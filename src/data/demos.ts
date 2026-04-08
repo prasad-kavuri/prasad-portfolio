@@ -16,7 +16,7 @@ export const demos: Demo[] = [
     description: "Real retrieval-augmented generation with Transformers.js embeddings and ChromaDB — runs entirely in your browser.",
     href: "/demos/rag-pipeline",
     tags: ["Transformers.js", "ChromaDB", "nomic-embed-text"],
-    status: "upgrading",
+    status: "live",
   },
   {
     id: "multi-agent",

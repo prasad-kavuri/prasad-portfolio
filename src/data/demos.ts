@@ -43,7 +43,7 @@ export const demos: Demo[] = [
     description: "Semantic search with real sentence-BERT embeddings and UMAP visualisation of the embedding space.",
     href: "/demos/vector-search",
     tags: ["all-MiniLM-L6-v2", "UMAP", "Cosine similarity"],
-    status: "upgrading",
+    status: "live",
   },
   {
     id: "portfolio-assistant",

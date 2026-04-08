@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Pipeline - Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-header {
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .test-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .test-summary {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-card.total {
+            background: #f0f0f0;
+        }
+
+        .summary-card.passed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .summary-card.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .summary-card.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .test-controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .test-suite {
+            margin: 20px 0;
+        }
+
+        .test-category {
+            margin-bottom: 30px;
+        }
+
+        .category-header {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-status {
+            font-size: 0.9rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #e0e0e0;
+        }
+
+        .test-case {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .test-case:hover {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-info {
+            flex: 1;
+        }
+
+        .test-name {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .test-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .test-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .status-icon.pass {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-icon.fail {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-icon.pending {
+            background: #ffc107;
+            color: white;
+        }
+
+        .status-icon.running {
+            background: #007bff;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .test-time {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .error-details {
+            background: #fff5f5;
+            border: 1px solid #ffcccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #cc0000;
+            display: none;
+        }
+
+        .test-case.failed .error-details {
+            display: block;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 4px;
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+
+        .test-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 4px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #6c757d;
+            margin-right: 10px;
+        }
+
+        .log-message {
+            color: #333;
+        }
+
+        .log-error {
+            color: #dc3545;
+        }
+
+        .log-success {
+            color: #28a745;
+        }
+
+        .iframe-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .iframe-container.active {
+            display: block;
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 RAG Pipeline Test Suite</h1>
+            <p>Automated testing for RAG Pipeline functionality</p>
+        </div>
+
+        <div class="test-summary">
+            <div class="summary-card total">
+                <div class="summary-number" id="totalTests">0</div>
+                <div class="summary-label">Total Tests</div>
+            </div>
+            <div class="summary-card passed">
+                <div class="summary-number" id="passedTests">0</div>
+                <div class="summary-label">Passed</div>
+            </div>
+            <div class="summary-card failed">
+                <div class="summary-number" id="failedTests">0</div>
+                <div class="summary-label">Failed</div>
+            </div>
+            <div class="summary-card pending">
+                <div class="summary-number" id="pendingTests">0</div>
+                <div class="summary-label">Pending</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <div class="test-controls">
+            <button class="btn btn-primary" onclick="runAllTests()">
+                ▶️ Run All Tests
+            </button>
+            <button class="btn btn-secondary" onclick="runFailedTests()">
+                🔄 Re-run Failed
+            </button>
+            <button class="btn btn-secondary" onclick="clearResults()">
+                🗑️ Clear Results
+            </button>
+            <button class="btn btn-secondary" onclick="exportResults()">
+                📊 Export Report
+            </button>
+        </div>
+
+        <div class="test-suite" id="testSuite">
+            <!-- Test categories will be dynamically inserted here -->
+        </div>
+
+        <div class="test-log">
+            <h3>Test Log</h3>
+            <div id="logContainer"></div>
+        </div>
+    </div>
+
+    <!-- Hidden iframe for testing the actual page -->
+    <iframe id="testFrame" style="display:none;"></iframe>
+
+    <script>
+        // Test Suite Configuration
+        const testSuites = {
+            'DOM Elements': [
+                {
+                    name: 'Query Input Exists',
+                    description: 'Verify query input textarea is present',
+                    test: async (doc) => {
+                        const element = doc.getElementById('queryInput');
+                        if (!element) throw new Error('Query input not found');
+                        if (element.tagName !== 'TEXTAREA') throw new Error('Query input is not a textarea');
+                    }
+                },
+                {
+                    name: 'Process Button Exists',
+                    description: 'Verify process button is present and clickable',
+                    test: async (doc) => {
+                        const element = doc.getElementById('processBtn');
+                        if (!element) throw new Error('Process button not found');
+                        if (element.disabled) throw new Error('Process button is disabled by default');
+                    }
+                },
+                {
+                    name: 'Pipeline Stages Container',
+                    description: 'Verify pipeline stages container exists',
+                    test: async (doc) => {
+                        const element = doc.getElementById('pipelineStages');
+                        if (!element) throw new Error('Pipeline stages container not found');
+                    }
+                },
+                {
+                    name: 'Error Message Container',
+                    description: 'Verify error message container exists',
+                    test: async (doc) => {
+                        const element = doc.getElementById('errorMessage');
+                        if (!element) throw new Error('Error message container not found');
+                    }
+                },
+                {
+                    name: 'Metrics Panel',
+                    description: 'Verify metrics panel exists',
+                    test: async (doc) => {
+                        const element = doc.getElementById('metricsPanel');
+                        if (!element) throw new Error('Metrics panel not found');
+                    }
+                },
+                {
+                    name: 'Navigation Bar',
+                    description: 'Verify navigation bar is present',
+                    test: async (doc) => {
+                        const element = doc.querySelector('.nav-bar');
+                        if (!element) throw new Error('Navigation bar not found');
+                    }
+                }
+            ],
+            'Functionality': [
+                {
+                    name: 'Set Query Function',
+                    description: 'Test setQuery function works correctly',
+                    test: async (doc, win) => {
+                        if (typeof win.setQuery !== 'function') {
+                            throw new Error('setQuery function not defined');
+                        }
+                        const input = doc.getElementById('queryInput');
+                        const originalValue = input.value;
+                        win.setQuery('Test Query');
+                        if (input.value !== 'Test Query') {
+                            throw new Error('setQuery did not update input value');
+                        }
+                        input.value = originalValue;
+                    }
+                },
+                {
+                    name: 'Clear Pipeline Function',
+                    description: 'Test clearPipeline function',
+                    test: async (doc, win) => {
+                        if (typeof win.clearPipeline !== 'function') {
+                            throw new Error('clearPipeline function not defined');
+                        }
+                        win.clearPipeline();
+                        const stages = doc.getElementById('pipelineStages');
+                        if (stages.innerHTML !== '') {
+                            throw new Error('clearPipeline did not clear stages');
+                        }
+                    }
+                },
+                {
+                    name: 'Safe DOM Operations',
+                    description: 'Test safe DOM helper functions',
+                    test: async (doc, win) => {
+                        if (typeof win.safeGetElement !== 'function') {
+                            throw new Error('safeGetElement function not defined');
+                        }
+                        if (typeof win.safeSetHTML !== 'function') {
+                            throw new Error('safeSetHTML function not defined');
+                        }
+                        // Test safe get with non-existent element
+                        const result = win.safeGetElement('nonExistentElement');
+                        if (result !== null) {
+                            throw new Error('safeGetElement should return null for non-existent elements');
+                        }
+                    }
+                },
+                {
+                    name: 'Process Button Click Handler',
+                    description: 'Verify process button has click handler',
+                    test: async (doc, win) => {
+                        const btn = doc.getElementById('processBtn');
+                        const hasOnclick = btn.hasAttribute('onclick') || btn.onclick !== null;
+                        if (!hasOnclick) {
+                            throw new Error('Process button has no click handler');
+                        }
+                    }
+                },
+                {
+                    name: 'Example Query Buttons',
+                    description: 'Test example query buttons functionality',
+                    test: async (doc, win) => {
+                        const buttons = doc.querySelectorAll('.example-btn');
+                        if (buttons.length === 0) {
+                            throw new Error('No example query buttons found');
+                        }
+                        // Test first button
+                        const firstBtn = buttons[0];
+                        if (!firstBtn.hasAttribute('onclick')) {
+                            throw new Error('Example button has no click handler');
+                        }
+                    }
+                }
+            ],
+            'State Management': [
+                {
+                    name: 'Pipeline State Initialization',
+                    description: 'Verify pipeline state is properly initialized',
+                    test: async (doc, win) => {
+                        if (!win.pipelineState) {
+                            throw new Error('pipelineState not defined');
+                        }
+                        const state = win.pipelineState;
+                        if (typeof state.isProcessing !== 'boolean') {
+                            throw new Error('pipelineState.isProcessing not properly initialized');
+                        }
+                        if (!Array.isArray(state.documents)) {
+                            throw new Error('pipelineState.documents is not an array');
+                        }
+                    }
+                },
+                {
+                    name: 'Processing Lock',
+                    description: 'Test that processing lock prevents double execution',
+                    test: async (doc, win) => {
+                        const input = doc.getElementById('queryInput');
+                        input.value = 'Test Query';
+
+                        // Simulate processing state
+                        win.pipelineState.isProcessing = true;
+
+                        // Try to process (should show error)
+                        const errorElement = doc.getElementById('errorMessage');
+                        const originalDisplay = errorElement.style.display;
+
+                        // Reset state
+                        win.pipelineState.isProcessing = false;
+                    }
+                }
+            ],
+            'Error Handling': [
+                {
+                    name: 'Empty Query Validation',
+                    description: 'Test handling of empty query submission',
+                    test: async (doc, win) => {
+                        const input = doc.getElementById('queryInput');
+                        const originalValue = input.value;
+                        input.value = '';
+
+                        // This should trigger validation
+                        if (typeof win.processWithRAG === 'function') {
+                            // Function exists, validation should work
+                            input.value = originalValue;
+                        } else {
+                            throw new Error('processWithRAG function not defined');
+                        }
+                    }
+                },
+                {
+                    name: 'Error Message Display',
+                    description: 'Test error message display function',
+                    test: async (doc, win) => {
+                        if (typeof win.showError !== 'function') {
+                            throw new Error('showError function not defined');
+                        }
+                        const errorElement = doc.getElementById('errorMessage');
+                        win.showError('Test Error');
+                        if (errorElement.style.display === 'none') {
+                            throw new Error('Error message not displayed');
+                        }
+                        // Clear error
+                        errorElement.style.display = 'none';
+                    }
+                },
+                {
+                    name: 'Success Message Display',
+                    description: 'Test success message display function',
+                    test: async (doc, win) => {
+                        if (typeof win.showSuccess !== 'function') {
+                            throw new Error('showSuccess function not defined');
+                        }
+                        const successElement = doc.getElementById('successMessage');
+                        win.showSuccess('Test Success');
+                        if (successElement.style.display === 'none') {
+                            throw new Error('Success message not displayed');
+                        }
+                        // Clear success
+                        successElement.style.display = 'none';
+                    }
+                }
+            ],
+            'UI Components': [
+                {
+                    name: 'Knowledge Base Stats',
+                    description: 'Verify knowledge base statistics are displayed',
+                    test: async (doc) => {
+                        const stats = doc.querySelectorAll('.kb-stat');
+                        if (stats.length < 4) {
+                            throw new Error('Missing knowledge base statistics');
+                        }
+                    }
+                },
+                {
+                    name: 'Responsive Layout',
+                    description: 'Check for responsive design classes',
+                    test: async (doc) => {
+                        const mainContent = doc.querySelector('.main-content');
+                        if (!mainContent) {
+                            throw new Error('Main content container not found');
+                        }
+                        const hasMediaQuery = window.getComputedStyle(mainContent).display;
+                        // Just check it exists, actual responsive testing would need viewport changes
+                    }
+                },
+                {
+                    name: 'Loading Spinner',
+                    description: 'Verify loading spinner CSS exists',
+                    test: async (doc) => {
+                        const styleSheets = Array.from(doc.styleSheets);
+                        let hasSpinner = false;
+                        for (const sheet of styleSheets) {
+                            try {
+                                const rules = Array.from(sheet.cssRules || []);
+                                hasSpinner = rules.some(rule =>
+                                    rule.selectorText && rule.selectorText.includes('loading-spinner')
+                                );
+                                if (hasSpinner) break;
+                            } catch (e) {
+                                // Cross-origin or other access issues
+                            }
+                        }
+                        if (!hasSpinner) {
+                            throw new Error('Loading spinner styles not found');
+                        }
+                    }
+                }
+            ],
+            'Performance': [
+                {
+                    name: 'Page Load Time',
+                    description: 'Test page loads within acceptable time',
+                    test: async (doc, win) => {
+                        const loadTime = win.performance.timing.loadEventEnd - win.performance.timing.navigationStart;
+                        if (loadTime > 3000) {
+                            throw new Error(`Page load time too high: ${loadTime}ms`);
+                        }
+                    }
+                },
+                {
+                    name: 'Memory Leaks Check',
+                    description: 'Check for potential memory leaks in state management',
+                    test: async (doc, win) => {
+                        // Basic check for cleanup
+                        win.clearPipeline();
+                        if (win.pipelineState.documents.length > 0) {
+                            throw new Error('Documents not cleared properly');
+                        }
+                        if (Object.keys(win.pipelineState.stageTimings).length > 0) {
+                            throw new Error('Stage timings not cleared properly');
+                        }
+                    }
+                }
+            ]
+        };
+
+        // Test Runner
+        class TestRunner {
+            constructor() {
+                this.results = [];
+                this.currentSuite = null;
+                this.iframe = null;
+            }
+
+            async init() {
+                this.iframe = document.getElementById('testFrame');
+                this.iframe.src = 'rag-pipeline.html';
+
+                return new Promise((resolve) => {
+                    this.iframe.onload = () => {
+                        this.log('Test frame loaded successfully', 'success');
+                        resolve();
+                    };
+                });
+            }
+
+            async runTest(category, test) {
+                const startTime = Date.now();
+                const result = {
+                    category,
+                    name: test.name,
+                    description: test.description,
+                    status: 'running',
+                    time: 0,
+                    error: null
+                };
+
+                try {
+                    const doc = this.iframe.contentDocument;
+                    const win = this.iframe.contentWindow;
+
+                    await test.test(doc, win);
+
+                    result.status = 'pass';
+                    result.time = Date.now() - startTime;
+                    this.log(`✓ ${test.name} (${result.time}ms)`, 'success');
+                } catch (error) {
+                    result.status = 'fail';
+                    result.error = error.message;
+                    result.time = Date.now() - startTime;
+                    this.log(`✗ ${test.name}: ${error.message}`, 'error');
+                }
+
+                this.results.push(result);
+                this.updateUI(result);
+                return result;
+            }
+
+            async runSuite(category, tests) {
+                this.log(`Running ${category} tests...`);
+                const results = [];
+
+                for (const test of tests) {
+                    const result = await this.runTest(category, test);
+                    results.push(result);
+                    await this.delay(100); // Small delay between tests
+                }
+
+                return results;
+            }
+
+            async runAll() {
+                this.results = [];
+                this.clearUI();
+                await this.init();
+
+                const totalTests = Object.values(testSuites).flat().length;
+                document.getElementById('totalTests').textContent = totalTests;
+
+                for (const [category, tests] of Object.entries(testSuites)) {
+                    await this.runSuite(category, tests);
+                }
+
+                this.showSummary();
+            }
+
+            updateUI(result) {
+                // Update counters
+                const passed = this.results.filter(r => r.status === 'pass').length;
+                const failed = this.results.filter(r => r.status === 'fail').length;
+                const total = this.results.length;
+
+                document.getElementById('passedTests').textContent = passed;
+                document.getElementById('failedTests').textContent = failed;
+                document.getElementById('pendingTests').textContent =
+                    document.getElementById('totalTests').textContent - total;
+
+                // Update progress bar
+                const progress = (total / document.getElementById('totalTests').textContent) * 100;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+            }
+
+            clearUI() {
+                document.getElementById('testSuite').innerHTML = '';
+                document.getElementById('logContainer').innerHTML = '';
+                document.getElementById('passedTests').textContent = '0';
+                document.getElementById('failedTests').textContent = '0';
+                document.getElementById('progressBar').style.width = '0%';
+            }
+
+            showSummary() {
+                const passed = this.results.filter(r => r.status === 'pass').length;
+                const failed = this.results.filter(r => r.status === 'fail').length;
+                const total = this.results.length;
+
+                this.log(`Test run complete: ${passed}/${total} passed, ${failed} failed`,
+                    failed > 0 ? 'error' : 'success');
+
+                // Display detailed results
+                this.displayResults();
+            }
+
+            displayResults() {
+                const container = document.getElementById('testSuite');
+                container.innerHTML = '';
+
+                // Group results by category
+                const grouped = {};
+                this.results.forEach(result => {
+                    if (!grouped[result.category]) {
+                        grouped[result.category] = [];
+                    }
+                    grouped[result.category].push(result);
+                });
+
+                // Display each category
+                for (const [category, results] of Object.entries(grouped)) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'test-category';
+
+                    const passed = results.filter(r => r.status === 'pass').length;
+                    const total = results.length;
+
+                    categoryDiv.innerHTML = `
+                        <div class="category-header">
+                            <span>${category}</span>
+                            <span class="category-status">${passed}/${total} passed</span>
+                        </div>
+                    `;
+
+                    results.forEach(result => {
+                        const testDiv = document.createElement('div');
+                        testDiv.className = `test-case ${result.status === 'fail' ? 'failed' : ''}`;
+
+                        const statusIcon = result.status === 'pass' ? '✓' : '✗';
+                        const statusClass = result.status === 'pass' ? 'pass' : 'fail';
+
+                        testDiv.innerHTML = `
+                            <div class="test-info">
+                                <div class="test-name">${result.name}</div>
+                                <div class="test-description">${result.description}</div>
+                                ${result.error ? `<div class="error-details">${result.error}</div>` : ''}
+                            </div>
+                            <div class="test-status">
+                                <div class="status-icon ${statusClass}">${statusIcon}</div>
+                                <div class="test-time">${result.time}ms</div>
+                            </div>
+                        `;
+
+                        categoryDiv.appendChild(testDiv);
+                    });
+
+                    container.appendChild(categoryDiv);
+                }
+            }
+
+            log(message, type = 'info') {
+                const logContainer = document.getElementById('logContainer');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+
+                const time = new Date().toLocaleTimeString();
+                const messageClass = type === 'error' ? 'log-error' :
+                    type === 'success' ? 'log-success' : 'log-message';
+
+                entry.innerHTML = `
+                    <span class="log-time">[${time}]</span>
+                    <span class="${messageClass}">${message}</span>
+                `;
+
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            exportResults() {
+                const report = {
+                    timestamp: new Date().toISOString(),
+                    summary: {
+                        total: this.results.length,
+                        passed: this.results.filter(r => r.status === 'pass').length,
+                        failed: this.results.filter(r => r.status === 'fail').length
+                    },
+                    results: this.results
+                };
+
+                const blob = new Blob([JSON.stringify(report, null, 2)],
+                    { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `test-report-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Global test runner instance
+        const testRunner = new TestRunner();
+
+        // Control functions
+        async function runAllTests() {
+            await testRunner.runAll();
+        }
+
+        async function runFailedTests() {
+            const failed = testRunner.results.filter(r => r.status === 'fail');
+            if (failed.length === 0) {
+                testRunner.log('No failed tests to re-run', 'info');
+                return;
+            }
+
+            testRunner.results = [];
+            await testRunner.init();
+
+            for (const failedTest of failed) {
+                const suite = testSuites[failedTest.category];
+                const test = suite.find(t => t.name === failedTest.name);
+                if (test) {
+                    await testRunner.runTest(failedTest.category, test);
+                }
+            }
+
+            testRunner.showSummary();
+        }
+
+        function clearResults() {
+            testRunner.results = [];
+            testRunner.clearUI();
+            testRunner.log('Results cleared', 'info');
+        }
+
+        function exportResults() {
+            if (testRunner.results.length === 0) {
+                testRunner.log('No results to export', 'error');
+                return;
+            }
+            testRunner.exportResults();
+            testRunner.log('Results exported', 'success');
+        }
+
+        // Auto-run tests on page load (optional)
+        window.addEventListener('load', () => {
+            testRunner.log('Test suite ready. Click "Run All Tests" to begin.', 'info');
+        });
+    </script>
+</body>
+
+</html>

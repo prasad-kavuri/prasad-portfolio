@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Script Loading</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .debug {
+            background: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007acc;
+        }
+
+        .error {
+            border-left-color: #cc0000;
+            background: #ffe6e6;
+        }
+
+        .success {
+            border-left-color: #00cc00;
+            background: #e6ffe6;
+        }
+
+        .warning {
+            border-left-color: #ff9900;
+            background: #fff3e6;
+        }
+
+        .test-btn {
+            background: #007acc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+
+        .test-btn:hover {
+            background: #005999;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Multi-Agent Script Loading Debug</h1>
+    <div id="debug-output"></div>
+
+    <button class="test-btn" onclick="testAgents()">Test Agent Classes</button>
+    <button class="test-btn" onclick="clearDebug()">Clear Debug</button>
+
+    <script>
+        const debugOutput = document.getElementById('debug-output');
+
+        function log(message, type = 'debug') {
+            const div = document.createElement('div');
+            div.className = `debug ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            debugOutput.appendChild(div);
+            console.log(message);
+        }
+
+        function clearDebug() {
+            debugOutput.innerHTML = '';
+        }
+
+        function testAgents() {
+            log('🔍 Testing agent classes availability...');
+
+            // Test each class
+            const tests = [
+                { name: 'AGENT_MOCK_DATA', check: () => typeof AGENT_MOCK_DATA !== 'undefined' },
+                { name: 'AnalyzerAgent', check: () => typeof AnalyzerAgent !== 'undefined' },
+                { name: 'ResearcherAgent', check: () => typeof ResearcherAgent !== 'undefined' },
+                { name: 'StrategistAgent', check: () => typeof StrategistAgent !== 'undefined' },
+                { name: 'AgentOrchestrator', check: () => typeof AgentOrchestrator !== 'undefined' }
+            ];
+
+            tests.forEach(test => {
+                try {
+                    if (test.check()) {
+                        log(`✅ ${test.name} is available`, 'success');
+
+                        // Try to create instance if it's a class
+                        if (test.name !== 'AGENT_MOCK_DATA') {
+                            try {
+                                const ClassConstructor = window[test.name];
+                                const instance = new ClassConstructor();
+                                log(`✅ ${test.name} instance created successfully: ${instance.name || instance.id || 'unnamed'}`, 'success');
+                            } catch (e) {
+                                log(`⚠️ ${test.name} exists but failed to instantiate: ${e.message}`, 'warning');
+                            }
+                        }
+                    } else {
+                        log(`❌ ${test.name} is NOT available`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ Error testing ${test.name}: ${error.message}`, 'error');
+                }
+            });
+
+            // Test the workflow
+            log('🔄 Testing complete workflow...');
+            try {
+                if (typeof AgentOrchestrator !== 'undefined' &&
+                    typeof AnalyzerAgent !== 'undefined' &&
+                    typeof ResearcherAgent !== 'undefined' &&
+                    typeof StrategistAgent !== 'undefined') {
+
+                    const orchestrator = new AgentOrchestrator();
+                    orchestrator.registerAgent(new AnalyzerAgent());
+                    orchestrator.registerAgent(new ResearcherAgent());
+                    orchestrator.registerAgent(new StrategistAgent());
+
+                    log('✅ All agents registered successfully!', 'success');
+                } else {
+                    log('❌ Cannot test workflow - missing agent classes', 'error');
+                }
+            } catch (error) {
+                log(`❌ Workflow test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run test when scripts load
+        window.addEventListener('load', function () {
+            setTimeout(() => {
+                log('📄 Page loaded, testing scripts...');
+                testAgents();
+            }, 500);
+        });
+    </script>
+
+    <!-- Load scripts in order and test each one -->
+    <script>
+        log('📦 Loading agent-mock-data.js...');
+    </script>
+    <script src="data/agent-mock-data.js" onload="log('✅ agent-mock-data.js loaded', 'success')"
+        onerror="log('❌ Failed to load agent-mock-data.js', 'error')"></script>
+
+    <script>
+        log('📦 Loading analyzer-agent.js...');
+    </script>
+    <script src="lib/agents/analyzer-agent.js" onload="log('✅ analyzer-agent.js loaded', 'success')"
+        onerror="log('❌ Failed to load analyzer-agent.js', 'error')"></script>
+
+    <script>
+        log('📦 Loading researcher-agent.js...');
+    </script>
+    <script src="lib/agents/researcher-agent.js" onload="log('✅ researcher-agent.js loaded', 'success')"
+        onerror="log('❌ Failed to load researcher-agent.js', 'error')"></script>
+
+    <script>
+        log('📦 Loading strategist-agent.js...');
+    </script>
+    <script src="lib/agents/strategist-agent.js" onload="log('✅ strategist-agent.js loaded', 'success')"
+        onerror="log('❌ Failed to load strategist-agent.js', 'error')"></script>
+
+    <script>
+        log('📦 Loading agent-orchestrator.js...');
+    </script>
+    <script src="lib/agents/agent-orchestrator.js" onload="log('✅ agent-orchestrator.js loaded', 'success')"
+        onerror="log('❌ Failed to load agent-orchestrator.js', 'error')"></script>
+</body>
+
+</html>

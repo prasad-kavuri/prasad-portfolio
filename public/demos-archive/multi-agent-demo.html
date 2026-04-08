@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent AI System Demo - Prasad Kavuri</title>
+    <meta name="description"
+        content="Interactive demonstration of collaborative AI agents working together to analyze websites and provide strategic recommendations.">
+
+    <style>
+        /* Essential inline styles to ensure functionality without Tailwind */
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .bg-white {
+            background-color: white;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .border-b {
+            border-bottom-width: 1px;
+            border-color: #e5e7eb;
+        }
+
+        .max-w-7xl {
+            max-width: 80rem;
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .px-8 {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .h-16 {
+            height: 4rem;
+        }
+
+        .space-x-2>*+* {
+            margin-left: 0.5rem;
+        }
+
+        .space-x-4>*+* {
+            margin-left: 1rem;
+        }
+
+        .text-gray-900 {
+            color: #111827;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-gray-700 {
+            color: #374151;
+        }
+
+        .text-blue-600 {
+            color: #2563eb;
+        }
+
+        .text-blue-700 {
+            color: #1d4ed8;
+        }
+
+        .text-blue-800 {
+            color: #1e40af;
+        }
+
+        .text-blue-900 {
+            color: #1e3a8a;
+        }
+
+        .text-blue-100 {
+            color: #dbeafe;
+        }
+
+        .text-green-600 {
+            color: #16a34a;
+        }
+
+        .text-green-700 {
+            color: #15803d;
+        }
+
+        .text-green-800 {
+            color: #166534;
+        }
+
+        .text-green-900 {
+            color: #14532d;
+        }
+
+        .text-purple-600 {
+            color: #9333ea;
+        }
+
+        .text-purple-700 {
+            color: #7c3aed;
+        }
+
+        .text-purple-800 {
+            color: #6b21a8;
+        }
+
+        .text-purple-900 {
+            color: #581c87;
+        }
+
+        .text-red-800 {
+            color: #991b1b;
+        }
+
+        .text-yellow-800 {
+            color: #92400e;
+        }
+
+        .hover\:text-blue-600:hover {
+            color: #2563eb;
+        }
+
+        .transition-colors {
+            transition-property: color;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1rem;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-12 {
+            margin-bottom: 3rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+
+        .mt-12 {
+            margin-top: 3rem;
+        }
+
+        .ml-auto {
+            margin-left: auto;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+
+        .rounded-2xl {
+            border-radius: 1rem;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .border {
+            border-width: 1px;
+        }
+
+        .border-2 {
+            border-width: 2px;
+        }
+
+        .border-t {
+            border-top-width: 1px;
+        }
+
+        .border-gray-200 {
+            border-color: #e5e7eb;
+        }
+
+        .border-gray-300 {
+            border-color: #d1d5db;
+        }
+
+        .border-blue-200 {
+            border-color: #c3ddfd;
+        }
+
+        .border-blue-500 {
+            border-color: #3b82f6;
+        }
+
+        .border-green-200 {
+            border-color: #bbf7d0;
+        }
+
+        .border-green-500 {
+            border-color: #22c55e;
+        }
+
+        .border-purple-200 {
+            border-color: #e9d5ff;
+        }
+
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        .bg-blue-50 {
+            background-color: #eff6ff;
+        }
+
+        .bg-blue-100 {
+            background-color: #dbeafe;
+        }
+
+        .bg-blue-500 {
+            background-color: #3b82f6;
+        }
+
+        .bg-blue-600 {
+            background-color: #2563eb;
+        }
+
+        .bg-green-50 {
+            background-color: #f0fdf4;
+        }
+
+        .bg-green-100 {
+            background-color: #dcfce7;
+        }
+
+        .bg-green-500 {
+            background-color: #22c55e;
+        }
+
+        .bg-green-600 {
+            background-color: #16a34a;
+        }
+
+        .bg-purple-50 {
+            background-color: #faf5ff;
+        }
+
+        .bg-purple-100 {
+            background-color: #e9d5ff;
+        }
+
+        .bg-purple-500 {
+            background-color: #a855f7;
+        }
+
+        .bg-purple-600 {
+            background-color: #9333ea;
+        }
+
+        .bg-red-100 {
+            background-color: #fee2e2;
+        }
+
+        .bg-yellow-100 {
+            background-color: #fef3c7;
+        }
+
+        .hover\:bg-blue-700:hover {
+            background-color: #1d4ed8;
+        }
+
+        .w-4 {
+            width: 1rem;
+        }
+
+        .w-5 {
+            width: 1.25rem;
+        }
+
+        .w-6 {
+            width: 1.5rem;
+        }
+
+        .w-8 {
+            width: 2rem;
+        }
+
+        .w-10 {
+            width: 2.5rem;
+        }
+
+        .w-12 {
+            width: 3rem;
+        }
+
+        .w-16 {
+            width: 4rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-2 {
+            height: 0.5rem;
+        }
+
+        .h-4 {
+            height: 1rem;
+        }
+
+        .h-5 {
+            height: 1.25rem;
+        }
+
+        .h-6 {
+            height: 1.5rem;
+        }
+
+        .h-8 {
+            height: 2rem;
+        }
+
+        .h-10 {
+            height: 2.5rem;
+        }
+
+        .h-12 {
+            height: 3rem;
+        }
+
+        .h-16 {
+            height: 4rem;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .gap-1 {
+            gap: 0.25rem;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-3 {
+            gap: 0.75rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .flex-1 {
+            flex: 1 1 0%;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        .flex-shrink-0 {
+            flex-shrink: 0;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .space-y-2>*+* {
+            margin-top: 0.5rem;
+        }
+
+        .space-y-3>*+* {
+            margin-top: 0.75rem;
+        }
+
+        .space-y-8>*+* {
+            margin-top: 2rem;
+        }
+
+        .leading-relaxed {
+            line-height: 1.625;
+        }
+
+        .max-w-3xl {
+            max-width: 48rem;
+        }
+
+        .max-h-64 {
+            max-height: 16rem;
+        }
+
+        .overflow-y-auto {
+            overflow-y: auto;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .block {
+            display: block;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+        .focus\:ring-2:focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        .focus\:ring-blue-500:focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        .focus\:border-transparent:focus {
+            border-color: transparent;
+        }
+
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+
+        .disabled\:opacity-50:disabled {
+            opacity: 0.5;
+        }
+
+        .disabled\:cursor-not-allowed:disabled {
+            cursor: not-allowed;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .pt-4 {
+            padding-top: 1rem;
+        }
+
+        .mt-0\.5 {
+            margin-top: 0.125rem;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .agent-card {
+            transition: all 0.3s ease;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Hide on mobile */
+        @media (max-width: 768px) {
+            .md\:grid-cols-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+
+            .md\:flex-row {
+                flex-direction: column;
+            }
+
+            .md\:flex {
+                display: none;
+            }
+
+            .sm\:px-6 {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .lg\:px-8 {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html"
+                        class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 transition-colors">
+                        <span>←</span>
+                        <span class="font-medium">Back to Portfolio</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">AI Agents Demo</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <div class="gradient-bg rounded-2xl p-8 text-white mb-8">
+                <h1 class="text-4xl font-bold mb-4 flex items-center justify-center gap-3">
+                    <span class="w-10 h-10">👥</span>
+                    Multi-Agent AI System
+                </h1>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+                    Watch three specialized AI agents collaborate in real-time to analyze websites and provide
+                    comprehensive improvement strategies. Each agent has unique capabilities and works together to
+                    deliver insights no single AI could achieve alone.
+                </p>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4 items-end">
+                <div class="flex-1">
+                    <label for="websiteUrl" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Website URL to Analyze
+                    </label>
+                    <input type="url" id="websiteUrl" value="https://www.prasadkavuri.com"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        placeholder="https://example.com">
+                </div>
+                <button id="startAnalysis"
+                    class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all">
+                    <span class="button-icon">▶</span>
+                    <span class="button-text">Start Analysis</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Agent Workflow Visualization -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Agent Collaboration Workflow</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Analyzer Agent -->
+                <div class="agent-card bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200" id="analyzer-card">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span class="text-white">🌐</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Analyzer Agent</h3>
+                            <p class="text-sm text-gray-600">Website Analysis Specialist</p>
+                        </div>
+                        <div class="ml-auto">
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 agent-status"
+                                id="analyzer-status"></div>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-gray-700 mb-4">
+                        Examines website structure, performance metrics, SEO factors, and accessibility compliance to
+                        identify improvement opportunities.
+                    </p>
+
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <h4 class="text-xs font-semibold text-gray-600 mb-2">CAPABILITIES</h4>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">Performance</span>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">SEO</span>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">Accessibility</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 hidden progress-container" id="analyzer-progress">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full transition-all progress-bar" style="width: 0%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arrow Connector -->
+                <div class="hidden md:flex justify-center items-center">
+                    <span class="w-8 h-8 text-gray-400">→</span>
+                </div>
+
+                <!-- Researcher Agent -->
+                <div class="agent-card bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200" id="researcher-card">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                            <span class="text-white">🔍</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Researcher Agent</h3>
+                            <p class="text-sm text-gray-600">Best Practices Research Specialist</p>
+                        </div>
+                        <div class="ml-auto">
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 agent-status"
+                                id="researcher-status"></div>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-gray-700 mb-4">
+                        Researches industry best practices, modern web standards, and proven solutions for identified
+                        issues and optimization opportunities.
+                    </p>
+
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <h4 class="text-xs font-semibold text-gray-600 mb-2">CAPABILITIES</h4>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Research</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Standards</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Solutions</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 hidden progress-container" id="researcher-progress">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-600 h-2 rounded-full transition-all progress-bar" style="width: 0%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arrow Connector -->
+                <div class="hidden md:flex justify-center items-center">
+                    <span class="w-8 h-8 text-gray-400">→</span>
+                </div>
+
+                <!-- Strategist Agent -->
+                <div class="agent-card bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200" id="strategist-card">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                            <span class="text-white">🎯</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Strategist Agent</h3>
+                            <p class="text-sm text-gray-600">Strategic Planning Specialist</p>
+                        </div>
+                        <div class="ml-auto">
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 agent-status"
+                                id="strategist-status"></div>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-gray-700 mb-4">
+                        Synthesizes analysis and research findings into prioritized, actionable strategies with
+                        timelines and resource requirements.
+                    </p>
+
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <h4 class="text-xs font-semibold text-gray-600 mb-2">CAPABILITIES</h4>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">Strategy</span>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">Planning</span>
+                            <span
+                                class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">Prioritization</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 hidden progress-container" id="strategist-progress">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-600 h-2 rounded-full transition-all progress-bar" style="width: 0%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden space-y-8">
+            <h2 class="text-2xl font-bold text-gray-900">Agent Collaboration Results</h2>
+
+            <!-- Analyzer Results -->
+            <div id="analyzer-results" class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <h3 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                    <span class="w-5 h-5">🌐</span>
+                    Analyzer Agent Findings
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-blue-800 mb-3">Issues Identified:</h4>
+                        <div id="analyzer-findings" class="space-y-2"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-blue-800 mb-3">Problem Categories:</h4>
+                        <div id="analyzer-categories" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Researcher Results -->
+            <div id="researcher-results" class="bg-green-50 rounded-xl p-6 border border-green-200">
+                <h3 class="text-xl font-bold text-green-900 mb-4 flex items-center gap-2">
+                    <span class="w-5 h-5">🔍</span>
+                    Researcher Agent Recommendations
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-green-800 mb-3">Best Practices:</h4>
+                        <div id="researcher-recommendations" class="space-y-2"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-green-800 mb-3">Research Sources:</h4>
+                        <div id="researcher-sources" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Strategist Results -->
+            <div id="strategist-results" class="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                <h3 class="text-xl font-bold text-purple-900 mb-4 flex items-center gap-2">
+                    <span class="w-5 h-5">🎯</span>
+                    Strategist Agent Action Plan
+                </h3>
+                <div>
+                    <h4 class="font-semibold text-purple-800 mb-4">Prioritized Recommendations:</h4>
+                    <div id="strategist-priorities" class="space-y-3"></div>
+                    <div class="mt-6 pt-4 border-t border-purple-200">
+                        <p class="text-sm text-purple-700">
+                            <strong>Estimated Timeline:</strong> <span id="strategist-timeline"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Communication Log -->
+        <div id="communication-log" class="bg-white rounded-xl shadow-lg p-6 mt-8 hidden">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span class="w-5 h-5">💬</span>
+                Agent Communication Log
+            </h3>
+            <div id="log-messages" class="space-y-3 max-h-64 overflow-y-auto"></div>
+        </div>
+
+        <!-- Features Overview -->
+        <div class="mt-12 bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Multi-Agent AI?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="w-8 h-8 text-blue-600 text-2xl">⚡</span>
+                    </div>
+                    <h3 class="font-bold text-gray-900 mb-2">Specialized Expertise</h3>
+                    <p class="text-gray-600 text-sm">Agents build upon each other's work, creating comprehensive
+                        solutions.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="w-8 h-8 text-purple-600 text-2xl">📈</span>
+                    </div>
+                    <h3 class="font-bold text-gray-900 mb-2">Scalable Architecture</h3>
+                    <p class="text-gray-600 text-sm">New agents can be added seamlessly to handle additional use cases.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts - Load in correct order -->
+    <script src="data/agent-mock-data.js"></script>
+    <script src="lib/agents/analyzer-agent.js"></script>
+    <script src="lib/agents/researcher-agent.js"></script>
+    <script src="lib/agents/strategist-agent.js"></script>
+    <script src="lib/agents/agent-orchestrator.js"></script>
+    <script src="multi-agent-demo.js"></script>
+</body>
+
+</html>Each agent focuses on specific domains, providing deeper insights
+than generalist AI.</p>
+</div>
+<div class="text-center">
+    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <span class="w-8 h-8 text-green-600 text-2xl">🔄</span>
+    </div>
+    <h3 class="font-bold text-gray-900 mb-2">Collaborative Intelligence</h3>
+    <p class="text-gray-600 text-sm">

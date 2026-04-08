@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Portfolio Assistant - Prasad Kavuri</title>
+    <meta name="description"
+        content="Interactive AI assistant for exploring Prasad Kavuri's experience in AI/ML Engineering, Agentic AI, and technology leadership">
+
+    <!-- Google Analytics 4 - Enhanced Implementation -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-38HPXDL9CK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        // Enhanced configuration
+        gtag('config', 'G-38HPXDL9CK', {
+            page_path: window.location.pathname,
+            page_title: document.title,
+            send_page_view: true
+            // Remove debug_mode in production
+        });
+
+        // Log successful initialization
+        console.log('GA4 initialized for:', window.location.pathname);
+    </script>
+
+    <!-- Enhanced Event Tracking for Chat Assistant -->
+    <script>
+        // Track chat interactions
+        function trackChatEvent(eventName, eventData) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', eventName, eventData);
+            }
+        }
+
+        // Track device and performance
+        window.addEventListener('load', function () {
+            const deviceType = window.innerWidth < 768 ? 'mobile' :
+                window.innerWidth < 1024 ? 'tablet' : 'desktop';
+
+            trackChatEvent('assistant_loaded', {
+                device_type: deviceType,
+                viewport_width: window.innerWidth,
+                viewport_height: window.innerHeight,
+                page_load_time: performance.timing.loadEventEnd - performance.timing.navigationStart
+            });
+        });
+
+        // Track chat session duration
+        let chatStartTime = Date.now();
+        let messageCount = 0;
+
+        window.addEventListener('beforeunload', function () {
+            const sessionDuration = Math.round((Date.now() - chatStartTime) / 1000);
+
+            trackChatEvent('chat_session_end', {
+                session_duration_seconds: sessionDuration,
+                messages_sent: messageCount,
+                average_messages_per_minute: messageCount > 0 ? (messageCount / (sessionDuration / 60)).toFixed(2) : 0
+            });
+        });
+
+        // Mobile responsiveness check
+        function checkMobileResponsiveness() {
+            const tests = {
+                viewport_meta: !!document.querySelector('meta[name="viewport"]'),
+                touch_friendly: true,
+                responsive_width: window.innerWidth <= 768 ? document.body.scrollWidth <= window.innerWidth : true
+            };
+
+            console.log('📱 Mobile Readiness:', tests);
+            return tests;
+        }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #2d3748;
+            font-size: 16px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: #2d3748;
+            min-height: 48px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 10px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover {
+            color: #667eea;
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+            max-height: 80vh;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .chat-header-info h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .chat-header-info p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #48bb78;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Chat Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f7fafc;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .message.user .message-avatar {
+            background: #e2e8f0;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-bubble {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            max-width: 80%;
+            display: inline-block;
+            line-height: 1.6;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.bot .message-bubble {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            max-width: 80px;
+        }
+
+        .typing-indicator.active {
+            display: inline-block;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #718096;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            padding: 15px 30px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action {
+            padding: 10px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            color: #4a5568;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .quick-action:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+
+        /* Input Area */
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            min-height: 48px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .send-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-icon {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        /* Enhanced Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .nav-link {
+                padding: 8px 12px;
+            }
+
+            .chat-container {
+                height: calc(100vh - 120px);
+                border-radius: 0;
+                max-height: none;
+            }
+
+            .chat-header {
+                padding: 20px;
+            }
+
+            .chat-header-info h2 {
+                font-size: 1.1rem;
+            }
+
+            .chat-messages {
+                padding: 20px;
+            }
+
+            .message-bubble {
+                max-width: 90%;
+                font-size: 0.95rem;
+            }
+
+            .quick-actions {
+                padding: 10px 20px;
+                gap: 8px;
+            }
+
+            .quick-action {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .chat-input {
+                font-size: 0.95rem;
+                padding: 12px 18px;
+            }
+
+            .send-button {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .logo-text h1 {
+                font-size: 1.2rem;
+            }
+
+            .logo-text p {
+                font-size: 0.8rem;
+            }
+
+            .chat-container {
+                height: calc(100vh - 100px);
+            }
+
+            .chat-header {
+                padding: 15px;
+            }
+
+            .bot-avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .chat-messages {
+                padding: 15px;
+            }
+
+            .message-avatar {
+                width: 30px;
+                height: 30px;
+            }
+
+            .quick-actions {
+                padding: 8px 15px;
+            }
+
+            .quick-action {
+                width: calc(50% - 4px);
+                justify-content: center;
+            }
+
+            .chat-input-container {
+                padding: 15px;
+            }
+        }
+
+        /* Ensure touch targets are large enough on mobile */
+        @media (pointer: coarse) {
+
+            button,
+            a,
+            .quick-action {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">🤖</div>
+                <div class="logo-text">
+                    <h1>Prasad Kavuri</h1>
+                    <p>AI Portfolio Assistant</p>
+                </div>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link"
+                    onclick="trackChatEvent('nav_click', {destination: 'home'})">Home</a>
+                <a href="resume-generator.html" class="nav-link"
+                    onclick="trackChatEvent('nav_click', {destination: 'resume_generator'})">Resume Generator</a>
+                <a href="https://www.linkedin.com/in/pkavuri/" class="nav-link" target="_blank"
+                    onclick="trackChatEvent('nav_click', {destination: 'linkedin'})">LinkedIn</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Chat Container -->
+    <div class="main-container">
+        <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="bot-avatar">🤖</div>
+                <div class="chat-header-info">
+                    <h2>AI Portfolio Assistant</h2>
+                    <p>Ask me about Prasad's experience, skills, and achievements</p>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span style="color: white; font-size: 0.9rem;">Online</span>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            👋 Hello! I'm Prasad's AI Portfolio Assistant. I can help you explore his 20+ years of
+                            experience in AI/ML engineering, leadership roles, and technical achievements.
+                            <br><br>
+                            Feel free to ask me about:
+                            <br>• His current role at Krutrim building India's first Agentic AI platform
+                            <br>• Experience leading 200+ engineers globally
+                            <br>• Technical expertise in LLMs, RAG, and cloud architecture
+                            <br>• Career progression from HERE Technologies to Ola to Krutrim
+                            <br>• Specific projects and achievements
+                            <br><br>
+                            What would you like to know?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-action" onclick="sendQuickMessage('Tell me about Prasad\'s current role')">Current
+                    Role</button>
+                <button class="quick-action" onclick="sendQuickMessage('What are his key achievements?')">Key
+                    Achievements</button>
+                <button class="quick-action" onclick="sendQuickMessage('Describe his AI/ML expertise')">AI/ML
+                    Expertise</button>
+                <button class="quick-action" onclick="sendQuickMessage('What is his leadership experience?')">Leadership
+                    Experience</button>
+                <button class="quick-action" onclick="sendQuickMessage('Tell me about the Agentic AI platform')">Agentic
+                    AI Platform</button>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <input type="text" class="chat-input" id="chatInput"
+                        placeholder="Ask me about Prasad's experience..." onkeypress="handleKeyPress(event)">
+                    <button class="send-button" onclick="sendMessage()">
+                        <svg class="send-icon" viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Knowledge base about Prasad
+        const knowledgeBase = {
+            currentRole: {
+                keywords: ['current', 'now', 'present', 'krutrim', 'head of ai'],
+                response: `Prasad is currently the Head of AI Engineering at Krutrim (March 2025 - Present), where he's leading the architecture and strategy for India's first Agentic AI platform called Kruti.ai.
+
+Key responsibilities include:
+• Leading a team of 200+ engineers building cutting-edge AI solutions
+• Architecting multi-model LLM orchestration systems with 50% latency reduction
+• Implementing RAG (Retrieval-Augmented Generation) pipelines
+• Achieving 40% cost savings through optimized infrastructure
+• Building domain-specific AI agents for mobility, payments, and content generation
+• Delivering 24/7 PaaS capabilities with enterprise-grade reliability`
+            },
+            achievements: {
+                keywords: ['achievement', 'accomplish', 'success', 'impact', 'results'],
+                response: `Prasad has delivered exceptional results throughout his career:
+
+🚀 **At Krutrim (2025)**:
+• Launched India's first Agentic AI platform with 50% latency reduction
+• Achieved 40% cost savings through multi-model LLM orchestration
+• Built and scaled team to 200+ engineers
+
+🗺 **At Ola (2023-2025)**:
+• Launched Ola Maps B2B platform acquiring 13,000+ customers
+• Generated $10M+ in new recurring revenue
+• Reduced infrastructure costs by 70%
+• Led 150+ engineers across US and India
+
+🌍 **At HERE Technologies (2005-2023)**:
+• Led 85+ engineers across North America, Europe, and APAC
+• Delivered autonomous driving datasets for major OEMs
+• Drove 50% cost reduction through cloud migration
+• 18-year progression from Senior Engineer to Director`
+            },
+            aiExpertise: {
+                keywords: ['ai', 'ml', 'machine learning', 'artificial intelligence', 'llm', 'expertise', 'skills', 'technical'],
+                response: `Prasad brings deep expertise across the AI/ML technology stack:
+
+**🤖 Advanced AI/ML Technologies:**
+• Multi-Model LLM Orchestration & Fine-tuning
+• Retrieval-Augmented Generation (RAG) Systems
+• Vector Search & Embeddings
+• Transformer Models (BERT, GPT architectures)
+• Real-time Personalization Engines
+• AI Agent Development & Orchestration
+
+**🏗️ Platform & Infrastructure:**
+• LLM Ops & MLOps at scale
+• Cloud-Native Architecture (AWS, Azure, GCP)
+• Kubernetes & Microservices
+• API Platform Development
+• SDK/API Integration for enterprise clients
+
+**🎯 Domain Expertise:**
+• Computer Vision for autonomous systems
+• NLP for conversational AI
+• Predictive Analytics for mobility
+• Real-time recommendation systems`
+            },
+            leadership: {
+                keywords: ['leadership', 'team', 'manage', 'lead', 'global', 'engineers'],
+                response: `Prasad is a proven engineering executive with extensive leadership experience:
+
+**👥 Team Leadership:**
+• Currently leading 200+ engineers at Krutrim
+• Previously managed 150+ engineers at Ola
+• Led 85+ engineers globally at HERE Technologies
+• Experience building and scaling teams across US, Europe, and APAC
+
+**💼 Executive Capabilities:**
+• P&L management for multi-million dollar products
+• Strategic vendor partnerships with major tech companies
+• Cross-functional collaboration with Product, Sales, and Operations
+• Executive stakeholder management and board presentations
+
+**🎯 Leadership Philosophy:**
+• Focus on building high-performance, autonomous teams
+• Data-driven decision making
+• Innovation through rapid experimentation
+• Mentorship and career development for team members`
+            },
+            agenticAI: {
+                keywords: ['agentic', 'kruti', 'agent', 'autonomous', 'platform'],
+                response: `The Kruti.ai platform at Krutrim represents India's first enterprise-grade Agentic AI system:
+
+**🤖 What is Agentic AI?**
+Agentic AI refers to AI systems that can act autonomously to achieve goals, make decisions, and interact with other systems without constant human oversight.
+
+**🚀 Kruti.ai Platform Features:**
+• Multi-model LLM orchestration for optimal performance
+• Domain-specific agents for different industries
+• Self-improving systems through reinforcement learning
+• Real-time decision making capabilities
+• Enterprise-grade security and compliance
+
+**💡 Use Cases Implemented:**
+• Autonomous customer service agents
+• Intelligent mobility routing and optimization
+• Payment fraud detection and prevention
+• Content generation and personalization
+• Predictive maintenance for fleet operations
+
+**📊 Platform Impact:**
+• 50% reduction in response latency
+• 40% cost savings vs traditional solutions
+• 24/7 availability with 99.9% uptime
+• Scalable to millions of concurrent requests`
+            },
+            career: {
+                keywords: ['career', 'progression', 'journey', 'experience', 'history', 'background'],
+                response: `Prasad's 20+ year career shows consistent growth and impact:
+
+**📈 Career Timeline:**
+
+**2025 - Present: Head of AI Engineering, Krutrim**
+• Leading India's first Agentic AI platform
+• Managing 200+ engineers
+• Driving AI innovation at national scale
+
+**2023 - 2025: Senior Director of Engineering, Ola**
+• Launched Ola Maps B2B platform
+• 13,000+ enterprise customers acquired
+• 70% infrastructure cost reduction
+
+**2005 - 2023: Director of Engineering, HERE Technologies**
+• 18-year progression from Senior Engineer to Director
+• Led autonomous driving initiatives
+• Managed global teams across 3 continents
+
+**Education:**
+• Master's degree in Computer Science
+• Specialized in AI/ML and distributed systems
+• Continuous learning in emerging AI technologies`
+            },
+            contact: {
+                keywords: ['contact', 'reach', 'connect', 'email', 'linkedin', 'hire', 'talk'],
+                response: `I'd be happy to help you connect with Prasad!
+
+**📧 Professional Contact:**
+• LinkedIn: https://www.linkedin.com/in/pkavuri/
+• Location: India (Open to global opportunities)
+
+**💼 Open to Discussing:**
+• Executive AI/ML leadership roles
+• Advisory and consulting opportunities
+• Speaking engagements on AI/Agentic systems
+• Strategic partnerships and collaborations
+
+**🎯 Ideal Opportunities:**
+• CTO/VP Engineering roles in AI-first companies
+• Head of AI/ML for enterprise transformation
+• Building next-generation AI platforms
+• Leading global engineering organizations
+
+Feel free to reach out via LinkedIn for professional inquiries!`
+            }
+        };
+
+        // Function to find best matching response
+        function findBestResponse(message) {
+            const lowerMessage = message.toLowerCase();
+
+            // Check each knowledge category
+            for (const category in knowledgeBase) {
+                const categoryData = knowledgeBase[category];
+                for (const keyword of categoryData.keywords) {
+                    if (lowerMessage.includes(keyword)) {
+                        return categoryData.response;
+                    }
+                }
+            }
+
+            // Default response if no match found
+            return `That's an interesting question! While I have extensive information about Prasad's experience, I might need more specific details to answer that particular query.
+
+Here are some topics I can help you with:
+• Current role at Krutrim and the Agentic AI platform
+• Leadership experience managing 200+ engineers
+• Technical expertise in AI/ML and cloud technologies
+• Career progression over 20+ years
+• Key achievements and project impacts
+• Contact information for professional opportunities
+
+Please feel free to ask about any of these areas!`;
+        }
+
+        // Send message function with analytics
+        function sendMessage(rawMessage) {
+            const input = document.getElementById('chatInput');
+            const candidate = rawMessage != null ? String(rawMessage) : (input?.value ?? '');
+            const message = candidate.trim();
+
+            // ✅ Reject empty/whitespace-only messages (matches unit test expectation)
+            if (!message) return false;
+
+            // Track message sent
+            messageCount++;
+            trackChatEvent('message_sent', {
+                message_length: message.length,
+                message_number: messageCount,
+                message_type: rawMessage != null ? 'user_programmatic' : 'user_typed'
+            });
+
+            // Add user message
+            addMessage(message, 'user');
+
+            // Clear input if present
+            if (input) input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Simulate response delay
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = findBestResponse(message);
+                addMessage(response, 'bot');
+
+                // Track bot response
+                trackChatEvent('bot_response', {
+                    query_type: detectQueryType(message),
+                    response_length: response.length
+                });
+            }, 1000 + Math.random() * 1000);
+
+            return true;
+        }
+
+        // (Optional) expose globally if you call it from inline HTML
+        if (typeof window !== 'undefined') window.sendMessage = sendMessage;
+    </script>
+
+    // Detect query type for analytics
+    function detectQueryType(message) {
+    const lower = message.toLowerCase();
+    if (lower.includes('current') || lower.includes('krutrim')) return 'current_role';
+    if (lower.includes('achievement') || lower.includes('success')) return 'achievements';
+    if (lower.includes('ai') || lower.includes('ml') || lower.includes('technical')) return 'technical';
+    if (lower.includes('lead') || lower.includes('team')) return 'leadership';
+    if (lower.includes('contact') || lower.includes('hire')) return 'contact';
+    return 'general';
+    }
+
+    // Add message to chat
+    function addMessage(text, sender) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+
+    const avatar = sender === 'bot' ? '🤖' : '👤';
+
+    messageDiv.innerHTML = `
+    <div class="message-avatar">${avatar}</div>
+    <div class="message-content">
+        <div class="message-bubble">${text}</div>
+    </div>
+    `;
+
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Quick message sender with tracking
+    function sendQuickMessage(message) {
+    // Track quick action click
+    trackChatEvent('quick_action_click', {
+    action_text: message,
+    action_type: 'predefined_query'
+    });
+
+    document.getElementById('chatInput').value = message;
+    sendMessage();
+    }
+
+    // Handle enter key
+    function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+    sendMessage();
+    }
+    }
+
+    // Typing indicator functions
+    function showTypingIndicator() {
+    const messagesContainer = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot';
+    typingDiv.id = 'tempTyping';
+
+    typingDiv.innerHTML = `
+    <div class="message-avatar">🤖</div>
+    <div class="message-content">
+        <div class="typing-indicator active">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    `;
+
+    messagesContainer.appendChild(typingDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+    const tempTyping = document.getElementById('tempTyping');
+    if (tempTyping) {
+    tempTyping.remove();
+    }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('chatInput').focus();
+
+    // Track assistant ready
+    trackChatEvent('assistant_ready', {
+    page_title: document.title,
+    timestamp: new Date().toISOString()
+    });
+
+    // Check mobile responsiveness
+    checkMobileResponsiveness();
+    });
+    </script>
+</body>
+
+</html>

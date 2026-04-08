@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Search & Embeddings Playground - Prasad Kavuri</title>
+    <meta name="description"
+        content="Interactive demonstration of vector search, semantic similarity, and RAG retrieval mechanisms using embeddings.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f7fafc;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: #3182ce;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.9rem;
+        }
+
+        input,
+        textarea,
+        select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Demo Modes */
+        .demo-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-card:hover {
+            border-color: #4299e1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-card.active {
+            border-color: #4299e1;
+            background: #f0f9ff;
+        }
+
+        .mode-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+
+        .mode-description {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .processing-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            color: #4299e1;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #4299e1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .result-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .similarity-score {
+            background: #4299e1;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .result-content {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4299e1;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Document Library */
+        .document-library {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .library-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .document-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .document-item:hover {
+            border-color: #4299e1;
+            background: #f0f9ff;
+        }
+
+        .document-item.selected {
+            border-color: #4299e1;
+            background: #f0f9ff;
+            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.2);
+        }
+
+        .document-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .document-preview {
+            color: #718096;
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-modes {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .control-panel,
+            .results-section,
+            .document-library {
+                padding: 20px;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a href="index.html" class="nav-back">
+                ← Back to Portfolio
+            </a>
+            <div class="gradient-bg">
+                <h1>Vector Search & Embeddings Playground</h1>
+                <p class="subtitle">
+                    Interactive demonstration of semantic search, document similarity, and RAG retrieval mechanisms.
+                    Experience how modern AI systems understand and match content using vector embeddings.
+                </p>
+            </div>
+        </div>
+
+        <!-- Demo Mode Selection -->
+        <div class="demo-modes">
+            <div class="mode-card active" data-mode="semantic-search">
+                <div class="mode-title">Semantic Search</div>
+                <div class="mode-description">Find documents based on meaning rather than exact keyword matches</div>
+            </div>
+            <div class="mode-card" data-mode="similarity">
+                <div class="mode-title">Document Similarity</div>
+                <div class="mode-description">Compare documents and find the most semantically similar content</div>
+            </div>
+            <div class="mode-card" data-mode="rag-retrieval">
+                <div class="mode-title">RAG Retrieval</div>
+                <div class="mode-description">Demonstrate retrieval-augmented generation with context ranking</div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-grid">
+                <div class="input-group">
+                    <label for="queryInput">Search Query / Question</label>
+                    <textarea id="queryInput"
+                        placeholder="Enter your search query or question...">artificial intelligence in healthcare</textarea>
+                </div>
+                <button id="searchBtn" class="btn">
+                    Search & Analyze
+                </button>
+            </div>
+
+            <!-- Advanced Options -->
+            <div
+                style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div class="input-group">
+                    <label for="similarityThreshold">Similarity Threshold</label>
+                    <input type="range" id="similarityThreshold" min="0" max="1" step="0.1" value="0.7">
+                    <span id="thresholdValue">0.7</span>
+                </div>
+                <div class="input-group">
+                    <label for="maxResults">Max Results</label>
+                    <select id="maxResults">
+                        <option value="3">3 Results</option>
+                        <option value="5" selected>5 Results</option>
+                        <option value="10">10 Results</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="embeddingModel">Embedding Model</label>
+                    <select id="embeddingModel">
+                        <option value="sentence-transformers" selected>Sentence-BERT</option>
+                        <option value="text-embedding-ada-002">OpenAI Ada-002</option>
+                        <option value="universal-sentence-encoder">Universal Sentence Encoder</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title">Search Results</h2>
+                <div class="processing-indicator" id="processingIndicator">
+                    <div class="spinner"></div>
+                    <span>Processing embeddings...</span>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="metrics-grid" id="metricsGrid" style="display: none;">
+                <div class="metric-card">
+                    <span class="metric-value" id="searchTime">-</span>
+                    <span class="metric-label">Search Time (ms)</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-value" id="documentsSearched">-</span>
+                    <span class="metric-label">Documents Searched</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-value" id="avgSimilarity">-</span>
+                    <span class="metric-label">Avg Similarity</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-value" id="embeddingDim">-</span>
+                    <span class="metric-label">Vector Dimensions</span>
+                </div>
+            </div>
+
+            <div id="searchResults">
+                <div style="text-align: center; color: #718096; padding: 40px;">
+                    Enter a search query above to see semantic search results
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Library -->
+        <div class="document-library">
+            <div>
+                <h2 class="library-title">Document Library</h2>
+                <p style="color: #718096; margin-bottom: 15px;">
+                    Sample documents indexed with embeddings. Click to select for similarity comparison.
+                </p>
+            </div>
+            <div class="document-grid" id="documentGrid">
+                <!-- Documents will be populated by JavaScript -->
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button id="addDocumentBtn" class="btn" style="background: #48bb78;">
+                    + Add Custom Document
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Vector Search & Embeddings Playground - Complete Implementation
+        class VectorSearchPlayground {
+            constructor() {
+                this.currentMode = 'semantic-search';
+                this.documentLibrary = [];
+                this.queryVector = null;
+                this.documentVectors = new Map();
+
+                this.init();
+                this.loadSampleDocuments();
+            }
+
+            init() {
+                // Event listeners
+                document.getElementById('searchBtn').addEventListener('click', () => this.performSearch());
+                document.getElementById('queryInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.performSearch();
+                    }
+                });
+
+                // Mode selection
+                document.querySelectorAll('.mode-card').forEach(card => {
+                    card.addEventListener('click', () => this.selectMode(card.dataset.mode));
+                });
+
+                // Advanced options
+                document.getElementById('similarityThreshold').addEventListener('input', (e) => {
+                    document.getElementById('thresholdValue').textContent = e.target.value;
+                });
+
+                document.getElementById('addDocumentBtn').addEventListener('click', () => this.showAddDocumentDialog());
+
+                console.log('Vector Search Playground initialized');
+            }
+
+            selectMode(mode) {
+                this.currentMode = mode;
+
+                // Update UI
+                document.querySelectorAll('.mode-card').forEach(card => {
+                    card.classList.toggle('active', card.dataset.mode === mode);
+                });
+
+                // Update placeholder text based on mode
+                const queryInput = document.getElementById('queryInput');
+                const placeholders = {
+                    'semantic-search': 'Enter your search query...',
+                    'similarity': 'Enter a document or text to find similar content...',
+                    'rag-retrieval': 'Ask a question for RAG-style retrieval...'
+                };
+                queryInput.placeholder = placeholders[mode];
+
+                console.log(`Mode switched to: ${mode}`);
+            }
+
+            async performSearch() {
+                const query = document.getElementById('queryInput').value.trim();
+                if (!query) {
+                    this.showError('Please enter a search query');
+                    return;
+                }
+
+                this.showProcessing(true);
+                const startTime = performance.now();
+
+                try {
+                    // Simulate embedding generation for query
+                    const queryVector = await this.generateEmbedding(query);
+                    this.queryVector = queryVector;
+
+                    // Generate embeddings for documents if not already done
+                    await this.ensureDocumentEmbeddings();
+
+                    // Perform vector search
+                    const results = await this.vectorSearch(queryVector, query);
+
+                    const searchTime = Math.round(performance.now() - startTime);
+                    this.displayResults(results, searchTime);
+                    this.updateMetrics(results, searchTime);
+
+                } catch (error) {
+                    console.error('Search error:', error);
+                    this.showError('Search failed. Please try again.');
+                } finally {
+                    this.showProcessing(false);
+                }
+            }
+
+            async generateEmbedding(text) {
+                // Simulate embedding generation with a realistic delay
+                await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+
+                // Generate a mock embedding vector (384 dimensions, typical for sentence transformers)
+                const dimensions = 384;
+                const vector = [];
+
+                // Create a somewhat realistic embedding based on text content
+                const textHash = this.simpleHash(text.toLowerCase());
+                const random = new this.SeededRandom(textHash);
+
+                for (let i = 0; i < dimensions; i++) {
+                    vector.push((random.next() - 0.5) * 2); // Values between -1 and 1
+                }
+
+                // Normalize the vector
+                const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
+                return vector.map(val => val / magnitude);
+            }
+
+            // Simple seeded random for consistent embeddings
+            SeededRandom = class {
+                constructor(seed) {
+                    this.seed = seed;
+                }
+
+                next() {
+                    this.seed = (this.seed * 9301 + 49297) % 233280;
+                    return this.seed / 233280;
+                }
+            };
+
+            simpleHash(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32bit integer
+                }
+                return Math.abs(hash);
+            }
+
+            async ensureDocumentEmbeddings() {
+                for (const doc of this.documentLibrary) {
+                    if (!this.documentVectors.has(doc.id)) {
+                        const embedding = await this.generateEmbedding(doc.content);
+                        this.documentVectors.set(doc.id, embedding);
+                    }
+                }
+            }
+
+            async vectorSearch(queryVector, originalQuery) {
+                const threshold = parseFloat(document.getElementById('similarityThreshold').value);
+                const maxResults = parseInt(document.getElementById('maxResults').value);
+
+                const similarities = [];
+
+                for (const doc of this.documentLibrary) {
+                    const docVector = this.documentVectors.get(doc.id);
+                    const similarity = this.cosineSimilarity(queryVector, docVector);
+
+                    if (similarity >= threshold) {
+                        similarities.push({
+                            document: doc,
+                            similarity: similarity,
+                            relevantContext: this.extractRelevantContext(doc.content, originalQuery)
+                        });
+                    }
+                }
+
+                // Sort by similarity (highest first) and limit results
+                similarities.sort((a, b) => b.similarity - a.similarity);
+                return similarities.slice(0, maxResults);
+            }
+
+            cosineSimilarity(vecA, vecB) {
+                const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+                const magnitudeA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+                const magnitudeB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+                return dotProduct / (magnitudeA * magnitudeB);
+            }
+
+            extractRelevantContext(content, query) {
+                // Simple keyword-based context extraction
+                const sentences = content.split(/[.!?]+/).filter(s => s.trim());
+                const queryWords = query.toLowerCase().split(/\s+/);
+
+                const scoredSentences = sentences.map(sentence => {
+                    const lowerSentence = sentence.toLowerCase();
+                    const score = queryWords.reduce((acc, word) => {
+                        return acc + (lowerSentence.includes(word) ? 1 : 0);
+                    }, 0);
+                    return { sentence: sentence.trim(), score };
+                });
+
+                scoredSentences.sort((a, b) => b.score - a.score);
+                return scoredSentences.slice(0, 2).map(s => s.sentence).join('. ') + '.';
+            }
+
+            displayResults(results, searchTime) {
+                const resultsContainer = document.getElementById('searchResults');
+
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div style="text-align: center; color: #718096; padding: 40px;">
+                            No documents found above the similarity threshold of ${document.getElementById('similarityThreshold').value}
+                        </div>
+                    `;
+                    return;
+                }
+
+                const resultsHTML = results.map((result, index) => {
+                    const percentage = Math.round(result.similarity * 100);
+                    const contextPreview = this.currentMode === 'rag-retrieval' ?
+                        result.relevantContext :
+                        result.document.content.substring(0, 200) + '...';
+
+                    return `
+                        <div class="result-item">
+                            <div class="result-header">
+                                <div class="result-title">${result.document.title}</div>
+                                <div class="similarity-score">${percentage}% Match</div>
+                            </div>
+                            <div class="result-content">
+                                ${contextPreview}
+                            </div>
+                            ${this.currentMode === 'rag-retrieval' ? `
+                                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 0.8rem; color: #718096;">
+                                    Retrieved from: ${result.document.category}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                resultsContainer.innerHTML = resultsHTML;
+            }
+
+            updateMetrics(results, searchTime) {
+                document.getElementById('searchTime').textContent = searchTime;
+                document.getElementById('documentsSearched').textContent = this.documentLibrary.length;
+
+                if (results.length > 0) {
+                    const avgSimilarity = results.reduce((sum, r) => sum + r.similarity, 0) / results.length;
+                    document.getElementById('avgSimilarity').textContent = (avgSimilarity * 100).toFixed(1) + '%';
+                } else {
+                    document.getElementById('avgSimilarity').textContent = '0%';
+                }
+
+                document.getElementById('embeddingDim').textContent = '384';
+                document.getElementById('metricsGrid').style.display = 'grid';
+            }
+
+            showProcessing(show) {
+                const indicator = document.getElementById('processingIndicator');
+                const button = document.getElementById('searchBtn');
+
+                if (show) {
+                    indicator.style.display = 'flex';
+                    button.disabled = true;
+                    button.textContent = 'Processing...';
+                } else {
+                    indicator.style.display = 'none';
+                    button.disabled = false;
+                    button.textContent = 'Search & Analyze';
+                }
+            }
+
+            showError(message) {
+                const resultsContainer = document.getElementById('searchResults');
+                resultsContainer.innerHTML = `
+                    <div style="text-align: center; color: #e53e3e; padding: 40px; background: #fed7d7; border-radius: 8px;">
+                        ${message}
+                    </div>
+                `;
+            }
+
+            loadSampleDocuments() {
+                const sampleDocs = [
+                    {
+                        id: 'ai-healthcare-1',
+                        title: 'AI in Medical Diagnosis',
+                        category: 'Healthcare Technology',
+                        content: 'Artificial intelligence is revolutionizing medical diagnosis through machine learning algorithms that can analyze medical images, predict patient outcomes, and assist doctors in making more accurate diagnoses. Deep learning models trained on vast datasets of medical scans can detect patterns invisible to the human eye.'
+                    },
+                    {
+                        id: 'ai-autonomous-1',
+                        title: 'Autonomous Vehicle Technology',
+                        category: 'Transportation',
+                        content: 'Self-driving cars use computer vision, sensor fusion, and artificial intelligence to navigate traffic scenarios. These vehicles process real-time data from cameras, lidar, and radar to make decisions about steering, acceleration, and braking.'
+                    },
+                    {
+                        id: 'ai-nlp-1',
+                        title: 'Natural Language Processing Advances',
+                        category: 'AI Research',
+                        content: 'Recent breakthroughs in natural language processing have enabled AI systems to understand and generate human-like text. Large language models like GPT and BERT have transformed applications in translation, content generation, and conversational AI.'
+                    },
+                    {
+                        id: 'ai-finance-1',
+                        title: 'Machine Learning in Financial Services',
+                        category: 'Financial Technology',
+                        content: 'Financial institutions leverage machine learning for fraud detection, algorithmic trading, and risk assessment. AI models analyze transaction patterns to identify suspicious activities and optimize investment portfolios.'
+                    },
+                    {
+                        id: 'ai-education-1',
+                        title: 'Personalized Learning with AI',
+                        category: 'Education Technology',
+                        content: 'Educational platforms use artificial intelligence to create personalized learning experiences. AI tutoring systems adapt to learning styles, identify knowledge gaps, and provide targeted recommendations for individual students.'
+                    }
+                ];
+
+                this.documentLibrary = sampleDocs;
+                this.renderDocumentLibrary();
+            }
+
+            renderDocumentLibrary() {
+                const grid = document.getElementById('documentGrid');
+                const documentsHTML = this.documentLibrary.map(doc => `
+                    <div class="document-item" data-doc-id="${doc.id}">
+                        <div class="document-title">${doc.title}</div>
+                        <div class="document-preview">${doc.content}</div>
+                    </div>
+                `).join('');
+
+                grid.innerHTML = documentsHTML;
+
+                // Add click handlers for document selection
+                grid.querySelectorAll('.document-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        grid.querySelectorAll('.document-item').forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+
+                        const docId = item.dataset.docId;
+                        const doc = this.documentLibrary.find(d => d.id === docId);
+                        if (doc) {
+                            document.getElementById('queryInput').value = doc.content.substring(0, 100) + '...';
+                        }
+                    });
+                });
+            }
+
+            showAddDocumentDialog() {
+                const title = prompt('Enter document title:');
+                if (!title) return;
+
+                const content = prompt('Enter document content:');
+                if (!content) return;
+
+                const category = prompt('Enter document category:', 'Custom');
+
+                const newDoc = {
+                    id: `custom-${Date.now()}`,
+                    title: title,
+                    category: category || 'Custom',
+                    content: content
+                };
+
+                this.documentLibrary.push(newDoc);
+                this.renderDocumentLibrary();
+
+                // Show success message
+                const resultsContainer = document.getElementById('searchResults');
+                resultsContainer.innerHTML = `
+                    <div style="text-align: center; color: #48bb78; padding: 20px; background: #f0fff4; border-radius: 8px; border: 1px solid #9ae6b4;">
+                        Document "${title}" added successfully! You can now search against it.
+                    </div>
+                `;
+
+                console.log('Document added:', newDoc);
+            }
+        }
+
+        // Initialize the playground when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                window.vectorSearchPlayground = new VectorSearchPlayground();
+                console.log('Vector Search Playground loaded successfully');
+
+            } catch (error) {
+                console.error('Failed to initialize Vector Search Playground:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

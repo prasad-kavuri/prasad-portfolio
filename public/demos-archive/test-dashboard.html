@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard - Portfolio Website</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .test-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .test-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .test-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .test-list li {
+            padding: 5px 0;
+            color: #666;
+        }
+
+        .test-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .run-tests {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 0 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <h1>🧪 Test Dashboard</h1>
+
+        <div class="test-grid">
+            <div class="test-card">
+                <h3>📄 Index Page</h3>
+                <ul class="test-list">
+                    <li>Navigation structure</li>
+                    <li>Project links</li>
+                    <li>Profile photo</li>
+                    <li>Responsive design</li>
+                </ul>
+            </div>
+
+            <div class="test-card">
+                <h3>🚀 RAG Pipeline</h3>
+                <ul class="test-list">
+                    <li>Query processing</li>
+                    <li>Pipeline stages</li>
+                    <li>Metrics display</li>
+                    <li>Document retrieval</li>
+                </ul>
+            </div>
+
+            <div class="test-card">
+                <h3>💬 Chatbot</h3>
+                <ul class="test-list">
+                    <li>Message sending</li>
+                    <li>Response handling</li>
+                    <li>UI updates</li>
+                    <li>Error handling</li>
+                </ul>
+            </div>
+
+            <div class="test-card">
+                <h3>📝 Resume Generator</h3>
+                <ul class="test-list">
+                    <li>Form validation</li>
+                    <li>Data processing</li>
+                    <li>PDF generation</li>
+                    <li>Template selection</li>
+                </ul>
+            </div>
+
+            <div class="test-card">
+                <h3>🤖 Portfolio Assistant</h3>
+                <ul class="test-list">
+                    <li>Query processing</li>
+                    <li>Response generation</li>
+                    <li>Context handling</li>
+                    <li>Agent coordination</li>
+                </ul>
+            </div>
+
+            <div class="test-card">
+                <h3>🔀 LLM Router</h3>
+                <ul class="test-list">
+                    <li>Model selection</li>
+                    <li>Routing logic</li>
+                    <li>Configuration</li>
+                    <li>Load balancing</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="run-tests">
+            <h2>Run Tests</h2>
+            <a href="test-suite.html" class="btn">Browser Tests</a>
+            <a href="#" onclick="alert('Run: npm test')" class="btn">Unit Tests</a>
+            <a href="#" onclick="alert('Run: npm run test:e2e')" class="btn">E2E Tests</a>
+        </div>
+    </div>
+</body>
+
+</html>

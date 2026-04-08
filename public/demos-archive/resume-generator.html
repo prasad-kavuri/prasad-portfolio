@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Generator - Prasad Kavuri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Google Analytics 4 - Enhanced Implementation -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-38HPXDL9CK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        // Enhanced configuration
+        gtag('config', 'G-38HPXDL9CK', {
+            page_path: window.location.pathname,
+            page_title: document.title,
+            send_page_view: true
+            // Remove debug_mode in production
+        });
+
+        // Log successful initialization
+        console.log('GA4 initialized for:', window.location.pathname);
+    </script>
+
+    <!-- Enhanced Event Tracking for Resume Generator -->
+    <script>
+        // Track resume generator events
+        function trackResumeEvent(eventName, eventData) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', eventName, eventData);
+            }
+        }
+
+        // Track device and performance
+        window.addEventListener('load', function () {
+            const deviceType = window.innerWidth < 768 ? 'mobile' :
+                window.innerWidth < 1024 ? 'tablet' : 'desktop';
+
+            trackResumeEvent('generator_loaded', {
+                device_type: deviceType,
+                viewport_width: window.innerWidth,
+                viewport_height: window.innerHeight,
+                page_load_time: performance.timing.loadEventEnd - performance.timing.navigationStart
+            });
+        });
+
+        // Track form progress
+        let currentStep = 1;
+        let generatorStartTime = Date.now();
+
+        window.addEventListener('beforeunload', function () {
+            const sessionDuration = Math.round((Date.now() - generatorStartTime) / 1000);
+
+            trackResumeEvent('generator_session_end', {
+                session_duration_seconds: sessionDuration,
+                last_step_reached: currentStep,
+                completed: currentStep === 4
+            });
+        });
+
+        // Mobile responsiveness check
+        function checkMobileResponsiveness() {
+            const tests = {
+                viewport_meta: !!document.querySelector('meta[name="viewport"]'),
+                touch_friendly: true,
+                responsive_width: window.innerWidth <= 768 ? document.body.scrollWidth <= window.innerWidth : true
+            };
+
+            console.log('📱 Mobile Readiness:', tests);
+            return tests;
+        }
+    </script>
+
+    <link rel="stylesheet" href="resume-generator.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <a href="index.html" class="back-link" onclick="trackResumeEvent('navigation', {destination: 'home'})">←
+                    Back to Portfolio</a>
+                <h1>AI Resume Generator</h1>
+                <p>Powered by Advanced AI to create tailored resumes from Prasad's extensive experience</p>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Job Details</span>
+                </div>
+                <div class="step" data-step="2">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Focus Areas</span>
+                </div>
+                <div class="step" data-step="3">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Customization</span>
+                </div>
+                <div class="step" data-step="4">
+                    <span class="step-number">4</span>
+                    <span class="step-label">Generate</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Step 1: Job Details -->
+            <div class="form-section active" id="step1">
+                <h2>Job Details</h2>
+                <p class="section-description">Paste the job description or enter details about the target position</p>
+
+                <div class="form-group">
+                    <label for="jobTitle">Target Job Title *</label>
+                    <input type="text" id="jobTitle" placeholder="e.g., Head of AI Engineering, VP of Engineering"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" placeholder="e.g., Google, Meta, OpenAI">
+                </div>
+
+                <div class="form-group">
+                    <label for="jobDescription">Job Description *</label>
+                    <textarea id="jobDescription" rows="8"
+                        placeholder="Paste the full job description here, or describe the key requirements and responsibilities..."
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="industry">Industry</label>
+                    <select id="industry">
+                        <option value="">Select Industry</option>
+                        <option value="ai-ml">AI/ML & Deep Tech</option>
+                        <option value="saas">Enterprise SaaS</option>
+                        <option value="fintech">Fintech</option>
+                        <option value="automotive">Automotive & Mobility</option>
+                        <option value="ecommerce">E-commerce</option>
+                        <option value="healthtech">Healthcare Tech</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="resumeGenerator.nextStep()">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Focus Areas -->
+            <div class="form-section" id="step2">
+                <h2>Experience Focus Areas</h2>
+                <p class="section-description">Select which experiences to emphasize based on the job requirements</p>
+
+                <div class="experience-selector">
+                    <div class="experience-card selected" data-exp="krutrim"
+                        onclick="resumeGenerator.toggleExperience(this)">
+                        <div class="exp-checkbox">✔</div>
+                        <h3>Krutrim - Head of AI Engineering</h3>
+                        <p class="exp-period">Mar 2025 - Present</p>
+                        <ul class="exp-highlights">
+                            <li>India's first Agentic AI platform (Kruti.ai)</li>
+                            <li>Leading 200+ engineers</li>
+                            <li>50% latency reduction, 40% cost savings</li>
+                            <li>Multi-model LLM orchestration</li>
+                        </ul>
+                    </div>
+
+                    <div class="experience-card selected" data-exp="ola"
+                        onclick="resumeGenerator.toggleExperience(this)">
+                        <div class="exp-checkbox">✔</div>
+                        <h3>Ola - Senior Director of Engineering</h3>
+                        <p class="exp-period">Sep 2023 - Feb 2025</p>
+                        <ul class="exp-highlights">
+                            <li>Ola Maps B2B platform launch</li>
+                            <li>13,000+ B2B customers</li>
+                            <li>70% infrastructure cost reduction</li>
+                            <li>AI-powered route optimization</li>
+                        </ul>
+                    </div>
+
+                    <div class="experience-card selected" data-exp="here"
+                        onclick="resumeGenerator.toggleExperience(this)">
+                        <div class="exp-checkbox">✔</div>
+                        <h3>HERE Technologies - Director</h3>
+                        <p class="exp-period">May 2005 - Aug 2023</p>
+                        <ul class="exp-highlights">
+                            <li>18-year progression to Director</li>
+                            <li>85+ engineers globally</li>
+                            <li>Autonomous driving datasets</li>
+                            <li>50% cost reduction via cloud migration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="skills-selector">
+                    <h3>Key Skills to Highlight</h3>
+                    <div class="skill-tags">
+                        <label class="skill-tag">
+                            <input type="checkbox" checked
+                                onchange="resumeGenerator.trackSkillToggle(this, 'Agentic AI')"> Agentic AI
+                        </label>
+                        <label class="skill-tag">
+                            <input type="checkbox" checked
+                                onchange="resumeGenerator.trackSkillToggle(this, 'LLM Platforms')"> LLM Platforms
+                        </label>
+                        <label class="skill-tag">
+                            <input type="checkbox" checked
+                                onchange="resumeGenerator.trackSkillToggle(this, 'Engineering Leadership')"> Engineering
+                            Leadership
+                        </label>
+                        <label class="skill-tag">
+                            <input type="checkbox" checked
+                                onchange="resumeGenerator.trackSkillToggle(this, 'Cloud Architecture')"> Cloud
+                            Architecture
+                        </label>
+                        <label class="skill-tag">
+                            <input type="checkbox"
+                                onchange="resumeGenerator.trackSkillToggle(this, 'Autonomous Systems')"> Autonomous
+                            Systems
+                        </label>
+                        <label class="skill-tag">
+                            <input type="checkbox" onchange="resumeGenerator.trackSkillToggle(this, 'B2B SaaS')"> B2B
+                            SaaS
+                        </label>
+                        <label class="skill-tag">
+                            <input type="checkbox" onchange="resumeGenerator.trackSkillToggle(this, 'DevOps & MLOps')">
+                            DevOps & MLOps
+                        </label>
+                        <label class="skill-tag">
+                            <input type="checkbox"
+                                onchange="resumeGenerator.trackSkillToggle(this, 'Cost Optimization')"> Cost
+                            Optimization
+                        </label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="resumeGenerator.previousStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="resumeGenerator.nextStep()">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Customization -->
+            <div class="form-section" id="step3">
+                <h2>Resume Customization</h2>
+                <p class="section-description">Fine-tune the resume format and content preferences</p>
+
+                <div class="customization-options">
+                    <div class="form-group">
+                        <label for="resumeLength">Resume Length</label>
+                        <select id="resumeLength" onchange="resumeGenerator.trackCustomization('length', this.value)">
+                            <option value="1">1 Page (Concise)</option>
+                            <option value="2" selected>2 Pages (Detailed)</option>
+                            <option value="3">3+ Pages (Comprehensive)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tone">Writing Tone</label>
+                        <select id="tone" onchange="resumeGenerator.trackCustomization('tone', this.value)">
+                            <option value="executive" selected>Executive & Strategic</option>
+                            <option value="technical">Technical & Detailed</option>
+                            <option value="balanced">Balanced Approach</option>
+                            <option value="innovative">Innovation-Focused</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="format">Resume Format</label>
+                        <select id="format" onchange="resumeGenerator.trackCustomization('format', this.value)">
+                            <option value="modern" selected>Modern ATS-Friendly</option>
+                            <option value="executive">Executive Format</option>
+                            <option value="technical">Technical Format</option>
+                            <option value="creative">Creative Design</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emphasis">Primary Emphasis</label>
+                        <select id="emphasis" onchange="resumeGenerator.trackCustomization('emphasis', this.value)">
+                            <option value="leadership" selected>Leadership & Strategy</option>
+                            <option value="technical">Technical Excellence</option>
+                            <option value="innovation">Innovation & Transformation</option>
+                            <option value="results">Business Results & ROI</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Instructions (Optional)</label>
+                        <textarea id="additionalNotes" rows="4"
+                            placeholder="Any specific requirements or areas to emphasize..."></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="resumeGenerator.previousStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="resumeGenerator.nextStep()">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Generate -->
+            <div class="form-section" id="step4">
+                <h2>Generate AI Resume</h2>
+                <p class="section-description">Review your selections and generate your customized resume</p>
+
+                <div class="summary-card">
+                    <h3>Summary of Your Selections</h3>
+                    <div id="summaryContent">
+                        <!-- Summary will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="ai-status" id="aiStatus">
+                    <div class="status-icon">🤖</div>
+                    <p>Ready to generate your AI-powered resume</p>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="resumeGenerator.previousStep()">← Back</button>
+                    <button class="btn btn-primary btn-generate" onclick="resumeGenerator.generateResume()">
+                        <span class="btn-text">Generate Resume</span>
+                        <span class="loading-spinner" style="display: none;">⏳</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Generated Resume Display -->
+            <div class="form-section" id="resumeOutput" style="display: none;">
+                <div class="output-header">
+                    <h2>Your AI-Generated Resume</h2>
+                    <div class="output-actions">
+                        <button class="btn btn-secondary" onclick="resumeGenerator.editResume()">✏️ Edit</button>
+                        <button class="btn btn-primary" onclick="resumeGenerator.downloadResume('pdf', this)">📥
+                            Download PDF</button>
+                        <button class="btn btn-secondary" onclick="resumeGenerator.downloadResume('docx', this)">📄
+                            Download DOCX</button>
+                    </div>
+                </div>
+
+                <div class="resume-preview" id="resumePreview">
+                    <!-- Generated resume will appear here -->
+                </div>
+
+                <div class="regenerate-section">
+                    <p>Not quite right? You can:</p>
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="resumeGenerator.regenerate()">🔄 Regenerate</button>
+                        <button class="btn btn-secondary" onclick="resumeGenerator.startOver()">🆕 Start Over</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="ai-animation">🤖</div>
+            <h3>AI is crafting your resume...</h3>
+            <p id="loadingMessage">Analyzing job requirements...</p>
+            <div class="progress-loader">
+                <div class="progress-loader-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add jsPDF and html2canvas libraries for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Enhanced Resume Generator Script with Analytics -->
+    <script>
+        const resumeGenerator = {
+            currentStep: 1,
+            formData: {},
+            selectedExperiences: ['krutrim', 'ola', 'here'],
+            selectedSkills: [],
+
+            // Initialize
+            init() {
+                this.attachEventListeners();
+                checkMobileResponsiveness();
+                trackResumeEvent('generator_initialized', {
+                    timestamp: new Date().toISOString()
+                });
+            },
+
+            // Attach event listeners
+            attachEventListeners() {
+                // Track form field interactions
+                document.querySelectorAll('input, textarea, select').forEach(field => {
+                    field.addEventListener('focus', (e) => {
+                        trackResumeEvent('field_focus', {
+                            field_name: e.target.id || e.target.name,
+                            field_type: e.target.type
+                        });
+                    });
+                });
+            },
+
+            // Toggle experience selection
+            toggleExperience(card) {
+                card.classList.toggle('selected');
+                const expName = card.dataset.exp;
+
+                if (card.classList.contains('selected')) {
+                    if (!this.selectedExperiences.includes(expName)) {
+                        this.selectedExperiences.push(expName);
+                    }
+                } else {
+                    this.selectedExperiences = this.selectedExperiences.filter(e => e !== expName);
+                }
+
+                trackResumeEvent('experience_toggle', {
+                    experience: expName,
+                    selected: card.classList.contains('selected')
+                });
+            },
+
+            // Track skill toggle
+            trackSkillToggle(checkbox, skillName) {
+                trackResumeEvent('skill_toggle', {
+                    skill: skillName,
+                    selected: checkbox.checked
+                });
+            },
+
+            // Track customization changes
+            trackCustomization(field, value) {
+                trackResumeEvent('customization_change', {
+                    field: field,
+                    value: value
+                });
+            },
+
+            // Navigate to next step
+            nextStep() {
+                if (this.validateCurrentStep()) {
+                    const prevStep = this.currentStep;
+                    this.currentStep++;
+                    currentStep = this.currentStep; // Update global var for analytics
+
+                    this.updateProgress();
+                    this.showStep(this.currentStep);
+
+                    trackResumeEvent('step_completed', {
+                        step_number: prevStep,
+                        step_name: document.querySelector(`.step[data-step="${prevStep}"] .step-label`).textContent,
+                        next_step: this.currentStep
+                    });
+
+                    if (this.currentStep === 4) {
+                        this.showSummary();
+                    }
+                }
+            },
+
+            // Navigate to previous step
+            previousStep() {
+                if (this.currentStep > 1) {
+                    this.currentStep--;
+                    currentStep = this.currentStep;
+                    this.updateProgress();
+                    this.showStep(this.currentStep);
+
+                    trackResumeEvent('step_back', {
+                        from_step: this.currentStep + 1,
+                        to_step: this.currentStep
+                    });
+                }
+            },
+
+            // Validate current step
+            validateCurrentStep() {
+                const currentSection = document.querySelector('.form-section.active');
+                const requiredFields = currentSection.querySelectorAll('[required]');
+                let isValid = true;
+
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('error');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('error');
+                    }
+                });
+
+                if (!isValid) {
+                    trackResumeEvent('validation_error', {
+                        step: this.currentStep,
+                        fields_missing: requiredFields.length
+                    });
+                }
+
+                return isValid;
+            },
+
+            // Update progress bar
+            updateProgress() {
+                const progressFill = document.getElementById('progressFill');
+                const steps = document.querySelectorAll('.step');
+
+                progressFill.style.width = `${(this.currentStep / 4) * 100}%`;
+
+                steps.forEach((step, index) => {
+                    if (index < this.currentStep) {
+                        step.classList.add('active');
+                    } else {
+                        step.classList.remove('active');
+                    }
+                });
+            },
+
+            // Show specific step
+            showStep(stepNumber) {
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                document.getElementById(`step${stepNumber}`).classList.add('active');
+                window.scrollTo(0, 0);
+            },
+
+            // Show summary
+            showSummary() {
+                const summary = document.getElementById('summaryContent');
+                const jobTitle = document.getElementById('jobTitle').value;
+                const company = document.getElementById('companyName').value;
+                const selectedSkillsCount = document.querySelectorAll('.skill-tag input:checked').length;
+
+                summary.innerHTML = `
+                    <div class="summary-item">
+                        <strong>Target Position:</strong> ${jobTitle} ${company ? `at ${company}` : ''}
+                    </div>
+                    <div class="summary-item">
+                        <strong>Selected Experiences:</strong> ${this.selectedExperiences.length} roles
+                    </div>
+                    <div class="summary-item">
+                        <strong>Highlighted Skills:</strong> ${selectedSkillsCount} key skills
+                    </div>
+                    <div class="summary-item">
+                        <strong>Format:</strong> ${document.getElementById('format').options[document.getElementById('format').selectedIndex].text}
+                    </div>
+                    <div class="summary-item">
+                        <strong>Length:</strong> ${document.getElementById('resumeLength').options[document.getElementById('resumeLength').selectedIndex].text}
+                    </div>
+                `;
+            },
+
+            // Generate resume
+            generateResume() {
+                const startTime = Date.now();
+
+                // Collect all form data
+                this.formData = {
+                    jobTitle: document.getElementById('jobTitle').value,
+                    company: document.getElementById('companyName').value,
+                    jobDescription: document.getElementById('jobDescription').value,
+                    industry: document.getElementById('industry').value,
+                    experiences: this.selectedExperiences,
+                    skills: Array.from(document.querySelectorAll('.skill-tag input:checked')).map(cb => cb.parentElement.textContent.trim()),
+                    resumeLength: document.getElementById('resumeLength').value,
+                    tone: document.getElementById('tone').value,
+                    format: document.getElementById('format').value,
+                    emphasis: document.getElementById('emphasis').value,
+                    additionalNotes: document.getElementById('additionalNotes').value
+                };
+
+                // Track generation start
+                trackResumeEvent('generation_started', {
+                    job_title: this.formData.jobTitle,
+                    company: this.formData.company,
+                    industry: this.formData.industry,
+                    experiences_count: this.formData.experiences.length,
+                    skills_count: this.formData.skills.length,
+                    format: this.formData.format
+                });
+
+                // Show loading overlay
+                document.getElementById('loadingOverlay').style.display = 'flex';
+
+                // Simulate AI generation with progress messages
+                const messages = [
+                    'Analyzing job requirements...',
+                    'Matching your experience to the role...',
+                    'Optimizing keyword relevance...',
+                    'Structuring content for ATS...',
+                    'Finalizing your resume...'
+                ];
+
+                let messageIndex = 0;
+                const messageInterval = setInterval(() => {
+                    if (messageIndex < messages.length) {
+                        document.getElementById('loadingMessage').textContent = messages[messageIndex];
+                        messageIndex++;
+                    }
+                }, 1500);
+
+                // Generate resume after delay (simulate AI processing)
+                setTimeout(() => {
+                    clearInterval(messageInterval);
+                    this.displayGeneratedResume();
+                    document.getElementById('loadingOverlay').style.display = 'none';
+
+                    const generationTime = (Date.now() - startTime) / 1000;
+
+                    // Track generation complete
+                    trackResumeEvent('generation_completed', {
+                        generation_time_seconds: generationTime,
+                        success: true
+                    });
+                }, 7500);
+            },
+
+            // Display generated resume
+            displayGeneratedResume() {
+                const preview = document.getElementById('resumePreview');
+
+                // Generate resume HTML based on selections
+                const resumeHTML = this.buildResumeHTML();
+                preview.innerHTML = resumeHTML;
+
+                // Show output section
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById('resumeOutput').style.display = 'block';
+
+                window.scrollTo(0, 0);
+            },
+
+            // Build resume HTML
+            buildResumeHTML() {
+                // This is a simplified version - in production, this would use AI
+                return `
+                    <div class="resume-content" style="font-family: 'Inter', sans-serif; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <header style="border-bottom: 2px solid #4299e1; padding-bottom: 20px; margin-bottom: 30px;">
+                            <h1 style="color: #1a202c; margin-bottom: 10px;">Prasad Kavuri</h1>
+                            <h2 style="color: #4299e1; font-size: 1.4rem; margin-bottom: 10px;">${this.formData.jobTitle}</h2>
+                            <p style="color: #718096;">📧 prasad.kavuri@example.com | 🔗 linkedin.com/in/pkavuri</p>
+                        </header>
+                        
+                        <section style="margin-bottom: 30px;">
+                            <h3 style="color: #2d3748; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Executive Summary</h3>
+                            <p style="line-height: 1.6; color: #4a5568;">
+                                Visionary AI/ML executive with 20+ years driving transformative technology strategies. 
+                                Currently leading India's first Agentic AI platform at Krutrim with 200+ engineers. 
+                                Proven track record of delivering enterprise-scale AI solutions, reducing costs by 40-70%, 
+                                and scaling platforms to 13,000+ B2B customers.
+                            </p>
+                        </section>
+                        
+                        <section style="margin-bottom: 30px;">
+                            <h3 style="color: #2d3748; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Key Skills</h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                ${this.formData.skills.map(skill => `
+                                    <span style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem;">
+                                        ${skill}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </section>
+                        
+                        <section>
+                            <h3 style="color: #2d3748; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Professional Experience</h3>
+                            ${this.formData.experiences.includes('krutrim') ? `
+                                <div style="margin-bottom: 25px;">
+                                    <h4 style="color: #1a202c;">Head of AI Engineering - Krutrim</h4>
+                                    <p style="color: #718096; margin-bottom: 10px;">March 2025 - Present</p>
+                                    <ul style="color: #4a5568; line-height: 1.8;">
+                                        <li>Leading architecture for India's first Agentic AI platform with 200+ engineers</li>
+                                        <li>Achieved 50% latency reduction and 40% cost savings through LLM orchestration</li>
+                                        <li>Built enterprise-grade 24/7 PaaS capabilities with 99.9% uptime</li>
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            ${this.formData.experiences.includes('ola') ? `
+                                <div style="margin-bottom: 25px;">
+                                    <h4 style="color: #1a202c;">Senior Director of Engineering - Ola</h4>
+                                    <p style="color: #718096; margin-bottom: 10px;">September 2023 - February 2025</p>
+                                    <ul style="color: #4a5568; line-height: 1.8;">
+                                        <li>Launched Ola Maps B2B platform acquiring 13,000+ customers</li>
+                                        <li>Reduced infrastructure costs by 70% while scaling to millions of API calls</li>
+                                        <li>Led 150+ engineers across US and India</li>
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </section>
+                    </div>
+                `;
+            },
+
+            // Download resume
+            downloadResume(format, button) {
+                const originalText = button.innerHTML;
+                button.innerHTML = 'Preparing download...';
+                button.disabled = true;
+
+                trackResumeEvent('download_initiated', {
+                    format: format,
+                    timestamp: new Date().toISOString()
+                });
+
+                setTimeout(() => {
+                    // In production, this would generate actual PDF/DOCX
+                    alert(`Resume download in ${format.toUpperCase()} format will be implemented in production version`);
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+
+                    trackResumeEvent('download_completed', {
+                        format: format,
+                        success: true
+                    });
+                }, 1000);
+            },
+
+            // Edit resume
+            editResume() {
+                trackResumeEvent('edit_initiated', {});
+                alert('Edit functionality will be available in the production version');
+            },
+
+            // Regenerate resume
+            regenerate() {
+                trackResumeEvent('regenerate_initiated', {});
+                this.generateResume();
+            },
+
+            // Start over
+            startOver() {
+                trackResumeEvent('start_over', {
+                    from_step: this.currentStep
+                });
+
+                if (confirm('Are you sure you want to start over? All your selections will be cleared.')) {
+                    window.location.reload();
+                }
+            }
+        };
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            resumeGenerator.init();
+        });
+    </script>
+
+    <style>
+        /* Ensure mobile responsiveness */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f7fafc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Touch-friendly buttons */
+        .btn {
+            min-height: 48px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .experience-card {
+                padding: 20px;
+            }
+
+            .skill-tags {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-steps {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.8rem;
+            }
+
+            .step-label {
+                display: none;
+            }
+
+            .step-number {
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #e2e8f0;
+                border-radius: 50%;
+            }
+
+            .step.active .step-number {
+                background: #667eea;
+                color: white;
+            }
+        }
+
+        /* Error states */
+        input.error,
+        textarea.error,
+        select.error {
+            border-color: #f56565;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .ai-animation {
+            font-size: 4rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</body>
+
+</html>

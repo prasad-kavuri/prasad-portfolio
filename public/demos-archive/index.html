@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prasad Kavuri - AI Engineering Executive | Agentic AI Leader</title>
+    <meta name="description"
+        content="AI/ML Executive with 20+ years experience. Led India's first Agentic AI platform, scaled global teams of 85+ engineers, delivered $M+ cost savings through AI transformation.">
+    <meta name="keywords"
+        content="AI Executive, Agentic AI, LLM Ops, AI Strategy, Digital Transformation, Engineering Leadership, Generative AI, AI Governance">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+
+    <!-- Google Analytics 4 - Enhanced Implementation -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-38HPXDL9CK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        // Enhanced configuration
+        gtag('config', 'G-38HPXDL9CK', {
+            page_path: window.location.pathname,
+            page_title: document.title,
+            send_page_view: true
+            // Remove debug_mode in production
+        });
+
+        // Log successful initialization
+        console.log('GA4 initialized for:', window.location.pathname);
+    </script>
+
+    <!-- Enhanced Event Tracking -->
+    <script>
+        // Track device type and performance
+        window.addEventListener('load', function () {
+            const deviceType = window.innerWidth < 768 ? 'mobile' :
+                window.innerWidth < 1024 ? 'tablet' : 'desktop';
+
+            // Track page performance
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'page_performance', {
+                    device_type: deviceType,
+                    viewport_width: window.innerWidth,
+                    viewport_height: window.innerHeight,
+                    page_load_time: performance.timing.loadEventEnd - performance.timing.navigationStart,
+                    page_url: window.location.href
+                });
+            }
+        });
+
+        // Enhanced click tracking
+        document.addEventListener('DOMContentLoaded', function () {
+            // Track AI tool clicks
+            document.querySelectorAll('.ai-tool-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    const toolCard = this.closest('.ai-tool-card');
+                    const toolName = toolCard ? toolCard.dataset.tool : 'unknown';
+
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'ai_tool_click', {
+                            tool_name: toolName,
+                            tool_title: toolCard ? toolCard.querySelector('h3').textContent : 'unknown',
+                            destination_url: this.href
+                        });
+                    }
+                });
+            });
+
+            // Track skill tag interactions
+            document.querySelectorAll('.skill-tag').forEach(tag => {
+                tag.addEventListener('click', function () {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'skill_tag_click', {
+                            skill_name: this.textContent.trim(),
+                            skill_category: this.closest('.skill-category')?.querySelector('h3')?.textContent
+                        });
+                    }
+                });
+            });
+
+            // Track contact button clicks
+            document.querySelectorAll('.contact-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const contactType = this.textContent.includes('LinkedIn') ? 'linkedin' : 'email';
+
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'contact_click', {
+                            contact_method: contactType,
+                            button_text: this.textContent.trim()
+                        });
+                    }
+                });
+            });
+
+            // Track scroll depth
+            let maxScroll = 0;
+            window.addEventListener('scroll', function () {
+                const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+
+                if (scrollPercent > maxScroll) {
+                    maxScroll = scrollPercent;
+
+                    // Track milestone scroll depths
+                    if (maxScroll >= 25 && maxScroll < 26) {
+                        gtag('event', 'scroll_depth', { depth: '25%' });
+                    } else if (maxScroll >= 50 && maxScroll < 51) {
+                        gtag('event', 'scroll_depth', { depth: '50%' });
+                    } else if (maxScroll >= 75 && maxScroll < 76) {
+                        gtag('event', 'scroll_depth', { depth: '75%' });
+                    } else if (maxScroll >= 90) {
+                        gtag('event', 'scroll_depth', { depth: '90%' });
+                    }
+                }
+            });
+
+            // Track time on page when leaving
+            const startTime = Date.now();
+            window.addEventListener('beforeunload', function () {
+                const timeOnPage = Math.round((Date.now() - startTime) / 1000);
+
+                if (typeof gtag !== 'undefined' && timeOnPage > 0) {
+                    gtag('event', 'engagement_time', {
+                        time_seconds: timeOnPage,
+                        page_title: document.title
+                    });
+                }
+            });
+        });
+
+        // Mobile responsiveness check
+        function checkMobileResponsiveness() {
+            const tests = {
+                viewport_meta: !!document.querySelector('meta[name="viewport"]'),
+                touch_friendly: true,
+                responsive_width: window.innerWidth <= 768 ? document.body.scrollWidth <= window.innerWidth : true
+            };
+
+            console.log('📱 Mobile Readiness:', tests);
+            return tests;
+        }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Metrics Badge Styles */
+        .metrics-badge {
+            background: rgba(66, 153, 225, 0.1);
+            color: #4299e1;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f7fafc;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header Card */
+        .header-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            padding: 60px 50px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .header-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-bottom: 35px;
+        }
+
+        .profile-photo {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .profile-photo:hover {
+            border-color: #4299e1;
+            transform: scale(1.02);
+        }
+
+        .profile-info h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .profile-info .title {
+            font-size: 1.4rem;
+            color: #4299e1;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .profile-info .subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .executive-summary {
+            font-size: 1.2rem;
+            color: #4a5568;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+            padding: 25px 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #4299e1;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            padding: 50px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .section-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #4299e1;
+            border-radius: 2px;
+        }
+
+        /* AI Tools Section */
+        .ai-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .ai-tool-card {
+            background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 16px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+            border-color: #5a6fd8;
+        }
+
+        .ai-tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .ai-tool-card:hover::before {
+            left: 100%;
+        }
+
+        .ai-tool-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .ai-tool-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .ai-tool-card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .ai-tool-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .ai-tool-btn:hover {
+            background: linear-gradient(135deg, #5a6fd8, #6b46c1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .coming-soon-card {
+            background: #f8f9fa;
+            border: 2px dashed #cbd5e0;
+            border-radius: 16px;
+            padding: 35px;
+            text-align: center;
+            color: #999;
+            transition: all 0.3s ease;
+        }
+
+        .coming-soon-card:hover {
+            border-color: #a0aec0;
+            background: #edf2f7;
+        }
+
+        .coming-soon-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            opacity: 0.6;
+        }
+
+        /* Skills Grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .skill-category {
+            background: #f8fafc;
+            padding: 35px 30px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .skill-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4299e1, #63b3ed);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .skill-category:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(66, 153, 225, 0.15);
+            background: white;
+        }
+
+        .skill-category h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .skill-tag {
+            background: white;
+            color: #4a5568;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .skill-tag:hover {
+            background: #4299e1;
+            color: white;
+            border-color: #4299e1;
+            transform: translateY(-1px);
+        }
+
+        /* Achievement Items */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .achievement-item {
+            background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid #4299e1;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(66, 153, 225, 0.1);
+        }
+
+        .achievement-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .achievement-company {
+            font-size: 1rem;
+            color: #4299e1;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .achievement-desc {
+            font-size: 1rem;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* Experience Timeline */
+        .experience-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .experience-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .experience-item {
+            position: relative;
+            background: #f8fafc;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .experience-item::before {
+            content: '';
+            position: absolute;
+            left: -37px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            background: #4299e1;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .experience-item:hover {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .exp-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .exp-company {
+            font-size: 1.2rem;
+            color: #4299e1;
+            font-weight: 500;
+        }
+
+        .exp-duration {
+            font-size: 0.95rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .exp-description {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #4299e1;
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid #4299e1;
+            min-height: 48px;
+        }
+
+        .contact-btn:hover {
+            background: #3182ce;
+            border-color: #3182ce;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.3);
+        }
+
+        .contact-btn.secondary {
+            background: white;
+            color: #4299e1;
+            border: 2px solid #4299e1;
+        }
+
+        .contact-btn.secondary:hover {
+            background: #4299e1;
+            color: white;
+        }
+
+        .contact-icon {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        /* Enhanced Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .header-card,
+            .card {
+                padding: 30px 20px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 30px;
+            }
+
+            .profile-photo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-info h1 {
+                font-size: 2rem;
+            }
+
+            .profile-info .title {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .skills-grid,
+            .achievement-grid,
+            .ai-tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .exp-header {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .contact-btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+            /* Touch-friendly sizing */
+            .skill-tag,
+            .ai-tool-btn,
+            .contact-btn {
+                min-height: 48px;
+                padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .header-card,
+            .card {
+                padding: 25px 15px;
+                border-radius: 12px;
+            }
+
+            .profile-info h1 {
+                font-size: 1.75rem;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .ai-tool-card,
+            .coming-soon-card {
+                padding: 25px;
+            }
+
+            .executive-summary {
+                font-size: 1rem;
+            }
+
+            .achievement-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievement-item {
+                padding: 20px;
+            }
+
+            /* Ensure touch targets are large enough */
+            button,
+            a,
+            .skill-tag {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+
+        /* Ensure images are responsive */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Improve table responsiveness */
+        table {
+            width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+
+        /* Print styles */
+        @media print {
+            .card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Enhanced Header Card -->
+        <div class="header-card">
+            <div class="profile-header">
+                <img src="profile-photo.jpg" alt="Prasad Kavuri - AI Engineering Executive" class="profile-photo">
+                <div class="profile-info">
+                    <h1>Prasad Kavuri</h1>
+                    <p class="title">Head of AI Engineering | AI/ML Executive Leader</p>
+                    <p class="subtitle">Agentic AI • LLM Platforms • Applied AI Strategy • Global Engineering Leadership
+                    </p>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-number">20+</span>
+                    <span class="stat-label">Years Experience</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">200+</span>
+                    <span class="stat-label">Engineers Led</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">13K+</span>
+                    <span class="stat-label">B2B Customers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">70%</span>
+                    <span class="stat-label">Cost Reduction</span>
+                </div>
+            </div>
+
+            <p class="executive-summary">
+                Visionary AI/ML executive with 20+ years driving transformative technology strategies across enterprise
+                platforms and AI ecosystems. Currently leading India's first Agentic AI platform (Kruti.ai) at Krutrim,
+                achieving 50% latency reduction and 40% cost savings. Previously scaled Ola Maps to 13,000+ B2B
+                customers with 150+ engineers while reducing infrastructure costs by 70%. Proven track record managing
+                global teams of 200+ engineers, delivering cloud-native solutions, and turning cutting-edge AI research
+                into commercial impact across automotive, mobility, and enterprise sectors.
+            </p>
+        </div>
+
+        <!-- AI Tools Section -->
+        <div class="card">
+            <h2 class="section-title">🤖 AI-Powered Tools</h2>
+            <div class="ai-tools-grid">
+                <div class="ai-tool-card" data-tool="resume-generator">
+                    <span class="ai-tool-icon">📄</span>
+                    <h3>AI Resume Generator</h3>
+                    <p>Advanced AI system that analyzes job descriptions and generates tailored resumes highlighting
+                        relevant experience from my AI Engineering background.</p>
+                    <a href="resume-generator.html" class="ai-tool-btn" target="_blank" rel="noopener noreferrer">
+                        Try AI Resume Generator →
+                    </a>
+                </div>
+
+                <div class="ai-tool-card" data-tool="portfolio-assistant">
+                    <span class="ai-tool-icon">🤖</span>
+                    <h3>Agentic AI Portfolio Assistant</h3>
+                    <p>Intelligent agent that helps explore my experience through dynamic conversations, personalized
+                        insights, and smart navigation.</p>
+                    <a href="portfolio-assistant.html" class="ai-tool-btn" target="_blank" rel="noopener noreferrer">
+                        Launch AI Assistant →
+                    </a>
+                </div>
+
+                <div class="ai-tool-card" data-tool="multi-agent-demo">
+                    <span class="ai-tool-icon">👥</span>
+                    <h3>Multi-Agent AI System</h3>
+                    <p>Interactive demonstration of collaborative AI agents working together to analyze websites and
+                        provide strategic recommendations through specialized expertise.</p>
+                    <a href="multi-agent-demo.html" class="ai-tool-btn" target="_blank" rel="noopener noreferrer">
+                        View Multi-Agent Demo →
+                    </a>
+                </div>
+
+                <div class="ai-tool-card" data-tool="llm-router">
+                    <span class="ai-tool-icon">🔄</span>
+                    <h3>LLM Router Demo</h3>
+                    <p>Intelligent model selection achieving 50% latency reduction and 40% cost savings through
+                        multi-model orchestration.</p>
+                    <a href="llm-router-demo.html" class="ai-tool-btn" target="_blank" rel="noopener noreferrer">
+                        Try Router Demo →
+                    </a>
+                </div>
+
+                <div class="ai-tool-card" data-tool="rag-pipeline">
+                    <span class="ai-tool-icon">🔍</span>
+                    <h3>RAG Pipeline Demo</h3>
+                    <p>Advanced Retrieval-Augmented Generation system with semantic search, document chunking, and 
+                        intelligent retrieval mechanisms for enhanced AI responses.</p>
+                    <a href="rag-pipeline.html" class="ai-tool-btn" rel="noopener noreferrer">
+                        View RAG Demo →
+                    </a>
+                </div>
+
+                <div class="ai-tool-card" data-tool="vector-search">
+                    <span class="ai-tool-icon">🔎</span>
+                    <h3>Vector Search & Embeddings</h3>
+                    <p>Interactive demonstration of semantic search, document similarity, and RAG retrieval mechanisms
+                        using vector embeddings.</p>
+                    <a href="vector-search-playground.html" class="ai-tool-btn" target="_blank" rel="noopener noreferrer">
+                        Explore Vector Search →
+                    </a>
+                </div>
+
+                <div class="ai-tool-card" data-tool="multimodal-assistant">
+                    <span class="ai-tool-icon">🎭</span>
+                    <h3>Multi-Modal AI Assistant</h3>
+                    <p>Advanced AI that processes text, images, and documents using state-of-the-art models running
+                        entirely in your browser with computer vision and OCR capabilities.</p>
+                    <a href="multimodal-assistant.html" class="ai-tool-btn" target="_blank" rel="noopener noreferrer">
+                        Try Multi-Modal AI →
+                    </a>
+                </div>
+
+                <div class="ai-tool-card" data-tool="ai-quantization">
+    <span class="ai-tool-icon">⚡</span>
+    <h3>AI Model Quantization Tool</h3>
+    <p>Interactive tool demonstrating model compression techniques, performance optimization, and 
+        quantization effects on AI model efficiency and accuracy.</p>
+    <a href="ai-quantization-demo.html" class="ai-tool-btn" rel="noopener noreferrer">
+
+        Try Quantization Demo →
+    </a>
+</div>
+            </div>
+        </div>
+
+        <!-- Enhanced Core Expertise -->
+        <div class="card">
+            <h2 class="section-title">Core Expertise</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>AI/ML Leadership & Strategy</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Agentic AI Architecture</span>
+                        <span class="skill-tag">AI/ML Strategy & Vision</span>
+                        <span class="skill-tag">Digital Transformation</span>
+                        <span class="skill-tag">AI Governance & Ethics</span>
+                        <span class="skill-tag">Technology Commercialization</span>
+                        <span class="skill-tag">AI Product Development</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Advanced AI/ML Technologies</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Multi-Model LLM Orchestration</span>
+                        <span class="skill-tag">Retrieval-Augmented Generation</span>
+                        <span class="skill-tag">Vector Search & Embeddings</span>
+                        <span class="skill-tag">Transformer Models & BERT</span>
+                        <span class="skill-tag">Real-time Personalization</span>
+                        <span class="skill-tag">AI Agent Development</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Enterprise & Platform Engineering</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Cloud-Native Architecture</span>
+                        <span class="skill-tag">API Platform Development</span>
+                        <span class="skill-tag">B2B SaaS Platforms</span>
+                        <span class="skill-tag">PaaS/Platform Ecosystems</span>
+                        <span class="skill-tag">Enterprise AI Integration</span>
+                        <span class="skill-tag">SDK/API Development</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Executive Leadership</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Global Team Leadership</span>
+                        <span class="skill-tag">P&L Management</span>
+                        <span class="skill-tag">Executive Stakeholder Management</span>
+                        <span class="skill-tag">Strategic Vendor Partnerships</span>
+                        <span class="skill-tag">Cost Optimization & ROI</span>
+                        <span class="skill-tag">Cross-functional Collaboration</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Technical Operations</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">LLM Ops & MLOps</span>
+                        <span class="skill-tag">AWS, Azure, GCP</span>
+                        <span class="skill-tag">Kubernetes & Microservices</span>
+                        <span class="skill-tag">CI/CD & DevOps</span>
+                        <span class="skill-tag">Infrastructure as Code</span>
+                        <span class="skill-tag">24/7 Production Systems</span>
+                    </div>
+                </div>
+
+                <div class="skill-category">
+                    <h3>Industry Expertise</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Autonomous Systems</span>
+                        <span class="skill-tag">Computer Vision</span>
+                        <span class="skill-tag">Mobility & Transportation</span>
+                        <span class="skill-tag">Mapping & GIS</span>
+                        <span class="skill-tag">Automotive Technology</span>
+                        <span class="skill-tag">Fleet Management</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leadership Achievements -->
+        <div class="card">
+            <h2 class="section-title">Leadership Achievements</h2>
+            <div class="achievement-grid">
+                <div class="achievement-item">
+                    <h3 class="achievement-title">India's First Agentic AI Platform</h3>
+                    <p class="achievement-company">Krutrim (2025)</p>
+                    <p class="achievement-desc">Architected and launched Kruti.ai with a team of 200+
+                        engineers,delivering 50% latency reduction and 40% cost savings through multi-model LLM
+                        orchestration and RAG pipelines. Built domain-specific AI agents across mobility, payments, and
+                        content generation.</p>
+                </div>
+
+                <div class="achievement-item">
+                    <h3 class="achievement-title">$10M+ Revenue Platform Launch</h3>
+                    <p class="achievement-company">Ola (2023-2025)</p>
+                    <p class="achievement-desc">Launched Ola Maps B2B platform with 150+ engineers, acquiring 13,000+
+                        customers and creating new recurring revenue channel. Reduced infrastructure costs by 70% while
+                        scaling to millions of daily API calls.</p>
+                </div>
+
+                <div class="achievement-item">
+                    <h3 class="achievement-title">Global Engineering Leadership</h3>
+                    <p class="achievement-company">HERE Technologies (2005-2023)</p>
+                    <p class="achievement-desc">Led 85+ engineers across North America, Europe, and APAC. Delivered
+                        autonomous driving datasets for major OEMs while driving 50% cost reduction through cloud
+                        migration strategies.</p>
+                </div>
+
+                <div class="achievement-item">
+                    <h3 class="achievement-title">AI-Powered Fleet Optimization</h3>
+                    <p class="achievement-company">Ola (2023-2025)</p>
+                    <p class="achievement-desc">Introduced AI-powered real-time route optimization improving ETA
+                        accuracy and customer satisfaction across millions of rides. Enabled predictive analytics for
+                        electric mobility operations.</p>
+                </div>
+
+                <div class="achievement-item">
+                    <h3 class="achievement-title">Enterprise AI Integration</h3>
+                    <p class="achievement-company">Krutrim (2025)</p>
+                    <p class="achievement-desc">Built enterprise-grade 24/7 PaaS capabilities with SDK/API integration,
+                        enabling seamless adoption by enterprise clients and expansion of agent ecosystem across B2B and
+                        B2C markets.</p>
+                </div>
+
+                <div class="achievement-item">
+                    <h3 class="achievement-title">Cloud-Native Transformation</h3>
+                    <p class="achievement-company">Multiple Organizations</p>
+                    <p class="achievement-desc">Led multiple cloud migration initiatives resulting in 50-70% cost
+                        reductions while improving scalability. Implemented DevOps practices and infrastructure-as-code
+                        across global engineering teams.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experience Highlights -->
+        <div class="card">
+            <h2 class="section-title">Experience Highlights</h2>
+            <div class="experience-timeline">
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <div>
+                            <h3 class="exp-title">Head of AI Engineering</h3>
+                            <p class="exp-company">Krutrim</p>
+                        </div>
+                        <span class="exp-duration">Mar 2025 - Present</span>
+                    </div>
+                    <p class="exp-description">
+                        Leading architecture strategy for India's first Agentic AI platform (Kruti.ai) with 200+
+                        engineers. Spearheaded multi-model LLM platform with 50% latency reduction and 40% cost savings.
+                        Built global engineering teams delivering 24/7 PaaS capabilities.
+                    </p>
+                </div>
+
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <div>
+                            <h3 class="exp-title">Senior Director of Engineering</h3>
+                            <p class="exp-company">Ola</p>
+                        </div>
+                        <span class="exp-duration">Sep 2023 - Feb 2025</span>
+                    </div>
+                    <p class="exp-description">
+                        Launched Ola Maps B2B platform with 150+ engineers, acquiring 13,000+ customers. Reduced
+                        infrastructure costs by 70% while enabling AI-driven real-time route optimization. Led
+                        cross-functional teams across US and India.
+                    </p>
+                </div>
+
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <div>
+                            <h3 class="exp-title">Director of Engineering</h3>
+                            <p class="exp-company">HERE Technologies</p>
+                        </div>
+                        <span class="exp-duration">May 2005 - Aug 2023</span>
+                    </div>
+                    <p class="exp-description">
+                        18-year progression from Senior Engineer to Director. Led 85+ engineers globally, delivered
+                        autonomous driving solutions for major OEMs, and drove 50% cost reduction through cloud
+                        migration initiatives.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Card -->
+        <div class="card">
+            <h2 class="section-title">Let's Connect</h2>
+            <div class="contact-links">
+                <a href="https://www.linkedin.com/in/pkavuri/" class="contact-btn" target="_blank" rel="noopener">
+                    <svg class="contact-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                    LinkedIn Profile
+                </a>
+                <a href="mailto:prasad.kavuri@example.com" class="contact-btn secondary">
+                    <svg class="contact-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                    </svg>
+                    Send Email
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

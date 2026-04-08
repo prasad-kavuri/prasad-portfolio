@@ -70,7 +70,7 @@ export const demos: Demo[] = [
     description: "Florence-2 image captioning and OCR running in-browser via Transformers.js — no server, no API key.",
     href: "/demos/multimodal",
     tags: ["Florence-2", "WebGPU", "In-browser"],
-    status: "upgrading",
+    status: "live",
   },
   {
     id: "quantization",

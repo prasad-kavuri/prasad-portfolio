@@ -34,7 +34,7 @@ export const demos: Demo[] = [
     description: "Real multi-model routing across Llama 3.1 8B, 70B, and Mixtral — see live latency, cost, and quality trade-offs.",
     href: "/demos/llm-router",
     tags: ["Groq", "Multi-model", "Live latency"],
-    status: "upgrading",
+    status: "live",
   },
   {
     id: "vector-search",

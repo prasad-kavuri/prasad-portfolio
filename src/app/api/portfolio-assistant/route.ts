@@ -156,7 +156,7 @@ Be concise but informative. Never say you lack context — you have it all below
 PRASAD KAVURI - COMPLETE PROFILE:
 ${fullContext}`;
 
-    let retrievedDocs = [];
+    let retrievedDocs: typeof knowledgeBase = [];
 
     // Additionally highlight most relevant docs if RAG is enabled
     if (useRAG && lastUserMessage) {

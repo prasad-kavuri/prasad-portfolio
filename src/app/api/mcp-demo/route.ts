@@ -222,7 +222,9 @@ export async function POST(request: Request) {
       ];
 
       // Add each tool result as a separate tool message
-      for (const toolCall of toolSelectionResponse.choices[0].message.tool_calls) {
+      const toolCalls = toolSelectionResponse.choices[0].message.tool_calls ?? [];
+
+      for (const toolCall of toolCalls) {
         const toolArgs = typeof toolCall.function.arguments === 'string'
           ? JSON.parse(toolCall.function.arguments)
           : toolCall.function.arguments;

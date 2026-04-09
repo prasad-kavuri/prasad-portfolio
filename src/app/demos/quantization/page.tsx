@@ -68,6 +68,7 @@ export default function QuantizationPage() {
         'sentiment-analysis',
         MODEL_NAME,
         {
+          dtype: 'fp32' as any,
           progress_callback: (p: any) => {
             if (p.progress) {
               const pct = Math.round(10 + p.progress * 40);
@@ -77,6 +78,7 @@ export default function QuantizationPage() {
         }
       );
 
+
       modelsRef.current.fp32 = fp32Model;
       setProgress(50);
 
@@ -85,11 +87,11 @@ export default function QuantizationPage() {
       setProgressMsg('Loading INT8 model (2/2)...');
       setProgress(50);
 
-      const int8Model = await pipeline(
+     const int8Model = await pipeline(
         'sentiment-analysis',
         MODEL_NAME,
         {
-          quantized: true,
+          dtype: 'q8' as any,
           progress_callback: (p: any) => {
             if (p.progress) {
               const pct = Math.round(50 + p.progress * 50);

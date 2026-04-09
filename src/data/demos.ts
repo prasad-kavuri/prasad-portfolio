@@ -61,7 +61,7 @@ export const demos: Demo[] = [
     description: "Paste a job description, get a tailored resume with skill matching scores and selection reasoning.",
     href: "/demos/resume-generator",
     tags: ["JD parsing", "Skill matching", "PDF export"],
-    status: "upgrading",
+    status: "live",
   },
   {
     id: "multimodal",

@@ -52,7 +52,7 @@ export const demos: Demo[] = [
     description: "Streaming RAG-powered assistant over my experience — ask anything about my background and see retrieved context.",
     href: "/demos/portfolio-assistant",
     tags: ["Vercel AI SDK", "Streaming", "RAG"],
-    status: "upgrading",
+    status: "live",
   },
   {
     id: "resume-generator",

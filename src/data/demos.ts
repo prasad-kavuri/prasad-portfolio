@@ -25,7 +25,7 @@ export const demos: Demo[] = [
     description: "CrewAI-powered agents with real LLM calls via Groq — Analyzer, Researcher, and Strategist collaborating in real time.",
     href: "/demos/multi-agent",
     tags: ["CrewAI", "Groq", "Llama 3.3"],
-    status: "upgrading",
+    status: "live",
   },
   {
     id: "llm-router",

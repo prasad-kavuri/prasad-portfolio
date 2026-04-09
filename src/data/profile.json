@@ -10,15 +10,15 @@
     "portfolio": "https://prasadkavuri.com",
     "github": "https://github.com/prasad-kavuri",
     "languages": ["English", "Hindi", "Telugu", "Urdu"],
-    "summary": "AI/ML executive with 20+ years building platforms and leading engineering organizations. Focused on helping companies adopt AI in ways that change how they operate — turning emerging AI capabilities into production systems, embedding AI into day-to-day workflows, and aligning engineering, product, and business teams around measurable outcomes.",
+    "summary": "I lead AI engineering organizations that turn generative and agentic AI into production platforms, operating workflows, and measurable business outcomes. My work spans multi-model orchestration, platform architecture, and enterprise transformation across mobility, mapping, and AI-native products.",
     "pills": ["Agentic AI", "LLM Platforms", "Applied AI Strategy", "Global Engineering Leadership"]
   },
   "stats": [
-    { "value": "20+", "label": "Years Experience" },
-    { "value": "200+", "label": "Engineers Led" },
-    { "value": "13K+", "label": "B2B Customers" },
-    { "value": "70%", "label": "Cost Reduction" }
-  ],
+  { "value": "20+", "label": "Years Experience" },
+  { "value": "200+", "label": "Engineers Led" },
+  { "value": "13K+", "label": "B2B Customers Enabled" },
+  { "value": "Up to 70%", "label": "Cost Reduction Delivered" }
+],
   "experience": [
     {
       "id": "krutrim",

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import profile from "@/data/profile.json";
 
+
 export function Hero() {
   return (
     <section className="py-20">
@@ -28,10 +29,7 @@ export function Hero() {
           </div>
         </div>
         <p className="mt-8 max-w-2xl text-muted-foreground leading-relaxed">
-          Visionary AI/ML executive with 20+ years driving transformative
-          technology strategies across enterprise platforms and AI ecosystems.
-          Currently leading India&apos;s first Agentic AI platform (Kruti.ai)
-          at Krutrim, achieving 50% latency reduction and 40% cost savings.
+          {profile.personal.summary}
         </p>
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {profile.stats.map((s) => (

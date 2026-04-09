@@ -5,6 +5,7 @@ import { ArrowLeft, Loader, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Status = 'idle' | 'loading-fp32' | 'loading-int8' | 'ready' | 'benchmarking' | 'done';
 
@@ -210,32 +211,35 @@ export default function QuantizationPage() {
     : 100;
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6 text-white">
+    <div className="min-h-screen bg-background p-6 text-foreground">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Model Quantization Demo</h1>
-            <p className="mt-1 text-slate-400">
+            <h1 className="text-3xl font-bold text-foreground">Model Quantization Demo</h1>
+            <p className="mt-1 text-muted-foreground">
               Compare FP32 vs INT8 inference — real benchmarks in your browser
             </p>
           </div>
-          <Link
-            href="/"
-            className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-slate-200 hover:bg-slate-600"
-          >
-            <ArrowLeft size={16} /> Back
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link
+              href="/"
+              className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-muted-foreground hover:bg-muted"
+            >
+              <ArrowLeft size={16} /> Back
+            </Link>
+          </div>
         </div>
 
         {/* Idle State */}
         {status === 'idle' && (
-          <Card className="border-slate-700 bg-slate-800 p-8 text-center">
-            <p className="mb-4 text-slate-300">
+          <Card className="border-border bg-card p-8 text-center">
+            <p className="mb-4 text-muted-foreground">
               Run real inference benchmarks comparing FP32 and INT8 quantized models in your
               browser.
             </p>
-            <p className="mb-6 text-sm text-slate-400">No API key required. Models downloaded on first use</p>
+            <p className="mb-6 text-sm text-muted-foreground">No API key required. Models downloaded on first use</p>
             <button
               onClick={loadModels}
               className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
@@ -247,15 +251,15 @@ export default function QuantizationPage() {
 
         {/* Loading FP32 State */}
         {status === 'loading-fp32' && (
-          <Card className="border-slate-700 bg-slate-800 p-6">
-            <p className="mb-3 font-medium text-slate-200">Loading FP32 model...</p>
-            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-slate-700">
+          <Card className="border-border bg-card p-6">
+            <p className="mb-3 font-medium text-foreground">Loading FP32 model...</p>
+            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-2 rounded-full bg-blue-500 transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted-foreground">
               {progress}% — {progressMsg}
             </p>
           </Card>
@@ -263,15 +267,15 @@ export default function QuantizationPage() {
 
         {/* Loading INT8 State */}
         {status === 'loading-int8' && (
-          <Card className="border-slate-700 bg-slate-800 p-6">
-            <p className="mb-3 font-medium text-slate-200">Loading INT8 model...</p>
-            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-slate-700">
+          <Card className="border-border bg-card p-6">
+            <p className="mb-3 font-medium text-foreground">Loading INT8 model...</p>
+            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-2 rounded-full bg-green-500 transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted-foreground">
               {progress}% — {progressMsg}
             </p>
           </Card>
@@ -295,26 +299,26 @@ export default function QuantizationPage() {
         {(status === 'ready' || status === 'benchmarking' || status === 'done') && (
           <div className="space-y-6">
             {/* Step 1: Text Input & Examples */}
-            <Card className="border-slate-700 bg-slate-800 p-6">
-              <label className="mb-3 block text-sm font-medium text-slate-300">
+            <Card className="border-border bg-card p-6">
+              <label className="mb-3 block text-sm font-medium text-muted-foreground">
                 Enter text to analyze
               </label>
               <textarea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Enter text to analyze..."
-                className="mb-4 h-20 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                className="mb-4 h-20 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-blue-500 focus:outline-none"
               />
 
               {/* Example Chips */}
               <div className="mb-4">
-                <p className="mb-2 text-xs font-medium text-slate-400">Example texts:</p>
+                <p className="mb-2 text-xs font-medium text-muted-foreground">Example texts:</p>
                 <div className="flex flex-wrap gap-2">
                   {EXAMPLE_TEXTS.map((text, i) => (
                     <button
                       key={i}
                       onClick={() => setInputText(text)}
-                      className="rounded-full border border-slate-600 bg-slate-700 px-3 py-1 text-xs text-slate-300 hover:border-blue-500 hover:bg-slate-600"
+                      className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-muted-foreground hover:border-blue-500 hover:bg-muted"
                     >
                       {text.slice(0, 30)}...
                     </button>
@@ -329,7 +333,7 @@ export default function QuantizationPage() {
                 className={`w-full rounded-lg px-4 py-3 font-medium transition ${
                   inputText.trim() && status !== 'benchmarking'
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'bg-slate-700 text-slate-400'
+                    : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {status === 'benchmarking' ? (
@@ -345,13 +349,13 @@ export default function QuantizationPage() {
               {/* Progress During Benchmark */}
               {status === 'benchmarking' && (
                 <div className="mt-4">
-                  <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-slate-700">
+                  <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-muted">
                     <div
                       className="h-2 rounded-full bg-purple-500 transition-all duration-300"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
-                  <p className="text-xs text-slate-400">{progress}% complete</p>
+                  <p className="text-xs text-muted-foreground">{progress}% complete</p>
                 </div>
               )}
             </Card>
@@ -362,39 +366,39 @@ export default function QuantizationPage() {
                 {/* Model Cards */}
                 <div className="grid gap-6 lg:grid-cols-2">
                   {/* FP32 Card */}
-                  <Card className="border-blue-700 bg-slate-800 p-6">
+                  <Card className="border-blue-700 bg-card p-6">
                     <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-white">FP32</h3>
+                      <h3 className="text-lg font-bold text-foreground">FP32</h3>
                       <Badge className="bg-blue-600">Full Precision</Badge>
                     </div>
 
-                    <div className="space-y-3 border-b border-slate-700 pb-4">
+                    <div className="space-y-3 border-b border-border pb-4">
                       <div className="flex justify-between">
-                        <span className="text-sm text-slate-400">Precision bits</span>
-                        <span className="text-sm font-medium text-slate-200">32-bit</span>
+                        <span className="text-sm text-muted-foreground">Precision bits</span>
+                        <span className="text-sm font-medium text-foreground">32-bit</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-slate-400">Model size</span>
-                        <span className="text-sm font-medium text-slate-200">~{FP32_SIZE_MB} MB</span>
+                        <span className="text-sm text-muted-foreground">Model size</span>
+                        <span className="text-sm font-medium text-foreground">~{FP32_SIZE_MB} MB</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-slate-400">Avg inference time</span>
+                        <span className="text-sm text-muted-foreground">Avg inference time</span>
                         <span className="text-lg font-bold text-blue-400">{results.fp32?.avg}ms</span>
                       </div>
                     </div>
 
                     {/* Results */}
-                    <div className="my-4 border-b border-slate-700 pb-4">
-                      <p className="mb-2 text-xs font-medium text-slate-400">Prediction</p>
+                    <div className="my-4 border-b border-border pb-4">
+                      <p className="mb-2 text-xs font-medium text-muted-foreground">Prediction</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-200">
+                        <span className="text-sm font-medium text-foreground">
                           {results.fp32?.label}
                         </span>
-                        <span className="text-sm text-slate-300">
+                        <span className="text-sm text-muted-foreground">
                           {(results.fp32?.confidence! * 100).toFixed(1)}%
                         </span>
                       </div>
-                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-700">
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
                         <div
                           className="h-2 rounded-full bg-blue-500"
                           style={{ width: `${(results.fp32?.confidence ?? 0) * 100}%` }}
@@ -404,7 +408,7 @@ export default function QuantizationPage() {
 
                     {/* Individual runs */}
                     <div>
-                      <p className="mb-2 text-xs font-medium text-slate-400">Individual runs (ms)</p>
+                      <p className="mb-2 text-xs font-medium text-muted-foreground">Individual runs (ms)</p>
                       <div className="flex items-end gap-1">
                         {results.fp32?.runs.map((time, i) => (
                           <div
@@ -415,46 +419,46 @@ export default function QuantizationPage() {
                           />
                         ))}
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {results.fp32?.runs.map(r => r.toString()).join(', ')}
                       </p>
                     </div>
                   </Card>
 
                   {/* INT8 Card */}
-                  <Card className="border-green-700 bg-slate-800 p-6">
+                  <Card className="border-green-700 bg-card p-6">
                     <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-white">INT8</h3>
+                      <h3 className="text-lg font-bold text-foreground">INT8</h3>
                       <Badge className="bg-green-600">Quantized</Badge>
                     </div>
 
-                    <div className="space-y-3 border-b border-slate-700 pb-4">
+                    <div className="space-y-3 border-b border-border pb-4">
                       <div className="flex justify-between">
-                        <span className="text-sm text-slate-400">Precision bits</span>
-                        <span className="text-sm font-medium text-slate-200">8-bit</span>
+                        <span className="text-sm text-muted-foreground">Precision bits</span>
+                        <span className="text-sm font-medium text-foreground">8-bit</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-slate-400">Model size</span>
-                        <span className="text-sm font-medium text-slate-200">~{INT8_SIZE_MB} MB</span>
+                        <span className="text-sm text-muted-foreground">Model size</span>
+                        <span className="text-sm font-medium text-foreground">~{INT8_SIZE_MB} MB</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-slate-400">Avg inference time</span>
+                        <span className="text-sm text-muted-foreground">Avg inference time</span>
                         <span className="text-lg font-bold text-green-400">{results.int8?.avg}ms</span>
                       </div>
                     </div>
 
                     {/* Results */}
-                    <div className="my-4 border-b border-slate-700 pb-4">
-                      <p className="mb-2 text-xs font-medium text-slate-400">Prediction</p>
+                    <div className="my-4 border-b border-border pb-4">
+                      <p className="mb-2 text-xs font-medium text-muted-foreground">Prediction</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-200">
+                        <span className="text-sm font-medium text-foreground">
                           {results.int8?.label}
                         </span>
-                        <span className="text-sm text-slate-300">
+                        <span className="text-sm text-muted-foreground">
                           {(results.int8?.confidence! * 100).toFixed(1)}%
                         </span>
                       </div>
-                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-700">
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
                         <div
                           className="h-2 rounded-full bg-green-500"
                           style={{ width: `${(results.int8?.confidence ?? 0) * 100}%` }}
@@ -464,7 +468,7 @@ export default function QuantizationPage() {
 
                     {/* Individual runs */}
                     <div>
-                      <p className="mb-2 text-xs font-medium text-slate-400">Individual runs (ms)</p>
+                      <p className="mb-2 text-xs font-medium text-muted-foreground">Individual runs (ms)</p>
                       <div className="flex items-end gap-1">
                         {results.int8?.runs.map((time, i) => (
                           <div
@@ -475,7 +479,7 @@ export default function QuantizationPage() {
                           />
                         ))}
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {results.int8?.runs.map(r => r.toString()).join(', ')}
                       </p>
                     </div>
@@ -484,32 +488,32 @@ export default function QuantizationPage() {
 
                 {/* Comparison Summary */}
                 {results.fp32 && results.int8 && (
-                  <Card className="border-slate-700 bg-slate-800 p-6">
-                    <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-white">
+                  <Card className="border-border bg-card p-6">
+                    <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-foreground">
                       <BarChart3 size={20} /> Comparison Summary
                     </h3>
 
                     <div className="grid gap-4 sm:grid-cols-3">
                       {/* Size Reduction */}
-                      <div className="rounded-lg border border-slate-700 bg-slate-900 p-4">
-                        <p className="text-xs text-slate-400">Size Reduction</p>
+                      <div className="rounded-lg border border-border bg-background p-4">
+                        <p className="text-xs text-muted-foreground">Size Reduction</p>
                         <p className="mt-1 text-2xl font-bold text-green-400">
                           {calculateSizeReduction()}%
                         </p>
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {FP32_SIZE_MB}MB → {INT8_SIZE_MB}MB
                         </p>
                       </div>
 
                       {/* Speed Improvement */}
-                      <div className="rounded-lg border border-slate-700 bg-slate-900 p-4">
-                        <p className="text-xs text-slate-400">Speed Improvement</p>
+                      <div className="rounded-lg border border-border bg-background p-4">
+                        <p className="text-xs text-muted-foreground">Speed Improvement</p>
                         {calculateSpeedup() && (
                           <>
                             <p className="mt-1 text-2xl font-bold text-blue-400">
                               {calculateSpeedup()!.percent}%
                             </p>
-                            <p className="mt-1 text-xs text-slate-400">
+                            <p className="mt-1 text-xs text-muted-foreground">
                               {calculateSpeedup()!.ms.toFixed(0)}ms faster
                             </p>
                           </>
@@ -517,10 +521,10 @@ export default function QuantizationPage() {
                       </div>
 
                       {/* Accuracy */}
-                      <div className="rounded-lg border border-slate-700 bg-slate-900 p-4">
-                        <p className="text-xs text-slate-400">Accuracy</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-200">{accuracyMatches}</p>
-                        <p className="mt-1 text-xs text-slate-400">
+                      <div className="rounded-lg border border-border bg-background p-4">
+                        <p className="text-xs text-muted-foreground">Accuracy</p>
+                        <p className="mt-1 text-lg font-semibold text-foreground">{accuracyMatches}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
                           Δ {Math.abs(results.fp32.confidence - results.int8.confidence).toFixed(3)}
                         </p>
                       </div>
@@ -540,34 +544,34 @@ export default function QuantizationPage() {
 
             {/* Technical Info */}
             {(status === 'ready' || status === 'done') && (
-              <Card className="border-slate-700 bg-slate-800 p-6">
-                <h3 className="mb-4 text-lg font-bold text-white">What is Quantization?</h3>
-                <div className="space-y-3 text-sm text-slate-300">
+              <Card className="border-border bg-card p-6">
+                <h3 className="mb-4 text-lg font-bold text-foreground">What is Quantization?</h3>
+                <div className="space-y-3 text-sm text-muted-foreground">
                   <div>
-                    <p className="font-medium text-slate-200">FP32 (Full Precision)</p>
-                    <p className="text-slate-400">
+                    <p className="font-medium text-foreground">FP32 (Full Precision)</p>
+                    <p className="text-muted-foreground">
                       Uses 32 bits per weight, highest precision, best accuracy, but larger model
                       size and slower inference
                     </p>
                   </div>
                   <div>
-                    <p className="font-medium text-slate-200">INT8 (Quantized)</p>
-                    <p className="text-slate-400">
+                    <p className="font-medium text-foreground">INT8 (Quantized)</p>
+                    <p className="text-muted-foreground">
                       Uses 8 bits per weight, 4x compression, faster inference, lower memory usage,
                       suitable for edge deployment. Negligible accuracy loss with proper calibration
                     </p>
                   </div>
                   <div>
-                    <p className="font-medium text-slate-200">Why it Matters</p>
-                    <p className="text-slate-400">
+                    <p className="font-medium text-foreground">Why it Matters</p>
+                    <p className="text-muted-foreground">
                       Quantization enables deploying large models on resource-constrained devices
                       (mobile, edge), reduces memory usage, speeds up inference significantly, and
                       lowers deployment costs
                     </p>
                   </div>
                   <div>
-                    <p className="font-medium text-slate-200">Trade-offs</p>
-                    <p className="text-slate-400">
+                    <p className="font-medium text-foreground">Trade-offs</p>
+                    <p className="text-muted-foreground">
                       Slight potential accuracy loss, requires calibration on representative data,
                       different hardware may support different quantization schemes optimally
                     </p>

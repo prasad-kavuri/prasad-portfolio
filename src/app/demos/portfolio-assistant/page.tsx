@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Send, Trash2, Copy, Check } from 'lucide-react';
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface Message {
   id: string;
@@ -257,20 +258,23 @@ export default function PortfolioAssistantPage() {
   const isEmpty = messages.length === 0 && !streamingText;
 
   return (
-    <div className="flex flex-col h-screen bg-slate-900 text-white">
+    <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-slate-700 p-4">
+      <div className="border-b border-border p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="hover:bg-slate-800 p-2 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Link
+                href="/"
+                className="hover:bg-card p-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+            </div>
             <div>
               <h1 className="text-2xl font-bold">AI Portfolio Assistant</h1>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Ask anything about Prasad's experience — powered by RAG + Llama
                 3.1
               </p>
@@ -291,7 +295,7 @@ export default function PortfolioAssistantPage() {
             {messages.length > 0 && (
               <button
                 onClick={handleClear}
-                className="hover:bg-slate-800 p-2 rounded-lg transition-colors"
+                className="hover:bg-card p-2 rounded-lg transition-colors"
                 title="Clear chat"
               >
                 <Trash2 className="w-5 h-5" />
@@ -316,20 +320,20 @@ export default function PortfolioAssistantPage() {
                 className={`max-w-2xl rounded-lg p-4 ${
                   message.role === 'user'
                     ? 'bg-blue-600 rounded-br-none'
-                    : 'bg-slate-800 rounded-bl-none'
+                    : 'bg-card rounded-bl-none'
                 }`}
               >
-                <p className="text-white whitespace-pre-wrap break-words">
+                <p className="text-foreground whitespace-pre-wrap break-words">
                   {message.content}
                 </p>
 
                 {/* Retrieved Docs Chips */}
                 {message.retrievedDocs && message.retrievedDocs.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-slate-700 flex flex-wrap gap-2">
+                  <div className="mt-3 pt-3 border-t border-border flex flex-wrap gap-2">
                     {message.retrievedDocs.map((doc, idx) => (
                       <span
                         key={idx}
-                        className="inline-block px-2 py-1 bg-slate-600 rounded text-xs text-slate-200"
+                        className="inline-block px-2 py-1 bg-muted rounded text-xs text-muted-foreground"
                       >
                         {doc}
                       </span>
@@ -339,7 +343,7 @@ export default function PortfolioAssistantPage() {
 
                 {/* Message Stats */}
                 {message.responseTime && (
-                  <div className="mt-2 text-xs text-slate-400">
+                  <div className="mt-2 text-xs text-muted-foreground">
                     Response time: {message.responseTime}ms
                     {message.tokenCount && ` • ~${message.tokenCount} tokens`}
                   </div>
@@ -350,13 +354,13 @@ export default function PortfolioAssistantPage() {
               {message.role === 'assistant' && (
                 <button
                   onClick={() => handleCopyMessage(message.id, message.content)}
-                  className="hover:bg-slate-800 p-2 rounded transition-colors self-start mt-1"
+                  className="hover:bg-card p-2 rounded transition-colors self-start mt-1"
                   title="Copy message"
                 >
                   {copiedId === message.id ? (
                     <Check className="w-4 h-4 text-green-500" />
                   ) : (
-                    <Copy className="w-4 h-4 text-slate-400" />
+                    <Copy className="w-4 h-4 text-muted-foreground" />
                   )}
                 </button>
               )}
@@ -366,18 +370,18 @@ export default function PortfolioAssistantPage() {
           {/* Streaming Text */}
           {streamingText && (
             <div className="flex gap-3 justify-start">
-              <div className="max-w-2xl rounded-lg p-4 bg-slate-800 rounded-bl-none">
-                <p className="text-white whitespace-pre-wrap break-words">
+              <div className="max-w-2xl rounded-lg p-4 bg-card rounded-bl-none">
+                <p className="text-foreground whitespace-pre-wrap break-words">
                   {streamingText}
                 </p>
 
                 {/* Retrieved Docs Chips while streaming */}
                 {currentRetrievedDocs.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-slate-700 flex flex-wrap gap-2">
+                  <div className="mt-3 pt-3 border-t border-border flex flex-wrap gap-2">
                     {currentRetrievedDocs.map(doc => (
                       <span
                         key={doc.id}
-                        className="inline-block px-2 py-1 bg-slate-600 rounded text-xs text-slate-200"
+                        className="inline-block px-2 py-1 bg-muted rounded text-xs text-muted-foreground"
                       >
                         {doc.title}
                       </span>
@@ -388,9 +392,9 @@ export default function PortfolioAssistantPage() {
                 {/* Loading Indicator */}
                 {isLoading && (
                   <div className="mt-2 flex gap-1">
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></span>
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-100"></span>
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-200"></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce delay-100"></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce delay-200"></span>
                   </div>
                 )}
               </div>
@@ -402,12 +406,12 @@ export default function PortfolioAssistantPage() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-slate-700 bg-slate-800">
+      <div className="border-t border-border bg-card">
         {/* Suggested Questions - Always Visible */}
-        <div className={`border-b border-slate-700 px-4 transition-all ${isEmpty ? 'py-6' : 'py-3'}`}>
+        <div className={`border-b border-border px-4 transition-all ${isEmpty ? 'py-6' : 'py-3'}`}>
           <div className="max-w-4xl mx-auto">
             {isEmpty && (
-              <p className="text-slate-400 text-center mb-3 text-sm">
+              <p className="text-muted-foreground text-center mb-3 text-sm">
                 Try asking one of these questions:
               </p>
             )}
@@ -420,8 +424,8 @@ export default function PortfolioAssistantPage() {
                     disabled={isLoading}
                     className={`whitespace-nowrap rounded-full transition-colors flex-shrink-0 ${
                       isEmpty
-                        ? 'px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm'
-                        : 'px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs'
+                        ? 'px-4 py-2 bg-muted hover:bg-muted text-muted-foreground text-sm'
+                        : 'px-3 py-1 bg-muted hover:bg-muted text-muted-foreground text-xs'
                     } disabled:opacity-50`}
                   >
                     {q}
@@ -442,7 +446,7 @@ export default function PortfolioAssistantPage() {
                 onChange={e => setInput(e.target.value)}
                 placeholder="Ask about Prasad's experience..."
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-lg bg-slate-700 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-lg bg-muted border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:border-blue-500 disabled:opacity-50"
               />
               <button
                 type="submit"
@@ -455,7 +459,7 @@ export default function PortfolioAssistantPage() {
             </form>
 
             {/* Footer */}
-            <div className="mt-3 text-center text-xs text-slate-400">
+            <div className="mt-3 text-center text-xs text-muted-foreground">
               <p>Powered by Groq + Llama 3.1 8B</p>
             </div>
           </div>

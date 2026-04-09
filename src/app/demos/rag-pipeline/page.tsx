@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const KNOWLEDGE_BASE = [
   { id: 1, title: 'Kruti.ai — Agentic AI Platform', content: 'Led India\'s first Agentic AI platform at Krutrim with 200+ engineers. Achieved 50% latency reduction and 40% cost savings through multi-model LLM orchestration. Built domain-specific agents for mobility, payments, and content generation.' },
@@ -117,22 +118,25 @@ export default function RAGPipelinePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6 text-white">
+    <div className="min-h-screen bg-background p-6 text-foreground">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">RAG Pipeline Demo</h1>
-            <p className="mt-1 text-slate-400">Retrieval-Augmented Generation with local embeddings</p>
+            <h1 className="text-3xl font-bold text-foreground">RAG Pipeline Demo</h1>
+            <p className="mt-1 text-muted-foreground">Retrieval-Augmented Generation with local embeddings</p>
           </div>
-          <Link href="/" className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-slate-200 hover:bg-slate-600">
-            <ArrowLeft size={16} /> Back
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link href="/" className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-foreground hover:bg-muted/80">
+              <ArrowLeft size={16} /> Back
+            </Link>
+          </div>
         </div>
 
         {/* Start button */}
         {status === 'idle' && (
-          <Card className="border-slate-700 bg-slate-800 p-8 text-center">
-            <p className="mb-4 text-slate-300">Click to load the embedding model in your browser. No API key required.</p>
+          <Card className="border-border bg-card p-8 text-center">
+            <p className="mb-4 text-muted-foreground">Click to load the embedding model in your browser. No API key required.</p>
             <button onClick={loadModel} className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700">
               Load Model & Start
             </button>
@@ -141,12 +145,12 @@ export default function RAGPipelinePage() {
 
         {/* Loading */}
         {status === 'loading-model' && (
-          <Card className="border-slate-700 bg-slate-800 p-6">
-            <p className="mb-3 font-medium text-slate-200">Loading model...</p>
-            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-slate-700">
+          <Card className="border-border bg-card p-6">
+            <p className="mb-3 font-medium text-foreground">Loading model...</p>
+            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-muted">
               <div className="h-2 rounded-full bg-blue-500 transition-all duration-300" style={{ width: `${progress}%` }} />
             </div>
-            <p className="text-sm text-slate-400">{progress}% — {progressMsg}</p>
+            <p className="text-sm text-muted-foreground">{progress}% — {progressMsg}</p>
           </Card>
         )}
 
@@ -164,8 +168,8 @@ export default function RAGPipelinePage() {
         {/* Search UI */}
         {(status === 'ready' || status === 'searching') && (
           <>
-            <Card className="mb-6 border-slate-700 bg-slate-800 p-6">
-              <label className="mb-2 block text-sm font-medium text-slate-300">Query</label>
+            <Card className="mb-6 border-border bg-card p-6">
+              <label className="mb-2 block text-sm font-medium text-foreground">Query</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -173,7 +177,7 @@ export default function RAGPipelinePage() {
                   onChange={e => setQuery(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSearch()}
                   placeholder="e.g. What is Prasad's AI experience?"
-                  className="flex-1 rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                  className="flex-1 rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-blue-500 focus:outline-none"
                 />
                 <button
                   onClick={handleSearch}
@@ -188,30 +192,30 @@ export default function RAGPipelinePage() {
             {results.length > 0 && (
               <>
                 <div className="mb-4 grid grid-cols-3 gap-4">
-                  <Card className="border-slate-700 bg-slate-800 p-4">
-                    <p className="text-xs text-slate-400">Query time</p>
+                  <Card className="border-border bg-card p-4">
+                    <p className="text-xs text-muted-foreground">Query time</p>
                     <p className="text-2xl font-bold text-blue-400">{queryTime}ms</p>
                   </Card>
-                  <Card className="border-slate-700 bg-slate-800 p-4">
-                    <p className="text-xs text-slate-400">Docs searched</p>
+                  <Card className="border-border bg-card p-4">
+                    <p className="text-xs text-muted-foreground">Docs searched</p>
                     <p className="text-2xl font-bold text-green-400">{KNOWLEDGE_BASE.length}</p>
                   </Card>
-                  <Card className="border-slate-700 bg-slate-800 p-4">
-                    <p className="text-xs text-slate-400">Top similarity</p>
+                  <Card className="border-border bg-card p-4">
+                    <p className="text-xs text-muted-foreground">Top similarity</p>
                     <p className="text-2xl font-bold text-purple-400">{(results[0].similarity * 100).toFixed(1)}%</p>
                   </Card>
                 </div>
-                <h2 className="mb-3 text-lg font-semibold text-white">Top 3 Retrieved Documents</h2>
+                <h2 className="mb-3 text-lg font-semibold text-foreground">Top 3 Retrieved Documents</h2>
                 <div className="space-y-3">
                   {results.map((r, i) => (
-                    <Card key={r.doc.id} className="border-slate-700 bg-slate-800 p-5">
+                    <Card key={r.doc.id} className="border-border bg-card p-5">
                       <div className="mb-2 flex items-center justify-between">
-                        <span className="font-medium text-white">{i + 1}. {r.doc.title}</span>
+                        <span className="font-medium text-foreground">{i + 1}. {r.doc.title}</span>
                         <Badge className={r.similarity > 0.7 ? 'bg-green-600' : r.similarity > 0.5 ? 'bg-yellow-600' : 'bg-orange-600'}>
                           {(r.similarity * 100).toFixed(1)}%
                         </Badge>
                       </div>
-                      <p className="text-sm text-slate-300">{r.doc.content}</p>
+                      <p className="text-sm text-muted-foreground">{r.doc.content}</p>
                     </Card>
                   ))}
                 </div>
@@ -219,16 +223,16 @@ export default function RAGPipelinePage() {
             )}
 
             {results.length === 0 && status === 'ready' && (
-              <Card className="border-slate-700 bg-slate-800 p-12 text-center">
-                <p className="text-slate-400">Enter a query above and click Search</p>
+              <Card className="border-border bg-card p-12 text-center">
+                <p className="text-muted-foreground">Enter a query above and click Search</p>
               </Card>
             )}
           </>
         )}
 
-        <Card className="mt-8 border-slate-700 bg-slate-800 p-5">
-          <p className="mb-2 font-medium text-slate-200">How it works</p>
-          <ul className="space-y-1 text-sm text-slate-400">
+        <Card className="mt-8 border-border bg-card p-5">
+          <p className="mb-2 font-medium text-foreground">How it works</p>
+          <ul className="space-y-1 text-sm text-muted-foreground">
             <li>• Model runs entirely in your browser via WebAssembly — no server</li>
             <li>• Uses all-MiniLM-L6-v2 (32MB) for semantic embeddings</li>
             <li>• Cosine similarity ranks documents by semantic relevance</li>

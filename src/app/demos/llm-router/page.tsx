@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface ModelResult {
   model: string;
@@ -133,16 +134,19 @@ export default function LLMRouterDemo() {
   const summary = getSummary();
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-6">
+    <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/" className="text-slate-400 hover:text-slate-200">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link href="/" className="text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+          </div>
           <div>
             <h1 className="text-4xl font-bold">LLM Router Demo</h1>
-            <p className="text-slate-400 mt-2">Real-time multi-model routing — see how intelligent routing achieves cost and latency savings</p>
+            <p className="text-muted-foreground mt-2">Real-time multi-model routing — see how intelligent routing achieves cost and latency savings</p>
           </div>
         </div>
 
@@ -152,7 +156,7 @@ export default function LLMRouterDemo() {
             value={prompt}
             onChange={e => setPrompt(e.target.value)}
             placeholder="Enter your prompt..."
-            className="w-full p-4 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm h-24 resize-none"
+            className="w-full p-4 bg-card border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm h-24 resize-none"
           />
 
           {/* Example Prompts */}
@@ -161,7 +165,7 @@ export default function LLMRouterDemo() {
               <button
                 key={example}
                 onClick={() => setPrompt(example)}
-                className="px-3 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full text-sm text-slate-300 transition-colors"
+                className="px-3 py-1 bg-muted hover:bg-muted/80 border border-border rounded-full text-sm text-muted-foreground transition-colors"
               >
                 {example}
               </button>
@@ -185,10 +189,10 @@ export default function LLMRouterDemo() {
         {isLoading && (
           <div className="grid grid-cols-2 gap-4 mb-8">
             {MODEL_IDS.map(modelId => (
-              <Card key={modelId} className="bg-slate-800 border-slate-700 p-6 animate-pulse">
-                <div className="h-8 bg-slate-700 rounded mb-4" />
-                <div className="h-4 bg-slate-700 rounded mb-2" />
-                <div className="h-4 bg-slate-700 rounded" />
+              <Card key={modelId} className="bg-card border-border p-6 animate-pulse">
+                <div className="h-8 bg-muted rounded mb-4" />
+                <div className="h-4 bg-muted rounded mb-2" />
+                <div className="h-4 bg-muted rounded" />
               </Card>
             ))}
           </div>
@@ -200,13 +204,13 @@ export default function LLMRouterDemo() {
               {results.map(result => (
                 <Card
                   key={result.model}
-                  className="bg-slate-800 border-slate-700 p-6 flex flex-col"
+                  className="bg-card border-border p-6 flex flex-col"
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="font-semibold text-lg">{result.modelName}</h3>
-                      <p className="text-xs text-slate-400">{result.provider}</p>
+                      <h3 className="font-semibold text-lg text-foreground">{result.modelName}</h3>
+                      <p className="text-xs text-muted-foreground">{result.provider}</p>
                     </div>
                     {result.model === recommendedModel && !result.error && (
                       <Badge className="bg-green-500/20 text-green-400 border-0">Recommended</Badge>
@@ -225,18 +229,18 @@ export default function LLMRouterDemo() {
                       </div>
 
                       {/* Tokens & Cost */}
-                      <div className="text-xs space-y-1 mb-4 text-slate-400">
+                      <div className="text-xs space-y-1 mb-4 text-muted-foreground">
                         <div>
                           Input: {result.input_tokens} | Output: {result.output_tokens}
                         </div>
-                        <div className="font-mono text-slate-300">
+                        <div className="font-mono text-foreground">
                           ${result.cost_usd.toFixed(6)}
                         </div>
                       </div>
 
                       {/* Response */}
                       <div className="flex-1 overflow-hidden">
-                        <div className="max-h-[150px] overflow-y-auto bg-slate-900 rounded p-3 text-sm text-slate-300 font-mono">
+                        <div className="max-h-[150px] overflow-y-auto bg-background rounded p-3 text-sm text-muted-foreground font-mono">
                           {result.response}
                         </div>
                       </div>
@@ -248,25 +252,25 @@ export default function LLMRouterDemo() {
 
             {/* Summary */}
             {summary && (
-              <Card className="bg-slate-800 border-slate-700 p-6">
+              <Card className="bg-card border-border p-6">
                 <div className="grid grid-cols-4 gap-4">
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider">Fastest</p>
-                    <p className="font-semibold text-lg mt-1">{summary.fastest?.modelName}</p>
-                    <p className="text-sm text-slate-400">{summary.fastest?.latency_ms}ms</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Fastest</p>
+                    <p className="font-semibold text-lg mt-1 text-foreground">{summary.fastest?.modelName}</p>
+                    <p className="text-sm text-muted-foreground">{summary.fastest?.latency_ms}ms</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider">Cheapest</p>
-                    <p className="font-semibold text-lg mt-1">{summary.cheapest?.modelName}</p>
-                    <p className="text-sm text-slate-400">${summary.cheapest?.cost_usd.toFixed(6)}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Cheapest</p>
+                    <p className="font-semibold text-lg mt-1 text-foreground">{summary.cheapest?.modelName}</p>
+                    <p className="text-sm text-muted-foreground">${summary.cheapest?.cost_usd.toFixed(6)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider">Recommended</p>
-                    <p className="font-semibold text-lg mt-1">{summary.recommended?.modelName}</p>
-                    <p className="text-sm text-slate-400">${summary.recommended?.cost_usd.toFixed(6)}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Recommended</p>
+                    <p className="font-semibold text-lg mt-1 text-foreground">{summary.recommended?.modelName}</p>
+                    <p className="text-sm text-muted-foreground">${summary.recommended?.cost_usd.toFixed(6)}</p>
                   </div>
                   <div className="bg-green-500/10 rounded p-3">
-                    <p className="text-xs text-slate-400 uppercase tracking-wider">Cost Savings</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Cost Savings</p>
                     <p className="font-semibold text-2xl mt-1 text-green-400">{summary.savingsPercent}%</p>
                   </div>
                 </div>

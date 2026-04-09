@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Copy, Check, Download, Loader } from 'lucide-react';
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface ResumeData {
   matchScore: number;
@@ -168,20 +169,23 @@ ${resume.atsKeywords.join(', ')}`;
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-slate-700 p-4 sticky top-0 z-10">
+      <div className="border-b border-border p-4 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-4 mb-2">
-            <Link
-              href="/"
-              className="hover:bg-slate-800 p-2 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Link
+                href="/"
+                className="hover:bg-card p-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+            </div>
             <div>
               <h1 className="text-2xl font-bold">AI Resume Generator</h1>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Paste a job description — get a tailored resume optimized for ATS
               </p>
             </div>
@@ -202,7 +206,7 @@ ${resume.atsKeywords.join(', ')}`;
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
                 placeholder="Paste the job description here..."
-                className="w-full h-96 px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full h-96 px-4 py-3 rounded-lg bg-card border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:border-blue-500 resize-none"
               />
             </div>
 
@@ -217,7 +221,7 @@ ${resume.atsKeywords.join(', ')}`;
                       type="checkbox"
                       checked={focusAreas.includes(area)}
                       onChange={() => handleFocusAreaChange(area)}
-                      className="w-4 h-4 rounded bg-slate-700 border-slate-600"
+                      className="w-4 h-4 rounded bg-muted border-border"
                     />
                     <span className="text-sm">{area}</span>
                   </label>
@@ -228,7 +232,7 @@ ${resume.atsKeywords.join(', ')}`;
             <div className="flex gap-2">
               <button
                 onClick={handleExample}
-                className="flex-1 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-medium transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg bg-muted hover:bg-muted text-sm font-medium transition-colors"
               >
                 Example JD
               </button>
@@ -270,14 +274,14 @@ ${resume.atsKeywords.join(', ')}`;
                       <div className={`text-4xl font-bold ${getScoreColor(resume.matchScore)}`}>
                         {resume.matchScore}%
                       </div>
-                      <div className="text-xs text-slate-300 mt-1">Match Score</div>
+                      <div className="text-xs text-muted-foreground mt-1">Match Score</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Matched Skills */}
                 <div>
-                  <h3 className="text-sm font-medium mb-2 text-slate-300">Matched Skills</h3>
+                  <h3 className="text-sm font-medium mb-2 text-muted-foreground">Matched Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {resume.matchedSkills.map((skill, idx) => (
                       <span
@@ -293,7 +297,7 @@ ${resume.atsKeywords.join(', ')}`;
                 {/* Missing Skills */}
                 {resume.missingSkills.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium mb-2 text-slate-300">Missing Skills</h3>
+                    <h3 className="text-sm font-medium mb-2 text-muted-foreground">Missing Skills</h3>
                     <div className="flex flex-wrap gap-2">
                       {resume.missingSkills.map((skill, idx) => (
                         <span
@@ -309,7 +313,7 @@ ${resume.atsKeywords.join(', ')}`;
 
                 {/* ATS Keywords */}
                 <div>
-                  <h3 className="text-sm font-medium mb-2 text-slate-300">ATS Keywords</h3>
+                  <h3 className="text-sm font-medium mb-2 text-muted-foreground">ATS Keywords</h3>
                   <div className="flex flex-wrap gap-2">
                     {resume.atsKeywords.map((keyword, idx) => (
                       <span
@@ -323,27 +327,27 @@ ${resume.atsKeywords.join(', ')}`;
                 </div>
 
                 {/* Summary */}
-                <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-                  <h3 className="text-sm font-medium mb-2 text-slate-300">Professional Summary</h3>
-                  <p className="text-sm text-slate-200 leading-relaxed">{resume.summary}</p>
+                <div className="bg-card rounded-lg p-4 border border-border">
+                  <h3 className="text-sm font-medium mb-2 text-muted-foreground">Professional Summary</h3>
+                  <p className="text-sm text-foreground leading-relaxed">{resume.summary}</p>
                 </div>
 
                 {/* Experience */}
                 <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-slate-300">Experience</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Experience</h3>
                   {resume.experience.map((exp, idx) => (
-                    <div key={idx} className="bg-slate-800 rounded-lg p-3 border border-slate-700">
+                    <div key={idx} className="bg-card rounded-lg p-3 border border-border">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-medium text-white">{exp.title}</h4>
-                          <p className="text-xs text-slate-400">{exp.company}</p>
-                          <p className="text-xs text-slate-500">{exp.period}</p>
+                          <h4 className="font-medium text-foreground">{exp.title}</h4>
+                          <p className="text-xs text-muted-foreground">{exp.company}</p>
+                          <p className="text-xs text-muted-foreground">{exp.period}</p>
                         </div>
                       </div>
                       <ul className="space-y-1">
                         {exp.bullets.map((bullet, bidx) => (
-                          <li key={bidx} className="text-xs text-slate-300 flex gap-2">
-                            <span className="text-slate-500">•</span>
+                          <li key={bidx} className="text-xs text-muted-foreground flex gap-2">
+                            <span className="text-muted-foreground">•</span>
                             <span>{bullet}</span>
                           </li>
                         ))}
@@ -354,12 +358,12 @@ ${resume.atsKeywords.join(', ')}`;
 
                 {/* Skills */}
                 <div>
-                  <h3 className="text-sm font-medium mb-2 text-slate-300">Skills</h3>
+                  <h3 className="text-sm font-medium mb-2 text-muted-foreground">Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {resume.skills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-1 rounded-md bg-slate-700 text-slate-300 text-xs"
+                        className="px-2 py-1 rounded-md bg-muted text-muted-foreground text-xs"
                       >
                         {skill}
                       </span>
@@ -371,7 +375,7 @@ ${resume.atsKeywords.join(', ')}`;
                 <div className="flex gap-2 pt-2">
                   <button
                     onClick={() => handleCopy(JSON.stringify(resume, null, 2), 'json')}
-                    className="flex-1 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                    className="flex-1 px-4 py-2 rounded-lg bg-muted hover:bg-muted transition-colors flex items-center justify-center gap-2 text-sm font-medium"
                   >
                     {copiedField === 'json' ? (
                       <>
@@ -395,7 +399,7 @@ ${resume.atsKeywords.join(', ')}`;
                 </div>
               </>
             ) : (
-              <div className="h-full flex items-center justify-center text-slate-400 text-center">
+              <div className="h-full flex items-center justify-center text-muted-foreground text-center">
                 <p>Paste a job description and click "Generate Tailored Resume"</p>
               </div>
             )}
@@ -404,9 +408,9 @@ ${resume.atsKeywords.join(', ')}`;
       </div>
 
       {/* Footer */}
-      <div className="border-t border-slate-700 mt-8 py-4">
+      <div className="border-t border-border mt-8 py-4">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Powered by Groq + Llama 3.3 70B
           </p>
         </div>

@@ -81,4 +81,13 @@ export const demos: Demo[] = [
     tags: ["ONNX", "INT8 vs FP32", "Transformers.js"],
     status: "live",
   },
+  {
+    id: "mcp-demo",
+    emoji: "🔌",
+    title: "MCP Tool Demo",
+    description: "Model Context Protocol in action — watch an LLM discover and call tools to answer questions about Prasad's background.",
+    href: "/demos/mcp-demo",
+    tags: ["MCP", "Tool Use", "Groq API"],
+    status: "live",
+  },
 ];

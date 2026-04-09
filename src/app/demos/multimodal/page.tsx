@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { ArrowLeft, Upload, Loader } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'error';
 type TaskType = 'classify' | 'zero-shot';
@@ -187,29 +188,32 @@ export default function MultimodalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6 text-white">
+    <div className="min-h-screen bg-background p-6 text-foreground">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Multimodal AI Assistant</h1>
-            <p className="mt-1 text-slate-400">Run vision models in your browser</p>
+            <h1 className="text-3xl font-bold text-foreground">Multimodal AI Assistant</h1>
+            <p className="mt-1 text-muted-foreground">Run vision models in your browser</p>
           </div>
-          <Link
-            href="/"
-            className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-slate-200 hover:bg-slate-600"
-          >
-            <ArrowLeft size={16} /> Back
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link
+              href="/"
+              className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-muted-foreground hover:bg-muted"
+            >
+              <ArrowLeft size={16} /> Back
+            </Link>
+          </div>
         </div>
 
         {/* Idle State */}
         {status === 'idle' && (
-          <Card className="border-slate-700 bg-slate-800 p-8 text-center">
-            <p className="mb-4 text-slate-300">
+          <Card className="border-border bg-card p-8 text-center">
+            <p className="mb-4 text-muted-foreground">
               Load vision models to classify images in your browser. No API key required.
             </p>
-            <p className="mb-6 text-sm text-slate-400">
+            <p className="mb-6 text-sm text-muted-foreground">
               Note: Models will download on first use
             </p>
             <button
@@ -223,15 +227,15 @@ export default function MultimodalPage() {
 
         {/* Loading State */}
         {status === 'loading-model' && (
-          <Card className="border-slate-700 bg-slate-800 p-6">
-            <p className="mb-3 font-medium text-slate-200">Loading models...</p>
-            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-slate-700">
+          <Card className="border-border bg-card p-6">
+            <p className="mb-3 font-medium text-foreground">Loading models...</p>
+            <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-2 rounded-full bg-blue-500 transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted-foreground">
               {progress}% — {progressMsg}
             </p>
           </Card>
@@ -258,7 +262,7 @@ export default function MultimodalPage() {
             <div className="space-y-4">
               {/* Upload Area */}
               <Card
-                className={`border-2 border-dashed border-slate-600 bg-slate-800 p-8 text-center transition ${
+                className={`border-2 border-dashed border-border bg-card p-8 text-center transition ${
                   dragOverRef.current ? 'border-blue-500 bg-blue-900/20' : ''
                 }`}
                 onDragOver={(e) => {
@@ -285,19 +289,19 @@ export default function MultimodalPage() {
                   }}
                   className="hidden"
                 />
-                <Upload size={32} className="mx-auto mb-2 text-slate-400" />
-                <p className="mb-2 text-slate-300">Drag & drop an image or click to browse</p>
+                <Upload size={32} className="mx-auto mb-2 text-muted-foreground" />
+                <p className="mb-2 text-muted-foreground">Drag & drop an image or click to browse</p>
                 <button
                   onClick={() => imageInputRef.current?.click()}
-                  className="rounded bg-slate-700 px-4 py-2 text-sm text-slate-200 hover:bg-slate-600"
+                  className="rounded bg-muted px-4 py-2 text-sm text-muted-foreground hover:bg-muted"
                 >
                   Browse Files
                 </button>
               </Card>
 
               {/* URL Input */}
-              <Card className="border-slate-700 bg-slate-800 p-4">
-                <label className="mb-2 block text-sm font-medium text-slate-300">
+              <Card className="border-border bg-card p-4">
+                <label className="mb-2 block text-sm font-medium text-muted-foreground">
                   Or load from URL
                 </label>
                 <div className="flex gap-2">
@@ -309,7 +313,7 @@ export default function MultimodalPage() {
                         handleURLInput(e.currentTarget.value);
                       }
                     }}
-                    className="flex-1 rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                    className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-blue-500 focus:outline-none"
                   />
                   <button
                     onClick={(e) => {
@@ -317,7 +321,7 @@ export default function MultimodalPage() {
                         .value;
                       handleURLInput(url);
                     }}
-                    className="rounded-lg bg-slate-700 px-3 py-2 text-sm text-slate-200 hover:bg-slate-600"
+                    className="rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground hover:bg-muted"
                   >
                     Load
                   </button>
@@ -326,14 +330,14 @@ export default function MultimodalPage() {
 
               {/* Image Preview */}
               {imageData && (
-                <Card className="border-slate-700 bg-slate-800 overflow-hidden">
+                <Card className="border-border bg-card overflow-hidden">
                   <img src={imageData} alt="Preview" className="w-full" />
                 </Card>
               )}
 
               {!imageData && (
-                <Card className="border-slate-700 bg-slate-800 p-8 text-center">
-                  <p className="text-slate-400">No image loaded</p>
+                <Card className="border-border bg-card p-8 text-center">
+                  <p className="text-muted-foreground">No image loaded</p>
                 </Card>
               )}
             </div>
@@ -350,7 +354,7 @@ export default function MultimodalPage() {
                   className={`flex-1 rounded-lg px-4 py-2 font-medium transition ${
                     activeTask === 'classify'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      : 'bg-muted text-muted-foreground hover:bg-muted'
                   }`}
                   disabled={status === 'processing'}
                 >
@@ -364,7 +368,7 @@ export default function MultimodalPage() {
                   className={`flex-1 rounded-lg px-4 py-2 font-medium transition ${
                     activeTask === 'zero-shot'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      : 'bg-muted text-muted-foreground hover:bg-muted'
                   }`}
                   disabled={status === 'processing'}
                 >
@@ -381,7 +385,7 @@ export default function MultimodalPage() {
                     className={`w-full rounded-lg px-4 py-3 font-medium transition ${
                       imageData && status !== 'processing'
                         ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-slate-700 text-slate-400'
+                        : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {status === 'processing' ? (
@@ -400,7 +404,7 @@ export default function MultimodalPage() {
               {activeTask === 'zero-shot' && (
                 <div className="space-y-3">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-300">
+                    <label className="mb-2 block text-sm font-medium text-muted-foreground">
                       Labels (comma-separated)
                     </label>
                     <input
@@ -408,7 +412,7 @@ export default function MultimodalPage() {
                       value={zeroShotLabels}
                       onChange={(e) => setZeroShotLabels(e.currentTarget.value)}
                       placeholder="e.g. cat, dog, car, person"
-                      className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-blue-500 focus:outline-none"
                     />
                   </div>
                   <button
@@ -417,7 +421,7 @@ export default function MultimodalPage() {
                     className={`w-full rounded-lg px-4 py-3 font-medium transition ${
                       imageData && status !== 'processing'
                         ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-slate-700 text-slate-400'
+                        : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {status === 'processing' ? (
@@ -434,21 +438,21 @@ export default function MultimodalPage() {
 
               {/* Results - Bar Chart */}
               {result && result.length > 0 && (
-                <Card className="border-slate-700 bg-slate-800 p-4">
+                <Card className="border-border bg-card p-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="text-sm font-medium text-slate-300">Results</p>
-                    <span className="text-xs text-slate-400">{processingTime}ms</span>
+                    <p className="text-sm font-medium text-muted-foreground">Results</p>
+                    <span className="text-xs text-muted-foreground">{processingTime}ms</span>
                   </div>
                   <div className="space-y-3">
                     {result.map((item, i) => (
                       <div key={i} className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm text-slate-300">{item.label}</p>
-                          <p className="text-sm font-medium text-slate-200">
+                          <p className="text-sm text-muted-foreground">{item.label}</p>
+                          <p className="text-sm font-medium text-foreground">
                             {(item.score * 100).toFixed(1)}%
                           </p>
                         </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-700">
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                           <div
                             className="h-2 rounded-full bg-blue-500"
                             style={{ width: `${item.score * 100}%` }}
@@ -469,8 +473,8 @@ export default function MultimodalPage() {
 
               {/* Prompt when no result */}
               {!result && !error && imageData && (
-                <Card className="border-slate-700 bg-slate-800 p-8 text-center">
-                  <p className="text-slate-400">
+                <Card className="border-border bg-card p-8 text-center">
+                  <p className="text-muted-foreground">
                     {activeTask === 'classify'
                       ? 'Click "Classify Image" to analyze'
                       : 'Enter labels and click "Classify Image" to analyze'}
@@ -483,9 +487,9 @@ export default function MultimodalPage() {
 
         {/* Info Footer */}
         {(status === 'ready' || status === 'processing') && (
-          <Card className="mt-8 border-slate-700 bg-slate-800 p-5">
-            <p className="mb-2 font-medium text-slate-200">How it works</p>
-            <ul className="space-y-1 text-sm text-slate-400">
+          <Card className="mt-8 border-border bg-card p-5">
+            <p className="mb-2 font-medium text-foreground">How it works</p>
+            <ul className="space-y-1 text-sm text-muted-foreground">
               <li>
                 • <strong>Classify:</strong> Predicts top 5 image classes using Vision
                 Transformer (ViT)

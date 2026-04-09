@@ -1,0 +1,321 @@
+{
+  "personal": {
+    "name": "Prasad Kavuri",
+    "title": "Head of AI Engineering",
+    "subtitle": "AI/ML Executive Leader",
+    "location": "Naperville, IL (Greater Chicago Area)",
+    "email": "vbkpkavuri@gmail.com",
+    "phone": "3126232488",
+    "linkedin": "https://linkedin.com/in/pkavuri",
+    "portfolio": "https://prasadkavuri.com",
+    "github": "https://github.com/prasad-kavuri",
+    "languages": ["English", "Hindi", "Telugu", "Urdu"],
+    "summary": "AI/ML executive with 20+ years building platforms and leading engineering organizations. Focused on helping companies adopt AI in ways that change how they operate — turning emerging AI capabilities into production systems, embedding AI into day-to-day workflows, and aligning engineering, product, and business teams around measurable outcomes.",
+    "pills": ["Agentic AI", "LLM Platforms", "Applied AI Strategy", "Global Engineering Leadership"]
+  },
+  "stats": [
+    { "value": "20+", "label": "Years Experience" },
+    { "value": "200+", "label": "Engineers Led" },
+    { "value": "13K+", "label": "B2B Customers" },
+    { "value": "70%", "label": "Cost Reduction" }
+  ],
+  "experience": [
+    {
+      "id": "krutrim",
+      "company": "Krutrim",
+      "title": "Head of AI Engineering",
+      "period": "March 2025 - Present",
+      "location": "Naperville, IL",
+      "duration": "1 year 2 months",
+      "highlights": [
+        "Architected India's first Agentic AI platform (Kruti.ai) with 200+ engineers",
+        "Delivered 50% latency reduction and 40% cost savings through multi-model LLM orchestration",
+        "Built RAG pipelines, vector search, and real-time personalization capabilities",
+        "Launched domain-specific AI agents for cab booking, food ordering, bill payments, image generation",
+        "Built enterprise-grade 24/7 PaaS capabilities with SDK/API integration",
+        "Leading enterprise adoption of agentic AI across engineering and product workflows"
+      ],
+      "tags": ["Agentic AI", "LLM Orchestration", "RAG", "Vector Search", "PaaS"]
+    },
+    {
+      "id": "ola",
+      "company": "Ola",
+      "title": "Senior Director of Engineering",
+      "period": "September 2023 - February 2025",
+      "location": "Naperville, IL",
+      "duration": "1 year 6 months",
+      "highlights": [
+        "Launched Ola Maps B2B platform acquiring 13,000+ enterprise customers",
+        "Reduced infrastructure costs by 70% via cloud-native roadmap",
+        "Scaled to millions of daily API calls",
+        "Introduced AI-powered real-time route optimization boosting ETA accuracy",
+        "Led 150+ engineers across US and India",
+        "Negotiated strategic vendor partnerships for electric mobility adoption"
+      ],
+      "tags": ["B2B Platform", "Cloud-Native", "AI Route Optimization", "Fleet Management"]
+    },
+    {
+      "id": "here-head",
+      "company": "HERE Technologies",
+      "title": "Head of Infrastructure and Services",
+      "period": "May 2023 - September 2023",
+      "location": "Chicago, IL",
+      "duration": "5 months",
+      "highlights": [
+        "Led large-scale engineering programs in safety-critical regulated environment",
+        "Directed global engineering for AI/ML infrastructure enabling autonomous driving",
+        "Led global team building core infrastructure for ML/AI products"
+      ],
+      "tags": ["Infrastructure", "AI/ML", "Autonomous Driving"]
+    },
+    {
+      "id": "here-director",
+      "company": "HERE Technologies",
+      "title": "Director of Engineering - Highly Automated Driving",
+      "period": "July 2021 - June 2023",
+      "location": "Chicago, IL",
+      "duration": "2 years",
+      "highlights": [
+        "Delivered AI-enhanced HD mapping and lane-level automation systems",
+        "Managed global team of 85+ engineers across North America, Europe, APAC",
+        "Championed AI/ML advancements in automated driving improving map precision",
+        "Supported major OEM autonomous driving platforms"
+      ],
+      "tags": ["Autonomous Driving", "HD Mapping", "Global Teams", "OEM"]
+    },
+    {
+      "id": "here-sr-manager",
+      "company": "HERE Technologies",
+      "title": "Sr Engineering Manager",
+      "period": "January 2017 - June 2021",
+      "location": "Greater Chicago Area",
+      "duration": "4 years 6 months",
+      "highlights": [
+        "Led teams delivering strategic products aligned with corporate vision",
+        "Drove engineering transformation with Agile practices",
+        "Adopted scalable infrastructure across teams"
+      ],
+      "tags": ["Engineering Management", "Agile", "Infrastructure"]
+    },
+    {
+      "id": "here-manager",
+      "company": "HERE Technologies",
+      "title": "Engineering Manager",
+      "period": "October 2012 - December 2016",
+      "location": "Greater Chicago Area",
+      "duration": "4 years 3 months",
+      "highlights": [
+        "Managed delivery of next-gen map products",
+        "Introduced Agile and cloud practices improving release cycles",
+        "Transitioned to cloud-based pipelines"
+      ],
+      "tags": ["Map Products", "Cloud", "Agile"]
+    },
+    {
+      "id": "here-lead",
+      "company": "HERE Technologies",
+      "title": "Lead Engineer",
+      "period": "April 2009 - October 2012",
+      "location": "Chicago, IL",
+      "duration": "3 years 7 months",
+      "highlights": [
+        "Developed infrastructure and tools for scalable mapping products",
+        "Supported transformation to new content delivery models"
+      ],
+      "tags": ["Infrastructure", "Mapping"]
+    },
+    {
+      "id": "here-engineer",
+      "company": "HERE Technologies",
+      "title": "Sr Engineer",
+      "period": "May 2005 - April 2009",
+      "location": "Chicago, IL",
+      "duration": "4 years",
+      "highlights": [
+        "Built foundational map data pipelines and tools powering navigation systems"
+      ],
+      "tags": ["Map Data", "Navigation"]
+    },
+    {
+      "id": "paradigm",
+      "company": "Paradigm Infotech Inc",
+      "title": "Software Developer",
+      "period": "November 2004 - April 2005",
+      "location": "Columbia, Maryland",
+      "duration": "6 months",
+      "highlights": [
+        "Developed GUI and Middle Tier using C# on .NET architecture",
+        "Participated in full development lifecycle from design to deployment"
+      ],
+      "tags": ["C#", ".NET"]
+    },
+    {
+      "id": "denizens",
+      "company": "Denizens Systems Inc",
+      "title": "Software Test Engineer",
+      "period": "August 2002 - October 2004",
+      "location": "Toronto, Canada",
+      "duration": "2 years 3 months",
+      "highlights": [
+        "Created and executed test plans for pharmacy applications",
+        "Drove continuous integration for Shoppers Drug Mart web store"
+      ],
+      "tags": ["QA", "Testing", "CI"]
+    },
+    {
+      "id": "evision",
+      "company": "eVision Cyber Solutions Limited",
+      "title": "Senior Network Engineer",
+      "period": "January 2000 - July 2002",
+      "location": "Hyderabad, India",
+      "duration": "2 years 7 months",
+      "highlights": [
+        "Designed, implemented, supported, and managed complex data networks"
+      ],
+      "tags": ["Networking", "Infrastructure"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Northern Illinois University",
+      "degree": "Master of Business Administration (MBA)",
+      "field": "Strategic Marketing",
+      "period": "2012 - 2014"
+    },
+    {
+      "institution": "Osmania University",
+      "degree": "Master of Computer Applications (MCA)",
+      "field": "Computer Applications",
+      "period": "1999 - 2002"
+    },
+    {
+      "institution": "Osmania University",
+      "degree": "Bachelor's Degree",
+      "field": "Computer Maintenance & Engineering",
+      "period": "1996 - 1999"
+    }
+  ],
+  "certifications": [
+    "ITIL Foundation Examination",
+    "Introduction to Responsible AI",
+    "How Business Thinkers Can Start Building AI Plugins With Semantic Kernel",
+    "The Data Scientist's Toolbox"
+  ],
+  "skills": {
+    "ai_ml": [
+      "Agentic AI Architecture",
+      "Multi-Model LLM Orchestration",
+      "Retrieval-Augmented Generation (RAG)",
+      "Vector Search & Embeddings",
+      "Transformer Models & BERT",
+      "Real-time Personalization",
+      "AI Agent Development",
+      "CrewAI",
+      "LangGraph",
+      "LLM Ops & MLOps"
+    ],
+    "cloud_infrastructure": [
+      "AWS", "Azure", "GCP",
+      "Kubernetes & Microservices",
+      "CI/CD & DevOps",
+      "Infrastructure as Code",
+      "Cloud-Native Architecture",
+      "API Platform Development",
+      "PaaS & Platform Ecosystems",
+      "SDK/API Integration",
+      "24/7 Production Systems"
+    ],
+    "leadership": [
+      "Global Team Leadership (200+ engineers)",
+      "P&L Management",
+      "Executive Stakeholder Management",
+      "Strategic Vendor Partnerships",
+      "Cost Optimization",
+      "Cross-functional Collaboration",
+      "AI Governance & Ethics",
+      "Digital Transformation"
+    ],
+    "industry": [
+      "Autonomous Systems",
+      "Computer Vision",
+      "Mobility & Transportation",
+      "Mapping & GIS",
+      "Automotive Technology",
+      "Fleet Management",
+      "Enterprise AI Integration",
+      "B2B SaaS Platforms"
+    ],
+    "core": [
+      "Product Strategy",
+      "Data Platforms",
+      "Distributed Systems"
+    ]
+  },
+  "achievements": [
+    {
+      "metric": "50%",
+      "label": "Latency Reduction",
+      "context": "Kruti.ai multi-model LLM orchestration",
+      "company": "Krutrim"
+    },
+    {
+      "metric": "40%",
+      "label": "Cost Savings",
+      "context": "Through multimodal Agentic AI",
+      "company": "Krutrim"
+    },
+    {
+      "metric": "70%",
+      "label": "Infrastructure Cost Reduction",
+      "context": "Cloud-native roadmap for Ola Maps",
+      "company": "Ola"
+    },
+    {
+      "metric": "13K+",
+      "label": "B2B Customers",
+      "context": "Ola Maps enterprise platform",
+      "company": "Ola"
+    },
+    {
+      "metric": "200+",
+      "label": "Engineers Led",
+      "context": "Global teams across US, Europe, India",
+      "company": "Multiple"
+    },
+    {
+      "metric": "85+",
+      "label": "Engineers at HERE",
+      "context": "Global team across NA, Europe, APAC",
+      "company": "HERE Technologies"
+    },
+    {
+      "metric": "18+",
+      "label": "Years at HERE",
+      "context": "Sr Engineer to Director progression",
+      "company": "HERE Technologies"
+    },
+    {
+      "metric": "20+",
+      "label": "Years Total Experience",
+      "context": "Platform and engineering leadership",
+      "company": "Multiple"
+    }
+  ],
+  "knowledgeBase": [
+    "Prasad Kavuri is currently Head of AI Engineering at Krutrim (March 2025 - Present), based in Naperville, IL. He leads enterprise adoption of agentic AI, moving AI from experimentation to measurable operating impact. He leads multi-model Generative and Agentic AI platform development including LLM orchestration, RAG, vector search, and real-time personalization powering India's first Agentic AI ecosystem — Kruti.ai.",
+    "At Krutrim, Prasad led architecture and strategy for India's first Agentic AI platform (Kruti.ai), delivering 50% lower latency and 40% cost savings through multimodal Agentic AI. He built and scaled a global engineering team delivering enterprise-grade 24/7 PaaS capabilities, integrating diverse AI models and vendors into a unified ecosystem.",
+    "At Krutrim, Prasad launched domain-specific AI agents for cab booking, food ordering, bill payments, and image generation, creating new B2B and B2C revenue streams. He drove technology vision for AI orchestration and SDK/API integration, ensuring adoption by enterprise clients and expansion of the Kruti.ai agent ecosystem.",
+    "Prasad was Senior Director of Engineering at Ola (September 2023 - February 2025). He led AI-driven platform transformation for Ola Maps, scaling cloud-native infrastructure, LLM-powered routing, and B2B APIs to 13,000+ customers, driving cost-efficient AI adoption across mobility.",
+    "At Ola, Prasad defined and executed a cloud-native roadmap that reduced infrastructure costs by 70% while enabling Ola Maps to scale API usage across millions of daily calls. He directed strategy and engineering for Ola Maps driving 13K+ B2B customers and built cross-functional engineering teams across the US and India.",
+    "At Ola, Prasad introduced AI-powered real-time route optimization for fleet management, boosting ETA accuracy and customer satisfaction. He negotiated and managed strategic vendor partnerships, driving operational efficiency and accelerating adoption in electric mobility and transport sectors.",
+    "Prasad spent 18+ years at HERE Technologies (May 2005 - September 2023) in Chicago, IL, progressing from Senior Engineer to Director of Engineering for Highly Automated Driving. He managed a global team of 85+ engineers and delivered autonomous driving datasets for major OEMs.",
+    "Prasad's AI and ML skills: Agentic AI Architecture, Multi-Model LLM Orchestration, RAG, Vector Search and Embeddings, Transformer Models and BERT, Real-time Personalization, AI Agent Development, CrewAI, LangGraph, LLM Ops and MLOps.",
+    "Prasad's cloud and infrastructure skills: AWS, Azure, GCP, Kubernetes and Microservices, CI/CD and DevOps, Infrastructure as Code, Cloud-Native Architecture, API Platform Development, PaaS and Platform Ecosystems.",
+    "Prasad's leadership: managed global teams of 200+ engineers across US, Europe and India. P&L management, executive stakeholder management, strategic vendor partnerships, cost optimization achieving 50-70% reductions.",
+    "Prasad's education: MBA Strategic Marketing from Northern Illinois University (2012-2014). MCA from Osmania University (1999-2002). BSc Computer Maintenance & Engineering from Osmania University (1996-1999).",
+    "Prasad's certifications: ITIL Foundation, Introduction to Responsible AI, Building AI Plugins With Semantic Kernel, The Data Scientist's Toolbox.",
+    "Prasad's key achievements: 50% latency reduction at Krutrim, 40% cost savings at Krutrim, 70% infrastructure cost reduction at Ola, 13,000+ B2B customers at Ola Maps, 200+ engineers led globally, 18+ years at HERE Technologies.",
+    "Prasad's industry expertise: Autonomous Systems, Computer Vision, Mobility and Transportation, Mapping and GIS, Automotive Technology, Fleet Management, Enterprise AI Integration, B2B SaaS Platforms, Electric Mobility.",
+    "Prasad is based in Naperville, IL (Greater Chicago Area). Contact: vbkpkavuri@gmail.com. LinkedIn: linkedin.com/in/pkavuri. Portfolio: prasadkavuri.com. GitHub: github.com/prasad-kavuri. Languages: English, Hindi, Telugu, Urdu."
+  ]
+}

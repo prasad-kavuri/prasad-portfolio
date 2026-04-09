@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import profile from '@/data/profile.json';
 
 interface RequestBody {
   jobDescription: string;
@@ -20,41 +21,6 @@ interface ResumeResponse {
   atsKeywords: string[];
 }
 
-const PRASAD_PROFILE = `PRASAD KAVURI - COMPLETE PROFILE FOR RESUME GENERATION:
-
-Current: Head of AI Engineering at Krutrim (March 2025 - Present), Naperville IL
-- Architected India's first Agentic AI platform (Kruti.ai) with 200+ engineers
-- 50% latency reduction, 40% cost savings via multi-model LLM orchestration
-- Built RAG pipelines, vector search, real-time personalization
-- Domain-specific AI agents: cab booking, food ordering, bill payments, image generation
-- Enterprise PaaS, SDK/API integration, 24/7 production systems
-
-Previous: Senior Director of Engineering at Ola (Sep 2023 - Feb 2025), Naperville IL
-- Launched Ola Maps B2B platform, 13,000+ enterprise customers
-- 70% infrastructure cost reduction via cloud-native roadmap
-- Scaled to millions of daily API calls
-- AI-powered real-time route optimization, ETA accuracy
-- Led 150+ engineers across US and India
-- Strategic vendor partnerships, electric mobility
-
-Previous: HERE Technologies (May 2005 - Sep 2023), Chicago IL - 18+ years
-- Director of Engineering, Highly Automated Driving (Jul 2021 - Jun 2023)
-- Led 85+ engineers globally across North America, Europe, APAC
-- HD mapping and lane-level automation for autonomous driving
-- Major OEM partnerships
-- Sr Engineering Manager, Engineering Manager, Lead Engineer, Sr Engineer roles
-- Cloud migration achieving 50% cost reduction
-- Agile transformation, foundational map data pipelines
-
-Education:
-- MBA Strategic Marketing, Northern Illinois University (2012-2014)
-- MCA, Osmania University (1999-2002)
-- BSc Computer Maintenance & Engineering, Osmania University (1996-1999)
-
-Skills: Agentic AI, LLM Orchestration, RAG, Vector Search, CrewAI, LangGraph,
-AWS/Azure/GCP, Kubernetes, MLOps, LLMOps, Product Strategy, Data Platforms,
-Distributed Systems, P&L Management, Global Team Leadership`;
-
 export async function POST(req: NextRequest) {
   try {
     const { jobDescription, focusAreas } = (await req.json()) as RequestBody;
@@ -75,6 +41,24 @@ export async function POST(req: NextRequest) {
     }
 
     const focusAreasText = focusAreas.length > 0 ? `\nFocus areas: ${focusAreas.join(', ')}` : '';
+
+    // Build dynamically from profile data
+    const topExperience = profile.experience.slice(0, 3)
+      .map(exp => `${exp.company} - ${exp.title}: ${exp.highlights.join('. ')}`)
+      .join('\n\n');
+
+    const PRASAD_PROFILE = `PRASAD KAVURI - COMPLETE PROFILE FOR RESUME GENERATION:
+
+${topExperience}
+
+Education:
+- MBA Strategic Marketing, Northern Illinois University (2012-2014)
+- MCA, Osmania University (1999-2002)
+- BSc Computer Maintenance & Engineering, Osmania University (1996-1999)
+
+Skills: Agentic AI, LLM Orchestration, RAG, Vector Search, CrewAI, LangGraph,
+AWS/Azure/GCP, Kubernetes, MLOps, LLMOps, Product Strategy, Data Platforms,
+Distributed Systems, P&L Management, Global Team Leadership`;
 
     const systemPrompt = `You are an expert resume writer and ATS optimization specialist.
 Your task is to generate a tailored resume JSON for Prasad Kavuri based on a job description.

@@ -9,7 +9,7 @@ export function Contact() {
     <section id="contact" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
         <div className="text-center">
-          <h2 className="mb-2 text-2xl font-semibold">Let&apos;s Connect</h2>
+          <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Let&apos;s Connect</h2>
           <p className="mb-10 text-muted-foreground">
             Interested in exploring AI strategies, collaborating on engineering
             challenges, or discussing how agentic AI can transform your business?
@@ -20,7 +20,7 @@ export function Contact() {
           <Link href={profile.personal.linkedin} target="_blank" rel="noopener noreferrer">
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">
-                <ExternalLink className="size-5 text-blue-600" />
+                <ExternalLink className="size-5" style={{ color: 'var(--accent-brand)' }} />
                 <span>LinkedIn</span>
               </CardContent>
             </Card>
@@ -38,7 +38,7 @@ export function Contact() {
           <Link href={profile.personal.github} target="_blank" rel="noopener noreferrer">
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">
-                <ExternalLink className="size-5" />
+                <ExternalLink className="size-5" style={{ color: 'var(--accent-brand)' }} />
                 <span>GitHub</span>
               </CardContent>
             </Card>

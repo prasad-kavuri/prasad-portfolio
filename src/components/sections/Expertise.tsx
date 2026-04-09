@@ -35,7 +35,7 @@ export function Expertise() {
   return (
     <section id="expertise" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
-        <h2 className="mb-2 text-2xl font-semibold">Core Expertise</h2>
+        <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Core Expertise</h2>
         <p className="mb-10 text-muted-foreground">
           Deep expertise across AI/ML leadership, cloud infrastructure, executive
           leadership, and industry-specific domains.

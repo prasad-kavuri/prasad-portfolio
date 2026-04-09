@@ -20,7 +20,7 @@ export function AITools() {
   return (
     <section id="tools" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
-        <h2 className="mb-2 text-2xl font-semibold">AI-Powered Tools</h2>
+        <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>AI-Powered Tools</h2>
         <p className="mb-10 text-muted-foreground">
           Live demos showcasing agentic AI, semantic search, and open-source
           LLM orchestration.
@@ -49,7 +49,7 @@ export function AITools() {
                       </Badge>
                     ))}
                   </div>
-                  <div className="mt-3 flex items-center gap-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="mt-3 flex items-center gap-1 text-xs opacity-0 transition-opacity group-hover:opacity-100" style={{ color: 'var(--accent-brand)' }}>
                     Open demo <ArrowRight className="size-3" />
                   </div>
                 </CardContent>

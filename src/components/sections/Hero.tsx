@@ -39,7 +39,8 @@ export function Hero() {
         <div className="mt-6 flex flex-wrap gap-3">
           <a
             href="#tools"
-            className="inline-flex items-center rounded-lg bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            className="inline-flex items-center rounded-lg px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+            style={{ background: 'var(--accent-brand)', color: 'var(--accent-brand-foreground)' }}
           >
             Explore AI Demos
           </a>

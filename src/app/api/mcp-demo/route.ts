@@ -164,9 +164,21 @@ export async function POST(request: Request) {
         },
       ],
       tools: GROQ_TOOLS,
-      tool_choice: "auto",
+      tool_choice: "required",
       max_tokens: 1024,
     });
+
+    const message = toolSelectionResponse.choices[0].message;
+
+    if (!message.tool_calls || message.tool_calls.length === 0) {
+      return Response.json({
+        query,
+        toolsDiscovered: 4,
+        toolCallLog: [],
+        finalAnswer: message.content || "I could not find relevant information.",
+        totalDuration_ms: Date.now() - startTime,
+      });
+    }
 
     const toolCallLog: any[] = [];
     let toolResults: any[] = [];
@@ -208,7 +220,7 @@ export async function POST(request: Request) {
       const messages: any[] = [
         {
           role: "system",
-          content: "You are an AI assistant with access to MCP tools about Prasad Kavuri's professional profile. Use the available tools to answer questions accurately."
+          content: "You are an AI assistant with access to tools about Prasad Kavuri's professional profile. You MUST use the provided tools to answer questions. Always call at least one tool before answering. Never generate tool calls in XML format like <function=...>. Only use the standard JSON tool_calls format."
         },
         {
           role: "user",

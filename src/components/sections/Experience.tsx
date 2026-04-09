@@ -8,7 +8,7 @@ export function Experience() {
   return (
     <section id="experience" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
-        <h2 className="mb-2 text-2xl font-semibold">Experience Highlights</h2>
+        <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Experience Highlights</h2>
         <p className="mb-10 text-muted-foreground">
           20+ years building AI platforms, leading global engineering teams,
           and driving transformative technology strategies.
@@ -17,7 +17,8 @@ export function Experience() {
           {displayedExperiences.map((exp) => (
             <Card
               key={exp.id}
-              className="border-l-4 border-l-primary overflow-hidden"
+              className="border-l-4 overflow-hidden"
+              style={{ borderColor: 'var(--accent-brand)' }}
             >
               <CardHeader className="pb-2">
                 <div className="flex flex-col gap-1">

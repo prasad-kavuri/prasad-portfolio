@@ -79,6 +79,6 @@ export const demos: Demo[] = [
     description: "Live ONNX benchmark comparing INT8 vs FP32 inference — real file sizes, real latency, real quality diff.",
     href: "/demos/quantization",
     tags: ["ONNX", "INT8 vs FP32", "Transformers.js"],
-    status: "upgrading",
+    status: "live",
   },
 ];

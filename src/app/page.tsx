@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { AITools } from "@/components/sections/AITools";
 import { Transformation } from "@/components/sections/Transformation";
+import { Architecture } from "@/components/sections/Architecture";
 import { Expertise } from "@/components/sections/Expertise";
 import { Experience } from "@/components/sections/Experience";
 import { CaseStudies } from "@/components/sections/CaseStudies";
@@ -16,6 +17,7 @@ export default function Home() {
         <Hero />
         <AITools />
         <Transformation />
+        <Architecture />
         <Expertise />
         <Experience />
         <CaseStudies />

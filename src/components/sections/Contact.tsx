@@ -11,8 +11,10 @@ export function Contact() {
         <div className="text-center">
           <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Let&apos;s Connect</h2>
           <p className="mb-10 text-muted-foreground">
-            Interested in exploring AI strategies, collaborating on engineering
-            challenges, or discussing how agentic AI can transform your business?
+            Open to VP / Head of AI Engineering roles. I focus on organizations
+            building or scaling enterprise AI — where platform architecture, agentic
+            systems, and transformation execution matter. I respond to every serious
+            inquiry within 24 hours.
           </p>
         </div>
 

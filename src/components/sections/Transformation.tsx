@@ -35,7 +35,7 @@ export function Transformation() {
       number: "03",
       title: "Organization",
       description:
-        "Aligning engineering, product, and business teams around AI execution — building the operating model, team structure, and governance that makes AI transformation stick.",
+        "Aligning engineering, product, and business teams around AI execution — building the operating model, team structure, and governance that makes AI transformation stick. This includes ensuring AI augments human judgment rather than replacing oversight in critical decisions.",
       tags: ["Team Scaling", "AI Governance", "Exec Alignment", "Operating Model"],
       icon: (
         <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

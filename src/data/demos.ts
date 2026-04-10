@@ -6,6 +6,7 @@ export type Demo = {
   href: string;
   tags: string[];
   status: "live" | "upgrading" | "coming-soon";
+  desktopOnly?: boolean;
 };
 
 export const demos: Demo[] = [

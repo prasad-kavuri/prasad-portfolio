@@ -11,6 +11,7 @@ interface CaseStudy {
   whatILed: string[];
   keyDecisions: string[];
   impact: string[];
+  roi: string;
 }
 
 const caseStudies: CaseStudy[] = [
@@ -40,6 +41,7 @@ const caseStudies: CaseStudy[] = [
       "Production-scale agent deployments",
       "India's first agentic AI ecosystem",
     ],
+    roi: "Delivered ~2-3x ROI within 12 months through platform consolidation",
   },
   {
     badge: "Ola",
@@ -67,6 +69,7 @@ const caseStudies: CaseStudy[] = [
       "Millions of daily API calls",
       "Improved ETA accuracy across fleet",
     ],
+    roi: "Platform generated new B2B revenue stream — 13K+ paying enterprise customers",
   },
   {
     badge: "HERE Technologies",
@@ -93,6 +96,7 @@ const caseStudies: CaseStudy[] = [
       "Sr Engineer → Director progression",
       "Global engineering organization built from ground up",
     ],
+    roi: "18-year compounding value delivery — Sr Engineer to Director scope expansion",
   },
 ];
 
@@ -190,6 +194,10 @@ export function CaseStudies() {
                             <span>{item}</span>
                           </li>
                         ))}
+                        <li className="flex gap-2 text-sm leading-relaxed font-semibold">
+                          <span className="text-indigo-500 flex-shrink-0">•</span>
+                          <span className="font-medium text-foreground">{study.roi}</span>
+                        </li>
                       </ul>
                     </div>
                   </div>

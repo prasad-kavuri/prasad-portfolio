@@ -2,6 +2,11 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import profile from "@/data/profile.json";
 
+const brandStyle = {
+  background: "var(--accent-brand)",
+  color: "var(--accent-brand-foreground)",
+} as const;
+
 export function Hero() {
   return (
     <>
@@ -25,9 +30,7 @@ export function Hero() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {profile.personal.pills.map((p) => (
-                  <Badge key={p} variant="secondary">
-                    {p}
-                  </Badge>
+                  <Badge key={p} variant="secondary">{p}</Badge>
                 ))}
               </div>
             </div>
@@ -41,7 +44,7 @@ export function Hero() {
             <a
               href="#tools"
               className="inline-flex items-center rounded-lg px-5 py-2 text-sm font-medium transition-opacity hover:opacity-90"
-              style={{ background: 'var(--accent-brand)', color: 'var(--accent-brand-foreground)' }}
+              style={brandStyle}
             >
               Explore AI Demos
             </a>
@@ -63,23 +66,42 @@ export function Hero() {
               </div>
             ))}
           </div>
+
+          <div className="mt-10 pt-8 border-t border-border">
+            <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-4">
+              Currently Exploring
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { label: "On-device Small Language Models", icon: "⚡" },
+                { label: "Agent-to-Agent (A2A) Protocol", icon: "🔗" },
+                { label: "LLM Observability and Tracing", icon: "🔍" },
+                { label: "Multimodal Agentic Workflows", icon: "🎯" },
+              ].map((item) => (
+                <span
+                  key={item.label}
+                  className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border border-border bg-muted/40 text-muted-foreground hover:border-indigo-500/40 transition-colors"
+                >
+                  <span>{item.icon}</span>
+                  {item.label}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       <div className="border-y border-border bg-muted/40 py-6">
         <div className="mx-auto max-w-5xl px-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            {/* Left side — label */}
             <div>
               <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-1">
-                For Recruiters & Hiring Managers
+                For Recruiters &amp; Hiring Managers
               </p>
               <p className="text-sm text-muted-foreground">
                 Available for VP / Head of AI Engineering roles
               </p>
             </div>
-
-            {/* Right side — buttons */}
             <div className="flex flex-wrap gap-3">
               <a
                 href="/Prasad_Kavuri_Resume.pdf"
@@ -94,7 +116,6 @@ export function Hero() {
                 </svg>
                 Download Resume
               </a>
-
               <a
                 href="https://linkedin.com/in/pkavuri"
                 target="_blank"
@@ -108,11 +129,10 @@ export function Hero() {
                 </svg>
                 View LinkedIn
               </a>
-
               <a
                 href="mailto:vbkpkavuri@gmail.com"
                 className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
-                style={{ background: 'var(--accent-brand)', color: 'var(--accent-brand-foreground)' }}
+                style={brandStyle}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>

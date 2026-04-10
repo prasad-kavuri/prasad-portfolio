@@ -16,6 +16,8 @@ const statusVariant: Record<string, "default" | "secondary" | "outline"> = {
   "coming-soon": "outline",
 };
 
+const DESKTOP_ONLY = ["quantization", "multimodal", "vector-search"];
+
 const DEMO_GROUPS = [
   {
     label: "Core AI Infrastructure",
@@ -38,7 +40,9 @@ export function AITools() {
   return (
     <section id="tools" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
-        <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>AI-Powered Tools</h2>
+        <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>
+          AI-Powered Tools
+        </h2>
         <p className="text-muted-foreground mb-4">
           These systems represent core architectural patterns used in
           enterprise AI deployments — not just demos, but production-ready
@@ -54,8 +58,10 @@ export function AITools() {
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-px flex-1 bg-border" />
                 <div className="text-center">
-                  <span className="text-xs font-semibold tracking-widest uppercase px-4"
-                        style={{ color: 'var(--accent-brand)' }}>
+                  <span
+                    className="text-xs font-semibold tracking-widest uppercase px-4"
+                    style={{ color: 'var(--accent-brand)' }}
+                  >
                     {group.label}
                   </span>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -73,9 +79,16 @@ export function AITools() {
                       <CardHeader className="pb-2">
                         <div className="flex items-start justify-between gap-2">
                           <span className="text-2xl">{demo.emoji}</span>
-                          <Badge variant={statusVariant[demo.status]}>
-                            {statusLabel[demo.status]}
-                          </Badge>
+                          <div className="flex items-center gap-1.5">
+                            {DESKTOP_ONLY.includes(demo.id) && (
+                              <span className="text-xs px-2 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                                Desktop
+                              </span>
+                            )}
+                            <Badge variant={statusVariant[demo.status]}>
+                              {statusLabel[demo.status]}
+                            </Badge>
+                          </div>
                         </div>
                         <CardTitle className="text-base">{demo.title}</CardTitle>
                       </CardHeader>
@@ -90,7 +103,10 @@ export function AITools() {
                             </Badge>
                           ))}
                         </div>
-                        <div className="mt-3 flex items-center gap-1 text-xs opacity-0 transition-opacity group-hover:opacity-100" style={{ color: 'var(--accent-brand)' }}>
+                        <div
+                          className="mt-3 flex items-center gap-1 text-xs opacity-0 transition-opacity group-hover:opacity-100"
+                          style={{ color: 'var(--accent-brand)' }}
+                        >
                           Open demo <ArrowRight className="size-3" />
                         </div>
                       </CardContent>

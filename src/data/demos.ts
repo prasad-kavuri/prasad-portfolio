@@ -43,6 +43,7 @@ export const demos: Demo[] = [
     description: "Semantic search with real sentence-BERT embeddings and UMAP visualisation of the embedding space.",
     href: "/demos/vector-search",
     tags: ["all-MiniLM-L6-v2", "UMAP", "Cosine similarity"],
+    desktopOnly: true,
     status: "live",
   },
   {
@@ -70,6 +71,7 @@ export const demos: Demo[] = [
     description: "Florence-2 image captioning and OCR running in-browser via Transformers.js — no server, no API key.",
     href: "/demos/multimodal",
     tags: ["Florence-2", "WebGPU", "In-browser"],
+    desktopOnly: true,
     status: "live",
   },
   {
@@ -79,6 +81,7 @@ export const demos: Demo[] = [
     description: "Live ONNX benchmark comparing INT8 vs FP32 inference — real file sizes, real latency, real quality diff.",
     href: "/demos/quantization",
     tags: ["ONNX", "INT8 vs FP32", "Transformers.js"],
+    desktopOnly:true,
     status: "live",
   },
   {

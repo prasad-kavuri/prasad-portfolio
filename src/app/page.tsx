@@ -5,6 +5,7 @@ import { AITools } from "@/components/sections/AITools";
 import { Transformation } from "@/components/sections/Transformation";
 import { Expertise } from "@/components/sections/Expertise";
 import { Experience } from "@/components/sections/Experience";
+import { CaseStudies } from "@/components/sections/CaseStudies";
 import { Contact } from "@/components/sections/Contact";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
         <Transformation />
         <Expertise />
         <Experience />
+        <CaseStudies />
         <Contact />
       </main>
       <Footer />

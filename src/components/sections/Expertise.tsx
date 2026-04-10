@@ -44,6 +44,13 @@ const VALUE_AREAS = [
     description: "Shipping AI products that users and enterprises actually adopt — from India's first agentic AI platform to B2B mapping APIs serving 13,000+ enterprise customers.",
     skills: ["B2B SaaS", "Platform Products", "Enterprise APIs", "Product-Led Growth"],
     icon: "product"
+  },
+  {
+    number: "07",
+    title: "AI Governance & Responsible AI",
+    description: "Designing AI systems with built-in guardrails, human-in-the-loop controls, and accountability frameworks — ensuring AI operates safely, transparently, and within enterprise risk tolerances.",
+    skills: ["Guardrails Design", "Human-in-the-Loop", "Prompt Safety", "Audit Trails", "AI Ethics", "Risk Frameworks"],
+    icon: "governance"
   }
 ];
 
@@ -61,7 +68,7 @@ export function Expertise() {
           What I Bring to an Organization
         </h2>
         <p className="text-muted-foreground mb-16 max-w-2xl">
-          Six areas where I consistently drive impact — from technical architecture
+          Seven areas where I consistently drive impact — from technical architecture
           to organizational transformation.
         </p>
 

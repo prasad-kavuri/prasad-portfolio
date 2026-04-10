@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { FadeUp } from '@/components/ui/motion';
 
 const colorMap = {
   indigo: {
@@ -98,81 +99,85 @@ export function Architecture() {
     <section id="architecture" className="bg-slate-900 py-20">
       <div className="mx-auto max-w-5xl px-4">
         {/* Header */}
-        <div className="mb-16">
-          <p className="text-xs font-semibold tracking-widest text-indigo-400 uppercase mb-3">
-            Enterprise AI Architecture
-          </p>
-          <h2 className="text-3xl font-semibold text-white mb-4">
-            How I Build Enterprise AI Systems
-          </h2>
-          <p className="text-slate-400 max-w-2xl leading-relaxed">
-            From user intent to production execution — connecting AI models, agents, tools, and workflows into real business systems.
-          </p>
-        </div>
+        <FadeUp>
+          <div className="mb-16">
+            <p className="text-xs font-semibold tracking-widest text-indigo-400 uppercase mb-3">
+              Enterprise AI Architecture
+            </p>
+            <h2 className="text-3xl font-semibold text-white mb-4">
+              How I Build Enterprise AI Systems
+            </h2>
+            <p className="text-slate-400 max-w-2xl leading-relaxed">
+              From user intent to production execution — connecting AI models, agents, tools, and workflows into real business systems.
+            </p>
+          </div>
+        </FadeUp>
 
         {/* Diagram */}
         <div className="space-y-1">
           {LAYERS.map((layer, idx) => (
-            <div key={layer.id}>
-              <div
-                className={`relative rounded-xl border p-5 cursor-pointer transition-all duration-200
-                  ${activeLayer === layer.id ? 'scale-[1.01] shadow-lg' : 'hover:scale-[1.005]'}
-                  ${colorMap[layer.color as keyof typeof colorMap].border}
-                  ${colorMap[layer.color as keyof typeof colorMap].bg}
-                `}
-                onMouseEnter={() => setActiveLayer(layer.id)}
-                onMouseLeave={() => setActiveLayer(null)}
-              >
-                <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  {/* Left: number + label + description */}
-                  <div className="md:w-64 flex-shrink-0">
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-xs font-mono text-slate-500">{layer.number}</span>
-                      <span className={`text-sm font-semibold ${colorMap[layer.color as keyof typeof colorMap].text}`}>
-                        {layer.label}
-                      </span>
+            <FadeUp key={layer.id} delay={idx * 0.08}>
+              <div>
+                <div
+                  className={`relative rounded-xl border p-5 cursor-pointer transition-all duration-200
+                    ${activeLayer === layer.id ? 'scale-[1.01] shadow-lg' : 'hover:scale-[1.005]'}
+                    ${colorMap[layer.color as keyof typeof colorMap].border}
+                    ${colorMap[layer.color as keyof typeof colorMap].bg}
+                  `}
+                  onMouseEnter={() => setActiveLayer(layer.id)}
+                  onMouseLeave={() => setActiveLayer(null)}
+                >
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    {/* Left: number + label + description */}
+                    <div className="md:w-64 flex-shrink-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-xs font-mono text-slate-500">{layer.number}</span>
+                        <span className={`text-sm font-semibold ${colorMap[layer.color as keyof typeof colorMap].text}`}>
+                          {layer.label}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 leading-relaxed">
+                        {layer.description}
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      {layer.description}
-                    </p>
-                  </div>
 
-                  {/* Divider line */}
-                  <div className="hidden md:block w-px h-10 bg-slate-700 flex-shrink-0" />
+                    {/* Divider line */}
+                    <div className="hidden md:block w-px h-10 bg-slate-700 flex-shrink-0" />
 
-                  {/* Right: component chips */}
-                  <div className="flex flex-wrap gap-2">
-                    {layer.components.map((component) => (
-                      <span
-                        key={component}
-                        className={`text-xs px-3 py-1 rounded-full border
-                          ${colorMap[layer.color as keyof typeof colorMap].chipBg}
-                          ${colorMap[layer.color as keyof typeof colorMap].chipText}
-                          ${colorMap[layer.color as keyof typeof colorMap].border}
-                        `}
-                      >
-                        {component}
-                      </span>
-                    ))}
+                    {/* Right: component chips */}
+                    <div className="flex flex-wrap gap-2">
+                      {layer.components.map((component) => (
+                        <span
+                          key={component}
+                          className={`text-xs px-3 py-1 rounded-full border
+                            ${colorMap[layer.color as keyof typeof colorMap].chipBg}
+                            ${colorMap[layer.color as keyof typeof colorMap].chipText}
+                            ${colorMap[layer.color as keyof typeof colorMap].border}
+                          `}
+                        >
+                          {component}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
+
+                {/* Arrow between layers */}
+                {idx < LAYERS.length - 1 && (
+                  <div className="flex justify-center my-1">
+                    <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
+                      <path
+                        d="M10 0 L10 12 M5 8 L10 14 L15 8"
+                        stroke="#4f46e5"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
-
-              {/* Arrow between layers */}
-              {idx < LAYERS.length - 1 && (
-                <div className="flex justify-center my-1">
-                  <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
-                    <path
-                      d="M10 0 L10 12 M5 8 L10 14 L15 8"
-                      stroke="#4f46e5"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
-            </div>
+            </FadeUp>
           ))}
         </div>
 

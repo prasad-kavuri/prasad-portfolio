@@ -1,5 +1,7 @@
 'use client';
 
+import { FadeUp } from '@/components/ui/motion';
+
 const VALUE_AREAS = [
   {
     number: "01",
@@ -65,39 +67,40 @@ export function Expertise() {
 
         {/* 2x3 Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {VALUE_AREAS.map((area) => (
-            <div
-              key={area.number}
-              className="group rounded-xl border border-border p-6 hover:border-indigo-500/50 hover:shadow-sm transition-all duration-200"
-            >
-              {/* Number */}
-              <p className="text-4xl font-bold mb-4 transition-colors"
-                 style={{ color: 'var(--accent-brand)', opacity: 0.25 }}>
-                {area.number}
-              </p>
+          {VALUE_AREAS.map((area, index) => (
+            <FadeUp key={area.number} delay={index * 0.08}>
+              <div
+                className="group rounded-xl border border-border p-6 hover:border-indigo-500/50 hover:shadow-sm transition-all duration-200"
+              >
+                {/* Number */}
+                <p className="text-4xl font-bold mb-4 transition-colors"
+                   style={{ color: 'var(--accent-brand)', opacity: 0.25 }}>
+                  {area.number}
+                </p>
 
-              {/* Title */}
-              <h3 className="text-base font-semibold mb-3 leading-snug">
-                {area.title}
-              </h3>
+                {/* Title */}
+                <h3 className="text-base font-semibold mb-3 leading-snug">
+                  {area.title}
+                </h3>
 
-              {/* Description */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                {area.description}
-              </p>
+                {/* Description */}
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                  {area.description}
+                </p>
 
-              {/* Skill tags */}
-              <div className="flex flex-wrap gap-2">
-                {area.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground"
-                  >
-                    {skill}
-                  </span>
-                ))}
+                {/* Skill tags */}
+                <div className="flex flex-wrap gap-2">
+                  {area.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </FadeUp>
           ))}
         </div>
 

@@ -1,3 +1,7 @@
+'use client';
+
+import { FadeUp } from '@/components/ui/motion';
+
 export function Transformation() {
   const columns = [
     {
@@ -48,57 +52,60 @@ export function Transformation() {
     <section id="transformation" className="bg-slate-900 py-20">
       <div className="mx-auto max-w-5xl px-4">
         {/* Header */}
-        <div className="mb-16">
-          <p className="text-xs font-semibold tracking-widest text-indigo-400 uppercase mb-3">
-            How I Drive AI Transformation
-          </p>
-          <h2 className="text-3xl font-semibold text-white mb-4 max-w-2xl">
-            Delivering AI impact requires more than models
-          </h2>
-          <p className="text-lg text-slate-400 max-w-xl">
-            It requires aligning systems, workflows, and organizations to operate with AI — not just experiment with it.
-          </p>
-        </div>
+        <FadeUp>
+          <div className="mb-16">
+            <p className="text-xs font-semibold tracking-widest text-indigo-400 uppercase mb-3">
+              How I Drive AI Transformation
+            </p>
+            <h2 className="text-3xl font-semibold text-white mb-4 max-w-2xl">
+              Delivering AI impact requires more than models
+            </h2>
+            <p className="text-lg text-slate-400 max-w-xl">
+              It requires aligning systems, workflows, and organizations to operate with AI — not just experiment with it.
+            </p>
+          </div>
+        </FadeUp>
 
         {/* Three Columns */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {columns.map((col, idx) => (
-            <div
-              key={idx}
-              className="border border-slate-700 rounded-xl p-8 hover:border-indigo-500/50 transition-colors"
-            >
-              {/* Number */}
-              <div className="text-5xl font-bold text-indigo-500/20 mb-4">
-                {col.number}
+            <FadeUp key={idx} delay={idx * 0.1}>
+              <div
+                className="border border-slate-700 rounded-xl p-8 hover:border-indigo-500/50 transition-colors"
+              >
+                {/* Number */}
+                <div className="text-5xl font-bold text-indigo-500/20 mb-4">
+                  {col.number}
+                </div>
+
+                {/* Icon */}
+                <div className="mb-4">
+                  {col.icon}
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  {col.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+                  {col.description}
+                </p>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {col.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-slate-800 text-slate-400 text-xs px-3 py-1 rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-
-              {/* Icon */}
-              <div className="mb-4">
-                {col.icon}
-              </div>
-
-              {/* Title */}
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {col.title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                {col.description}
-              </p>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {col.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-slate-800 text-slate-400 text-xs px-3 py-1 rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
+            </FadeUp>
           ))}
         </div>
 

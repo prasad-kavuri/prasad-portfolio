@@ -1,3 +1,7 @@
+'use client';
+
+import { FadeUp } from '@/components/ui/motion';
+
 interface CaseStudy {
   badge: string;
   role: string;
@@ -125,76 +129,78 @@ export function CaseStudies() {
         {/* Case Studies */}
         <div>
           {caseStudies.map((study, idx) => (
-            <div key={idx}>
-              <div className="border border-border rounded-2xl p-8 hover:border-indigo-500/40 transition-colors">
-                {/* Header Row */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1">
-                    <span className="inline-block bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-semibold">
-                      {study.badge}
-                    </span>
+            <FadeUp key={idx} delay={idx * 0.15}>
+              <div>
+                <div className="border border-border rounded-2xl p-8 hover:border-indigo-500/40 transition-colors">
+                  {/* Header Row */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="flex items-center gap-1">
+                      <span className="inline-block bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-semibold">
+                        {study.badge}
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-semibold">{study.role}</p>
+                      <p className="text-xs text-muted-foreground">{study.period}</p>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-sm font-semibold">{study.role}</p>
-                    <p className="text-xs text-muted-foreground">{study.period}</p>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-semibold mb-8" style={{ color: 'var(--accent-brand)' }}>
+                    {study.title}
+                  </h3>
+
+                  {/* Four Columns */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {/* Challenge */}
+                    <div>
+                      <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
+                        Challenge
+                      </p>
+                      <p className="text-sm text-foreground leading-relaxed">
+                        {study.challenge}
+                      </p>
+                    </div>
+
+                    {/* What I Led */}
+                    <div>
+                      <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
+                        What I Led
+                      </p>
+                      <BulletList items={study.whatILed} />
+                    </div>
+
+                    {/* Key Decisions */}
+                    <div>
+                      <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
+                        Key Decisions
+                      </p>
+                      <BulletList items={study.keyDecisions} />
+                    </div>
+
+                    {/* Impact */}
+                    <div>
+                      <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
+                        Impact
+                      </p>
+                      <ul className="space-y-2">
+                        {study.impact.map((item, idx) => (
+                          <li key={idx} className="flex gap-2 text-sm text-foreground leading-relaxed font-semibold">
+                            <span className="text-indigo-500 flex-shrink-0">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="text-2xl font-semibold mb-8" style={{ color: 'var(--accent-brand)' }}>
-                  {study.title}
-                </h3>
-
-                {/* Four Columns */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  {/* Challenge */}
-                  <div>
-                    <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
-                      Challenge
-                    </p>
-                    <p className="text-sm text-foreground leading-relaxed">
-                      {study.challenge}
-                    </p>
-                  </div>
-
-                  {/* What I Led */}
-                  <div>
-                    <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
-                      What I Led
-                    </p>
-                    <BulletList items={study.whatILed} />
-                  </div>
-
-                  {/* Key Decisions */}
-                  <div>
-                    <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
-                      Key Decisions
-                    </p>
-                    <BulletList items={study.keyDecisions} />
-                  </div>
-
-                  {/* Impact */}
-                  <div>
-                    <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">
-                      Impact
-                    </p>
-                    <ul className="space-y-2">
-                      {study.impact.map((item, idx) => (
-                        <li key={idx} className="flex gap-2 text-sm text-foreground leading-relaxed font-semibold">
-                          <span className="text-indigo-500 flex-shrink-0">•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                {/* Divider */}
+                {idx < caseStudies.length - 1 && (
+                  <div className="h-px bg-border my-8" />
+                )}
               </div>
-
-              {/* Divider */}
-              {idx < caseStudies.length - 1 && (
-                <div className="h-px bg-border my-8" />
-              )}
-            </div>
+            </FadeUp>
           ))}
         </div>
       </div>

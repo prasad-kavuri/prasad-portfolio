@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react';
+import { FadeUp } from '@/components/ui/motion';
 
 const ARTICLES = [
   {
@@ -78,68 +79,69 @@ export function Perspectives() {
 
         {/* Articles */}
         <div>
-          {ARTICLES.map((article) => (
-            <article
-              key={article.id}
-              className="border border-border rounded-xl p-6 mb-4 bg-background hover:border-indigo-500/30 transition-colors"
-            >
-              {/* Title and Read Time */}
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div>
-                  <span className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
-                    {article.eyebrow}
-                  </span>
-                  <h3 className="text-lg font-semibold mt-1 leading-snug">
-                    {article.title}
-                  </h3>
-                </div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap mt-1 flex-shrink-0">
-                  {article.readTime}
-                </span>
-              </div>
-
-              {/* Preview */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                {article.preview}
-              </p>
-
-              {/* Expandable Content */}
-              {expandedId === article.id && (
-                <div className="border-t border-border pt-4 mt-2">
-                  {article.content.split('\n\n').map((para, i) => (
-                    <p
-                      key={i}
-                      className="text-sm text-foreground leading-relaxed mb-4 last:mb-0"
-                    >
-                      {para}
-                    </p>
-                  ))}
-                </div>
-              )}
-
-              {/* Toggle Button */}
-              <button
-                onClick={() =>
-                  setExpandedId(
-                    expandedId === article.id ? null : article.id
-                  )
-                }
-                className="text-sm font-medium flex items-center gap-1 transition-colors hover:opacity-70"
-                style={{ color: 'var(--accent-brand)' }}
+          {ARTICLES.map((article, index) => (
+            <FadeUp key={article.id} delay={index * 0.1}>
+              <article
+                className="border border-border rounded-xl p-6 mb-4 bg-background hover:border-indigo-500/30 transition-colors"
               >
-                {expandedId === article.id ? (
-                  <>
-                    <span>Collapse</span>
-                    <span>↑</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Read more</span>
-                    <span>→</span>
-                  </>
+                {/* Title and Read Time */}
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div>
+                    <span className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+                      {article.eyebrow}
+                    </span>
+                    <h3 className="text-lg font-semibold mt-1 leading-snug">
+                      {article.title}
+                    </h3>
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap mt-1 flex-shrink-0">
+                    {article.readTime}
+                  </span>
+                </div>
+
+                {/* Preview */}
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                  {article.preview}
+                </p>
+
+                {/* Expandable Content */}
+                {expandedId === article.id && (
+                  <div className="border-t border-border pt-4 mt-2">
+                    {article.content.split('\n\n').map((para, i) => (
+                      <p
+                        key={i}
+                        className="text-sm text-foreground leading-relaxed mb-4 last:mb-0"
+                      >
+                        {para}
+                      </p>
+                    ))}
+                  </div>
                 )}
-              </button>
-            </article>
+
+                {/* Toggle Button */}
+                <button
+                  onClick={() =>
+                    setExpandedId(
+                      expandedId === article.id ? null : article.id
+                    )
+                  }
+                  className="text-sm font-medium flex items-center gap-1 transition-colors hover:opacity-70"
+                  style={{ color: 'var(--accent-brand)' }}
+                >
+                  {expandedId === article.id ? (
+                    <>
+                      <span>Collapse</span>
+                      <span>↑</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Read more</span>
+                      <span>→</span>
+                    </>
+                  )}
+                </button>
+              </article>
+            </FadeUp>
           ))}
         </div>
       </div>

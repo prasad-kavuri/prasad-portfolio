@@ -1,5 +1,8 @@
+'use client';
+
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { AnimatedCounter } from "@/components/ui/counter";
 import profile from "@/data/profile.json";
 
 const brandStyle = {
@@ -62,7 +65,7 @@ export function Hero() {
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {profile.stats.map((s) => (
               <div key={s.label} className="rounded-lg bg-muted p-4">
-                <p className="text-2xl font-semibold">{s.value}</p>
+                <AnimatedCounter value={s.value} className="text-2xl font-semibold" />
                 <p className="text-xs text-muted-foreground">{s.label}</p>
               </div>
             ))}

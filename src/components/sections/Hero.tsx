@@ -44,6 +44,20 @@ export function Hero() {
             {profile.personal.summary}
           </p>
 
+          <div className="mt-6 mb-2 space-y-2">
+            {[
+              "I build production AI systems — not prototypes.",
+              "I optimize for cost, latency, and scalability — not just model quality.",
+              "I align engineering, product, and business teams around measurable outcomes.",
+              "I design AI systems that combine capability with human oversight and governance.",
+            ].map((line, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-1.5 size-1 rounded-full shrink-0 bg-indigo-500" />
+                <span>{line}</span>
+              </div>
+            ))}
+          </div>
+
           <div className="mt-6 flex flex-wrap gap-3">
             <a
               href="#tools"

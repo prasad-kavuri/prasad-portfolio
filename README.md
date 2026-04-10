@@ -2,9 +2,10 @@
 
 > Live at [prasadkavuri.com](https://prasadkavuri.com)
 
-AI/ML Executive portfolio showcasing real working demos of agentic AI, 
-semantic search, LLM orchestration, and open-source model inference.
-Built with Next.js 16, Tailwind v4, and shadcn/ui.
+AI Engineering Executive Portfolio — 9 live AI demos showcasing 
+agentic AI, multi-model orchestration, RAG, MCP tool use, and 
+open-source model inference. Built with Next.js 16, Tailwind v4, 
+Groq, and Hugging Face.
 
 ## Live Demos
 
@@ -17,9 +18,12 @@ Built with Next.js 16, Tailwind v4, and shadcn/ui.
 | Resume Generator | Groq, Llama 3.3 70B, ATS optimization | Live |
 | Multimodal Assistant | ViT-base, CLIP zero-shot, Transformers.js | Live |
 | Model Quantization | ONNX, FP32 vs INT8 benchmark, Transformers.js | Live |
-| Multi-Agent System | CrewAI, Groq, LangGraph (coming soon) | Upgrading |
+| Multi-Agent System | Three specialized AI agents (Analyzer, Researcher, Strategist) collaborate via Groq — powered by FastAPI backend on Hugging Face Spaces | Live |
+| MCP Tool Demo | Model Context Protocol, Groq tool calling, JSON-RPC 2.0 | Live |
 
 ## Architecture
+
+Organized into 3 demo groups: **Core AI Infrastructure** (RAG, Vector Search, Quantization), **Agentic Systems** (Multi-Agent, LLM Router), and **AI Applications** (Portfolio Assistant, Resume Generator, Multimodal, MCP Tool Demo).
 
 ```
 prasad-portfolio/
@@ -65,9 +69,11 @@ prasad-portfolio/
 
 **AI / ML**
 - @huggingface/transformers v3 (browser-side ONNX inference)
-- Groq API (Llama 3.1 8B, Llama 3.3 70B, Llama 4 Scout, Qwen3 32B)
+- Groq SDK (llama-3.1-8b-instant, llama-3.3-70b-versatile, llama-4-scout, qwen3-32b)
 - Vercel AI SDK (streaming)
 - Models: all-MiniLM-L6-v2, ViT-base-patch16-224, CLIP ViT-base-patch32
+- HuggingFace Spaces (FastAPI Docker backend for Multi-Agent)
+- MCP (Model Context Protocol) — Linux Foundation standard
 
 **Infrastructure**
 - Vercel (deployment, edge functions, analytics)

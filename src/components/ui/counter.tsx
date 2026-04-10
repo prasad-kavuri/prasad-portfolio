@@ -1,7 +1,7 @@
 'use client';
 
-import { useInView, useMotionValue, useSpring } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useInView } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 
 interface CounterProps {
   value: string;
@@ -9,48 +9,39 @@ interface CounterProps {
 }
 
 export function AnimatedCounter({ value, className }: CounterProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const inViewRef = useRef(null);
-  const isInView = useInView(inViewRef, { once: true });
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const [display, setDisplay] = useState(value);
 
-  // Extract number and suffix (e.g. "200+" -> 200, "+")
-  const match = value.match(/^([\d.]+)(.*)$/);
-  const numericValue = match ? parseFloat(match[1]) : 0;
-  const suffix = match ? match[2] : value;
+  const match = value.match(/^(\d+)(.*)/);
   const isNumeric = match !== null;
-
-  const motionValue = useMotionValue(0);
-  const springValue = useSpring(motionValue, {
-    damping: 60,
-    stiffness: 100,
-  });
+  const target = isNumeric ? parseInt(match[1]) : 0;
+  const suffix = isNumeric ? match[2] : '';
 
   useEffect(() => {
-    if (isInView && isNumeric) {
-      motionValue.set(numericValue);
-    }
-  }, [isInView, isNumeric, motionValue, numericValue]);
+    if (!isInView || !isNumeric) return;
 
-  useEffect(() => {
-    return springValue.on('change', (latest) => {
-      if (ref.current) {
-        const rounded = numericValue >= 10
-          ? Math.round(latest)
-          : Math.round(latest * 10) / 10;
-        ref.current.textContent = rounded + suffix;
+    let start = 0;
+    const duration = 1500;
+    const step = 16;
+    const increment = target / (duration / step);
+
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        setDisplay(value);
+        clearInterval(timer);
+      } else {
+        setDisplay(Math.floor(start) + suffix);
       }
-    });
-  }, [springValue, suffix, numericValue]);
+    }, step);
 
-  if (!isNumeric) {
-    return <span className={className}>{value}</span>;
-  }
+    return () => clearInterval(timer);
+  }, [isInView, isNumeric, target, suffix, value]);
 
   return (
-    <div ref={inViewRef}>
-      <span ref={ref} className={className}>
-        0{suffix}
-      </span>
-    </div>
+    <span ref={ref} className={className}>
+      {display}
+    </span>
   );
 }

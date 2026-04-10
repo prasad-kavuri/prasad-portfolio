@@ -57,6 +57,20 @@ prasad-portfolio/
 └── ...config files
 ```
 
+## Architecture Deep Dive
+
+For a comprehensive breakdown of the 6-layer enterprise AI architecture,
+design principles, technology decisions, and model selection strategy, see:
+
+**[📐 Architecture Documentation](docs/ARCHITECTURE.md)**
+
+This covers:
+- Layer-by-layer architecture breakdown with ASCII diagrams
+- LLM routing strategy and model selection matrix
+- RAG pipeline architecture
+- MCP tool integration patterns
+- Key design principles from production AI experience
+
 ## Tech Stack
 
 **Frontend**

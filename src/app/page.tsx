@@ -7,6 +7,7 @@ import { Architecture } from "@/components/sections/Architecture";
 import { Expertise } from "@/components/sections/Expertise";
 import { Experience } from "@/components/sections/Experience";
 import { CaseStudies } from "@/components/sections/CaseStudies";
+import { Perspectives } from "@/components/sections/Perspectives";
 import { Contact } from "@/components/sections/Contact";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
         <Expertise />
         <Experience />
         <CaseStudies />
+        <Perspectives />
         <Contact />
       </main>
       <Footer />

@@ -8,7 +8,9 @@ const store = new Map<string, Entry>();
 export const RATE_LIMIT_MAX = 10;
 export const RATE_LIMIT_WINDOW_MS = 60_000;
 
-export function rateLimit(ip: string): { limited: boolean } {
+export function rateLimit(rawIp: string): { limited: boolean } {
+  // Normalize: take first IP from comma-separated x-forwarded-for list
+  const ip = rawIp.split(',')[0].trim();
   const now = Date.now();
   const entry = store.get(ip);
 

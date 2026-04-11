@@ -17,6 +17,22 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      // API tests share the in-memory rate-limit bucket with chromium;
+      // running them again in webkit exhausts 'anonymous' and causes false 429s.
+      // HTTP-level validation is browser-agnostic — chromium coverage is sufficient.
+      testIgnore: ['**/api.spec.ts'],
+    },
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
+      // Same rate-limit bucket issue for API tests.
+      // Desktop navbar links are hidden on mobile (hamburger layout) —
+      // navigation.spec.ts tests desktop-only nav interactions.
+      testIgnore: ['**/api.spec.ts', '**/navigation.spec.ts'],
+    },
   ],
   webServer: {
     command: 'npm run build && npm run start',

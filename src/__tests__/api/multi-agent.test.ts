@@ -1,0 +1,115 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { _resetStore } from '@/lib/rate-limit';
+
+const mockFetch = vi.fn();
+vi.stubGlobal('fetch', mockFetch);
+
+function makeRequest(body: object, ip = '127.0.0.1') {
+  return new Request('http://localhost/api/multi-agent', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-forwarded-for': ip,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+describe('POST /api/multi-agent', () => {
+  beforeEach(() => {
+    _resetStore();
+    vi.clearAllMocks();
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ agents: [], total_duration_ms: 100 }),
+    });
+  });
+
+  it('returns 400 for missing website_url', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({}) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(/website_url is required/i);
+  });
+
+  it('returns 400 for URL over 200 chars', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://' + 'a'.repeat(200) + '.com' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(/too long/i);
+  });
+
+  it('returns 400 for invalid URL format', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'not-a-url' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Invalid URL');
+  });
+
+  it('returns 400 for localhost URL (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://localhost/admin' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for 127.0.0.1 (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://127.0.0.1/secret' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for metadata IP (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://169.254.169.254/metadata' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for internal network IP (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://192.168.1.1/admin' }) as any);
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 429 after rate limit exceeded', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const ip = '1.2.3.4';
+    for (let i = 0; i < 10; i++) {
+      await POST(makeRequest({ website_url: 'https://example.com' }, ip) as any);
+    }
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }, ip) as any);
+    expect(res.status).toBe(429);
+    const body = await res.json();
+    expect(body.error).toMatch(/too many requests/i);
+  });
+
+  it('returns 200 for valid public URL', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://prasadkavuri.com' }) as any);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toHaveProperty('agents');
+  });
+
+  it('returns 500 when HF Space returns non-200', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, text: async () => 'Service unavailable' });
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(500);
+  });
+
+  it('returns 500 when fetch throws', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Connection refused'));
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(500);
+  });
+});

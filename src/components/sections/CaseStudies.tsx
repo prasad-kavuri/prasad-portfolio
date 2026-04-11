@@ -69,7 +69,7 @@ const caseStudies: CaseStudy[] = [
       "Millions of daily API calls",
       "Improved ETA accuracy across fleet",
     ],
-    roi: "Platform generated new B2B revenue stream — 13K+ paying enterprise customers",
+    roi: "Enabled new recurring revenue through B2B API subscriptions",
   },
   {
     badge: "HERE Technologies",
@@ -96,7 +96,7 @@ const caseStudies: CaseStudy[] = [
       "Sr Engineer → Director progression",
       "Global engineering organization built from ground up",
     ],
-    roi: "18-year compounding value delivery — Sr Engineer to Director scope expansion",
+    roi: "Safety-critical AI systems supporting global OEM production deployments",
   },
 ];
 

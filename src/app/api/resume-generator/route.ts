@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
 import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
-import { enforceRateLimit, isStringArray, jsonError, readJsonObject } from '@/lib/api';
+import {
+  enforceRateLimit,
+  isStringArray,
+  jsonError,
+  logApiError,
+  logApiEvent,
+  logApiWarning,
+  readJsonObject,
+} from '@/lib/api';
+
+const ROUTE = '/api/resume-generator';
 
 interface ResumeResponse {
   matchScore: number;
@@ -53,33 +63,39 @@ function isResumeResponse(value: unknown): value is ResumeResponse {
 }
 
 export async function POST(req: NextRequest) {
+  const requestStart = Date.now();
   try {
-    const rateLimited = await enforceRateLimit(req);
+    const rateLimited = await enforceRateLimit(req, 'anonymous', { route: ROUTE });
     if (rateLimited) return rateLimited;
 
-    const body = await readJsonObject(req);
+    const body = await readJsonObject(req, { route: ROUTE });
     if (!body.ok) return body.response;
 
     const { jobDescription, focusAreas } = body.data;
 
     if (!jobDescription || typeof jobDescription !== 'string' || !jobDescription.trim()) {
+      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'missing_job_description', status: 400 });
       return jsonError('Job description is required', 400);
     }
 
     if (focusAreas !== undefined && !isStringArray(focusAreas, { maxItems: 10, maxItemLength: 100 })) {
+      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'invalid_focus_areas', status: 400 });
       return jsonError('Invalid input', 400);
     }
     const safeAreas = focusAreas ?? [];
 
     if (jobDescription.length > 5000) {
+      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'job_description_too_long', jobDescriptionLength: jobDescription.length, status: 400 });
       return jsonError('Input too long', 400);
     }
     if (detectPromptInjection(jobDescription)) {
+      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_injection', jobDescriptionLength: jobDescription.length, status: 400 });
       return jsonError('Invalid input', 400);
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
+      logApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, status: 500 });
       return jsonError('GROQ_API_KEY not configured', 500);
     }
 
@@ -160,8 +176,13 @@ Generate a tailored resume as JSON with this exact structure:
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('Groq API error:', error);
+      await response.text().catch(() => '');
+      logApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
+        route: ROUTE,
+        upstreamStatus: response.status,
+        status: 500,
+        durationMs: Date.now() - requestStart,
+      });
       return NextResponse.json(
         { error: 'Failed to generate resume from Groq API' },
         { status: 500 }
@@ -181,7 +202,12 @@ Generate a tailored resume as JSON with this exact structure:
       }
       parsedResume = JSON.parse(jsonMatch[0]);
     } catch (parseError) {
-      console.error('Error parsing resume JSON:', parseError, 'Content:', content);
+      logApiError('api.llm_parse_error', parseError, {
+        route: ROUTE,
+        status: 500,
+        durationMs: Date.now() - requestStart,
+        responseLength: content.length,
+      });
       return NextResponse.json(
         { error: 'Failed to generate valid resume. Please try again.' },
         { status: 500 }
@@ -190,6 +216,11 @@ Generate a tailored resume as JSON with this exact structure:
 
     // Validate the response structure
     if (!isResumeResponse(parsedResume)) {
+      logApiError('api.llm_schema_error', new Error('Invalid resume structure'), {
+        route: ROUTE,
+        status: 500,
+        durationMs: Date.now() - requestStart,
+      });
       return NextResponse.json(
         { error: 'Invalid resume structure generated' },
         { status: 500 }
@@ -210,9 +241,22 @@ Generate a tailored resume as JSON with this exact structure:
       atsKeywords: parsedResume.atsKeywords.map(k => sanitizeLLMOutput(k)),
     };
 
+    logApiEvent('api.request_completed', {
+      route: ROUTE,
+      status: 200,
+      durationMs: Date.now() - requestStart,
+      jobDescriptionLength: jobDescription.length,
+      focusAreaCount: safeAreas.length,
+      matchScore: parsedResume.matchScore,
+    });
+
     return NextResponse.json(sanitized);
   } catch (error) {
-    console.error('Resume generator error:', error);
+    logApiError('api.request_failed', error, {
+      route: ROUTE,
+      status: 500,
+      durationMs: Date.now() - requestStart,
+    });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

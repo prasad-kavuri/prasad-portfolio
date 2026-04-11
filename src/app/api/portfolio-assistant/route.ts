@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
 import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
-import { enforceRateLimit, jsonError, readJsonObject } from '@/lib/api';
+import {
+  enforceRateLimit,
+  jsonError,
+  logApiError,
+  logApiEvent,
+  logApiWarning,
+  readJsonObject,
+} from '@/lib/api';
+
+const ROUTE = '/api/portfolio-assistant';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -45,33 +54,39 @@ function validateMessages(value: unknown): Message[] | null {
 }
 
 export async function POST(req: NextRequest) {
+  const requestStart = Date.now();
   try {
-    const rateLimited = await enforceRateLimit(req);
+    const rateLimited = await enforceRateLimit(req, 'anonymous', { route: ROUTE });
     if (rateLimited) return rateLimited;
 
-    const body = await readJsonObject(req);
+    const body = await readJsonObject(req, { route: ROUTE });
     if (!body.ok) return body.response;
 
     const messages = validateMessages(body.data.messages);
     if (!messages) {
+      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'invalid_messages', status: 400 });
       return jsonError('Messages are required', 400);
     }
 
     if (body.data.useRAG !== undefined && typeof body.data.useRAG !== 'boolean') {
+      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'invalid_use_rag', status: 400 });
       return jsonError('Invalid input', 400);
     }
     const useRAG = body.data.useRAG === true;
 
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     if (lastUserMessage && lastUserMessage.content.length > 500) {
+      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'message_too_long', messageLength: lastUserMessage.content.length, status: 400 });
       return jsonError('Input too long', 400);
     }
     if (lastUserMessage && detectPromptInjection(lastUserMessage.content)) {
+      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
       return jsonError('Invalid input', 400);
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
+      logApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, status: 500 });
       return jsonError('GROQ_API_KEY not configured', 500);
     }
 
@@ -117,8 +132,13 @@ ${fullContext}`;
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('Groq API error:', error);
+      await response.text().catch(() => '');
+      logApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
+        route: ROUTE,
+        upstreamStatus: response.status,
+        status: 500,
+        durationMs: Date.now() - requestStart,
+      });
       return NextResponse.json(
         { error: 'Failed to get response from Groq API' },
         { status: 500 }
@@ -182,6 +202,15 @@ ${fullContext}`;
       },
     });
 
+    logApiEvent('api.request_completed', {
+      route: ROUTE,
+      status: 200,
+      durationMs: Date.now() - requestStart,
+      messageCount: messages.length,
+      useRAG,
+      retrievedDocs: retrievedDocs.length,
+    });
+
     return new NextResponse(readableStream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
@@ -190,7 +219,11 @@ ${fullContext}`;
       },
     });
   } catch (error) {
-    console.error('Portfolio assistant error:', error);
+    logApiError('api.request_failed', error, {
+      route: ROUTE,
+      status: 500,
+      durationMs: Date.now() - requestStart,
+    });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

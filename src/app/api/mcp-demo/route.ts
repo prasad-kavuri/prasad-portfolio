@@ -3,7 +3,16 @@ import { Groq } from "groq-sdk";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat";
 import profile from "@/data/profile.json";
 import { detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
-import { enforceRateLimit, jsonError, readJsonObject } from "@/lib/api";
+import {
+  enforceRateLimit,
+  jsonError,
+  logApiError,
+  logApiEvent,
+  logApiWarning,
+  readJsonObject,
+} from "@/lib/api";
+
+const ROUTE = "/api/mcp-demo";
 
 const MCP_TOOLS = [
   {
@@ -199,26 +208,30 @@ function executeTool(name: string, args: ToolArgs): string {
 }
 
 export async function POST(request: NextRequest) {
-  const rateLimited = await enforceRateLimit(request);
+  const rateLimited = await enforceRateLimit(request, "anonymous", { route: ROUTE });
   if (rateLimited) return rateLimited;
 
-  const body = await readJsonObject(request);
+  const body = await readJsonObject(request, { route: ROUTE });
   if (!body.ok) return body.response;
 
   const { query } = body.data;
 
   if (!query || typeof query !== 'string') {
+    logApiWarning('api.validation_failed', { route: ROUTE, reason: 'missing_query', status: 400 });
     return jsonError('Query is required', 400);
   }
   if (query.length > 500) {
+    logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'query_too_long', queryLength: query.length, status: 400 });
     return jsonError('Input too long', 400);
   }
   if (detectPromptInjection(query)) {
+    logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_injection', queryLength: query.length, status: 400 });
     return jsonError('Invalid input', 400);
   }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
+    logApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, status: 500 });
     return jsonError('GROQ_API_KEY not configured', 500);
   }
 
@@ -243,6 +256,13 @@ export async function POST(request: NextRequest) {
     const message = toolSelectionResponse.choices[0].message;
 
     if (!message.tool_calls || message.tool_calls.length === 0) {
+      logApiWarning('api.abnormal_usage', {
+        route: ROUTE,
+        reason: 'no_tool_calls',
+        queryLength: query.length,
+        status: 200,
+        durationMs: Date.now() - startTime,
+      });
       return Response.json({
         query,
         toolsDiscovered: 4,
@@ -322,6 +342,14 @@ export async function POST(request: NextRequest) {
 
     const totalDuration = Date.now() - startTime;
 
+    logApiEvent('api.request_completed', {
+      route: ROUTE,
+      status: 200,
+      durationMs: totalDuration,
+      queryLength: query.length,
+      toolCalls: toolCallLog.length,
+    });
+
     return Response.json({
       query,
       toolsDiscovered: MCP_TOOLS.length,
@@ -330,7 +358,11 @@ export async function POST(request: NextRequest) {
       totalDuration_ms: totalDuration,
     });
   } catch (error) {
-    console.error("MCP Demo Error:", error);
+    logApiError("api.request_failed", error, {
+      route: ROUTE,
+      status: 500,
+      durationMs: Date.now() - startTime,
+    });
     return Response.json(
       { error: "Failed to process MCP demo request" },
       { status: 500 }

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { FadeUp } from '@/components/ui/motion';
+import { trackEvent } from '@/lib/analytics';
 
 const ARTICLES = [
   {
@@ -120,11 +121,11 @@ export function Perspectives() {
 
                 {/* Toggle Button */}
                 <button
-                  onClick={() =>
-                    setExpandedId(
-                      expandedId === article.id ? null : article.id
-                    )
-                  }
+                  onClick={() => {
+                    const isExpanding = expandedId !== article.id;
+                    setExpandedId(expandedId === article.id ? null : article.id);
+                    if (isExpanding) trackEvent('article_expanded', { article: article.id });
+                  }}
                   className="text-sm font-medium flex items-center gap-1 transition-colors hover:opacity-70"
                   style={{ color: 'var(--accent-brand)' }}
                 >

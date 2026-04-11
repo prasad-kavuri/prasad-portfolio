@@ -1,8 +1,11 @@
+'use client';
+
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demos } from "@/data/demos";
 import { ArrowRight } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 const statusLabel: Record<string, string> = {
   live: "Live",
@@ -74,7 +77,7 @@ export function AITools() {
               {/* Cards grid for this group */}
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {groupDemos.map((demo) => (
-                  <Link key={demo.id} href={demo.href} className="group">
+                  <Link key={demo.id} href={demo.href} className="group" onClick={() => trackEvent('demo_opened', { demo: demo.id })}>
                     <Card className="h-full transition-shadow group-hover:shadow-md">
                       <CardHeader className="pb-2">
                         <div className="flex items-start justify-between gap-2">

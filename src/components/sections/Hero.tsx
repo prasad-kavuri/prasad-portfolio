@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedCounter } from "@/components/ui/counter";
 import profile from "@/data/profile.json";
+import { trackEvent } from "@/lib/analytics";
 
 const brandStyle = {
   background: "var(--accent-brand)",
@@ -70,6 +71,7 @@ export function Hero() {
               href={profile.personal.linkedin}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('linkedin_clicked')}
               className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
             >
               View LinkedIn
@@ -120,9 +122,10 @@ export function Hero() {
             </div>
             <div className="flex flex-wrap gap-3">
               <a
-                href="/Prasad_Kavuri_Resume.pdf"
+                href="/api/resume-download"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent('resume_downloaded')}
                 className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
               >
                 Download Resume

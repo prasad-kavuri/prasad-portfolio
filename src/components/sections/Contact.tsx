@@ -1,8 +1,11 @@
+'use client';
+
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import profile from "@/data/profile.json";
 import { Mail, ExternalLink } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export function Contact() {
   return (
@@ -28,7 +31,7 @@ export function Contact() {
             </Card>
           </Link>
 
-          <Link href={`mailto:${profile.personal.email}`}>
+          <Link href={`mailto:${profile.personal.email}`} onClick={() => trackEvent('contact_email_clicked')}>
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">
                 <Mail className="size-5 text-red-600" />

@@ -4,10 +4,6 @@ import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat";
 import profile from "@/data/profile.json";
 import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 const MCP_TOOLS = [
   {
     name: "get_experience",
@@ -215,6 +211,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: 'GROQ_API_KEY not configured' }, { status: 500 });
+  }
+
+  const groq = new Groq({ apiKey });
   const startTime = Date.now();
 
   try {

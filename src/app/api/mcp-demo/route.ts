@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { Groq } from "groq-sdk";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat";
 import profile from "@/data/profile.json";
-import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
+import { detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
+import { enforceRateLimit, jsonError, readJsonObject } from "@/lib/api";
 
 const MCP_TOOLS = [
   {
@@ -106,10 +107,14 @@ function getStringArrayArg(args: ToolArgs, key: string): string[] {
 
 function parseToolArgs(argumentsValue: unknown): ToolArgs {
   if (typeof argumentsValue === "string") {
-    const parsed = JSON.parse(argumentsValue) as unknown;
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
-      ? parsed as ToolArgs
-      : {};
+    try {
+      const parsed = JSON.parse(argumentsValue) as unknown;
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? parsed as ToolArgs
+        : {};
+    } catch {
+      return {};
+    }
   }
 
   return argumentsValue && typeof argumentsValue === "object" && !Array.isArray(argumentsValue)
@@ -194,26 +199,27 @@ function executeTool(name: string, args: ToolArgs): string {
 }
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') ?? 'anonymous';
-  if ((await rateLimit(ip)).limited) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-  }
+  const rateLimited = await enforceRateLimit(request);
+  if (rateLimited) return rateLimited;
 
-  const { query } = await request.json();
+  const body = await readJsonObject(request);
+  if (!body.ok) return body.response;
+
+  const { query } = body.data;
 
   if (!query || typeof query !== 'string') {
-    return NextResponse.json({ error: 'Query is required' }, { status: 400 });
+    return jsonError('Query is required', 400);
   }
   if (query.length > 500) {
-    return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+    return jsonError('Input too long', 400);
   }
   if (detectPromptInjection(query)) {
-    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    return jsonError('Invalid input', 400);
   }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: 'GROQ_API_KEY not configured' }, { status: 500 });
+    return jsonError('GROQ_API_KEY not configured', 500);
   }
 
   const groq = new Groq({ apiKey });
@@ -326,10 +332,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("MCP Demo Error:", error);
     return Response.json(
-      {
-        error: "Failed to process MCP demo request",
-        details: error instanceof Error ? error.message : String(error),
-      },
+      { error: "Failed to process MCP demo request" },
       { status: 500 }
     );
   }

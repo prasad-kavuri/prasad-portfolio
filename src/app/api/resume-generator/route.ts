@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
-
-interface RequestBody {
-  jobDescription: string;
-  focusAreas: string[];
-}
+import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
+import { enforceRateLimit, isStringArray, jsonError, readJsonObject } from '@/lib/api';
 
 interface ResumeResponse {
   matchScore: number;
@@ -22,43 +18,69 @@ interface ResumeResponse {
   atsKeywords: string[];
 }
 
+function isResumeStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string');
+}
+
+function isResumeExperience(value: unknown): value is ResumeResponse['experience'] {
+  return Array.isArray(value) && value.every(item => {
+    if (!item || typeof item !== 'object') return false;
+    const exp = item as Record<string, unknown>;
+    return (
+      typeof exp.company === 'string' &&
+      typeof exp.title === 'string' &&
+      typeof exp.period === 'string' &&
+      isResumeStringArray(exp.bullets)
+    );
+  });
+}
+
+function isResumeResponse(value: unknown): value is ResumeResponse {
+  if (!value || typeof value !== 'object') return false;
+  const resume = value as Record<string, unknown>;
+  return (
+    typeof resume.matchScore === 'number' &&
+    Number.isFinite(resume.matchScore) &&
+    resume.matchScore >= 0 &&
+    resume.matchScore <= 100 &&
+    isResumeStringArray(resume.matchedSkills) &&
+    isResumeStringArray(resume.missingSkills) &&
+    typeof resume.summary === 'string' &&
+    isResumeExperience(resume.experience) &&
+    isResumeStringArray(resume.skills) &&
+    isResumeStringArray(resume.atsKeywords)
+  );
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
-    if ((await rateLimit(ip)).limited) {
-      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-    }
+    const rateLimited = await enforceRateLimit(req);
+    if (rateLimited) return rateLimited;
 
-    const body = await req.json();
+    const body = await readJsonObject(req);
+    if (!body.ok) return body.response;
 
-    const { jobDescription, focusAreas } = body as RequestBody;
+    const { jobDescription, focusAreas } = body.data;
 
     if (!jobDescription || typeof jobDescription !== 'string' || !jobDescription.trim()) {
-      return NextResponse.json(
-        { error: 'Job description is required' },
-        { status: 400 }
-      );
+      return jsonError('Job description is required', 400);
     }
 
-    // focusAreas is optional — but if provided it must be an array
-    if (focusAreas !== undefined && !Array.isArray(focusAreas)) {
-      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    if (focusAreas !== undefined && !isStringArray(focusAreas, { maxItems: 10, maxItemLength: 100 })) {
+      return jsonError('Invalid input', 400);
     }
-    const safeAreas: string[] = Array.isArray(focusAreas) ? focusAreas : [];
+    const safeAreas = focusAreas ?? [];
 
     if (jobDescription.length > 5000) {
-      return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+      return jsonError('Input too long', 400);
     }
     if (detectPromptInjection(jobDescription)) {
-      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+      return jsonError('Invalid input', 400);
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(
-        { error: 'GROQ_API_KEY not configured' },
-        { status: 500 }
-      );
+      return jsonError('GROQ_API_KEY not configured', 500);
     }
 
     const focusAreasText = safeAreas.length > 0 ? `\nFocus areas: ${safeAreas.join(', ')}` : '';
@@ -134,6 +156,7 @@ Generate a tailored resume as JSON with this exact structure:
         temperature: 0.3,
         max_tokens: 2048,
       }),
+      signal: AbortSignal.timeout(30000),
     });
 
     if (!response.ok) {
@@ -149,7 +172,7 @@ Generate a tailored resume as JSON with this exact structure:
     const content = data.choices?.[0]?.message?.content || '';
 
     // Try to parse JSON from the response
-    let parsedResume: ResumeResponse;
+    let parsedResume: unknown;
     try {
       // Extract JSON from the response (in case there's extra text)
       const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -166,7 +189,7 @@ Generate a tailored resume as JSON with this exact structure:
     }
 
     // Validate the response structure
-    if (!parsedResume.matchScore || !parsedResume.summary || !parsedResume.experience) {
+    if (!isResumeResponse(parsedResume)) {
       return NextResponse.json(
         { error: 'Invalid resume structure generated' },
         { status: 500 }

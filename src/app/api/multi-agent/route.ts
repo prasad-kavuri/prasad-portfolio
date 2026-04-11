@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimit, sanitizeLLMOutput } from '@/lib/rate-limit';
+import { sanitizeLLMOutput } from '@/lib/rate-limit';
+import { enforceRateLimit, jsonError, readJsonObject } from '@/lib/api';
 
 const HF_SPACE_URL = 'https://prasadkavuri-multi-agent-demo.hf.space';
-
-const BLOCKED_URL_PATTERNS = [
-  'localhost', '127.0.0.1', '0.0.0.0', '169.254', '10.', '192.168.', 'internal',
-];
 
 interface AgentResult {
   findings?: unknown;
@@ -18,39 +15,68 @@ interface AgentBackendResponse {
   [key: string]: unknown;
 }
 
-export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
-  if ((await rateLimit(ip)).limited) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+function isBlockedHostname(hostname: string): boolean {
+  const host = hostname.toLowerCase();
+  if (
+    host === 'localhost' ||
+    host.endsWith('.localhost') ||
+    host === '0.0.0.0' ||
+    host === '::1' ||
+    host === '[::1]' ||
+    host.endsWith('.internal')
+  ) {
+    return true;
   }
 
-  const { website_url } = await req.json();
+  const parts = host.split('.').map(part => Number(part));
+  const isIpv4 = parts.length === 4 && parts.every(part => Number.isInteger(part) && part >= 0 && part <= 255);
+  if (!isIpv4) return false;
+
+  const [first, second] = parts;
+  return (
+    first === 0 ||
+    first === 10 ||
+    first === 127 ||
+    (first === 169 && second === 254) ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+}
+
+export async function POST(req: NextRequest) {
+  const rateLimited = await enforceRateLimit(req, 'unknown');
+  if (rateLimited) return rateLimited;
+
+  const body = await readJsonObject(req);
+  if (!body.ok) return body.response;
+
+  const { website_url } = body.data;
 
   if (!website_url) {
-    return NextResponse.json({ error: 'website_url is required' }, { status: 400 });
+    return jsonError('website_url is required', 400);
   }
 
   if (typeof website_url !== 'string') {
-    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    return jsonError('Invalid input', 400);
   }
 
   if (website_url.length > 200) {
-    return NextResponse.json({ error: 'URL too long' }, { status: 400 });
+    return jsonError('URL too long', 400);
   }
 
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(website_url);
   } catch {
-    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+    return jsonError('Invalid URL', 400);
   }
 
   if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+    return jsonError('Invalid URL', 400);
   }
 
-  if (BLOCKED_URL_PATTERNS.some(b => website_url.includes(b))) {
-    return NextResponse.json({ error: 'URL not allowed' }, { status: 400 });
+  if (isBlockedHostname(parsedUrl.hostname)) {
+    return jsonError('URL not allowed', 400);
   }
 
   try {
@@ -62,8 +88,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      return NextResponse.json({ error }, { status: 500 });
+      await response.text().catch(() => '');
+      return jsonError('Failed to connect to agent backend', 502);
     }
 
     const data = (await response.json()) as AgentBackendResponse;
@@ -82,11 +108,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(data);
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : null;
+  } catch {
     return NextResponse.json(
-      { error: message || 'Failed to connect to agent backend' },
-      { status: 500 }
+      { error: 'Failed to connect to agent backend' },
+      { status: 502 }
     );
   }
 }

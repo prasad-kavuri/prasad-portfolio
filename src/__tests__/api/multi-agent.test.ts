@@ -99,17 +99,17 @@ describe('POST /api/multi-agent', () => {
     expect(body).toHaveProperty('agents');
   });
 
-  it('returns 500 when HF Space returns non-200', async () => {
+  it('returns 502 when HF Space returns non-200', async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, text: async () => 'Service unavailable' });
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(502);
   });
 
-  it('returns 500 when fetch throws', async () => {
+  it('returns 502 when fetch throws', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Connection refused'));
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(502);
   });
 });

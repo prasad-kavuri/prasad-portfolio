@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest",
     "test:e2e": "playwright test",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "test:fuzz": "vitest run src/__tests__/fuzz"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.0.1",

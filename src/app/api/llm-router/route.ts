@@ -14,10 +14,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  if (!process.env.GROQ_API_KEY) {
-    return NextResponse.json({ error: 'GROQ_API_KEY not configured' }, { status: 500 });
-  }
-
+  // Validate inputs BEFORE checking the API key so malformed requests get 400,
+  // not 500, regardless of whether the key is configured.
   const { prompt, model: modelId } = await req.json();
 
   if (!prompt || typeof prompt !== 'string') {
@@ -32,6 +30,10 @@ export async function POST(req: NextRequest) {
 
   const model = MODELS.find(m => m.id === modelId);
   if (!model) return NextResponse.json({ error: 'Model not found' }, { status: 400 });
+
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json({ error: 'GROQ_API_KEY not configured' }, { status: 500 });
+  }
 
   try {
     const start = Date.now();

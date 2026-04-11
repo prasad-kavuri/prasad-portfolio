@@ -46,6 +46,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
     }
 
+    const invalidMessage = messages.find(
+      m => !m || typeof m !== 'object' || typeof (m as { content?: unknown }).content !== 'string'
+    );
+    if (invalidMessage !== undefined) {
+      return NextResponse.json({ error: 'Invalid message format' }, { status: 400 });
+    }
+
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     if (lastUserMessage && lastUserMessage.content.length > 500) {
       return NextResponse.json({ error: 'Input too long' }, { status: 400 });

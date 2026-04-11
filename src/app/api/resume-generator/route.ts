@@ -29,14 +29,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
-    const { jobDescription, focusAreas } = (await req.json()) as RequestBody;
+    const body = await req.json();
 
-    if (!jobDescription || !jobDescription.trim()) {
+    const { jobDescription, focusAreas } = body as RequestBody;
+
+    if (!jobDescription || typeof jobDescription !== 'string' || !jobDescription.trim()) {
       return NextResponse.json(
         { error: 'Job description is required' },
         { status: 400 }
       );
     }
+
+    // focusAreas is optional — but if provided it must be an array
+    if (focusAreas !== undefined && !Array.isArray(focusAreas)) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    }
+    const safeAreas: string[] = Array.isArray(focusAreas) ? focusAreas : [];
 
     if (jobDescription.length > 5000) {
       return NextResponse.json({ error: 'Input too long' }, { status: 400 });
@@ -53,7 +61,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const focusAreasText = focusAreas.length > 0 ? `\nFocus areas: ${focusAreas.join(', ')}` : '';
+    const focusAreasText = safeAreas.length > 0 ? `\nFocus areas: ${safeAreas.join(', ')}` : '';
 
     // Build dynamically from profile data
     const topExperience = profile.experience.slice(0, 3)

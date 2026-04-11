@@ -19,13 +19,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'website_url is required' }, { status: 400 });
   }
 
+  if (typeof website_url !== 'string') {
+    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+  }
+
   if (website_url.length > 200) {
     return NextResponse.json({ error: 'URL too long' }, { status: 400 });
   }
 
+  let parsedUrl: URL;
   try {
-    new URL(website_url);
+    parsedUrl = new URL(website_url);
   } catch {
+    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+  }
+
+  if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
     return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
   }
 

@@ -63,6 +63,34 @@ vi.mock('@/data/demos', () => ({
       tags: ['Streaming', 'RAG'],
       status: 'live',
     },
+    // Desktop-only demos (ids matched by DESKTOP_ONLY constant in AITools.tsx)
+    {
+      id: 'vector-search',
+      emoji: '🔎',
+      title: 'Vector Search',
+      description: 'Semantic search with embeddings.',
+      href: '/demos/vector-search',
+      tags: ['all-MiniLM-L6-v2', 'UMAP'],
+      status: 'live',
+    },
+    {
+      id: 'multimodal',
+      emoji: '🎭',
+      title: 'Multimodal Assistant',
+      description: 'Florence-2 image captioning.',
+      href: '/demos/multimodal',
+      tags: ['Florence-2', 'WebGPU'],
+      status: 'live',
+    },
+    {
+      id: 'quantization',
+      emoji: '⚡',
+      title: 'Model Quantization',
+      description: 'Live ONNX benchmark.',
+      href: '/demos/quantization',
+      tags: ['ONNX', 'INT8 vs FP32'],
+      status: 'live',
+    },
   ],
 }));
 
@@ -106,5 +134,46 @@ describe('AITools', () => {
     render(React.createElement(AITools));
     const liveBadges = screen.getAllByText('Live');
     expect(liveBadges.length).toBeGreaterThan(0);
+  });
+
+  it('renders Desktop badge on exactly 3 cards', () => {
+    render(React.createElement(AITools));
+    const desktopBadges = screen.getAllByText('Desktop');
+    expect(desktopBadges.length).toBe(3);
+  });
+
+  it('Desktop badge appears on Vector Search', () => {
+    render(React.createElement(AITools));
+    const vectorCard = screen.getByText('Vector Search').closest('a');
+    expect(vectorCard?.textContent).toContain('Desktop');
+  });
+
+  it('Desktop badge appears on Multimodal Assistant', () => {
+    render(React.createElement(AITools));
+    const multimodalCard = screen.getByText('Multimodal Assistant').closest('a');
+    expect(multimodalCard?.textContent).toContain('Desktop');
+  });
+
+  it('Desktop badge appears on Model Quantization', () => {
+    render(React.createElement(AITools));
+    const quantCard = screen.getByText('Model Quantization').closest('a');
+    expect(quantCard?.textContent).toContain('Desktop');
+  });
+
+  it('does NOT show Desktop badge on RAG Pipeline', () => {
+    render(React.createElement(AITools));
+    const ragCard = screen.getByText('RAG Pipeline').closest('a');
+    expect(ragCard?.textContent).not.toContain('Desktop');
+  });
+
+  it('all demo cards have working href links', () => {
+    render(React.createElement(AITools));
+    const links = screen.getAllByRole('link');
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href?.includes('/demos/')) {
+        expect(href).toMatch(/^\/demos\//);
+      }
+    });
   });
 });

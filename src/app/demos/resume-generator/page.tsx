@@ -206,6 +206,7 @@ ${resume.atsKeywords.join(', ')}`;
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
                 placeholder="Paste the job description here..."
+                maxLength={5000}
                 className="w-full h-96 px-4 py-3 rounded-lg bg-card border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:border-blue-500 resize-none"
               />
             </div>

@@ -39,10 +39,22 @@ function inMemoryRateLimit(ip: string): { limited: boolean } {
   return { limited: false };
 }
 
+/** One-way SHA-256 of an IP so raw addresses are never stored in Redis. */
+async function hashIp(ip: string): Promise<string> {
+  const buf = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(ip)
+  );
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
 export async function rateLimit(rawIp: string): Promise<{ limited: boolean }> {
   const ip = rawIp.split(',')[0].trim();
   if (upstashLimiter) {
-    const { success } = await upstashLimiter.limit(ip);
+    const key = await hashIp(ip);
+    const { success } = await upstashLimiter.limit(key);
     return { limited: !success };
   }
   return inMemoryRateLimit(ip);

@@ -71,9 +71,9 @@ describe('POST /api/resume-generator', () => {
     expect(res.status).toBe(400);
   });
 
-  it('returns 400 when jobDescription exceeds 500 characters', async () => {
+  it('returns 400 when jobDescription exceeds 5000 characters', async () => {
     const { POST } = await import('@/app/api/resume-generator/route');
-    const res = await POST(makeRequest({ jobDescription: 'j'.repeat(501), focusAreas: [] }));
+    const res = await POST(makeRequest({ jobDescription: 'j'.repeat(5001), focusAreas: [] }));
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/too long/i);

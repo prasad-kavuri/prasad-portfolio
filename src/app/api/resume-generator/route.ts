@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (jobDescription.length > 500) {
+    if (jobDescription.length > 5000) {
       return NextResponse.json({ error: 'Input too long' }, { status: 400 });
     }
     if (detectPromptInjection(jobDescription)) {

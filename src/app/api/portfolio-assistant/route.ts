@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { rateLimit } from '@/lib/rate-limit';
+import { rateLimit, detectPromptInjection } from '@/lib/rate-limit';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -45,6 +45,9 @@ export async function POST(req: NextRequest) {
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     if (lastUserMessage && lastUserMessage.content.length > 500) {
       return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+    }
+    if (lastUserMessage && detectPromptInjection(lastUserMessage.content)) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
     const apiKey = process.env.GROQ_API_KEY;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { rateLimit } from '@/lib/rate-limit';
+import { rateLimit, detectPromptInjection } from '@/lib/rate-limit';
 
 interface RequestBody {
   jobDescription: string;
@@ -40,6 +40,9 @@ export async function POST(req: NextRequest) {
 
     if (jobDescription.length > 500) {
       return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+    }
+    if (detectPromptInjection(jobDescription)) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
     const apiKey = process.env.GROQ_API_KEY;

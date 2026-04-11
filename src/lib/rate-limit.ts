@@ -29,3 +29,20 @@ export function rateLimit(ip: string): { limited: boolean } {
 export function _resetStore(): void {
   store.clear();
 }
+
+const INJECTION_PATTERNS = [
+  /ignore\s+(all\s+)?(previous|prior|above)\s+instructions/i,
+  /you\s+are\s+now\s+(a|an)\s+/i,
+  /act\s+as\s+(a|an)\s+/i,
+  /\[SYSTEM\]/i,
+  /\[INST\]/i,
+  /reveal\s+(your\s+)?(system\s+)?prompt/i,
+  /forget\s+(everything|all)\s+(you|above)/i,
+  /pretend\s+(you\s+are|to\s+be)/i,
+  /jailbreak/i,
+  /new\s+personality/i,
+];
+
+export function detectPromptInjection(input: string): boolean {
+  return INJECTION_PATTERNS.some(pattern => pattern.test(input));
+}

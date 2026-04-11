@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Groq } from "groq-sdk";
 import profile from "@/data/profile.json";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, detectPromptInjection } from "@/lib/rate-limit";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -164,6 +164,9 @@ export async function POST(request: NextRequest) {
   }
   if (query.length > 500) {
     return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+  }
+  if (detectPromptInjection(query)) {
+    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
   const startTime = Date.now();

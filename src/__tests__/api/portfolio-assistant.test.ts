@@ -1,0 +1,99 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { NextRequest } from 'next/server';
+import { _resetStore } from '@/lib/rate-limit';
+
+// Must mock before importing the route
+const mockFetch = vi.fn();
+vi.stubGlobal('fetch', mockFetch);
+
+// Mock profile.json to avoid loading the full data file
+vi.mock('@/data/profile.json', () => ({
+  default: {
+    personal: { name: 'Prasad Kavuri' },
+    knowledgeBase: ['AI engineer with 20 years experience'],
+  },
+}));
+
+function makeRequest(body: object, ip = '127.0.0.1') {
+  return new NextRequest('http://localhost/api/portfolio-assistant', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-forwarded-for': ip,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+describe('POST /api/portfolio-assistant', () => {
+  beforeEach(() => {
+    _resetStore();
+    vi.clearAllMocks();
+    process.env.GROQ_API_KEY = 'test-key';
+  });
+
+  afterEach(() => {
+    delete process.env.GROQ_API_KEY;
+  });
+
+  it('returns 500 when GROQ_API_KEY is not set', async () => {
+    delete process.env.GROQ_API_KEY;
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({ messages: [{ role: 'user', content: 'hello' }], useRAG: false });
+    const res = await POST(req);
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toMatch(/GROQ_API_KEY/);
+  });
+
+  it('returns 400 when last user message exceeds 500 characters', async () => {
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({
+      messages: [{ role: 'user', content: 'a'.repeat(501) }],
+      useRAG: false,
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(/too long/i);
+  });
+
+  it('returns 429 after 10 requests from the same IP', async () => {
+    // With no API key the handler exits early (500) but the counter still increments
+    delete process.env.GROQ_API_KEY;
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const ip = '10.0.0.1';
+    const body = { messages: [{ role: 'user', content: 'hi' }], useRAG: false };
+
+    for (let i = 0; i < 10; i++) {
+      await POST(makeRequest(body, ip));
+    }
+
+    const res = await POST(makeRequest(body, ip));
+    expect(res.status).toBe(429);
+    const json = await res.json();
+    expect(json.error).toMatch(/too many requests/i);
+  });
+
+  it('calls Groq and returns a streaming response for a valid request', async () => {
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode('data: {"choices":[{"delta":{"content":"Hello"}}]}\n')
+        );
+        controller.enqueue(new TextEncoder().encode('data: [DONE]\n'));
+        controller.close();
+      },
+    });
+    mockFetch.mockResolvedValueOnce(new Response(stream, { status: 200 }));
+
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({ messages: [{ role: 'user', content: 'Who is Prasad?' }], useRAG: false });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('groq.com'),
+      expect.objectContaining({ method: 'POST' })
+    );
+  });
+});

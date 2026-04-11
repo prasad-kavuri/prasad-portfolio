@@ -1,5 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
 import { Groq } from "groq-sdk";
 import profile from "@/data/profile.json";
+import { rateLimit } from "@/lib/rate-limit";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -149,8 +151,21 @@ function executeTool(name: string, args: any): string {
   return "Tool not found";
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') ?? 'anonymous';
+  if (rateLimit(ip).limited) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   const { query } = await request.json();
+
+  if (!query || typeof query !== 'string') {
+    return NextResponse.json({ error: 'Query is required' }, { status: 400 });
+  }
+  if (query.length > 500) {
+    return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+  }
+
   const startTime = Date.now();
 
   try {

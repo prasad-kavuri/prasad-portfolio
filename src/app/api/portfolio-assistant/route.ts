@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
+import { rateLimit } from '@/lib/rate-limit';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -34,7 +35,17 @@ function retrieveRelevantDocuments(query: string, topK = 3) {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
+    if (rateLimit(ip).limited) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+
     const { messages, useRAG } = (await req.json()) as RequestBody;
+
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+    if (lastUserMessage && lastUserMessage.content.length > 500) {
+      return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+    }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
@@ -44,8 +55,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get the last user message for RAG retrieval
-    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     // Always inject full knowledge base as base context
     const fullContext = profile.knowledgeBase.join('\n\n');
 

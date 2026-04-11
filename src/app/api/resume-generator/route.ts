@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
+import { rateLimit } from '@/lib/rate-limit';
 
 interface RequestBody {
   jobDescription: string;
@@ -23,6 +24,11 @@ interface ResumeResponse {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
+    if (rateLimit(ip).limited) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+
     const { jobDescription, focusAreas } = (await req.json()) as RequestBody;
 
     if (!jobDescription || !jobDescription.trim()) {
@@ -30,6 +36,10 @@ export async function POST(req: NextRequest) {
         { error: 'Job description is required' },
         { status: 400 }
       );
+    }
+
+    if (jobDescription.length > 500) {
+      return NextResponse.json({ error: 'Input too long' }, { status: 400 });
     }
 
     const apiKey = process.env.GROQ_API_KEY;

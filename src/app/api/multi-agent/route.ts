@@ -7,6 +7,17 @@ const BLOCKED_URL_PATTERNS = [
   'localhost', '127.0.0.1', '0.0.0.0', '169.254', '10.', '192.168.', 'internal',
 ];
 
+interface AgentResult {
+  findings?: unknown;
+  recommendation?: unknown;
+  [key: string]: unknown;
+}
+
+interface AgentBackendResponse {
+  agents?: unknown;
+  [key: string]: unknown;
+}
+
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
   if ((await rateLimit(ip)).limited) {
@@ -55,11 +66,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error }, { status: 500 });
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as AgentBackendResponse;
 
     // Sanitize LLM-generated string fields from the agent backend
     if (data?.agents && Array.isArray(data.agents)) {
-      data.agents = data.agents.map((agent: any) => ({
+      data.agents = data.agents.map((agent: AgentResult) => ({
         ...agent,
         findings: Array.isArray(agent.findings)
           ? agent.findings.map((f: string) => sanitizeLLMOutput(f))
@@ -71,9 +82,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : null;
     return NextResponse.json(
-      { error: error?.message || 'Failed to connect to agent backend' },
+      { error: message || 'Failed to connect to agent backend' },
       { status: 500 }
     );
   }

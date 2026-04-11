@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     // Always inject full knowledge base as base context
     const fullContext = profile.knowledgeBase.join('\n\n');
 
-    let systemPrompt = `You are Prasad Kavuri's AI portfolio assistant.
+    const systemPrompt = `You are Prasad Kavuri's AI portfolio assistant.
 You have complete knowledge about Prasad's professional background.
 Answer questions accurately and specifically using the information below.
 Be concise but informative. Never say you lack context — you have it all below.

@@ -96,17 +96,17 @@ const LAYERS = [
 
 export function Architecture() {
   const [activeLayer, setActiveLayer] = useState<string | null>(null);
-  const [hasTracked, setHasTracked] = useState(false);
 
   const diagramRef = useRef<HTMLDivElement>(null);
+  const hasTrackedRef = useRef(false);
   const isInView = useInView(diagramRef, { once: true, margin: '-100px' });
 
   useEffect(() => {
-    if (isInView && !hasTracked) {
+    if (isInView && !hasTrackedRef.current) {
       trackEvent('architecture_diagram_viewed');
-      setHasTracked(true);
+      hasTrackedRef.current = true;
     }
-  }, [isInView, hasTracked]);
+  }, [isInView]);
 
   return (
     <section id="architecture" className="bg-slate-900 py-20">

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Groq } from "groq-sdk";
+import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat";
 import profile from "@/data/profile.json";
 import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
 
@@ -82,12 +83,53 @@ const GROQ_TOOLS = MCP_TOOLS.map(tool => ({
   }
 }));
 
-function executeTool(name: string, args: any): string {
+type ToolArgs = Record<string, unknown>;
+
+interface ToolCallLogEntry {
+  tool: string;
+  args: ToolArgs;
+  result: string;
+  duration_ms: number;
+}
+
+interface ToolResultMessage {
+  role: "tool";
+  tool_call_id: string;
+  content: string;
+}
+
+function getStringArg(args: ToolArgs, key: string): string {
+  const value = args[key];
+  return typeof value === "string" ? value : "";
+}
+
+function getStringArrayArg(args: ToolArgs, key: string): string[] {
+  const value = args[key];
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function parseToolArgs(argumentsValue: unknown): ToolArgs {
+  if (typeof argumentsValue === "string") {
+    const parsed = JSON.parse(argumentsValue) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed as ToolArgs
+      : {};
+  }
+
+  return argumentsValue && typeof argumentsValue === "object" && !Array.isArray(argumentsValue)
+    ? argumentsValue as ToolArgs
+    : {};
+}
+
+function executeTool(name: string, args: ToolArgs): string {
   if (name === "get_experience") {
+    const company = getStringArg(args, "company").toLowerCase();
+    if (!company) return "Company not found";
+
     const exp = profile.experience.find(
       (e) =>
-        e.company.toLowerCase().includes(args.company.toLowerCase()) ||
-        e.id.includes(args.company.toLowerCase())
+        e.company.toLowerCase().includes(company) ||
+        e.id.includes(company)
     );
     if (!exp) return "Company not found";
     return JSON.stringify({
@@ -100,14 +142,17 @@ function executeTool(name: string, args: any): string {
   }
 
   if (name === "search_skills") {
+    const category = getStringArg(args, "category");
     const skills = profile.skills[
-      args.category as keyof typeof profile.skills
+      category as keyof typeof profile.skills
     ];
     if (!skills) return "Category not found";
-    return JSON.stringify({ category: args.category, skills });
+    return JSON.stringify({ category, skills });
   }
 
   if (name === "calculate_fit_score") {
+    const requiredSkills = getStringArrayArg(args, "required_skills");
+    const roleTitle = getStringArg(args, "role_title");
     const allSkills = [
       ...profile.skills.ai_ml,
       ...profile.skills.cloud_infrastructure,
@@ -116,7 +161,7 @@ function executeTool(name: string, args: any): string {
       ...profile.skills.core,
     ].map((s) => s.toLowerCase());
 
-    const matched = args.required_skills.filter((skill: string) =>
+    const matched = requiredSkills.filter((skill) =>
       allSkills.some(
         (s) =>
           s.includes(skill.toLowerCase()) ||
@@ -124,25 +169,26 @@ function executeTool(name: string, args: any): string {
       )
     );
 
-    const score = Math.round((matched.length / args.required_skills.length) * 100);
+    const score = requiredSkills.length > 0
+      ? Math.round((matched.length / requiredSkills.length) * 100)
+      : 0;
     return JSON.stringify({
-      role: args.role_title,
+      role: roleTitle,
       score,
       matched_skills: matched,
-      missing_skills: args.required_skills.filter(
-        (s: string) => !matched.includes(s)
-      ),
-      total_required: args.required_skills.length,
+      missing_skills: requiredSkills.filter((s) => !matched.includes(s)),
+      total_required: requiredSkills.length,
     });
   }
 
   if (name === "get_achievements") {
+    const company = getStringArg(args, "company").toLowerCase();
     let achievements = profile.achievements;
-    if (args.company) {
+    if (company) {
       achievements = achievements.filter(
         (a) =>
-          a.company.toLowerCase().includes(args.company.toLowerCase()) ||
-          args.company.toLowerCase() === "multiple"
+          a.company.toLowerCase().includes(company) ||
+          company === "multiple"
       );
     }
     return JSON.stringify(achievements);
@@ -198,8 +244,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const toolCallLog: any[] = [];
-    let toolResults: any[] = [];
+    const toolCallLog: ToolCallLogEntry[] = [];
+    const toolResultMessages: ToolResultMessage[] = [];
 
     // Step 2: Execute tools if called
     if (
@@ -209,9 +255,7 @@ export async function POST(request: NextRequest) {
       for (const toolCall of toolSelectionResponse.choices[0].message
         .tool_calls) {
         const toolStartTime = Date.now();
-        const toolArgs = typeof toolCall.function.arguments === 'string'
-          ? JSON.parse(toolCall.function.arguments)
-          : toolCall.function.arguments;
+        const toolArgs = parseToolArgs(toolCall.function.arguments);
         const result = executeTool(toolCall.function.name, toolArgs);
         const duration = Date.now() - toolStartTime;
 
@@ -222,9 +266,9 @@ export async function POST(request: NextRequest) {
           duration_ms: duration,
         });
 
-        toolResults.push({
-          type: "tool",
-          tool_use_id: toolCall.id,
+        toolResultMessages.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
           content: result,
         });
       }
@@ -233,9 +277,9 @@ export async function POST(request: NextRequest) {
     // Step 3: Call Groq again with tool results to get final answer
     let finalAnswer = "";
 
-    if (toolResults.length > 0) {
+    if (toolResultMessages.length > 0) {
       // Build message history with tool results
-      const messages: any[] = [
+      const messages: ChatCompletionMessageParam[] = [
         {
           role: "system",
           content: "You are an AI assistant with access to tools about Prasad Kavuri's professional profile. You MUST use the provided tools to answer questions. Always call at least one tool before answering. Never generate tool calls in XML format like <function=...>. Only use the standard JSON tool_calls format."
@@ -248,23 +292,9 @@ export async function POST(request: NextRequest) {
           role: "assistant",
           content: null,
           tool_calls: toolSelectionResponse.choices[0].message.tool_calls
-        }
+        },
+        ...toolResultMessages,
       ];
-
-      // Add each tool result as a separate tool message
-      const toolCalls = toolSelectionResponse.choices[0].message.tool_calls ?? [];
-
-      for (const toolCall of toolCalls) {
-        const toolArgs = typeof toolCall.function.arguments === 'string'
-          ? JSON.parse(toolCall.function.arguments)
-          : toolCall.function.arguments;
-        const result = executeTool(toolCall.function.name, toolArgs);
-        messages.push({
-          role: "tool",
-          tool_call_id: toolCall.id,
-          content: result
-        });
-      }
 
       const finalResponse = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",

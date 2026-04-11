@@ -9,7 +9,7 @@ const BLOCKED_URL_PATTERNS = [
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') ?? 'unknown';
-  if (rateLimit(ip).limited) {
+  if ((await rateLimit(ip)).limited) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 

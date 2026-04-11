@@ -1,33 +1,54 @@
-interface Entry {
-  count: number;
-  resetAt: number;
-}
-
-const store = new Map<string, Entry>();
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 export const RATE_LIMIT_MAX = 10;
 export const RATE_LIMIT_WINDOW_MS = 60_000;
 
-export function rateLimit(rawIp: string): { limited: boolean } {
-  // Normalize: take first IP from comma-separated x-forwarded-for list
-  const ip = rawIp.split(',')[0].trim();
+const hasUpstash = !!(
+  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
+);
+
+let upstashLimiter: Ratelimit | null = null;
+
+if (hasUpstash) {
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  });
+  upstashLimiter = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(RATE_LIMIT_MAX, '60 s'),
+    analytics: true,
+    prefix: '@prasadkavuri/ratelimit',
+  });
+}
+
+interface Entry { count: number; resetAt: number; }
+const store = new Map<string, Entry>();
+
+function inMemoryRateLimit(ip: string): { limited: boolean } {
   const now = Date.now();
   const entry = store.get(ip);
-
   if (!entry || now > entry.resetAt) {
     store.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
     return { limited: false };
   }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return { limited: true };
-  }
-
+  if (entry.count >= RATE_LIMIT_MAX) return { limited: true };
   entry.count++;
   return { limited: false };
 }
 
-/** Reset the store — for use in tests only. */
+export async function rateLimit(rawIp: string): Promise<{ limited: boolean }> {
+  const ip = rawIp.split(',')[0].trim();
+  if (upstashLimiter) {
+    const { success } = await upstashLimiter.limit(ip);
+    return { limited: !success };
+  }
+  return inMemoryRateLimit(ip);
+}
+
+/** Reset the in-memory store — for use in tests only. */
 export function _resetStore(): void {
   store.clear();
 }

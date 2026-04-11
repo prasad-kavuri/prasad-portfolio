@@ -36,7 +36,7 @@ function retrieveRelevantDocuments(query: string, topK = 3) {
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
-    if (rateLimit(ip).limited) {
+    if ((await rateLimit(ip)).limited) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 

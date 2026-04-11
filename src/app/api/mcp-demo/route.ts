@@ -153,7 +153,7 @@ function executeTool(name: string, args: any): string {
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') ?? 'anonymous';
-  if (rateLimit(ip).limited) {
+  if ((await rateLimit(ip)).limited) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 

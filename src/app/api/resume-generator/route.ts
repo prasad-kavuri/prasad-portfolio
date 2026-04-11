@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { rateLimit, detectPromptInjection } from '@/lib/rate-limit';
+import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
 
 interface RequestBody {
   jobDescription: string;
@@ -165,7 +165,21 @@ Generate a tailored resume as JSON with this exact structure:
       );
     }
 
-    return NextResponse.json(parsedResume);
+    // Sanitize all string fields before returning
+    const sanitized = {
+      ...parsedResume,
+      summary: sanitizeLLMOutput(parsedResume.summary),
+      experience: parsedResume.experience.map(exp => ({
+        ...exp,
+        bullets: exp.bullets.map(b => sanitizeLLMOutput(b)),
+      })),
+      skills: parsedResume.skills.map(s => sanitizeLLMOutput(s)),
+      matchedSkills: parsedResume.matchedSkills.map(s => sanitizeLLMOutput(s)),
+      missingSkills: parsedResume.missingSkills.map(s => sanitizeLLMOutput(s)),
+      atsKeywords: parsedResume.atsKeywords.map(k => sanitizeLLMOutput(k)),
+    };
+
+    return NextResponse.json(sanitized);
   } catch (error) {
     console.error('Resume generator error:', error);
     return NextResponse.json(

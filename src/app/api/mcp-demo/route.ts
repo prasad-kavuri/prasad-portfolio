@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Groq } from "groq-sdk";
 import profile from "@/data/profile.json";
-import { rateLimit, detectPromptInjection } from "@/lib/rate-limit";
+import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
         query,
         toolsDiscovered: 4,
         toolCallLog: [],
-        finalAnswer: message.content || "I could not find relevant information.",
+        finalAnswer: sanitizeLLMOutput(message.content || "I could not find relevant information."),
         totalDuration_ms: Date.now() - startTime,
       });
     }
@@ -272,12 +272,14 @@ export async function POST(request: NextRequest) {
         max_tokens: 1024,
       });
 
-      finalAnswer =
-        finalResponse.choices[0].message.content || "No response generated";
+      finalAnswer = sanitizeLLMOutput(
+        finalResponse.choices[0].message.content || "No response generated"
+      );
     } else {
       // No tools were called, use the initial response
-      finalAnswer =
-        toolSelectionResponse.choices[0].message.content || "No response generated";
+      finalAnswer = sanitizeLLMOutput(
+        toolSelectionResponse.choices[0].message.content || "No response generated"
+      );
     }
 
     const totalDuration = Date.now() - startTime;

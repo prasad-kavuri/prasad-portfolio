@@ -81,3 +81,11 @@ const INJECTION_PATTERNS = [
 export function detectPromptInjection(input: string): boolean {
   return INJECTION_PATTERNS.some(pattern => pattern.test(input));
 }
+
+/** Strip script tags, event handlers, and javascript: URIs from LLM output server-side. */
+export function sanitizeLLMOutput(text: string): string {
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/javascript:/gi, '');
+}

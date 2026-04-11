@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { rateLimit, detectPromptInjection } from '@/lib/rate-limit';
+import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -141,7 +141,7 @@ ${fullContext}`;
                   const json = JSON.parse(line.slice(6));
                   const content = json.choices?.[0]?.delta?.content || '';
                   if (content) {
-                    controller.enqueue(encoder.encode(content));
+                    controller.enqueue(encoder.encode(sanitizeLLMOutput(content)));
                   }
                 } catch {
                   // Skip malformed JSON

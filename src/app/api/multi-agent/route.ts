@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimit } from '@/lib/rate-limit';
+import { rateLimit, sanitizeLLMOutput } from '@/lib/rate-limit';
 
 const HF_SPACE_URL = 'https://prasadkavuri-multi-agent-demo.hf.space';
 
@@ -47,6 +47,20 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
+
+    // Sanitize LLM-generated string fields from the agent backend
+    if (data?.agents && Array.isArray(data.agents)) {
+      data.agents = data.agents.map((agent: any) => ({
+        ...agent,
+        findings: Array.isArray(agent.findings)
+          ? agent.findings.map((f: string) => sanitizeLLMOutput(f))
+          : agent.findings,
+        recommendation: typeof agent.recommendation === 'string'
+          ? sanitizeLLMOutput(agent.recommendation)
+          : agent.recommendation,
+      }));
+    }
+
     return NextResponse.json(data);
   } catch (error: any) {
     return NextResponse.json(

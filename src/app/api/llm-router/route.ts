@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimit, detectPromptInjection } from '@/lib/rate-limit';
+import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
 
 const MODELS = [
   { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', provider: 'Meta', inputCost: 0.05, outputCost: 0.08 },
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       model: model.id,
       modelName: model.name,
       provider: model.provider,
-      response: data.choices[0].message.content,
+      response: sanitizeLLMOutput(data.choices[0].message.content ?? ''),
       latency_ms: latency,
       input_tokens: inputTokens,
       output_tokens: outputTokens,

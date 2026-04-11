@@ -2,10 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: false,
+  fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 1,
+  workers: process.env.CI ? 2 : undefined,
   reporter: 'list',
   use: {
     baseURL: 'http://localhost:3000',
@@ -18,20 +18,16 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-      // API tests share the in-memory rate-limit bucket with chromium;
-      // running them again in webkit exhausts 'anonymous' and causes false 429s.
-      // HTTP-level validation is browser-agnostic — chromium coverage is sufficient.
-      testIgnore: ['**/api.spec.ts'],
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
     },
     {
-      name: 'mobile-chrome',
-      use: { ...devices['Pixel 5'] },
-      // Same rate-limit bucket issue for API tests.
-      // Desktop navbar links are hidden on mobile (hamburger layout) —
-      // navigation.spec.ts tests desktop-only nav interactions.
-      testIgnore: ['**/api.spec.ts', '**/navigation.spec.ts'],
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'mobile',
+      use: { ...devices['iPhone 14'] },
     },
   ],
   webServer: {

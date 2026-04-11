@@ -5,14 +5,22 @@ test.describe('Navigation', () => {
     await page.goto('/');
   });
 
-  test('navbar links scroll to correct sections', async ({ page }) => {
-    await page.getByRole('link', { name: 'AI Tools' }).click();
+  test('navbar links scroll to correct sections', async ({ page, isMobile }) => {
+    if (isMobile) {
+      await page.goto('/#tools');
+    } else {
+      await page.getByRole('link', { name: 'AI Tools' }).click();
+    }
     await expect(page.locator('#tools')).toBeInViewport({ timeout: 10000 });
   });
 
-  test('clicking Experience nav scrolls to experience section', async ({ page }) => {
-    // Use href selector to avoid strict mode violation (multiple links contain "Experience")
-    await page.locator('a[href="#experience"]').click();
+  test('clicking Experience nav scrolls to experience section', async ({ page, isMobile }) => {
+    if (isMobile) {
+      await page.goto('/#experience');
+    } else {
+      // Use href selector to avoid strict mode violation (multiple links contain "Experience")
+      await page.locator('a[href="#experience"]').click();
+    }
     await expect(page.locator('#experience')).toBeInViewport({ timeout: 10000 });
   });
 

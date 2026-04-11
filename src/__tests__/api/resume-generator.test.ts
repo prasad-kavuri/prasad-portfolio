@@ -135,4 +135,54 @@ describe('POST /api/resume-generator', () => {
     expect(body).toHaveProperty('summary');
     expect(body.matchedSkills).toContain('LLM Orchestration');
   });
+
+  it('returns 500 when Groq API returns non-200', async () => {
+    mockFetch.mockResolvedValueOnce(new Response('Unauthorized', { status: 401 }));
+
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI role', focusAreas: [] }));
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toMatch(/groq api/i);
+  });
+
+  it('returns 500 when LLM response contains no extractable JSON', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: 'Sorry, I cannot help with that.' } }] }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    );
+
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI role', focusAreas: [] }));
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toMatch(/failed to generate valid resume/i);
+  });
+
+  it('returns 500 when parsed resume is missing required fields', async () => {
+    // JSON object found but lacks matchScore and experience
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { content: JSON.stringify({ summary: 'Good candidate' }) } }],
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    );
+
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI role', focusAreas: [] }));
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toMatch(/invalid resume structure/i);
+  });
+
+  it('returns 500 for unexpected runtime errors', async () => {
+    // Omitting focusAreas causes TypeError at focusAreas.length (caught by outer try/catch)
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI role' }));
+    expect(res.status).toBe(500);
+  });
 });

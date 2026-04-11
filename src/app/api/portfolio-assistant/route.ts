@@ -42,6 +42,10 @@ export async function POST(req: NextRequest) {
 
     const { messages, useRAG } = (await req.json()) as RequestBody;
 
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
+    }
+
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     if (lastUserMessage && lastUserMessage.content.length > 500) {
       return NextResponse.json({ error: 'Input too long' }, { status: 400 });

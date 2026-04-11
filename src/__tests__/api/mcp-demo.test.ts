@@ -139,4 +139,175 @@ describe('POST /api/mcp-demo', () => {
     expect(body.toolCallLog[0].tool).toBe('get_experience');
     expect(body.finalAnswer).toBe('Prasad led AI at Krutrim.');
   });
+
+  it('executes search_skills tool for known category', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'search_skills', arguments: JSON.stringify({ category: 'ai_ml' }) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Prasad has strong AI/ML skills including LLM Orchestration.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'What are Prasad AI skills?' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog).toHaveLength(1);
+    expect(body.toolCallLog[0].tool).toBe('search_skills');
+    expect(body.toolCallLog[0].result).toContain('LLM Orchestration');
+  });
+
+  it('search_skills returns Category not found for unknown category', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'search_skills', arguments: JSON.stringify({ category: 'unknown_cat' }) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Category not found.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Show me unknown skills' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog[0].result).toBe('Category not found');
+  });
+
+  it('executes calculate_fit_score tool', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          {
+            id: 'call_1',
+            function: {
+              name: 'calculate_fit_score',
+              arguments: JSON.stringify({ required_skills: ['RAG', 'LLM'], role_title: 'VP of AI' }),
+            },
+          },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Prasad is an excellent fit with a score of 100.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Is Prasad a good fit for VP of AI?' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog[0].tool).toBe('calculate_fit_score');
+    const result = JSON.parse(body.toolCallLog[0].result);
+    expect(result.role).toBe('VP of AI');
+    expect(result.score).toBeGreaterThanOrEqual(0);
+  });
+
+  it('executes get_achievements tool with company filter', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'get_achievements', arguments: JSON.stringify({ company: 'Krutrim' }) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: '50% latency reduction at Krutrim.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Show Krutrim achievements' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog[0].tool).toBe('get_achievements');
+    const result = JSON.parse(body.toolCallLog[0].result);
+    expect(result).toHaveLength(1);
+    expect(result[0].company).toBe('Krutrim');
+  });
+
+  it('executes get_achievements tool without company filter', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'get_achievements', arguments: JSON.stringify({}) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Here are all achievements.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Show all achievements' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog[0].tool).toBe('get_achievements');
+    const result = JSON.parse(body.toolCallLog[0].result);
+    expect(Array.isArray(result)).toBe(true);
+  });
+
+  it('handles multiple tool calls in one request', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'search_skills', arguments: JSON.stringify({ category: 'leadership' }) } },
+          { id: 'call_2', function: { name: 'get_achievements', arguments: JSON.stringify({}) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Great leader with strong achievements.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Tell me about leadership and achievements' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog).toHaveLength(2);
+    expect(body.toolCallLog[0].tool).toBe('search_skills');
+    expect(body.toolCallLog[1].tool).toBe('get_achievements');
+  });
+
+  it('returns Tool not found for unknown tool name', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'nonexistent_tool', arguments: JSON.stringify({}) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Tool result unavailable.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Use a fake tool' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog[0].result).toBe('Tool not found');
+  });
+
+  it('get_experience returns Company not found for unknown company', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'get_experience', arguments: JSON.stringify({ company: 'unknown_corp' }) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'No info found.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'What did Prasad do at UnknownCorp?' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.toolCallLog[0].result).toBe('Company not found');
+  });
 });

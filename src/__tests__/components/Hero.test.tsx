@@ -1,6 +1,10 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
+
+vi.mock('@/lib/analytics', () => ({
+  trackEvent: vi.fn(),
+}));
 
 // next/image does not work outside Next.js; replace with a plain <img>
 vi.mock('next/image', () => ({
@@ -21,8 +25,12 @@ vi.mock('framer-motion', () => ({
 }));
 
 import { Hero } from '@/components/sections/Hero';
+import { trackEvent } from '@/lib/analytics';
 
 describe('Hero', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('renders full name from profile.json', () => {
     render(<Hero />);
     expect(screen.getByText('Prasad Kavuri')).toBeDefined();
@@ -95,5 +103,23 @@ describe('Hero', () => {
     render(<Hero />);
     expect(screen.getByText(/Recruiters/i)).toBeDefined();
     expect(screen.getByText(/VP \/ Head of AI Engineering/i)).toBeDefined();
+  });
+
+  it('fires trackEvent(linkedin_clicked) when View LinkedIn is clicked', () => {
+    render(<Hero />);
+    const links = screen.getAllByRole('link', { name: /View LinkedIn/i });
+    // Remove href to prevent happy-dom from navigating; React onClick still fires
+    links[0].removeAttribute('href');
+    fireEvent.click(links[0]);
+    expect(trackEvent).toHaveBeenCalledWith('linkedin_clicked');
+  });
+
+  it('fires trackEvent(resume_downloaded) when Download Resume is clicked', () => {
+    render(<Hero />);
+    const link = screen.getByRole('link', { name: /Download Resume/i });
+    // Remove href to prevent happy-dom from navigating; React onClick still fires
+    link.removeAttribute('href');
+    fireEvent.click(link);
+    expect(trackEvent).toHaveBeenCalledWith('resume_downloaded');
   });
 });

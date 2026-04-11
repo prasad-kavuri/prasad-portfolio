@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock framer-motion useInView to immediately return true
@@ -28,15 +28,19 @@ describe('AnimatedCounter', () => {
     expect(screen.getByText(/\d+\+/)).toBeDefined();
   });
 
-  it('animates to target value after interval completes', () => {
+  it('animates to target value after interval completes', async () => {
     render(<AnimatedCounter value="20+" className="test" />);
-    vi.runAllTimers();
+    await act(async () => {
+      vi.runAllTimers();
+    });
     expect(screen.getByText('20+')).toBeDefined();
   });
 
-  it('handles K+ suffix correctly', () => {
+  it('handles K+ suffix correctly', async () => {
     render(<AnimatedCounter value="13K+" className="test" />);
-    vi.runAllTimers();
+    await act(async () => {
+      vi.runAllTimers();
+    });
     expect(screen.getByText('13K+')).toBeDefined();
   });
 

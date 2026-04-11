@@ -46,10 +46,17 @@ function makeRequest(body: object, ip = '127.0.0.1') {
   });
 }
 
+const DEFAULT_GROQ_RESPONSE = {
+  choices: [{ message: { content: 'test response', tool_calls: null } }],
+  usage: { total_tokens: 10 },
+};
+
 describe('POST /api/mcp-demo', () => {
   beforeEach(() => {
     _resetStore();
     vi.clearAllMocks();
+    // Default: always return a valid response so requests that reach Groq don't crash
+    mockCreate.mockResolvedValue(DEFAULT_GROQ_RESPONSE);
   });
 
   it('returns 400 when query is missing', async () => {

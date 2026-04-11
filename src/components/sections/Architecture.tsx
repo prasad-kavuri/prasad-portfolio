@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useInView } from 'framer-motion';
 import { FadeUp } from '@/components/ui/motion';
+import { trackEvent } from '@/lib/analytics';
 
 const colorMap = {
   indigo: {
@@ -94,6 +96,17 @@ const LAYERS = [
 
 export function Architecture() {
   const [activeLayer, setActiveLayer] = useState<string | null>(null);
+  const [hasTracked, setHasTracked] = useState(false);
+
+  const diagramRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(diagramRef, { once: true, margin: '-100px' });
+
+  useEffect(() => {
+    if (isInView && !hasTracked) {
+      trackEvent('architecture_diagram_viewed');
+      setHasTracked(true);
+    }
+  }, [isInView, hasTracked]);
 
   return (
     <section id="architecture" className="bg-slate-900 py-20">
@@ -114,7 +127,7 @@ export function Architecture() {
         </FadeUp>
 
         {/* Diagram */}
-        <div className="space-y-1">
+        <div ref={diagramRef} className="space-y-1">
           {LAYERS.map((layer, idx) => (
             <FadeUp key={layer.id} delay={idx * 0.08}>
               <div>

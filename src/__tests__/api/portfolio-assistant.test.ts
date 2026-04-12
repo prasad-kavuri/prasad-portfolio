@@ -154,6 +154,50 @@ describe('POST /api/portfolio-assistant', () => {
     expect(docsHeader).not.toBeNull();
   });
 
+  it('accepts multi-turn conversation with long assistant history (regression: was returning 400)', async () => {
+    // Bug: validateMessages applied a 1000-char limit to ALL messages.
+    // Groq responses are up to 1024 tokens (~4000+ chars). The second
+    // request always included the previous assistant response, which
+    // exceeded 1000 chars → validateMessages returned null → 400.
+    const longAssistantResponse = 'A'.repeat(3000); // typical Groq response length
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode('data: {"choices":[{"delta":{"content":"answer"}}]}\n')
+        );
+        controller.enqueue(new TextEncoder().encode('data: [DONE]\n'));
+        controller.close();
+      },
+    });
+    mockFetch.mockResolvedValueOnce(new Response(stream, { status: 200 }));
+
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({
+      messages: [
+        { role: 'user', content: 'First question' },
+        { role: 'assistant', content: longAssistantResponse },
+        { role: 'user', content: 'Follow-up question' },
+      ],
+      useRAG: false,
+    });
+    const res = await POST(req);
+    // Must be 200, not 400 — this is the regression test
+    expect(res.status).toBe(200);
+  });
+
+  it('still rejects assistant messages exceeding MAX_ASSISTANT_MSG_LEN (8192)', async () => {
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({
+      messages: [
+        { role: 'assistant', content: 'A'.repeat(8193) },
+        { role: 'user', content: 'follow up' },
+      ],
+      useRAG: false,
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
   it('handles response with null body (no reader path)', async () => {
     // Response with null body → body?.getReader() === undefined → stream closes immediately
     mockFetch.mockResolvedValueOnce(new Response(null, { status: 200 }));

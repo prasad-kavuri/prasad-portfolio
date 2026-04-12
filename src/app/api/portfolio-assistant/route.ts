@@ -41,6 +41,13 @@ function retrieveRelevantDocuments(query: string, topK = 3) {
     .map(({ score, ...doc }) => doc);
 }
 
+// User messages are limited tightly (security). Assistant messages can be
+// much longer — up to ~1024 tokens ≈ 4000–8000 chars from Groq responses.
+// Applying the 1000-char user limit to all messages caused every second
+// request to fail because the previous assistant response exceeded it.
+const MAX_USER_MSG_LEN = 1000;
+const MAX_ASSISTANT_MSG_LEN = 8192;
+
 function validateMessages(value: unknown): Message[] | null {
   if (!Array.isArray(value) || value.length === 0 || value.length > 20) return null;
 
@@ -49,7 +56,8 @@ function validateMessages(value: unknown): Message[] | null {
     if (!item || typeof item !== 'object') return null;
     const { role, content } = item as { role?: unknown; content?: unknown };
     if ((role !== 'user' && role !== 'assistant') || typeof content !== 'string') return null;
-    if (content.length > 1000) return null;
+    const limit = role === 'user' ? MAX_USER_MSG_LEN : MAX_ASSISTANT_MSG_LEN;
+    if (content.length > limit) return null;
     messages.push({ role, content });
   }
 
@@ -112,10 +120,14 @@ ${fullContext}`;
       retrievedDocs = retrieveRelevantDocuments(lastUserMessage.content);
     }
 
+    // Limit conversation history to last 6 messages to prevent context overflow.
+    // System prompt + full knowledgeBase already consumes most of the context window.
+    const recentMessages = messages.slice(-6);
+
     // Prepare messages for Groq API
     const groqMessages = [
       { role: 'system' as const, content: systemPrompt },
-      ...messages,
+      ...recentMessages,
     ];
 
     // Call Groq API with streaming
@@ -210,7 +222,7 @@ ${fullContext}`;
       traceId: context.traceId,
       status: 200,
       durationMs: totalDuration,
-      messageCount: messages.length,
+      messageCount: recentMessages.length,
       useRAG,
       retrievedDocs: retrievedDocs.length,
     });

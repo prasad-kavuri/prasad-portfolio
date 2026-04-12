@@ -47,7 +47,7 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Restore Next.js cache
+      - name: Restore Next.js build cache
         uses: actions/cache@v4
         with:
           path: .next/cache
@@ -65,7 +65,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: .next/
+          # Exclude .next/cache (managed by actions/cache above, not needed at runtime)
+          # and .next/dev (dev-mode output, not needed for next start, can be 800MB+).
+          path: |
+            .next/
+            !.next/cache
+            !.next/dev
           retention-days: 1
 
   e2e:
@@ -93,28 +98,31 @@ jobs:
 
       - name: Download build artifact
         # upload-artifact stores paths relative to the workspace root (.next/server/...)
-        # so we extract to . (workspace root) to restore .next/ in the correct location.
+        # so extract to . (workspace root) to restore .next/ in the correct location.
         uses: actions/download-artifact@v4
         with:
           name: next-build
           path: .
 
-      - name: Verify artifact
-        run: ls -la .next/
+      - name: Verify artifact landed correctly
+        run: |
+          ls -la .next/ || (echo "ERROR: .next/ not found after artifact download" && exit 1)
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Start server
-        run: npm run start &
+      - name: Start server, wait for readiness, run tests
+        # Start next start in the background within the same shell so the PID
+        # is trackable; wait-on blocks until port 3000 is accepting connections.
+        run: |
+          npx next start &
+          SERVER_PID=$!
+          npx wait-on http://localhost:3000 --timeout 30000
+          echo "Server ready (PID $SERVER_PID)"
+          npx playwright test --project=${{ matrix.browser }}
+          kill $SERVER_PID 2>/dev/null || true
         env:
           NODE_ENV: production
-
-      - name: Wait for server to be ready
-        run: npx wait-on http://localhost:3000 --timeout 60000
-
-      - name: Playwright tests (${{ matrix.browser }})
-        run: npx playwright test --project=${{ matrix.browser }}
 
       - name: Upload Playwright report
         if: failure()

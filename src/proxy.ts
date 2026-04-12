@@ -8,7 +8,7 @@ export function proxy(request: NextRequest) {
   // Handles CDN-cached legacy URLs not covered by next.config.ts redirects().
   if (pathname.endsWith('.html') && !pathname.startsWith('/_next/')) {
     return NextResponse.redirect(
-      new URL('/demos', request.url),
+      new URL('/', request.url),
       { status: 308 }
     );
   }

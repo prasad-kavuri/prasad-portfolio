@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "Browser-based RAG with real embeddings, cosine similarity, and document retrieval.",
     url: "https://prasadkavuri.com/demos/rag-pipeline",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/rag-pipeline",
+  },
 };

@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "Streaming RAG chatbot powered by Groq Llama 3.1 with full knowledge base.",
     url: "https://prasadkavuri.com/demos/portfolio-assistant",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/portfolio-assistant",
+  },
 };

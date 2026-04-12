@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "Real multi-agent collaboration with Groq LLMs and sequential agent handoffs.",
     url: "https://prasadkavuri.com/demos/multi-agent",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/multi-agent",
+  },
 };

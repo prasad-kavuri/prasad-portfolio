@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "Live Model Context Protocol demo with tool discovery, selection, and execution trace.",
     url: "https://prasadkavuri.com/demos/mcp-demo",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/mcp-demo",
+  },
 };

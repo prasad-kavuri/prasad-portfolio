@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Redirect any .html requests that aren't Next.js internals to /demos.
+  // Handles CDN-cached legacy URLs not covered by next.config.ts redirects().
+  if (pathname.endsWith('.html') && !pathname.startsWith('/_next/')) {
+    const slug = pathname.replace(/\.html$/, '').replace(/^\//, '');
+    return NextResponse.redirect(
+      new URL(`/demos/${slug}`, request.url),
+      { status: 308 }
+    );
+  }
+
   const response = NextResponse.next();
 
   // Security headers

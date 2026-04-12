@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "Live FP32 vs INT8 benchmark with real ONNX inference timing.",
     url: "https://prasadkavuri.com/demos/quantization",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/quantization",
+  },
 };

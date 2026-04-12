@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "ATS-optimized resume generation with JD parsing and skill matching.",
     url: "https://prasadkavuri.com/demos/resume-generator",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/resume-generator",
+  },
 };

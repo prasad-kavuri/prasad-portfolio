@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "Browser-based semantic search with UMAP-style 2D embedding visualisation.",
     url: "https://prasadkavuri.com/demos/vector-search",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/vector-search",
+  },
 };

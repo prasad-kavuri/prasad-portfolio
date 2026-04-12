@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "In-browser ViT image classification and CLIP zero-shot with no API key.",
     url: "https://prasadkavuri.com/demos/multimodal",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/multimodal",
+  },
 };

@@ -1,7 +1,28 @@
 import type { NextConfig } from "next";
 
+const LEGACY_HTML_PAGES = [
+  '/portfolio-assistant.html',
+  '/vector-search-playground.html',
+  '/multimodal-assistant.html',
+  '/multi-agent-demo.html',
+  '/rag-pipeline.html',
+  '/vector-search.html',
+  '/quantization.html',
+  '/llm-router.html',
+  '/multi-agent.html',
+  '/mcp-demo.html',
+  '/resume-generator.html',
+];
+
 const nextConfig: NextConfig = {
   turbopack: {},
+  async redirects() {
+    return LEGACY_HTML_PAGES.map(source => ({
+      source,
+      destination: '/demos' + source.replace('.html', ''),
+      permanent: true, // 308 — signals final redirect to Google
+    }));
+  },
   async headers() {
     return [
       {

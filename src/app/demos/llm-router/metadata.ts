@@ -8,4 +8,7 @@ export const metadata: Metadata = {
     description: "Intelligent model routing achieving cost and latency savings across 4 Groq models.",
     url: "https://prasadkavuri.com/demos/llm-router",
   },
+  alternates: {
+    canonical: "https://prasadkavuri.com/demos/llm-router",
+  },
 };

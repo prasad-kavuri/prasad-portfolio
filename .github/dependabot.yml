@@ -38,6 +38,11 @@ updates:
       interval: weekly
       day: monday
       time: "09:00"
+    ignore:
+      # Major version bumps for actions require manual review —
+      # non-existent major versions (e.g. checkout@v6) would break CI.
+      - dependency-name: "actions/*"
+        update-types: ["version-update:semver-major"]
     labels:
       - dependencies
       - ci

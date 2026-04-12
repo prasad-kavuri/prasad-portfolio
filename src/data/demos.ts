@@ -3,6 +3,7 @@ export type Demo = {
   emoji: string;
   title: string;
   description: string;
+  businessImpact: string;
   href: string;
   tags: string[];
   status: "live" | "upgrading" | "coming-soon";
@@ -15,6 +16,7 @@ export const demos: Demo[] = [
     emoji: "🚀",
     title: "RAG Pipeline",
     description: "Real retrieval-augmented generation with Transformers.js embeddings and ChromaDB — runs entirely in your browser.",
+    businessImpact: "Enables faster decisions across enterprise knowledge systems at lower support cost",
     href: "/demos/rag-pipeline",
     tags: ["Transformers.js", "ChromaDB", "nomic-embed-text"],
     status: "live",
@@ -24,6 +26,7 @@ export const demos: Demo[] = [
     emoji: "👥",
     title: "Multi-Agent System",
     description: "CrewAI-powered agents with real LLM calls via Groq — Analyzer, Researcher, and Strategist collaborating in real time.",
+    businessImpact: "Improves decision speed by coordinating specialized workflows across business functions",
     href: "/demos/multi-agent",
     tags: ["CrewAI", "Groq", "Llama 3.3"],
     status: "live",
@@ -33,6 +36,7 @@ export const demos: Demo[] = [
     emoji: "🔄",
     title: "LLM Router",
     description: "Real multi-model routing across Llama 3.1 8B, 70B, and Mixtral — see live latency, cost, and quality trade-offs.",
+    businessImpact: "Optimizes cost and latency in large-scale AI inference pipelines",
     href: "/demos/llm-router",
     tags: ["Groq", "Multi-model", "Live latency"],
     status: "live",
@@ -42,6 +46,7 @@ export const demos: Demo[] = [
     emoji: "🔎",
     title: "Vector Search",
     description: "Semantic search with real sentence-BERT embeddings and UMAP visualisation of the embedding space.",
+    businessImpact: "Accelerates knowledge discovery across large enterprise content repositories",
     href: "/demos/vector-search",
     tags: ["all-MiniLM-L6-v2", "UMAP", "Cosine similarity"],
     desktopOnly: true,
@@ -52,6 +57,7 @@ export const demos: Demo[] = [
     emoji: "🤖",
     title: "AI Portfolio Assistant",
     description: "Streaming RAG-powered assistant over my experience — ask anything about my background and see retrieved context.",
+    businessImpact: "Cuts expert lookup time by making organizational knowledge instantly accessible",
     href: "/demos/portfolio-assistant",
     tags: ["Vercel AI SDK", "Streaming", "RAG"],
     status: "live",
@@ -61,6 +67,7 @@ export const demos: Demo[] = [
     emoji: "📄",
     title: "Resume Generator",
     description: "Paste a job description, get a tailored resume with skill matching scores and selection reasoning.",
+    businessImpact: "Reduces recruiting cycle time through faster candidate-role alignment",
     href: "/demos/resume-generator",
     tags: ["JD parsing", "Skill matching", "PDF export"],
     status: "live",
@@ -70,6 +77,7 @@ export const demos: Demo[] = [
     emoji: "🎭",
     title: "Multimodal Assistant",
     description: "Florence-2 image captioning and OCR running in-browser via Transformers.js — no server, no API key.",
+    businessImpact: "Lowers processing costs by running vision workflows closer to users",
     href: "/demos/multimodal",
     tags: ["Florence-2", "WebGPU", "In-browser"],
     desktopOnly: true,
@@ -80,6 +88,7 @@ export const demos: Demo[] = [
     emoji: "⚡",
     title: "Model Quantization",
     description: "Live ONNX benchmark comparing INT8 vs FP32 inference — real file sizes, real latency, real quality diff.",
+    businessImpact: "Reduces infrastructure overhead through smaller, faster production models",
     href: "/demos/quantization",
     tags: ["ONNX", "INT8 vs FP32", "Transformers.js"],
     desktopOnly:true,
@@ -90,6 +99,7 @@ export const demos: Demo[] = [
     emoji: "🔌",
     title: "MCP Tool Demo",
     description: "Model Context Protocol in action — watch an LLM discover and call tools to answer questions about Prasad's background.",
+    businessImpact: "Improves reliability by standardizing tool access across agent workflows",
     href: "/demos/mcp-demo",
     tags: ["MCP", "Tool Use", "Groq API"],
     status: "live",

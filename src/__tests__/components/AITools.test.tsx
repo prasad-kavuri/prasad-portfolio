@@ -14,6 +14,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '🚀',
       title: 'RAG Pipeline',
       description: 'Real retrieval-augmented generation.',
+      businessImpact: 'Enables faster decisions across enterprise knowledge systems',
       href: '/demos/rag-pipeline',
       tags: ['RAG', 'Transformers.js'],
       status: 'live',
@@ -23,6 +24,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '👥',
       title: 'Multi-Agent System',
       description: 'CrewAI-powered agents.',
+      businessImpact: 'Improves decision speed across specialized business workflows',
       href: '/demos/multi-agent',
       tags: ['CrewAI', 'Groq'],
       status: 'live',
@@ -32,6 +34,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '🔄',
       title: 'LLM Router',
       description: 'Multi-model routing.',
+      businessImpact: 'Optimizes cost and latency in AI inference pipelines',
       href: '/demos/llm-router',
       tags: ['Groq', 'Multi-model'],
       status: 'live',
@@ -41,6 +44,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '🔌',
       title: 'MCP Tool Demo',
       description: 'MCP in action.',
+      businessImpact: 'Improves reliability through standardized tool access',
       href: '/demos/mcp-demo',
       tags: ['MCP', 'Tool Use'],
       status: 'live',
@@ -50,6 +54,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '📄',
       title: 'Resume Generator',
       description: 'Tailored resume from JD.',
+      businessImpact: 'Reduces recruiting cycle time through faster alignment',
       href: '/demos/resume-generator',
       tags: ['JD parsing', 'Skill matching'],
       status: 'live',
@@ -59,6 +64,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '🤖',
       title: 'AI Portfolio Assistant',
       description: 'Streaming RAG assistant.',
+      businessImpact: 'Cuts lookup time by making knowledge instantly accessible',
       href: '/demos/portfolio-assistant',
       tags: ['Streaming', 'RAG'],
       status: 'live',
@@ -69,6 +75,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '🔎',
       title: 'Vector Search',
       description: 'Semantic search with embeddings.',
+      businessImpact: 'Accelerates knowledge discovery across enterprise content',
       href: '/demos/vector-search',
       tags: ['all-MiniLM-L6-v2', 'UMAP'],
       status: 'live',
@@ -78,6 +85,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '🎭',
       title: 'Multimodal Assistant',
       description: 'Florence-2 image captioning.',
+      businessImpact: 'Lowers processing costs by running vision closer to users',
       href: '/demos/multimodal',
       tags: ['Florence-2', 'WebGPU'],
       status: 'live',
@@ -87,6 +95,7 @@ vi.mock('@/data/demos', () => ({
       emoji: '⚡',
       title: 'Model Quantization',
       description: 'Live ONNX benchmark.',
+      businessImpact: 'Reduces infrastructure overhead through faster production models',
       href: '/demos/quantization',
       tags: ['ONNX', 'INT8 vs FP32'],
       status: 'live',
@@ -122,6 +131,12 @@ describe('AITools', () => {
     expect(screen.getByText('MCP Tool Demo')).toBeInTheDocument();
     expect(screen.getByText('Resume Generator')).toBeInTheDocument();
     expect(screen.getByText('AI Portfolio Assistant')).toBeInTheDocument();
+  });
+
+  it('renders business impact lines for demo cards', () => {
+    render(React.createElement(AITools));
+    expect(screen.getByText('Optimizes cost and latency in AI inference pipelines')).toBeInTheDocument();
+    expect(screen.getByText('Accelerates knowledge discovery across enterprise content')).toBeInTheDocument();
   });
 
   it('renders demo card links with correct hrefs', () => {

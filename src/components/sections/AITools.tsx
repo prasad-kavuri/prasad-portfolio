@@ -94,6 +94,9 @@ export function AITools() {
                           </div>
                         </div>
                         <CardTitle className="text-base">{demo.title}</CardTitle>
+                        <p className="text-xs leading-snug text-muted-foreground">
+                          {demo.businessImpact}
+                        </p>
                       </CardHeader>
                       <CardContent>
                         <p className="mb-3 text-sm text-muted-foreground">

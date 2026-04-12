@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { FadeUp } from '@/components/ui/motion';
 import { trackEvent } from '@/lib/analytics';
@@ -132,6 +133,22 @@ export function Architecture() {
           ref={diagramRef}
           className="rounded-2xl border border-slate-700/70 bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/25 p-3 shadow-[0_20px_70px_rgba(15,23,42,0.28)] sm:p-4"
         >
+          <figure className="mb-6 overflow-hidden rounded-xl border border-slate-700/70 bg-slate-950/70">
+            <Image
+              src="/architecture-diagram.svg"
+              alt="System architecture diagram for the portfolio AI platform"
+              width={1200}
+              height={760}
+              priority={false}
+              className="h-auto w-full"
+            />
+            <figcaption className="border-t border-slate-700/70 px-4 py-3 text-xs leading-relaxed text-slate-400">
+              System-level view of the portfolio: Next.js UI, API reliability
+              controls, agent orchestration, AI services, data sources, and
+              external providers.
+            </figcaption>
+          </figure>
+
           <div className="space-y-1">
             {LAYERS.map((layer, idx) => (
               <FadeUp key={layer.id} delay={idx * 0.03} duration={0.24} yOffset={14}>

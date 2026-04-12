@@ -5,7 +5,7 @@
 > enterprise security, full test suite, and CI/CD pipeline.
 
 [![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-208%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-270%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)]()
 [![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)]()
 [![React](https://img.shields.io/badge/React-19.2.5-blue)]()
@@ -24,10 +24,22 @@
 | [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq, Analyzer+Researcher+Strategist | Server |
 | [MCP Tool Demo](https://www.prasadkavuri.com/demos/mcp-demo) | Agentic | MCP protocol, Groq tool calling | Server |
 
-## Architecture
+## Architecture Overview
 
-6-layer Enterprise AI Architecture — from user intent to business outcomes.
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full breakdown.
+![Portfolio AI system architecture](public/architecture-diagram.svg)
+
+The portfolio is modeled as a production AI system rather than a static site:
+
+| Layer | Implementation |
+|---|---|
+| UI Layer | Next.js App Router, Tailwind CSS, Framer Motion, Vercel Analytics |
+| API and Reliability | Shared route utilities for request tracing, validation, rate limits, errors, and structured logs |
+| Agentic Orchestration | Multi-agent workflow demo, MCP tool discovery, prompt safety, and approval-oriented patterns |
+| AI Services | LLM Router, RAG Pipeline, Portfolio Assistant, Resume Generator, MCP Demo, browser ML demos |
+| Data Layer | `profile.json`, `demos.ts`, browser embeddings, vector search, static knowledge base |
+| External Services | Groq, Hugging Face models/Spaces, Upstash Redis, Vercel hosting and telemetry |
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full system-level breakdown, including routing, security, and observability.
 
 ```
 prasad-portfolio/
@@ -96,7 +108,7 @@ prasad-portfolio/
 npm run test           # unit tests (Vitest)
 npm run test:coverage  # coverage report
 npm run test:fuzz      # adversarial/fuzz tests
-npm run test:e2e       # Playwright (chromium, firefox, webkit, mobile)
+npm run test:e2e       # Playwright (chromium, firefox, webkit)
 ```
 
 | Layer | Directory | Focus |

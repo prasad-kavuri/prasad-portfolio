@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Prasad Portfolio System Architecture</title>
+  <desc id="desc">A layered system architecture diagram showing Next.js UI, API routes, agentic orchestration, AI services, data services, and external providers.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="55%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#93c5fd"/>
+    </marker>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.55 0 0 0 0 0.38 0 0 0 0 1 0 0 0 0.45 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <style>
+      .title { fill: #f8fafc; font: 700 30px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .subtitle { fill: #94a3b8; font: 400 15px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .layer-title { fill: #e2e8f0; font: 700 17px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .layer-desc { fill: #94a3b8; font: 400 13px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .node-title { fill: #e5e7eb; font: 650 13px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .node-copy { fill: #94a3b8; font: 400 11px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .pill { fill: #0f172a; stroke: #334155; stroke-width: 1; }
+      .line { stroke: #93c5fd; stroke-width: 1.8; fill: none; marker-end: url(#arrow); opacity: 0.9; }
+      .muted-line { stroke: #475569; stroke-width: 1.4; fill: none; marker-end: url(#arrow); opacity: 0.75; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="760" rx="28" fill="url(#bg)"/>
+  <rect x="24" y="24" width="1152" height="712" rx="24" fill="none" stroke="url(#accent)" stroke-width="1.4" opacity="0.55"/>
+
+  <text x="64" y="74" class="title">Portfolio AI System Architecture</text>
+  <text x="64" y="103" class="subtitle">Next.js UI, API routes, orchestration, AI services, data services, and provider integrations</text>
+
+  <g transform="translate(64 138)">
+    <rect width="1072" height="92" rx="16" fill="#0f172a" stroke="#334155"/>
+    <text x="26" y="34" class="layer-title">UI Layer</text>
+    <text x="26" y="58" class="layer-desc">Next.js App Router, Tailwind CSS, Framer Motion, Vercel Analytics</text>
+    <g transform="translate(360 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Homepage</text>
+      <text x="18" y="38" class="node-copy">architecture + demos</text>
+    </g>
+    <g transform="translate(536 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Demo Pages</text>
+      <text x="18" y="38" class="node-copy">9 live experiences</text>
+    </g>
+    <g transform="translate(712 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Client AI</text>
+      <text x="18" y="38" class="node-copy">WASM / WebGPU</text>
+    </g>
+    <g transform="translate(888 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">SEO + AI</text>
+      <text x="18" y="38" class="node-copy">JSON-LD + llms.txt</text>
+    </g>
+  </g>
+
+  <path class="line" d="M600 230 L600 264"/>
+
+  <g transform="translate(64 264)">
+    <rect width="1072" height="92" rx="16" fill="#111827" stroke="#475569"/>
+    <text x="26" y="34" class="layer-title">API and Reliability Layer</text>
+    <text x="26" y="58" class="layer-desc">Route handlers with validation, rate limiting, tracing, error handling, and structured logs</text>
+    <g transform="translate(360 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">API Utilities</text>
+      <text x="18" y="38" class="node-copy">context + errors</text>
+    </g>
+    <g transform="translate(536 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Rate Limits</text>
+      <text x="18" y="38" class="node-copy">Upstash fallback</text>
+    </g>
+    <g transform="translate(712 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Security</text>
+      <text x="18" y="38" class="node-copy">input + output guards</text>
+    </g>
+    <g transform="translate(888 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Observability</text>
+      <text x="18" y="38" class="node-copy">trace + metrics</text>
+    </g>
+  </g>
+
+  <path class="line" d="M600 356 L600 390"/>
+
+  <g transform="translate(64 390)" filter="url(#softGlow)">
+    <rect width="1072" height="98" rx="16" fill="#1e1b4b" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="26" y="35" class="layer-title">Agentic Orchestration Layer</text>
+    <text x="26" y="60" class="layer-desc">Coordinates task planning, specialist agents, tool access, memory/context, and human approval gates</text>
+    <g transform="translate(360 25)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Multi-Agent</text>
+      <text x="18" y="38" class="node-copy">CrewAI backend</text>
+    </g>
+    <g transform="translate(536 25)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">MCP Tools</text>
+      <text x="18" y="38" class="node-copy">tool discovery</text>
+    </g>
+    <g transform="translate(712 25)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Guardrails</text>
+      <text x="18" y="38" class="node-copy">prompt safety</text>
+    </g>
+    <g transform="translate(888 25)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Approvals</text>
+      <text x="18" y="38" class="node-copy">high-risk gates</text>
+    </g>
+  </g>
+
+  <path class="line" d="M600 488 L600 522"/>
+
+  <g transform="translate(64 522)">
+    <rect width="1072" height="92" rx="16" fill="#0f172a" stroke="#334155"/>
+    <text x="26" y="34" class="layer-title">AI Services Layer</text>
+    <text x="26" y="58" class="layer-desc">Production demos and service patterns: routing, retrieval, generation, vision, quantization, and tool calling</text>
+    <g transform="translate(360 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">LLM Router</text>
+      <text x="18" y="38" class="node-copy">cost + latency</text>
+    </g>
+    <g transform="translate(536 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">RAG / Search</text>
+      <text x="18" y="38" class="node-copy">retrieval systems</text>
+    </g>
+    <g transform="translate(712 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Generation</text>
+      <text x="18" y="38" class="node-copy">resume + assistant</text>
+    </g>
+    <g transform="translate(888 22)">
+      <rect class="pill" width="150" height="48" rx="12"/>
+      <text x="18" y="22" class="node-title">Browser ML</text>
+      <text x="18" y="38" class="node-copy">vision + ONNX</text>
+    </g>
+  </g>
+
+  <path class="line" d="M600 614 L600 642"/>
+
+  <g transform="translate(64 642)">
+    <rect width="1072" height="72" rx="16" fill="#111827" stroke="#475569"/>
+    <text x="26" y="30" class="layer-title">Data and External Services</text>
+    <text x="26" y="52" class="layer-desc">profile.json, demos.ts, embeddings, vector search, Groq API, Hugging Face models/Spaces, Upstash Redis, Vercel</text>
+    <path class="muted-line" d="M360 36 L1018 36"/>
+    <text x="376" y="30" class="node-copy">Data layer</text>
+    <text x="496" y="30" class="node-copy">Provider layer</text>
+    <text x="640" y="30" class="node-copy">Deployment and telemetry</text>
+  </g>
+</svg>

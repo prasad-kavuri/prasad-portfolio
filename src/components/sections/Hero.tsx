@@ -145,6 +145,15 @@ export function Hero() {
               >
                 Start a Conversation
               </a>
+              <a
+                href="https://calendly.com/vbkpkavuri"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('calendly_clicked')}
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
+              >
+                Book a Call
+              </a>
             </div>
           </div>
         </div>

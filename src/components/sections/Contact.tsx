@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import profile from "@/data/profile.json";
-import { Mail, ExternalLink } from "lucide-react";
+import { Mail, ExternalLink, CalendarDays } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 export function Contact() {
@@ -45,6 +45,20 @@ export function Contact() {
               <CardContent className="flex items-center gap-2 p-4">
                 <ExternalLink className="size-5" style={{ color: 'var(--accent-brand)' }} />
                 <span>GitHub</span>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link
+            href="https://calendly.com/vbkpkavuri"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackEvent('calendly_clicked')}
+          >
+            <Card className="h-full transition-shadow hover:shadow-md">
+              <CardContent className="flex items-center gap-2 p-4">
+                <CalendarDays className="size-5" style={{ color: 'var(--accent-brand)' }} />
+                <span>Book a Call</span>
               </CardContent>
             </Card>
           </Link>

@@ -3,12 +3,13 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://prasadkavuri.com"),
   title: {
-    default: "Prasad Kavuri — Head of AI Engineering",
+    default: "Prasad Kavuri — VP / Head of AI Engineering",
     template: "%s | Prasad Kavuri",
   },
   description:
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://prasadkavuri.com",
     siteName: "Prasad Kavuri",
-    title: "Prasad Kavuri — Head of AI Engineering",
+    title: "Prasad Kavuri — VP / Head of AI Engineering",
     description:
       "AI engineering executive leading agentic AI platforms, LLM orchestration, and enterprise transformation. Live demos: RAG, Vector Search, LLM Router, Multi-Agent, MCP.",
     images: [
@@ -45,13 +46,13 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Prasad Kavuri — Head of AI Engineering",
+        alt: "Prasad Kavuri — VP / Head of AI Engineering",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Prasad Kavuri — Head of AI Engineering",
+    title: "Prasad Kavuri — VP / Head of AI Engineering",
     description:
       "AI engineering executive. 9 live AI demos: RAG, Vector Search, LLM Router, Multi-Agent, MCP Tool Demo and more.",
     images: ["/og-image.jpg"],
@@ -98,18 +99,26 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "Person",
                 name: "Prasad Kavuri",
-                jobTitle: "Head of AI Engineering",
+                jobTitle: "VP / Head of AI Engineering",
                 url: "https://prasadkavuri.com",
+                email: "vbkpkavuri@gmail.com",
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: "Naperville",
+                  addressRegion: "IL",
+                  addressCountry: "US",
+                },
                 sameAs: [
                   "https://linkedin.com/in/pkavuri",
                   "https://github.com/prasad-kavuri",
+                  "https://calendly.com/vbkpkavuri",
                 ],
                 worksFor: {
                   "@type": "Organization",
                   name: "Krutrim",
                 },
                 description:
-                  "AI engineering executive with 20+ years experience leading agentic AI platforms, LLM orchestration, and enterprise transformation.",
+                  "AI engineering executive with 20+ years experience. Built India's first Agentic AI platform. Leads 200+ engineers across agentic AI, LLM orchestration, RAG pipelines, and enterprise AI transformation.",
                 knowsAbout: [
                   "Agentic AI",
                   "LLM Orchestration",
@@ -117,12 +126,19 @@ export default function RootLayout({
                   "Multi-Agent Systems",
                   "Machine Learning",
                   "AI Platform Architecture",
+                  "GenAI",
+                  "Vector Search",
+                  "LLMOps",
+                  "MLOps",
+                  "Enterprise AI Transformation",
+                  "Model Context Protocol",
                 ],
               }),
             }}
           />
           {children}
           <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>

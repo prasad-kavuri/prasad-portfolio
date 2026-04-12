@@ -102,7 +102,7 @@ describe('Hero', () => {
   it('renders recruiter strip with role targeting', () => {
     render(<Hero />);
     expect(screen.getByText(/Recruiters/i)).toBeDefined();
-    expect(screen.getByText(/VP \/ Head of AI Engineering/i)).toBeDefined();
+    expect(screen.getAllByText(/VP \/ Head of AI Engineering/i).length).toBeGreaterThan(0);
   });
 
   it('fires trackEvent(linkedin_clicked) when View LinkedIn is clicked', () => {

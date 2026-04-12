@@ -92,16 +92,26 @@ jobs:
         run: npm ci
 
       - name: Download build artifact
-        # Extract to workspace root so .next/ lands at the correct path.
-        # upload-artifact stores paths relative to the workspace (e.g. .next/server/...),
-        # so downloading to .next/ would double-nest to .next/.next/server/...
+        # upload-artifact stores paths relative to the workspace root (.next/server/...)
+        # so we extract to . (workspace root) to restore .next/ in the correct location.
         uses: actions/download-artifact@v4
         with:
           name: next-build
           path: .
 
+      - name: Verify artifact
+        run: ls -la .next/
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Start server
+        run: npm run start &
+        env:
+          NODE_ENV: production
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000 --timeout 60000
 
       - name: Playwright tests (${{ matrix.browser }})
         run: npx playwright test --project=${{ matrix.browser }}

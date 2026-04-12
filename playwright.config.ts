@@ -30,11 +30,12 @@ export default defineConfig({
       use: { ...devices['iPhone 14'] },
     },
   ],
-  webServer: {
-    // In CI the build artifact is already downloaded; just start the server.
-    command: process.env.CI ? 'npm run start' : 'npm run build && npm run start',
+  // In CI the server is started explicitly in the workflow (npm run start & wait-on).
+  // webServer is only used for local dev where no server is running yet.
+  webServer: process.env.CI ? undefined : {
+    command: 'npm run build && npm run start',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120000,
   },
 });

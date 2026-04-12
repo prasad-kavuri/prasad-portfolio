@@ -14,8 +14,13 @@ export interface APIEventPayload {
   route: string;
   severity: Severity;
   traceId?: string;
+  requestId?: string;
   durationMs?: number;
   statusCode?: number;
+  status?: number;
+  latency?: number;
+  errorType?: ErrorCategory;
+  userHash?: string;
   errorName?: string;
   errorMessage?: string;
   [key: string]: boolean | number | string | null | undefined;
@@ -35,7 +40,10 @@ export interface ObservabilitySnapshot {
   errors: Record<string, number>;
   rateLimited: Record<string, number>;
   rateLimitAllowed: Record<string, number>;
+  highFrequency: Record<string, number>;
 }
+
+export type ErrorCategory = 'rate_limit' | 'validation' | 'external_api' | 'unknown';
 
 interface ErrorMonitoringPayload {
   route: string;
@@ -55,7 +63,11 @@ const counters: ObservabilitySnapshot = {
   errors: {},
   rateLimited: {},
   rateLimitAllowed: {},
+  highFrequency: {},
 };
+
+const failureWindows = new Map<string, number[]>();
+const requestWindows = new Map<string, number[]>();
 
 function increment(bucket: Record<string, number>, route: string): void {
   bucket[route] = (bucket[route] ?? 0) + 1;
@@ -101,6 +113,64 @@ export function trackRateLimit(route: string, limited: boolean): void {
   increment(limited ? counters.rateLimited : counters.rateLimitAllowed, route);
 }
 
+export function categorizeError(statusCode: number, event = ''): ErrorCategory | undefined {
+  if (statusCode === 429) return 'rate_limit';
+  if (statusCode >= 400 && statusCode < 500) return 'validation';
+  if (/upstream|groq|external|timeout/i.test(event)) return 'external_api';
+  if (statusCode >= 500) return 'unknown';
+  return undefined;
+}
+
+function pruneWindow(values: number[], now: number, windowMs: number): number[] {
+  return values.filter(timestamp => now - timestamp <= windowMs);
+}
+
+export function detectUsageAnomaly(route: string, statusCode: number, userHash = 'anonymous'): AnomalyResult {
+  const now = Date.now();
+  const reasons: string[] = [];
+  const key = `${route}:${userHash}`;
+
+  const requests = pruneWindow(requestWindows.get(key) ?? [], now, 60_000);
+  requests.push(now);
+  requestWindows.set(key, requests);
+  if (requests.length >= 12) {
+    increment(counters.highFrequency, route);
+    reasons.push('high_request_frequency');
+  }
+
+  if (statusCode >= ERROR_STATUS_THRESHOLD) {
+    const failures = pruneWindow(failureWindows.get(key) ?? [], now, 60_000);
+    failures.push(now);
+    failureWindows.set(key, failures);
+    if (failures.length >= 3) {
+      reasons.push('repeated_failures');
+    }
+  }
+
+  return { anomaly: reasons.length > 0, reasons };
+}
+
+export function logStructuredRequest(payload: {
+  requestId: string;
+  route: string;
+  status: number;
+  latency: number;
+  errorType?: ErrorCategory;
+  userHash?: string;
+}): void {
+  logAPIEvent({
+    event: 'api.request_summary',
+    severity: payload.status >= 500 ? 'error' : payload.status >= 400 ? 'warn' : 'info',
+    route: payload.route,
+    requestId: payload.requestId,
+    traceId: payload.requestId,
+    status: payload.status,
+    latency: payload.latency,
+    errorType: payload.errorType,
+    userHash: payload.userHash,
+  });
+}
+
 export function captureAPIError(
   error: unknown,
   payload: ErrorMonitoringPayload
@@ -121,6 +191,7 @@ export function getObservabilitySnapshot(): ObservabilitySnapshot {
     errors: { ...counters.errors },
     rateLimited: { ...counters.rateLimited },
     rateLimitAllowed: { ...counters.rateLimitAllowed },
+    highFrequency: { ...counters.highFrequency },
   };
 }
 
@@ -130,6 +201,9 @@ export function _resetObservability(): void {
   counters.errors = {};
   counters.rateLimited = {};
   counters.rateLimitAllowed = {};
+  counters.highFrequency = {};
+  failureWindows.clear();
+  requestWindows.clear();
 }
 
 /**

@@ -4,6 +4,7 @@ import {
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
+  getClientIp,
   jsonError,
   captureAndLogApiError,
   logApiEvent,
@@ -11,6 +12,7 @@ import {
   readJsonObject,
 } from '@/lib/api';
 import { detectAnomaly, logAPIEvent } from '@/lib/observability';
+import { enforceCostControls } from '@/lib/cost-control';
 
 const ROUTE = '/api/llm-router';
 
@@ -64,6 +66,25 @@ export async function POST(req: NextRequest) {
     return finalizeApiResponse(jsonError('Model not found', 400, { context }), context);
   }
 
+  const costControl = enforceCostControls({
+    route: ROUTE,
+    userKey: getClientIp(req, 'unknown'),
+    prompt,
+    requestedModel: model.id,
+    maxTokens: 100,
+  });
+  if (!costControl.allowed) {
+    logApiWarning('api.cost_control_blocked', {
+      route: ROUTE,
+      traceId: context.traceId,
+      reason: costControl.reason,
+      estimatedTokens: costControl.estimatedTokens,
+      status: 429,
+    });
+    return finalizeApiResponse(jsonError('AI request limit exceeded. Please shorten the prompt or try again shortly.', 429, { context }), context);
+  }
+  const effectiveModel = MODELS.find(m => m.id === costControl.fallbackModel) ?? model;
+
   if (!process.env.GROQ_API_KEY) {
     captureAndLogApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, traceId: context.traceId, status: 500 });
     return finalizeApiResponse(jsonError('GROQ_API_KEY not configured', 500, { context }), context);
@@ -78,7 +99,7 @@ export async function POST(req: NextRequest) {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: model.id,
+        model: effectiveModel.id,
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 500,
       }),
@@ -102,7 +123,7 @@ export async function POST(req: NextRequest) {
 
     const inputTokens = data.usage?.prompt_tokens || 0;
     const outputTokens = data.usage?.completion_tokens || 0;
-    const cost = (inputTokens * model.inputCost + outputTokens * model.outputCost) / 1_000_000;
+    const cost = (inputTokens * effectiveModel.inputCost + outputTokens * effectiveModel.outputCost) / 1_000_000;
 
     const totalDuration = Date.now() - context.startedAt;
     logApiEvent('api.request_completed', {
@@ -111,7 +132,8 @@ export async function POST(req: NextRequest) {
       status: 200,
       durationMs: totalDuration,
       upstreamLatencyMs: latency,
-      model: model.id,
+      model: effectiveModel.id,
+      requestedModel: model.id,
       promptLength: prompt.length,
       inputTokens,
       outputTokens,
@@ -123,9 +145,10 @@ export async function POST(req: NextRequest) {
     }
 
     return finalizeApiResponse(NextResponse.json({
-      model: model.id,
-      modelName: model.name,
-      provider: model.provider,
+      model: effectiveModel.id,
+      requestedModel: model.id,
+      modelName: effectiveModel.name,
+      provider: effectiveModel.provider,
       response: sanitizeLLMOutput(data.choices?.[0]?.message?.content ?? ''),
       latency_ms: latency,
       input_tokens: inputTokens,

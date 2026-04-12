@@ -10,6 +10,7 @@ import {
   logApiWarning,
   readJsonObject,
 } from '@/lib/api';
+import { trackModelOutput } from '@/lib/drift-monitor';
 
 const HF_SPACE_URL = 'https://prasadkavuri-multi-agent-demo.hf.space';
 const ROUTE = '/api/multi-agent';
@@ -61,11 +62,16 @@ export async function POST(req: NextRequest) {
   const body = await readJsonObject(req, { context });
   if (!body.ok) return body.response;
 
-  const { website_url } = body.data;
+  const { website_url, approvalState } = body.data;
 
   if (!website_url) {
     logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'missing_website_url', status: 400 });
     return finalizeApiResponse(jsonError('website_url is required', 400, { context }), context);
+  }
+
+  if (approvalState !== undefined && approvalState !== 'pending' && approvalState !== 'approved') {
+    logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_approval_state', status: 400 });
+    return finalizeApiResponse(jsonError('Invalid approval state', 400, { context }), context);
   }
 
   if (typeof website_url !== 'string') {
@@ -106,6 +112,7 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       await response.text().catch(() => '');
+      trackModelOutput(ROUTE, `upstream_error:${response.status}`, 'error');
       captureAndLogApiError('api.upstream_error', new Error('Agent backend returned non-OK status'), {
         route: ROUTE,
         traceId: context.traceId,
@@ -130,6 +137,7 @@ export async function POST(req: NextRequest) {
           : agent.recommendation,
       }));
     }
+    trackModelOutput(ROUTE, JSON.stringify(data), 'success');
 
     logApiEvent('api.request_completed', {
       route: ROUTE,
@@ -142,6 +150,7 @@ export async function POST(req: NextRequest) {
 
     return finalizeApiResponse(NextResponse.json(data), context);
   } catch (error) {
+    trackModelOutput(ROUTE, error instanceof Error ? error.name : 'agent_backend_error', 'error');
     captureAndLogApiError('api.request_failed', error, {
       route: ROUTE,
       traceId: context.traceId,

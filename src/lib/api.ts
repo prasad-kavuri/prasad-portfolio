@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, type RateLimitResult } from '@/lib/rate-limit';
 import {
   captureAPIError,
+  categorizeError,
   createTraceId,
+  detectUsageAnomaly,
+  logAPIEvent,
+  logStructuredRequest,
   trackAPIRequest,
   trackRateLimit,
 } from '@/lib/observability';
@@ -21,6 +25,7 @@ export interface RequestContext {
   method: string;
   traceId: string;
   startedAt: number;
+  userHash?: string;
   rateLimit?: RateLimitResult;
 }
 
@@ -123,6 +128,28 @@ export function finalizeApiResponse(
   }
 
   trackAPIRequest(context.route, statusCode);
+  logStructuredRequest({
+    requestId: context.traceId,
+    route: context.route,
+    status: statusCode,
+    latency: durationMs,
+    errorType: categorizeError(statusCode),
+    userHash: context.userHash,
+  });
+  const usageAnomaly = detectUsageAnomaly(context.route, statusCode, context.userHash);
+  if (usageAnomaly.anomaly) {
+    logAPIEvent({
+      event: 'api.usage_anomaly',
+      route: context.route,
+      requestId: context.traceId,
+      traceId: context.traceId,
+      severity: 'warn',
+      status: statusCode,
+      latency: durationMs,
+      userHash: context.userHash,
+      reasons: usageAnomaly.reasons.join('; '),
+    });
+  }
   return response;
 }
 
@@ -153,9 +180,11 @@ export async function enforceRateLimit(
   meta: RequestMeta = {}
 ): Promise<NextResponse | null> {
   const clientIp = getClientIp(req, fallback);
+  const userHash = await hashLogValue(clientIp.split(',')[0].trim());
   const result = await rateLimit(clientIp);
   if (meta.context) {
     meta.context.rateLimit = result;
+    meta.context.userHash = userHash;
   }
 
   trackRateLimit(meta.context?.route ?? meta.route ?? 'unknown', result.limited);
@@ -165,7 +194,8 @@ export async function enforceRateLimit(
       route: meta.context?.route ?? meta.route,
       traceId: meta.context?.traceId ?? meta.traceId,
       method: req.method,
-      clientHash: await hashLogValue(clientIp.split(',')[0].trim()),
+      clientHash: userHash,
+      userHash,
       limit: result.limit,
       remaining: result.remaining,
     });
@@ -232,5 +262,6 @@ export function captureAndLogApiError(event: string, error: unknown, meta: LogMe
     traceId: meta.traceId,
     durationMs: meta.durationMs,
     statusCode: meta.status ?? 500,
+    errorType: categorizeError(meta.status ?? 500, event),
   });
 }

@@ -14,6 +14,8 @@ import {
 } from '@/lib/api';
 
 const ROUTE = '/api/resume-generator';
+const MAX_JOB_DESCRIPTION_LENGTH = 2000;
+const ALLOWED_RESUME_INPUT = /^[\p{L}\p{N}\s.,;:!?'"()/$%+\-#&@|•\[\]\n\r]+$/u;
 
 interface ResumeResponse {
   matchScore: number;
@@ -64,6 +66,38 @@ function isResumeResponse(value: unknown): value is ResumeResponse {
   );
 }
 
+function stripHtml(input: string): string {
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ');
+}
+
+function escapeSpecialCharacters(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function normalizeWhitespace(input: string): string {
+  return input.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function sanitizeResumeInput(input: string): string {
+  return escapeSpecialCharacters(normalizeWhitespace(stripHtml(input)));
+}
+
+function sanitizeResumeOutput(input: string): string {
+  return sanitizeResumeInput(sanitizeLLMOutput(input));
+}
+
+function hasAllowedResumeCharacters(input: string): boolean {
+  return ALLOWED_RESUME_INPUT.test(input);
+}
+
 export async function POST(req: NextRequest) {
   const context = createRequestContext(req, ROUTE);
   try {
@@ -84,14 +118,19 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_focus_areas', status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
-    const safeAreas = focusAreas ?? [];
+    const safeAreas = (focusAreas ?? []).map(area => sanitizeResumeInput(area));
 
-    if (jobDescription.length > 5000) {
+    if (jobDescription.length > MAX_JOB_DESCRIPTION_LENGTH) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'job_description_too_long', jobDescriptionLength: jobDescription.length, status: 400 });
       return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
     }
     if (detectPromptInjection(jobDescription)) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', jobDescriptionLength: jobDescription.length, status: 400 });
+      return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
+    }
+    const safeJobDescription = sanitizeResumeInput(jobDescription);
+    if (!safeJobDescription || !hasAllowedResumeCharacters(safeJobDescription) || !safeAreas.every(hasAllowedResumeCharacters)) {
+      logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'disallowed_resume_characters', status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
 
@@ -139,7 +178,7 @@ Instructions:
 Return ONLY valid JSON, no markdown or additional text.`;
 
     const userMessage = `Job Description:
-${jobDescription}${focusAreasText}
+${safeJobDescription}${focusAreasText}
 
 Generate a tailored resume as JSON with this exact structure:
 {
@@ -226,15 +265,18 @@ Generate a tailored resume as JSON with this exact structure:
     // Sanitize all string fields before returning
     const sanitized = {
       ...parsedResume,
-      summary: sanitizeLLMOutput(parsedResume.summary),
+      summary: sanitizeResumeOutput(parsedResume.summary),
       experience: parsedResume.experience.map(exp => ({
         ...exp,
-        bullets: exp.bullets.map(b => sanitizeLLMOutput(b)),
+        company: sanitizeResumeOutput(exp.company),
+        title: sanitizeResumeOutput(exp.title),
+        period: sanitizeResumeOutput(exp.period),
+        bullets: exp.bullets.map(b => sanitizeResumeOutput(b)),
       })),
-      skills: parsedResume.skills.map(s => sanitizeLLMOutput(s)),
-      matchedSkills: parsedResume.matchedSkills.map(s => sanitizeLLMOutput(s)),
-      missingSkills: parsedResume.missingSkills.map(s => sanitizeLLMOutput(s)),
-      atsKeywords: parsedResume.atsKeywords.map(k => sanitizeLLMOutput(k)),
+      skills: parsedResume.skills.map(s => sanitizeResumeOutput(s)),
+      matchedSkills: parsedResume.matchedSkills.map(s => sanitizeResumeOutput(s)),
+      missingSkills: parsedResume.missingSkills.map(s => sanitizeResumeOutput(s)),
+      atsKeywords: parsedResume.atsKeywords.map(k => sanitizeResumeOutput(k)),
     };
 
     logApiEvent('api.request_completed', {

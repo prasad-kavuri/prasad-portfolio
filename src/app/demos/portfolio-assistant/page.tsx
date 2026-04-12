@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Send, Trash2, Copy, Check } from 'lucide-react';
 import { ThemeToggle } from "@/components/theme-toggle";
+import { resolveReviewCheckpoint } from '@/lib/hitl';
 
 interface Message {
   id: string;
@@ -19,11 +20,13 @@ export default function PortfolioAssistantPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [useRAG, setUseRAG] = useState(true);
+  const [reviewMode, setReviewMode] = useState(false);
   const [streamingText, setStreamingText] = useState('');
+  const [pendingAssistantMessage, setPendingAssistantMessage] =
+    useState<Message | null>(null);
   const [currentRetrievedDocs, setCurrentRetrievedDocs] = useState<
     Array<{ id: string; title: string }>
   >([]);
-  const [currentResponseTime, setCurrentResponseTime] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -56,8 +59,8 @@ export default function PortfolioAssistantPage() {
     setInput('');
     setIsLoading(true);
     setStreamingText('');
+    setPendingAssistantMessage(null);
     setCurrentRetrievedDocs([]);
-    setCurrentResponseTime(0);
 
     const startTime = performance.now();
 
@@ -73,6 +76,7 @@ export default function PortfolioAssistantPage() {
               content: m.content,
             })),
             useRAG,
+            approvalState: reviewMode ? 'pending' : 'approved',
           }),
         });
 
@@ -111,8 +115,6 @@ export default function PortfolioAssistantPage() {
         }
 
         const endTime = performance.now();
-        setCurrentResponseTime(Math.round(endTime - startTime));
-
         // Remove metadata suffix if present
         const cleanContent = fullContent
           .replace(/\n\n\[Retrieved \d+ documents\]$/, '')
@@ -127,7 +129,9 @@ export default function PortfolioAssistantPage() {
           responseTime: Math.round(endTime - startTime),
         };
 
-        setMessages(prev => [...prev, assistantMessage]);
+        const checkpoint = resolveReviewCheckpoint(assistantMessage, reviewMode);
+        if (checkpoint.status === 'pending') setPendingAssistantMessage(checkpoint.pending);
+        if (checkpoint.status === 'approved') setMessages(prev => [...prev, checkpoint.approved]);
         setStreamingText('');
       } catch (error) {
         console.error('Error:', error);
@@ -158,8 +162,8 @@ export default function PortfolioAssistantPage() {
     setInput('');
     setIsLoading(true);
     setStreamingText('');
+    setPendingAssistantMessage(null);
     setCurrentRetrievedDocs([]);
-    setCurrentResponseTime(0);
 
     const startTime = performance.now();
 
@@ -171,8 +175,9 @@ export default function PortfolioAssistantPage() {
           messages: messages.map(m => ({
             role: m.role,
             content: m.content,
-          })),
+          })).concat({ role: userMessage.role, content: userMessage.content }),
           useRAG,
+          approvalState: reviewMode ? 'pending' : 'approved',
         }),
       });
 
@@ -211,8 +216,6 @@ export default function PortfolioAssistantPage() {
       }
 
       const endTime = performance.now();
-      setCurrentResponseTime(Math.round(endTime - startTime));
-
       // Remove metadata suffix if present
       const cleanContent = fullContent
         .replace(/\n\n\[Retrieved \d+ documents\]$/, '')
@@ -227,7 +230,9 @@ export default function PortfolioAssistantPage() {
         responseTime: Math.round(endTime - startTime),
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      const checkpoint = resolveReviewCheckpoint(assistantMessage, reviewMode);
+      if (checkpoint.status === 'pending') setPendingAssistantMessage(checkpoint.pending);
+      if (checkpoint.status === 'approved') setMessages(prev => [...prev, checkpoint.approved]);
       setStreamingText('');
     } catch (error) {
       console.error('Error:', error);
@@ -247,6 +252,20 @@ export default function PortfolioAssistantPage() {
     setMessages([]);
     setInput('');
     setStreamingText('');
+    setPendingAssistantMessage(null);
+  };
+
+  const handleApprovePending = () => {
+    if (!pendingAssistantMessage) return;
+    setMessages(prev => [...prev, pendingAssistantMessage]);
+    setPendingAssistantMessage(null);
+  };
+
+  const handleRegeneratePending = () => {
+    const lastUserMessage = [...messages].reverse().find(message => message.role === 'user');
+    setPendingAssistantMessage(null);
+    setStreamingText('');
+    setInput(lastUserMessage?.content ?? '');
   };
 
   const handleCopyMessage = (messageId: string, content: string) => {
@@ -291,6 +310,15 @@ export default function PortfolioAssistantPage() {
                 className="w-4 h-4"
               />
               <span className="text-sm font-medium">RAG Mode</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={reviewMode}
+                onChange={e => setReviewMode(e.target.checked)}
+                className="w-4 h-4"
+              />
+              <span className="text-sm font-medium">Enable Review Mode</span>
             </label>
             {messages.length > 0 && (
               <button
@@ -397,6 +425,33 @@ export default function PortfolioAssistantPage() {
                     <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce delay-200"></span>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {pendingAssistantMessage && (
+            <div className="flex gap-3 justify-start">
+              <div className="max-w-2xl rounded-lg p-4 bg-card rounded-bl-none border border-blue-500/40">
+                <p className="text-xs font-medium text-blue-300 mb-2">
+                  Pending review
+                </p>
+                <p className="text-foreground whitespace-pre-wrap break-words">
+                  {pendingAssistantMessage.content}
+                </p>
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={handleApprovePending}
+                    className="px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-sm font-medium transition-colors"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={handleRegeneratePending}
+                    className="px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 text-sm font-medium transition-colors"
+                  >
+                    Regenerate
+                  </button>
+                </div>
               </div>
             </div>
           )}

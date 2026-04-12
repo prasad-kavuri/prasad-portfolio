@@ -5,6 +5,7 @@ import {
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
+  getClientIp,
   jsonError,
   captureAndLogApiError,
   logApiEvent,
@@ -12,6 +13,8 @@ import {
   readJsonObject,
 } from '@/lib/api';
 import { detectAnomaly, logAPIEvent, startTimer } from '@/lib/observability';
+import { enforceCostControls } from '@/lib/cost-control';
+import { trackModelOutput } from '@/lib/drift-monitor';
 
 const ROUTE = '/api/portfolio-assistant';
 
@@ -84,6 +87,10 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_use_rag', status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
+    if (body.data.approvalState !== undefined && body.data.approvalState !== 'pending' && body.data.approvalState !== 'approved') {
+      logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_approval_state', status: 400 });
+      return finalizeApiResponse(jsonError('Invalid approval state', 400, { context }), context);
+    }
     const useRAG = body.data.useRAG === true;
 
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
@@ -94,6 +101,25 @@ export async function POST(req: NextRequest) {
     if (lastUserMessage && detectPromptInjection(lastUserMessage.content)) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
+    }
+    if (lastUserMessage) {
+      const costControl = enforceCostControls({
+        route: ROUTE,
+        userKey: getClientIp(req, 'anonymous'),
+        prompt: lastUserMessage.content,
+        requestedModel: 'llama-3.1-8b-instant',
+        maxTokens: 100,
+      });
+      if (!costControl.allowed) {
+        logApiWarning('api.cost_control_blocked', {
+          route: ROUTE,
+          traceId: context.traceId,
+          reason: costControl.reason,
+          estimatedTokens: costControl.estimatedTokens,
+          status: 429,
+        });
+        return finalizeApiResponse(jsonError('AI request limit exceeded. Please shorten the prompt or try again shortly.', 429, { context }), context);
+      }
     }
 
     const apiKey = process.env.GROQ_API_KEY;
@@ -149,6 +175,7 @@ ${fullContext}`;
 
     if (!response.ok) {
       await response.text().catch(() => '');
+      trackModelOutput(ROUTE, `upstream_error:${response.status}`, 'error');
       captureAndLogApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
         route: ROUTE,
         traceId: context.traceId,
@@ -162,6 +189,7 @@ ${fullContext}`;
     // Create a readable stream for streaming response
     const encoder = new TextEncoder();
     let buffer = '';
+    let streamedOutput = '';
 
     const readableStream = new ReadableStream({
       async start(controller) {
@@ -189,7 +217,9 @@ ${fullContext}`;
                   const json = JSON.parse(line.slice(6));
                   const content = json.choices?.[0]?.delta?.content || '';
                   if (content) {
-                    controller.enqueue(encoder.encode(sanitizeLLMOutput(content)));
+                    const sanitizedChunk = sanitizeLLMOutput(content);
+                    streamedOutput += sanitizedChunk;
+                    controller.enqueue(encoder.encode(sanitizedChunk));
                   }
                 } catch {
                   // Skip malformed JSON
@@ -209,8 +239,12 @@ ${fullContext}`;
 
           controller.close();
         } catch (error) {
+          trackModelOutput(ROUTE, error instanceof Error ? error.name : 'stream_error', 'error');
           controller.error(error);
         } finally {
+          if (streamedOutput) {
+            trackModelOutput(ROUTE, streamedOutput, 'success');
+          }
           reader.releaseLock();
         }
       },
@@ -243,8 +277,10 @@ ${fullContext}`;
     const durationMs = elapsed();
     if (error instanceof Error && error.name === 'TimeoutError') {
       logApiWarning('api.upstream_timeout', { route: ROUTE, traceId: context.traceId, status: 504, durationMs });
+      trackModelOutput(ROUTE, 'upstream_timeout', 'error');
       return finalizeApiResponse(jsonError('Upstream timeout', 504, { context }), context);
     }
+    trackModelOutput(ROUTE, error instanceof Error ? error.name : 'request_failed', 'error');
     captureAndLogApiError('api.request_failed', error, { route: ROUTE, traceId: context.traceId, status: 500, durationMs });
     return finalizeApiResponse(jsonError('Internal server error', 500, { context }), context);
   }

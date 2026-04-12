@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Loader2, Users } from "lucide-react";
+import { ArrowLeft, Loader2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { resolveReviewCheckpoint } from "@/lib/hitl";
 
 interface AgentResult {
   name: string;
@@ -40,11 +41,13 @@ const EXAMPLE_URLS = [
 
 export default function MultiAgentPage() {
   const [url, setUrl] = useState<string>("https://www.prasadkavuri.com");
-  const [status, setStatus] = useState<"idle" | "running" | "done" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "running" | "pending_review" | "done" | "error">("idle");
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [pendingResult, setPendingResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string>("");
   const [currentAgent, setCurrentAgent] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
+  const [reviewMode, setReviewMode] = useState(false);
 
   useEffect(() => {
     if (status !== "running") return;
@@ -75,6 +78,7 @@ export default function MultiAgentPage() {
     setStatus("running");
     setError("");
     setResult(null);
+    setPendingResult(null);
     setProgress(0);
     setCurrentAgent("Analyzer");
 
@@ -82,7 +86,10 @@ export default function MultiAgentPage() {
       const res = await fetch("/api/multi-agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ website_url: url }),
+        body: JSON.stringify({
+          website_url: url,
+          approvalState: reviewMode ? "pending" : "approved",
+        }),
       });
 
       if (!res.ok) {
@@ -94,13 +101,31 @@ export default function MultiAgentPage() {
       setProgress(100);
       setCurrentAgent("");
       setTimeout(() => {
-        setResult(data);
-        setStatus("done");
+        const checkpoint = resolveReviewCheckpoint(data, reviewMode);
+        if (checkpoint.status === "pending") {
+          setPendingResult(checkpoint.pending);
+          setStatus("pending_review");
+        } else {
+          setResult(checkpoint.approved);
+          setStatus("done");
+        }
       }, 500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setStatus("error");
     }
+  };
+
+  const handleApprovePending = () => {
+    if (!pendingResult) return;
+    setResult(pendingResult);
+    setPendingResult(null);
+    setStatus("done");
+  };
+
+  const handleRegeneratePending = () => {
+    setPendingResult(null);
+    handleAnalyze();
   };
 
   const getConfidenceBadgeColor = (confidence: number) => {
@@ -142,6 +167,15 @@ export default function MultiAgentPage() {
             <p className="text-muted-foreground mt-1">
               Three specialized AI agents collaborate to analyze websites and provide strategic recommendations
             </p>
+            <label className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+              <input
+                type="checkbox"
+                checked={reviewMode}
+                onChange={(e) => setReviewMode(e.target.checked)}
+                className="w-4 h-4"
+              />
+              <span>Enable Review Mode</span>
+            </label>
           </div>
         </div>
       </div>
@@ -265,6 +299,30 @@ export default function MultiAgentPage() {
               )}
             </p>
             <p className="text-xs text-muted-foreground mt-2">This may take 15-30 seconds...</p>
+          </Card>
+        )}
+
+        {status === "pending_review" && pendingResult && (
+          <Card className="bg-card border border-blue-500/40 p-6 mb-12">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div>
+                <h3 className="font-semibold text-blue-300">Pending review</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Review mode is enabled. Approve the agent analysis before showing it as final output.
+                </p>
+                <p className="text-xs text-muted-foreground mt-3">
+                  {pendingResult.agents.length} agents · {pendingResult.total_tokens.toLocaleString()} tokens · {(pendingResult.total_duration_ms / 1000).toFixed(1)}s
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700">
+                  Approve
+                </Button>
+                <Button onClick={handleRegeneratePending} variant="outline">
+                  Regenerate
+                </Button>
+              </div>
+            </div>
           </Card>
         )}
 

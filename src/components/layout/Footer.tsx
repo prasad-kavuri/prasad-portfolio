@@ -15,6 +15,9 @@ export function Footer() {
           <Link href="mailto:vbkavuri@gmail.com" className="hover:text-foreground">
             Email
           </Link>
+          <Link href="/status" className="hover:text-foreground">
+            System Status
+          </Link>
         </div>
       </div>
     </footer>

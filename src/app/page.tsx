@@ -11,9 +11,54 @@ import { Perspectives } from "@/components/sections/Perspectives";
 import { Contact } from "@/components/sections/Contact";
 import { SectionBridge } from "@/components/sections/SectionBridge";
 
+const siteUrl = "https://www.prasadkavuri.com";
+
+const homePageStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${siteUrl}/#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: siteUrl,
+        },
+      ],
+    },
+    {
+      "@type": ["WebPage", "ProfilePage"],
+      "@id": `${siteUrl}/#webpage`,
+      url: siteUrl,
+      name: "Prasad Kavuri - VP / Head of AI Engineering",
+      isPartOf: { "@id": `${siteUrl}/#website` },
+      about: { "@id": `${siteUrl}/#person` },
+      mainEntity: { "@id": `${siteUrl}/#person` },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/profile-photo.jpg`,
+      },
+      breadcrumb: { "@id": `${siteUrl}/#breadcrumb` },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: ["#profile-name", "#profile-summary"],
+      },
+      inLanguage: "en-US",
+    },
+  ],
+};
+
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(homePageStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
       <Navbar />
       <main>
         <Hero />

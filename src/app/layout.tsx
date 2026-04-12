@@ -6,6 +6,97 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
+const siteUrl = "https://www.prasadkavuri.com";
+const personId = `${siteUrl}/#person`;
+const websiteId = `${siteUrl}/#website`;
+const krutrimId = `${siteUrl}/#organization-krutrim`;
+
+const siteStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      name: "Prasad Kavuri",
+      url: siteUrl,
+      publisher: { "@id": personId },
+      inLanguage: "en-US",
+    },
+    {
+      "@type": "Person",
+      "@id": personId,
+      name: "Prasad Kavuri",
+      jobTitle: "VP / Head of AI Engineering",
+      description:
+        "AI engineering executive leading agentic AI platforms, LLM orchestration, and enterprise AI transformation.",
+      url: siteUrl,
+      mainEntityOfPage: siteUrl,
+      email: "vbkpkavuri@gmail.com",
+      image: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/profile-photo.jpg`,
+        width: 400,
+        height: 400,
+      },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Naperville",
+        addressRegion: "IL",
+        addressCountry: "US",
+      },
+      sameAs: [
+        "https://linkedin.com/in/pkavuri",
+        "https://github.com/prasad-kavuri",
+        "https://calendly.com/vbkpkavuri",
+      ],
+      worksFor: { "@id": krutrimId },
+      alumniOf: [
+        {
+          "@type": "CollegeOrUniversity",
+          name: "Northern Illinois University",
+        },
+        {
+          "@type": "CollegeOrUniversity",
+          name: "Osmania University",
+        },
+      ],
+      knowsAbout: [
+        "Agentic AI",
+        "LLM Orchestration",
+        "RAG Pipelines",
+        "Enterprise AI",
+        "AI Platform Architecture",
+        "Multi-Agent Systems",
+        "AI Governance",
+      ],
+      hasOccupation: {
+        "@type": "Occupation",
+        name: "AI Engineering Executive",
+        occupationLocation: {
+          "@type": "Country",
+          name: "United States",
+        },
+        skills: [
+          "AI platform architecture",
+          "LLM orchestration",
+          "RAG pipelines",
+          "Global engineering leadership",
+        ],
+      },
+    },
+    {
+      "@type": "Organization",
+      "@id": krutrimId,
+      name: "Krutrim",
+      url: "https://olakrutrim.com/",
+      sameAs: ["https://www.linkedin.com/company/krutrim"],
+      description:
+        "AI computing company where Prasad Kavuri serves as Head of AI Engineering.",
+      employee: { "@id": personId },
+    },
+  ],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.prasadkavuri.com"),
   title: "Prasad Kavuri — VP / Head of AI Engineering",
@@ -82,36 +173,7 @@ export default function RootLayout({
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Person",
-                name: "Prasad Kavuri",
-                jobTitle: "VP / Head of AI Engineering",
-                url: "https://www.prasadkavuri.com",
-                email: "vbkpkavuri@gmail.com",
-                address: {
-                  "@type": "PostalAddress",
-                  addressLocality: "Naperville",
-                  addressRegion: "IL",
-                  addressCountry: "US",
-                },
-                sameAs: [
-                  "https://linkedin.com/in/pkavuri",
-                  "https://github.com/prasad-kavuri",
-                  "https://calendly.com/vbkpkavuri",
-                ],
-                worksFor: {
-                  "@type": "Organization",
-                  name: "Krutrim",
-                },
-                knowsAbout: [
-                  "Agentic AI",
-                  "LLM Orchestration",
-                  "RAG Pipelines",
-                  "Enterprise AI",
-                  "AI Platform Architecture",
-                ],
-              }),
+              __html: JSON.stringify(siteStructuredData).replace(/</g, "\\u003c"),
             }}
           />
           {children}

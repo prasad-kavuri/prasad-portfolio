@@ -17,6 +17,30 @@ describe('SEO metadata integrity', () => {
     expect(layout).toMatch(/@type.*Person/);
   });
 
+  it('layout.tsx JSON-LD includes Knowledge Panel identity signals', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/personId = `\$\{siteUrl\}\/#person`/);
+    expect(layout).toMatch(/profile-photo\.jpg/);
+    expect(layout).toMatch(/sameAs/);
+    expect(layout).toMatch(/alumniOf/);
+    expect(layout).toMatch(/hasOccupation/);
+  });
+
+  it('layout.tsx JSON-LD includes Organization schema for leadership role', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/@type.*Organization/);
+    expect(layout).toMatch(/organization-krutrim/);
+    expect(layout).toMatch(/Head of AI Engineering/);
+  });
+
+  it('page.tsx JSON-LD includes Breadcrumb and Speakable schema', () => {
+    const page = readFileSync('src/app/page.tsx', 'utf8');
+    expect(page).toMatch(/BreadcrumbList/);
+    expect(page).toMatch(/SpeakableSpecification/);
+    expect(page).toMatch(/#profile-name/);
+    expect(page).toMatch(/#profile-summary/);
+  });
+
   it('layout.tsx JSON-LD includes Calendly in sameAs', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
     expect(layout).toMatch(/calendly\.com\/vbkpkavuri/);

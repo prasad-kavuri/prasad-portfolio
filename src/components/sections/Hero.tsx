@@ -25,7 +25,7 @@ export function Hero() {
               alt="Profile"
             />
             <div>
-              <h1 className="text-3xl font-semibold">
+              <h1 id="profile-name" className="text-3xl font-semibold">
                 {profile.personal.name}
               </h1>
               <p className="text-lg text-muted-foreground">
@@ -41,7 +41,7 @@ export function Hero() {
             </div>
           </div>
 
-          <p className="mt-8 max-w-2xl leading-relaxed text-muted-foreground">
+          <p id="profile-summary" className="mt-8 max-w-2xl leading-relaxed text-muted-foreground">
             {profile.personal.summary}
           </p>
 

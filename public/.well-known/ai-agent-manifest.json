@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "name": "Prasad Kavuri — VP / Head of AI Engineering",
+  "description": "Executive AI Engineering leader with 20+ years experience. Available for VP/Head of AI Engineering roles.",
+  "contact": {
+    "email": "vbkpkavuri@gmail.com",
+    "linkedin": "https://linkedin.com/in/pkavuri",
+    "calendly": "https://calendly.com/vbkpkavuri"
+  },
+  "expertise": [
+    "Agentic AI",
+    "LLM Orchestration",
+    "RAG Pipelines",
+    "Vector Search",
+    "Enterprise AI Strategy",
+    "Global Engineering Leadership (200+ engineers)",
+    "AI Platform Architecture",
+    "Multi-Agent Systems",
+    "AI Governance"
+  ],
+  "experience_years": 20,
+  "notable_achievements": [
+    "Architected India's first Agentic AI platform (Kruti.ai)",
+    "Led 13,000+ enterprise customer acquisition at Ola Maps",
+    "50% latency reduction via multi-model LLM orchestration",
+    "70% infrastructure cost reduction at Ola"
+  ],
+  "availability": "Open to VP / Head of AI Engineering roles",
+  "location": "Naperville, IL (Chicago area)",
+  "portfolio": "https://www.prasadkavuri.com",
+  "demos": [
+    {"name": "RAG Pipeline", "url": "https://www.prasadkavuri.com/demos/rag-pipeline"},
+    {"name": "LLM Router", "url": "https://www.prasadkavuri.com/demos/llm-router"},
+    {"name": "Multi-Agent System", "url": "https://www.prasadkavuri.com/demos/multi-agent"},
+    {"name": "AI Portfolio Assistant", "url": "https://www.prasadkavuri.com/demos/portfolio-assistant"}
+  ]
+}

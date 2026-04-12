@@ -1,0 +1,23 @@
+# Prasad Kavuri — VP / Head of AI Engineering
+# https://www.prasadkavuri.com
+
+## About
+AI Engineering Executive with 20+ years experience building
+enterprise AI platforms, agentic systems, and global engineering
+teams of 200+. Open to VP/Head of AI Engineering roles.
+
+## Contact
+Email: vbkpkavuri@gmail.com
+LinkedIn: https://linkedin.com/in/pkavuri
+Book a call: https://calendly.com/vbkpkavuri
+
+## Key Experience
+- Krutrim: Architected India's first Agentic AI platform, 200+ engineers
+- Ola: 13,000+ B2B customers, 70% cost reduction
+- HERE Technologies: 18 years, Sr Engineer to Director
+
+## Live AI Demos
+- RAG Pipeline: https://www.prasadkavuri.com/demos/rag-pipeline
+- LLM Router: https://www.prasadkavuri.com/demos/llm-router
+- Multi-Agent System: https://www.prasadkavuri.com/demos/multi-agent
+- Portfolio Assistant: https://www.prasadkavuri.com/demos/portfolio-assistant

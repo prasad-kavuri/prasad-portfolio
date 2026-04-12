@@ -8,10 +8,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://prasadkavuri.com"),
-  title: {
-    default: "Prasad Kavuri — VP / Head of AI Engineering",
-    template: "%s | Prasad Kavuri",
-  },
+  title: "Prasad Kavuri — VP / Head of AI Engineering",
   description:
     "AI engineering executive leading agentic AI platforms, LLM orchestration, and enterprise transformation. 20+ years experience, 200+ engineers led, India's first Agentic AI platform.",
   keywords: [
@@ -34,28 +31,18 @@ export const metadata: Metadata = {
   authors: [{ name: "Prasad Kavuri", url: "https://prasadkavuri.com" }],
   creator: "Prasad Kavuri",
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://prasadkavuri.com",
-    siteName: "Prasad Kavuri",
     title: "Prasad Kavuri — VP / Head of AI Engineering",
-    description:
-      "AI engineering executive leading agentic AI platforms, LLM orchestration, and enterprise transformation. Live demos: RAG, Vector Search, LLM Router, Multi-Agent, MCP.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Prasad Kavuri — VP / Head of AI Engineering",
-      },
-    ],
+    description: "AI Engineering Executive. 20+ years. 200+ engineers led. Open to VP/Head of AI Engineering roles.",
+    url: "https://www.prasadkavuri.com",
+    siteName: "Prasad Kavuri",
+    images: [{ url: "https://www.prasadkavuri.com/profile-photo.jpg", width: 400, height: 400, alt: "Prasad Kavuri" }],
+    type: "website",
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Prasad Kavuri — VP / Head of AI Engineering",
-    description:
-      "AI engineering executive. 9 live AI demos: RAG, Vector Search, LLM Router, Multi-Agent, MCP Tool Demo and more.",
-    images: ["/og-image.jpg"],
+    description: "AI Engineering Executive. 20+ years. Open to VP/Head of AI roles.",
+    images: ["https://www.prasadkavuri.com/profile-photo.jpg"],
     creator: "@prasadkavuri",
   },
   robots: {
@@ -117,21 +104,12 @@ export default function RootLayout({
                   "@type": "Organization",
                   name: "Krutrim",
                 },
-                description:
-                  "AI engineering executive with 20+ years experience. Built India's first Agentic AI platform. Leads 200+ engineers across agentic AI, LLM orchestration, RAG pipelines, and enterprise AI transformation.",
                 knowsAbout: [
                   "Agentic AI",
                   "LLM Orchestration",
                   "RAG Pipelines",
-                  "Multi-Agent Systems",
-                  "Machine Learning",
+                  "Enterprise AI",
                   "AI Platform Architecture",
-                  "GenAI",
-                  "Vector Search",
-                  "LLMOps",
-                  "MLOps",
-                  "Enterprise AI Transformation",
-                  "Model Context Protocol",
                 ],
               }),
             }}

@@ -7,9 +7,8 @@ export function proxy(request: NextRequest) {
   // Redirect any .html requests that aren't Next.js internals to /demos.
   // Handles CDN-cached legacy URLs not covered by next.config.ts redirects().
   if (pathname.endsWith('.html') && !pathname.startsWith('/_next/')) {
-    const slug = pathname.replace(/\.html$/, '').replace(/^\//, '');
     return NextResponse.redirect(
-      new URL(`/demos/${slug}`, request.url),
+      new URL('/demos', request.url),
       { status: 308 }
     );
   }

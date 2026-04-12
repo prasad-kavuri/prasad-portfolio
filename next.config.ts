@@ -1,25 +1,27 @@
 import type { NextConfig } from "next";
 
-const LEGACY_HTML_PAGES = [
-  '/portfolio-assistant.html',
-  '/vector-search-playground.html',
-  '/multimodal-assistant.html',
-  '/multi-agent-demo.html',
-  '/rag-pipeline.html',
-  '/vector-search.html',
-  '/quantization.html',
-  '/llm-router.html',
-  '/multi-agent.html',
-  '/mcp-demo.html',
-  '/resume-generator.html',
+// Explicit source→destination mapping so old URLs with different names
+// (e.g. multimodal-assistant → multimodal) land on the right page.
+const LEGACY_HTML_PAGES: Array<{ source: string; destination: string }> = [
+  { source: '/portfolio-assistant.html',      destination: '/demos/portfolio-assistant' },
+  { source: '/vector-search-playground.html', destination: '/demos/vector-search' },
+  { source: '/multimodal-assistant.html',     destination: '/demos/multimodal' },
+  { source: '/multi-agent-demo.html',         destination: '/demos/multi-agent' },
+  { source: '/rag-pipeline.html',             destination: '/demos/rag-pipeline' },
+  { source: '/vector-search.html',            destination: '/demos/vector-search' },
+  { source: '/quantization.html',             destination: '/demos/quantization' },
+  { source: '/llm-router.html',               destination: '/demos/llm-router' },
+  { source: '/multi-agent.html',              destination: '/demos/multi-agent' },
+  { source: '/mcp-demo.html',                 destination: '/demos/mcp-demo' },
+  { source: '/resume-generator.html',         destination: '/demos/resume-generator' },
 ];
 
 const nextConfig: NextConfig = {
   turbopack: {},
   async redirects() {
-    return LEGACY_HTML_PAGES.map(source => ({
+    return LEGACY_HTML_PAGES.map(({ source, destination }) => ({
       source,
-      destination: '/demos' + source.replace('.html', ''),
+      destination,
       permanent: true, // 308 — signals final redirect to Google
     }));
   },

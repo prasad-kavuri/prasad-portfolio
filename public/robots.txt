@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /_next/
+Disallow: /*.html$
 
 Sitemap: https://www.prasadkavuri.com/sitemap.xml

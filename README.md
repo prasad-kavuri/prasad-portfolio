@@ -1,167 +1,175 @@
-# Prasad Kavuri — AI Engineering Portfolio
+# Prasad Kavuri — VP / Head of AI Engineering Portfolio
 
-> Live at [prasadkavuri.com](https://prasadkavuri.com)
+> **Live at [prasadkavuri.com](https://www.prasadkavuri.com)**  
+> Production-grade AI engineering portfolio with 9 live demos,
+> enterprise security, full test suite, and CI/CD pipeline.
 
-AI Engineering Executive Portfolio — 9 live AI demos showcasing 
-agentic AI, multi-model orchestration, RAG, MCP tool use, and 
-open-source model inference. Built with Next.js 16, Tailwind v4, 
-Groq, and Hugging Face.
+[![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-208%20passing-brightgreen)]()
+[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)]()
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)]()
+[![React](https://img.shields.io/badge/React-19.2.5-blue)]()
 
 ## Live Demos
 
-| Demo | Tech Stack | Status |
-|------|-----------|--------|
-| RAG Pipeline | Transformers.js, all-MiniLM-L6-v2, ChromaDB | Live |
-| Vector Search + 2D Viz | Transformers.js, PCA projection, Canvas | Live |
-| LLM Router | Groq API, Llama 3.1/3.3, Qwen3, Llama 4 | Live |
-| AI Portfolio Assistant | Groq, Llama 3.1 8B, RAG, Streaming | Live |
-| Resume Generator | Groq, Llama 3.3 70B, ATS optimization | Live |
-| Multimodal Assistant | ViT-base, CLIP zero-shot, Transformers.js | Live |
-| Model Quantization | ONNX, FP32 vs INT8 benchmark, Transformers.js | Live |
-| Multi-Agent System | Three specialized AI agents (Analyzer, Researcher, Strategist) collaborate via Groq — powered by FastAPI backend on Hugging Face Spaces | Live |
-| MCP Tool Demo | Model Context Protocol, Groq tool calling, JSON-RPC 2.0 | Live |
+| Demo | Category | Tech Stack | Mode |
+|---|---|---|---|
+| [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Core AI | Transformers.js, all-MiniLM-L6-v2 | Browser |
+| [Vector Search](https://www.prasadkavuri.com/demos/vector-search) | Core AI | Transformers.js, PCA, Canvas | Browser |
+| [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | Core AI | Groq, Llama 3.1/4, Qwen3 | Server |
+| [AI Portfolio Assistant](https://www.prasadkavuri.com/demos/portfolio-assistant) | Applications | Groq, RAG, streaming | Server |
+| [Resume Generator](https://www.prasadkavuri.com/demos/resume-generator) | Applications | Groq, Llama 3.3 70B, PDF export | Server |
+| [Multimodal Assistant](https://www.prasadkavuri.com/demos/multimodal) | Applications | Florence-2, WebGPU, Transformers.js | Browser |
+| [Model Quantization](https://www.prasadkavuri.com/demos/quantization) | Applications | ONNX, FP32 vs INT8 benchmark | Browser |
+| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq, Analyzer+Researcher+Strategist | Server |
+| [MCP Tool Demo](https://www.prasadkavuri.com/demos/mcp-demo) | Agentic | MCP protocol, Groq tool calling | Server |
 
 ## Architecture
 
-Organized into 3 demo groups: **Core AI Infrastructure** (RAG, Vector Search, Quantization), **Agentic Systems** (Multi-Agent, LLM Router), and **AI Applications** (Portfolio Assistant, Resume Generator, Multimodal, MCP Tool Demo).
+6-layer Enterprise AI Architecture — from user intent to business outcomes.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full breakdown.
 
 ```
 prasad-portfolio/
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx              # Main portfolio page
-│   │   ├── layout.tsx            # Root layout + ThemeProvider
-│   │   ├── demos/                # Individual demo pages
-│   │   │   ├── rag-pipeline/
-│   │   │   ├── vector-search/
-│   │   │   ├── llm-router/
-│   │   │   ├── portfolio-assistant/
-│   │   │   ├── resume-generator/
-│   │   │   ├── multimodal/
-│   │   │   └── quantization/
-│   │   └── api/                  # Server-side API routes
-│   │       ├── llm-router/       # Groq multi-model routing
-│   │       ├── portfolio-assistant/ # RAG + streaming chat
-│   │       └── resume-generator/ # JD parsing + ATS optimization
+│   │   ├── page.tsx                  # Main portfolio page
+│   │   ├── layout.tsx                # Root layout, metadata, JSON-LD
+│   │   ├── demos/                    # 9 demo pages
+│   │   └── api/                      # Server-side API routes
+│   │       ├── llm-router/           # Multi-model routing
+│   │       ├── portfolio-assistant/  # RAG + streaming
+│   │       ├── resume-generator/     # JD parsing + PDF
+│   │       ├── multi-agent/          # Agent orchestration
+│   │       ├── mcp-demo/             # MCP tool calling
+│   │       └── resume-download/      # PDF download
 │   ├── components/
-│   │   ├── layout/               # Navbar, Footer
-│   │   ├── sections/             # Hero, AITools, Expertise, Experience, Contact
-│   │   └── ui/                   # shadcn components
+│   │   ├── sections/                 # Hero, AITools, Experience, etc.
+│   │   └── ui/                       # shadcn/ui components
 │   ├── data/
-│   │   ├── profile.json          # Single source of truth for all profile data
-│   │   └── demos.ts              # Demo card definitions
+│   │   ├── profile.json              # Single source of truth
+│   │   └── demos.ts                  # Demo card definitions
 │   └── lib/
-│       └── utils.ts
-├── public/
-│   └── profile-photo.jpg
-└── ...config files
+│       ├── rate-limit.ts             # Upstash rate limiting + IP hashing
+│       ├── observability.ts          # Structured logging + anomaly detection
+│       ├── analytics.ts              # Usage event tracking
+│       └── api.ts                    # Shared route utilities
+├── src/__tests__/
+│   ├── api/                          # API route unit tests
+│   ├── components/                   # Component tests
+│   ├── evals/                        # LLM accuracy eval tests
+│   ├── fuzz/                         # Adversarial/fuzz tests
+│   ├── integration/                  # Cross-cutting integration tests
+│   ├── lib/                          # Library unit tests
+│   ├── resilience/                   # Chaos + failure chain tests
+│   └── stateful/                     # Sequence + rate limit tests
+├── e2e/                              # Playwright E2E tests
+├── docs/
+│   └── ARCHITECTURE.md              # Full system architecture
+├── .github/
+│   ├── workflows/ci.yml              # Parallel CI pipeline
+│   └── dependabot.yml                # Automated dependency updates
+└── public/
+    ├── robots.txt                    # SEO + crawler config
+    ├── llms.txt                      # AI crawler hint file
+    └── .well-known/
+        └── ai-agent-manifest.json    # Machine-readable profile
 ```
 
-## Architecture Deep Dive
+## Security
 
-For a comprehensive breakdown of the 6-layer enterprise AI architecture,
-design principles, technology decisions, and model selection strategy, see:
+| Control | Implementation | Status |
+|---|---|---|
+| Content Security Policy | `next.config.ts` + `src/proxy.ts` headers | Active |
+| Rate Limiting | Upstash Redis (@upstash/ratelimit) | Active |
+| Prompt Injection Guard | `detectPromptInjection` on all user inputs | Active |
+| XSS Sanitization | DOMPurify on all LLM output | Active |
+| Input Validation | Length limits + type checks at route entry | Active |
+| Dependency Scanning | `npm audit --audit-level=high` in CI + Dependabot | Active |
+| COOP/COEP Headers | Required for SharedArrayBuffer / WASM multi-threading | Active |
+| IP Hashing | SHA-256 before Redis storage, never raw IPs | Active |
+| No Hardcoded Secrets | All keys via `process.env`, verified in security tests | Active |
 
-**[📐 Architecture Documentation](docs/ARCHITECTURE.md)**
+## Testing
 
-This covers:
-- Layer-by-layer architecture breakdown with ASCII diagrams
-- LLM routing strategy and model selection matrix
-- RAG pipeline architecture
-- MCP tool integration patterns
-- Key design principles from production AI experience
+```bash
+npm run test           # unit tests (Vitest)
+npm run test:coverage  # coverage report
+npm run test:fuzz      # adversarial/fuzz tests
+npm run test:e2e       # Playwright (chromium, firefox, webkit, mobile)
+```
+
+| Layer | Directory | Focus |
+|---|---|---|
+| API Routes | `src/__tests__/api/` | Handler logic, validation, error states |
+| Components | `src/__tests__/components/` | Rendering, interaction, accessibility |
+| Library | `src/__tests__/lib/` | Rate limiting, observability, analytics |
+| LLM Evals | `src/__tests__/evals/` | Prompt construction, injection guards |
+| Fuzz | `src/__tests__/fuzz/` | Adversarial inputs, edge cases |
+| Stateful | `src/__tests__/stateful/` | Sequence tests, rate limit drain |
+| Resilience | `src/__tests__/resilience/` | Chaos, timeouts, failure chains |
+| Integration | `src/__tests__/integration/` | Metadata, security config integrity |
+| E2E | `e2e/` | Cross-browser, WCAG 2.1 AA, performance |
+
+Coverage gates enforced in CI: API routes ≥90%, lib ≥95%, components ≥70%.
+
+## CI/CD Pipeline
+
+Two-job parallel pipeline on every push to `main` and every PR:
+
+```
+lint-and-unit (security audit → lint → unit tests)
+     └─► e2e matrix
+              ├── chromium
+              ├── firefox
+              └── webkit
+```
+
+- `npm audit --audit-level=high` blocks on any high/critical CVEs
+- Dependabot: weekly dependency updates, major versions require manual review
+- Playwright report uploaded as artifact on failure (7-day retention)
 
 ## Tech Stack
 
-**Frontend**
-- Next.js 16 (App Router, Turbopack)
-- TypeScript
-- Tailwind CSS v4 (no config file)
-- shadcn/ui (Nova preset, Radix primitives)
-- Framer Motion
-- next-themes (dark mode)
-
-**AI / ML**
-- @huggingface/transformers v3 (browser-side ONNX inference)
-- Groq SDK (llama-3.1-8b-instant, llama-3.3-70b-versatile, llama-4-scout, qwen3-32b)
-- Vercel AI SDK (streaming)
-- Models: all-MiniLM-L6-v2, ViT-base-patch16-224, CLIP ViT-base-patch32
-- HuggingFace Spaces (FastAPI Docker backend for Multi-Agent)
-- MCP (Model Context Protocol) — Linux Foundation standard
-
-**Infrastructure**
-- Vercel (deployment, edge functions, analytics)
-- GitHub (source control, CI/CD via Vercel integration)
-
-## Key Design Decisions
-
-**Browser-first AI**: RAG pipeline, vector search, multimodal, and quantization 
-demos run entirely in-browser via WebAssembly — no server, no API key for visitors.
-
-**Single source of truth**: All profile data lives in `src/data/profile.json`. 
-Update once, propagates to Hero, Portfolio Assistant, Resume Generator, and all sections.
-
-**Real inference, not simulation**: Every demo uses actual model inference — 
-real embeddings, real LLM calls, real latency measurements. No hardcoded fake outputs.
-
-**Server-side API keys**: Groq API calls go through Next.js API routes — 
-keys never exposed to the browser.
+**Framework:** Next.js 16.2.3 (App Router + Turbopack), React 19.2.5  
+**Styling:** Tailwind CSS v4, shadcn/ui, Framer Motion 12  
+**AI/ML:** @huggingface/transformers v4 (WASM/WebGPU), Groq SDK  
+**Security:** @upstash/ratelimit, @upstash/redis, DOMPurify  
+**Testing:** Vitest 4, Playwright 1.59, @axe-core/playwright  
+**Observability:** @vercel/analytics, @vercel/speed-insights, structured JSON logging  
+**Deployment:** Vercel (edge middleware, CDN)
 
 ## Local Development
 
 ```bash
-# Clone
 git clone https://github.com/prasad-kavuri/prasad-portfolio.git
 cd prasad-portfolio
-
-# Install
 npm install
 
-# Environment variables
+# Copy and fill environment variables
 cp .env.local.example .env.local
-# Add your GROQ_API_KEY to .env.local
 
-# Run
-npm run dev
+npm run dev   # http://localhost:3000
 ```
-
-Open [http://localhost:3000](http://localhost:3000)
 
 ## Environment Variables
 
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `GROQ_API_KEY` | Yes (for LLM demos) | Groq API key from console.groq.com |
+|---|---|---|
+| `GROQ_API_KEY` | Yes | Groq API — console.groq.com |
+| `UPSTASH_REDIS_REST_URL` | Yes | Rate limiting (in-memory fallback in dev) |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes | Rate limiting |
+| `ANTHROPIC_API_KEY` | Optional | Future use |
+| `NEXT_PUBLIC_APP_URL` | Optional | Defaults to http://localhost:3000 |
 
-Browser-only demos (RAG, Vector Search, Multimodal, Quantization) work without any API key.
+Browser demos (RAG, Vector Search, Multimodal, Quantization) run 100%
+client-side via WebAssembly — no API key required.
 
-## Profile Data
+## Documentation
 
-All professional information is centralized in `src/data/profile.json`:
-
-```json
-{
-  "personal": { ... },
-  "stats": [ ... ],
-  "experience": [ ... ],
-  "education": [ ... ],
-  "skills": { ... },
-  "achievements": [ ... ],
-  "knowledgeBase": [ ... ]
-}
-```
-
-To update your profile, edit this file — changes propagate automatically.
-
-## Deployment
-
-Deployed on Vercel with automatic deployments on push to `main`.
-
-```bash
-# Deploy manually
-npx vercel --prod
-```
+- [Architecture](docs/ARCHITECTURE.md) — 6-layer system design
+- [System Status](https://www.prasadkavuri.com/status) — Live dashboard
 
 ## License
 
-MIT
+MIT — © 2026 Prasad Kavuri

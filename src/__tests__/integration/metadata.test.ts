@@ -1,0 +1,80 @@
+/**
+ * Integration tests: SEO metadata, AI discovery files, and canonical URLs.
+ * Reads source files directly — verifies correctness without a running server.
+ */
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'fs';
+
+describe('SEO metadata integrity', () => {
+  it('layout.tsx title is "VP / Head of AI Engineering"', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/VP \/ Head of AI Engineering/);
+  });
+
+  it('layout.tsx contains JSON-LD Person schema in JSX body', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/application\/ld\+json/);
+    expect(layout).toMatch(/@type.*Person/);
+  });
+
+  it('layout.tsx JSON-LD includes Calendly in sameAs', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/calendly\.com\/vbkpkavuri/);
+  });
+
+  it('layout.tsx contains openGraph metadata', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/openGraph/);
+    expect(layout).toMatch(/profile-photo\.jpg/);
+  });
+
+  it('layout.tsx twitter card is "summary" (not summary_large_image)', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/card.*summary[^_]/);
+  });
+
+  it('all prasadkavuri.com URLs in layout.tsx use www', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    // Should not contain bare prasadkavuri.com (without www)
+    const bareMatches = layout.match(/https:\/\/prasadkavuri\.com(?!\/[^\/]|")/g);
+    expect(bareMatches).toBeNull();
+  });
+
+  it('robots.txt exists and disallows /api/', () => {
+    const robots = readFileSync('public/robots.txt', 'utf8');
+    expect(robots).toMatch(/Disallow: \/api\//);
+  });
+
+  it('robots.txt points to www sitemap', () => {
+    const robots = readFileSync('public/robots.txt', 'utf8');
+    expect(robots).toMatch(/sitemap\.xml/);
+  });
+
+  it('llms.txt exists with correct identity and availability', () => {
+    const llmsTxt = readFileSync('public/llms.txt', 'utf8');
+    expect(llmsTxt).toMatch(/Prasad Kavuri/);
+    expect(llmsTxt).toMatch(/VP \/ Head/);
+    expect(llmsTxt).toMatch(/calendly\.com/);
+  });
+
+  it('ai-agent-manifest.json is valid JSON with required fields', () => {
+    const raw = readFileSync('public/.well-known/ai-agent-manifest.json', 'utf8');
+    const manifest = JSON.parse(raw);
+    expect(manifest).toHaveProperty('name');
+    expect(manifest).toHaveProperty('expertise');
+    expect(manifest).toHaveProperty('contact');
+    expect(manifest).toHaveProperty('demos');
+    expect(manifest.name).toMatch(/Prasad Kavuri/);
+    expect(manifest.contact).toHaveProperty('calendly');
+  });
+
+  it('profile.json personal.title is "VP / Head of AI Engineering"', () => {
+    const profile = JSON.parse(readFileSync('src/data/profile.json', 'utf8'));
+    expect(profile.personal.title).toBe('VP / Head of AI Engineering');
+  });
+
+  it('profile.json portfolio URL uses www', () => {
+    const profile = JSON.parse(readFileSync('src/data/profile.json', 'utf8'));
+    expect(profile.personal.portfolio).toMatch(/www\.prasadkavuri\.com/);
+  });
+});

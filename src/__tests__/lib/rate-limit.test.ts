@@ -11,7 +11,11 @@ describe('rateLimit', () => {
   beforeEach(() => _resetStore());
 
   it('allows first request', async () => {
-    expect((await rateLimit('1.2.3.4')).limited).toBe(false);
+    const result = await rateLimit('1.2.3.4');
+    expect(result.limited).toBe(false);
+    expect(result.limit).toBe(RATE_LIMIT_MAX);
+    expect(result.remaining).toBe(RATE_LIMIT_MAX - 1);
+    expect(result.resetAt).toBeGreaterThan(Date.now());
   });
 
   it('blocks after RATE_LIMIT_MAX requests', async () => {
@@ -44,7 +48,9 @@ describe('rateLimit', () => {
     }
 
     expect(results).toEqual(Array(RATE_LIMIT_MAX).fill(false));
-    expect((await rateLimit('3.3.3.3')).limited).toBe(true);
+    const blocked = await rateLimit('3.3.3.3');
+    expect(blocked.limited).toBe(true);
+    expect(blocked.remaining).toBe(0);
   });
 
   it('different IPs have independent limits', async () => {

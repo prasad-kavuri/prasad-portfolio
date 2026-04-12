@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
 import {
   enforceRateLimit,
+  createRequestContext,
+  finalizeApiResponse,
   jsonError,
-  logApiError,
+  captureAndLogApiError,
   logApiEvent,
   logApiWarning,
   readJsonObject,
@@ -34,37 +36,37 @@ const MODELS = [
 ];
 
 export async function POST(req: NextRequest) {
-  const requestStart = Date.now();
-  const rateLimited = await enforceRateLimit(req, 'unknown', { route: ROUTE });
+  const context = createRequestContext(req, ROUTE);
+  const rateLimited = await enforceRateLimit(req, 'unknown', { context });
   if (rateLimited) return rateLimited;
 
-  const body = await readJsonObject(req, { route: ROUTE });
+  const body = await readJsonObject(req, { context });
   if (!body.ok) return body.response;
 
   const { prompt, model: modelId } = body.data;
 
   if (!prompt || typeof prompt !== 'string') {
-    logApiWarning('api.validation_failed', { route: ROUTE, reason: 'missing_prompt', status: 400 });
-    return jsonError('Prompt is required', 400);
+    logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'missing_prompt', status: 400 });
+    return finalizeApiResponse(jsonError('Prompt is required', 400, { context }), context);
   }
   if (prompt.length > 500) {
-    logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_too_long', promptLength: prompt.length, status: 400 });
-    return jsonError('Input too long', 400);
+    logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_too_long', promptLength: prompt.length, status: 400 });
+    return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
   }
   if (detectPromptInjection(prompt)) {
-    logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_injection', promptLength: prompt.length, status: 400 });
-    return jsonError('Invalid input', 400);
+    logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', promptLength: prompt.length, status: 400 });
+    return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
   }
 
   const model = MODELS.find(m => m.id === modelId);
   if (!model) {
-    logApiWarning('api.validation_failed', { route: ROUTE, reason: 'unknown_model', status: 400 });
-    return jsonError('Model not found', 400);
+    logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'unknown_model', status: 400 });
+    return finalizeApiResponse(jsonError('Model not found', 400, { context }), context);
   }
 
   if (!process.env.GROQ_API_KEY) {
-    logApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, status: 500 });
-    return jsonError('GROQ_API_KEY not configured', 500);
+    captureAndLogApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, traceId: context.traceId, status: 500 });
+    return finalizeApiResponse(jsonError('GROQ_API_KEY not configured', 500, { context }), context);
   }
 
   try {
@@ -88,22 +90,24 @@ export async function POST(req: NextRequest) {
       choices?: Array<{ message?: { content?: string } }>;
     };
     if (!res.ok) {
-      logApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
+      captureAndLogApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
         route: ROUTE,
         upstreamStatus: res.status,
-        durationMs: Date.now() - requestStart,
+        traceId: context.traceId,
+        durationMs: Date.now() - context.startedAt,
         status: 500,
       });
-      return jsonError('Failed to call Groq API', 500);
+      return finalizeApiResponse(jsonError('Failed to call Groq API', 500, { context }), context);
     }
 
     const inputTokens = data.usage?.prompt_tokens || 0;
     const outputTokens = data.usage?.completion_tokens || 0;
     const cost = (inputTokens * model.inputCost + outputTokens * model.outputCost) / 1_000_000;
 
-    const totalDuration = Date.now() - requestStart;
+    const totalDuration = Date.now() - context.startedAt;
     logApiEvent('api.request_completed', {
       route: ROUTE,
+      traceId: context.traceId,
       status: 200,
       durationMs: totalDuration,
       upstreamLatencyMs: latency,
@@ -115,10 +119,10 @@ export async function POST(req: NextRequest) {
 
     const anomaly = detectAnomaly(totalDuration, 200);
     if (anomaly.anomaly) {
-      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, traceId: context.traceId, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
     }
 
-    return NextResponse.json({
+    return finalizeApiResponse(NextResponse.json({
       model: model.id,
       modelName: model.name,
       provider: model.provider,
@@ -127,14 +131,14 @@ export async function POST(req: NextRequest) {
       input_tokens: inputTokens,
       output_tokens: outputTokens,
       cost_usd: cost,
-    });
+    }), context);
   } catch (error) {
-    const durationMs = Date.now() - requestStart;
+    const durationMs = Date.now() - context.startedAt;
     if (error instanceof Error && error.name === 'TimeoutError') {
-      logApiWarning('api.upstream_timeout', { route: ROUTE, status: 504, durationMs });
-      return jsonError('Upstream timeout', 504);
+      logApiWarning('api.upstream_timeout', { route: ROUTE, traceId: context.traceId, status: 504, durationMs });
+      return finalizeApiResponse(jsonError('Upstream timeout', 504, { context }), context);
     }
-    logApiError('api.request_failed', error, { route: ROUTE, status: 500, durationMs });
-    return jsonError('Failed to call Groq API', 500);
+    captureAndLogApiError('api.request_failed', error, { route: ROUTE, traceId: context.traceId, status: 500, durationMs });
+    return finalizeApiResponse(jsonError('Failed to call Groq API', 500, { context }), context);
   }
 }

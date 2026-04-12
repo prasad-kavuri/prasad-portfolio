@@ -5,8 +5,10 @@ import profile from "@/data/profile.json";
 import { detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
 import {
   enforceRateLimit,
+  createRequestContext,
+  finalizeApiResponse,
   jsonError,
-  logApiError,
+  captureAndLogApiError,
   logApiEvent,
   logApiWarning,
   readJsonObject,
@@ -209,31 +211,32 @@ function executeTool(name: string, args: ToolArgs): string {
 }
 
 export async function POST(request: NextRequest) {
-  const rateLimited = await enforceRateLimit(request, "anonymous", { route: ROUTE });
+  const context = createRequestContext(request, ROUTE);
+  const rateLimited = await enforceRateLimit(request, "anonymous", { context });
   if (rateLimited) return rateLimited;
 
-  const body = await readJsonObject(request, { route: ROUTE });
+  const body = await readJsonObject(request, { context });
   if (!body.ok) return body.response;
 
   const { query } = body.data;
 
   if (!query || typeof query !== 'string') {
-    logApiWarning('api.validation_failed', { route: ROUTE, reason: 'missing_query', status: 400 });
-    return jsonError('Query is required', 400);
+    logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'missing_query', status: 400 });
+    return finalizeApiResponse(jsonError('Query is required', 400, { context }), context);
   }
   if (query.length > 500) {
-    logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'query_too_long', queryLength: query.length, status: 400 });
-    return jsonError('Input too long', 400);
+    logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'query_too_long', queryLength: query.length, status: 400 });
+    return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
   }
   if (detectPromptInjection(query)) {
-    logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_injection', queryLength: query.length, status: 400 });
-    return jsonError('Invalid input', 400);
+    logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', queryLength: query.length, status: 400 });
+    return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
   }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    logApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, status: 500 });
-    return jsonError('GROQ_API_KEY not configured', 500);
+    captureAndLogApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, traceId: context.traceId, status: 500 });
+    return finalizeApiResponse(jsonError('GROQ_API_KEY not configured', 500, { context }), context);
   }
 
   const groq = new Groq({ apiKey });
@@ -260,18 +263,19 @@ export async function POST(request: NextRequest) {
     if (!message.tool_calls || message.tool_calls.length === 0) {
       logApiWarning('api.abnormal_usage', {
         route: ROUTE,
+        traceId: context.traceId,
         reason: 'no_tool_calls',
         queryLength: query.length,
         status: 200,
         durationMs: Date.now() - startTime,
       });
-      return Response.json({
+      return finalizeApiResponse(Response.json({
         query,
         toolsDiscovered: 4,
         toolCallLog: [],
         finalAnswer: sanitizeLLMOutput(message.content || "I could not find relevant information."),
         totalDuration_ms: Date.now() - startTime,
-      });
+      }), context);
     }
 
     const toolCallLog: ToolCallLogEntry[] = [];
@@ -346,6 +350,7 @@ export async function POST(request: NextRequest) {
 
     logApiEvent('api.request_completed', {
       route: ROUTE,
+      traceId: context.traceId,
       status: 200,
       durationMs: totalDuration,
       queryLength: query.length,
@@ -354,34 +359,32 @@ export async function POST(request: NextRequest) {
 
     const anomaly = detectAnomaly(totalDuration, 200);
     if (anomaly.anomaly) {
-      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, traceId: context.traceId, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
     }
 
-    return Response.json({
+    return finalizeApiResponse(Response.json({
       query,
       toolsDiscovered: MCP_TOOLS.length,
       toolCallLog,
       finalAnswer,
       totalDuration_ms: totalDuration,
-    });
+    }), context);
   } catch (error) {
     const totalDuration = elapsed();
     if (error instanceof Error && error.name === 'TimeoutError') {
-      logApiWarning('api.upstream_timeout', { route: ROUTE, status: 504, durationMs: totalDuration });
-      return Response.json({ error: 'Upstream timeout' }, { status: 504 });
+      logApiWarning('api.upstream_timeout', { route: ROUTE, traceId: context.traceId, status: 504, durationMs: totalDuration });
+      return finalizeApiResponse(jsonError('Upstream timeout', 504, { context }), context);
     }
-    logApiError("api.request_failed", error, {
+    captureAndLogApiError("api.request_failed", error, {
       route: ROUTE,
+      traceId: context.traceId,
       status: 500,
       durationMs: totalDuration,
     });
     const anomaly = detectAnomaly(totalDuration, 500);
     if (anomaly.anomaly) {
-      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'error', durationMs: totalDuration, statusCode: 500, reasons: anomaly.reasons.join('; ') });
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, traceId: context.traceId, severity: 'error', durationMs: totalDuration, statusCode: 500, reasons: anomaly.reasons.join('; ') });
     }
-    return Response.json(
-      { error: "Failed to process MCP demo request" },
-      { status: 500 }
-    );
+    return finalizeApiResponse(jsonError("Failed to process MCP demo request", 500, { context }), context);
   }
 }

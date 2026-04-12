@@ -154,7 +154,11 @@ test.describe('Accessibility', () => {
     expect(h1s.length).toBe(1);
   });
 
-  test('interactive elements are reachable via keyboard Tab', async ({ page }) => {
+  test('interactive elements are reachable via keyboard Tab', async ({ page, browserName }) => {
+    test.skip(
+      browserName === 'webkit',
+      'WebKit on macOS follows the host keyboard focus preference for Tab navigation.'
+    );
     await page.goto('/');
     // Press Tab 5 times and verify focus moves to interactive elements
     for (let i = 0; i < 5; i++) {

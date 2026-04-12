@@ -17,7 +17,15 @@ vi.mock('@/lib/rate-limit', () => ({
 }));
 
 vi.mock('@/lib/api', () => ({
+  captureAndLogApiError: vi.fn(),
+  createRequestContext: vi.fn(() => ({
+    route: '/api/portfolio-assistant',
+    method: 'POST',
+    traceId: 'test-trace-id',
+    startedAt: Date.now(),
+  })),
   enforceRateLimit: vi.fn(async () => null),
+  finalizeApiResponse: vi.fn((response: Response) => response),
   jsonError: (msg: string, status: number) =>
     new Response(JSON.stringify({ error: msg }), { status }),
   logApiError: vi.fn(),

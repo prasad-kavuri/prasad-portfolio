@@ -3,9 +3,22 @@
  * Covers structured logging, anomaly detection, and timer utilities.
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { logAPIEvent, detectAnomaly, startTimer } from '@/lib/observability';
+import {
+  _resetObservability,
+  captureAPIError,
+  createTraceId,
+  detectAnomaly,
+  getObservabilitySnapshot,
+  logAPIEvent,
+  startTimer,
+  trackAPIRequest,
+  trackRateLimit,
+} from '@/lib/observability';
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  _resetObservability();
+});
 
 describe('logAPIEvent: structured JSON logging', () => {
   it('emits JSON to console.info for info severity', () => {
@@ -54,6 +67,63 @@ describe('logAPIEvent: structured JSON logging', () => {
     logAPIEvent({ event: 'test', route: '/api/test', severity: 'info' });
     const output = JSON.parse(spy.mock.calls[0][0] as string);
     expect(new Date(output.timestamp).toISOString()).toBe(output.timestamp);
+  });
+});
+
+describe('request tracing', () => {
+  it('uses a valid incoming trace id', () => {
+    expect(createTraceId('trace-abc_123')).toBe('trace-abc_123');
+  });
+
+  it('generates a new trace id for invalid input', () => {
+    const generated = createTraceId('bad trace id with spaces');
+    expect(generated).not.toBe('bad trace id with spaces');
+    expect(generated).toMatch(/^[0-9a-f-]{36}$/);
+  });
+});
+
+describe('in-memory observability counters', () => {
+  it('tracks request and error counts by route', () => {
+    trackAPIRequest('/api/test', 200);
+    trackAPIRequest('/api/test', 500);
+
+    const snapshot = getObservabilitySnapshot();
+    expect(snapshot.requests['/api/test']).toBe(2);
+    expect(snapshot.errors['/api/test']).toBe(1);
+  });
+
+  it('tracks rate-limit allowed and blocked counts by route', () => {
+    trackRateLimit('/api/test', false);
+    trackRateLimit('/api/test', true);
+
+    const snapshot = getObservabilitySnapshot();
+    expect(snapshot.rateLimitAllowed['/api/test']).toBe(1);
+    expect(snapshot.rateLimited['/api/test']).toBe(1);
+  });
+});
+
+describe('captureAPIError', () => {
+  it('emits a sanitized error monitoring event', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    captureAPIError(new TypeError('sensitive message'), {
+      route: '/api/test',
+      traceId: 'trace-12345',
+      statusCode: 500,
+      durationMs: 42,
+    });
+
+    expect(spy).toHaveBeenCalledOnce();
+    const output = JSON.parse(spy.mock.calls[0][0] as string);
+    expect(output).toMatchObject({
+      event: 'api.error_captured',
+      route: '/api/test',
+      traceId: 'trace-12345',
+      severity: 'error',
+      errorName: 'TypeError',
+      statusCode: 500,
+      durationMs: 42,
+    });
+    expect(JSON.stringify(output)).not.toContain('sensitive message');
   });
 });
 

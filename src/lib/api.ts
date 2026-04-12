@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimit } from '@/lib/rate-limit';
+import { rateLimit, type RateLimitResult } from '@/lib/rate-limit';
+import {
+  captureAPIError,
+  createTraceId,
+  trackAPIRequest,
+  trackRateLimit,
+} from '@/lib/observability';
 
 export type JsonObject = Record<string, unknown>;
 export type LogLevel = 'info' | 'warn' | 'error';
@@ -9,6 +15,20 @@ type JsonBodyResult =
   | { ok: false; response: NextResponse };
 
 type LogMeta = Record<string, boolean | number | string | null | undefined>;
+
+export interface RequestContext {
+  route: string;
+  method: string;
+  traceId: string;
+  startedAt: number;
+  rateLimit?: RateLimitResult;
+}
+
+type RequestMeta = {
+  route?: string;
+  traceId?: string;
+  context?: RequestContext;
+};
 
 const LOG_IP_SALT = process.env.LOG_IP_SALT ?? 'portfolio-api';
 
@@ -62,8 +82,61 @@ export function logApiError(event: string, error: unknown, meta: LogMeta = {}): 
   });
 }
 
-export function jsonError(error: string, status: number): NextResponse {
-  return NextResponse.json({ error }, { status });
+export function createRequestContext(req: NextRequest, route: string): RequestContext {
+  return {
+    route,
+    method: req.method,
+    traceId: createTraceId(
+      req.headers.get('x-request-id') ?? req.headers.get('x-trace-id')
+    ),
+    startedAt: Date.now(),
+  };
+}
+
+function rateLimitHeaders(result?: RateLimitResult): Record<string, string> {
+  if (!result) return {};
+
+  return {
+    'X-RateLimit-Limit': String(result.limit),
+    'X-RateLimit-Remaining': String(result.remaining),
+    'X-RateLimit-Reset': String(Math.ceil(result.resetAt / 1000)),
+  };
+}
+
+function traceHeaders(meta: RequestMeta = {}): Record<string, string> {
+  const traceId = meta.context?.traceId ?? meta.traceId;
+  return traceId ? { 'X-Request-Id': traceId, 'X-Trace-Id': traceId } : {};
+}
+
+export function finalizeApiResponse(
+  response: Response,
+  context: RequestContext,
+  statusCode = response.status
+): Response {
+  const durationMs = Date.now() - context.startedAt;
+  response.headers.set('X-Request-Id', context.traceId);
+  response.headers.set('X-Trace-Id', context.traceId);
+  response.headers.set('Server-Timing', `app;dur=${durationMs}`);
+
+  for (const [key, value] of Object.entries(rateLimitHeaders(context.rateLimit))) {
+    response.headers.set(key, value);
+  }
+
+  trackAPIRequest(context.route, statusCode);
+  return response;
+}
+
+export function jsonError(error: string, status: number, meta: RequestMeta = {}): NextResponse {
+  return NextResponse.json(
+    { error, requestId: meta.context?.traceId ?? meta.traceId },
+    {
+      status,
+      headers: {
+        ...traceHeaders(meta),
+        ...rateLimitHeaders(meta.context?.rateLimit),
+      },
+    }
+  );
 }
 
 export function getClientIp(req: NextRequest, fallback = 'anonymous'): string {
@@ -77,44 +150,63 @@ export function getClientIp(req: NextRequest, fallback = 'anonymous'): string {
 export async function enforceRateLimit(
   req: NextRequest,
   fallback = 'anonymous',
-  meta: { route?: string } = {}
+  meta: RequestMeta = {}
 ): Promise<NextResponse | null> {
   const clientIp = getClientIp(req, fallback);
-  if ((await rateLimit(clientIp)).limited) {
+  const result = await rateLimit(clientIp);
+  if (meta.context) {
+    meta.context.rateLimit = result;
+  }
+
+  trackRateLimit(meta.context?.route ?? meta.route ?? 'unknown', result.limited);
+
+  if (result.limited) {
     logApiWarning('api.rate_limited', {
-      route: meta.route,
+      route: meta.context?.route ?? meta.route,
+      traceId: meta.context?.traceId ?? meta.traceId,
       method: req.method,
       clientHash: await hashLogValue(clientIp.split(',')[0].trim()),
+      limit: result.limit,
+      remaining: result.remaining,
     });
-    return jsonError('Too many requests', 429);
+    const response = jsonError('Too many requests', 429, meta);
+    return meta.context ? finalizeApiResponse(response, meta.context, 429) as NextResponse : response;
   }
   return null;
 }
 
 export async function readJsonObject(
   req: NextRequest,
-  meta: { route?: string } = {}
+  meta: RequestMeta = {}
 ): Promise<JsonBodyResult> {
   let data: unknown;
   try {
     data = await req.json();
   } catch {
     logApiWarning('api.invalid_json', {
-      route: meta.route,
+      route: meta.context?.route ?? meta.route,
+      traceId: meta.context?.traceId ?? meta.traceId,
       method: req.method,
     });
-    return { ok: false, response: jsonError('Invalid JSON body', 400) };
+    const response = jsonError('Invalid JSON body', 400, meta);
+    return {
+      ok: false,
+      response: meta.context ? finalizeApiResponse(response, meta.context, 400) as NextResponse : response,
+    };
   }
 
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     logApiWarning('api.invalid_json_shape', {
-      route: meta.route,
+      route: meta.context?.route ?? meta.route,
+      traceId: meta.context?.traceId ?? meta.traceId,
       method: req.method,
       bodyType: Array.isArray(data) ? 'array' : typeof data,
     });
     return {
       ok: false,
-      response: jsonError('Request body must be a JSON object', 400),
+      response: meta.context
+        ? finalizeApiResponse(jsonError('Request body must be a JSON object', 400, meta), meta.context, 400) as NextResponse
+        : jsonError('Request body must be a JSON object', 400, meta),
     };
   }
 
@@ -131,4 +223,14 @@ export function isStringArray(
     typeof item === 'string' &&
     (options.maxItemLength === undefined || item.length <= options.maxItemLength)
   ));
+}
+
+export function captureAndLogApiError(event: string, error: unknown, meta: LogMeta & { route: string; status?: number; durationMs?: number; traceId?: string }): void {
+  logApiError(event, error, meta);
+  captureAPIError(error, {
+    route: meta.route,
+    traceId: meta.traceId,
+    durationMs: meta.durationMs,
+    statusCode: meta.status ?? 500,
+  });
 }

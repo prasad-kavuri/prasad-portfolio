@@ -119,8 +119,15 @@ describe('POST /api/llm-router', () => {
 
   it('returns 200 with valid prompt and model', async () => {
     const { POST } = await import('@/app/api/llm-router/route');
-    const res = await POST(makeRequest({ prompt: 'What is agentic AI?', model: 'llama-3.1-8b-instant' }) as any);
+    const req = makeRequest({ prompt: 'What is agentic AI?', model: 'llama-3.1-8b-instant' }) as any;
+    req.headers.set('x-request-id', 'trace-llm-router-1');
+    const res = await POST(req);
     expect(res.status).toBe(200);
+    expect(res.headers.get('x-request-id')).toBe('trace-llm-router-1');
+    expect(res.headers.get('x-trace-id')).toBe('trace-llm-router-1');
+    expect(res.headers.get('server-timing')).toMatch(/app;dur=/);
+    expect(res.headers.get('x-ratelimit-limit')).toBe('10');
+    expect(res.headers.get('x-ratelimit-remaining')).toBe('9');
     const body = await res.json();
     expect(body).toHaveProperty('response', 'Test response');
     expect(body).toHaveProperty('latency_ms');

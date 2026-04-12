@@ -4,6 +4,13 @@ import { Redis } from '@upstash/redis';
 export const RATE_LIMIT_MAX = 10;
 export const RATE_LIMIT_WINDOW_MS = 60_000;
 
+export interface RateLimitResult {
+  limited: boolean;
+  limit: number;
+  remaining: number;
+  resetAt: number;
+}
+
 const hasUpstash = !!(
   process.env.UPSTASH_REDIS_REST_URL &&
   process.env.UPSTASH_REDIS_REST_TOKEN
@@ -28,16 +35,24 @@ if (hasUpstash) {
 interface Entry { count: number; resetAt: number; }
 const store = new Map<string, Entry>();
 
-function inMemoryRateLimit(ip: string): { limited: boolean } {
+function inMemoryRateLimit(ip: string): RateLimitResult {
   const now = Date.now();
   const entry = store.get(ip);
   if (!entry || now > entry.resetAt) {
-    store.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return { limited: false };
+    const resetAt = now + RATE_LIMIT_WINDOW_MS;
+    store.set(ip, { count: 1, resetAt });
+    return { limited: false, limit: RATE_LIMIT_MAX, remaining: RATE_LIMIT_MAX - 1, resetAt };
   }
-  if (entry.count >= RATE_LIMIT_MAX) return { limited: true };
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return { limited: true, limit: RATE_LIMIT_MAX, remaining: 0, resetAt: entry.resetAt };
+  }
   entry.count++;
-  return { limited: false };
+  return {
+    limited: false,
+    limit: RATE_LIMIT_MAX,
+    remaining: Math.max(0, RATE_LIMIT_MAX - entry.count),
+    resetAt: entry.resetAt,
+  };
 }
 
 /* c8 ignore next 9 — only called when Upstash is available (production only) */
@@ -51,13 +66,13 @@ async function hashIp(ip: string): Promise<string> {
     .join('');
 }
 
-export async function rateLimit(rawIp: string): Promise<{ limited: boolean }> {
+export async function rateLimit(rawIp: string): Promise<RateLimitResult> {
   const ip = rawIp.split(',')[0].trim();
   /* c8 ignore next 4 — Upstash path only reachable in production */
   if (upstashLimiter) {
     const key = await hashIp(ip);
-    const { success } = await upstashLimiter.limit(key);
-    return { limited: !success };
+    const { success, limit, remaining, reset } = await upstashLimiter.limit(key);
+    return { limited: !success, limit, remaining, resetAt: reset };
   }
   return inMemoryRateLimit(ip);
 }

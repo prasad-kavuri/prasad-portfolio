@@ -3,8 +3,10 @@ import profile from '@/data/profile.json';
 import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
 import {
   enforceRateLimit,
+  createRequestContext,
+  finalizeApiResponse,
   jsonError,
-  logApiError,
+  captureAndLogApiError,
   logApiEvent,
   logApiWarning,
   readJsonObject,
@@ -55,41 +57,41 @@ function validateMessages(value: unknown): Message[] | null {
 }
 
 export async function POST(req: NextRequest) {
-  const requestStart = Date.now();
+  const context = createRequestContext(req, ROUTE);
   const elapsed = startTimer();
   try {
-    const rateLimited = await enforceRateLimit(req, 'anonymous', { route: ROUTE });
+    const rateLimited = await enforceRateLimit(req, 'anonymous', { context });
     if (rateLimited) return rateLimited;
 
-    const body = await readJsonObject(req, { route: ROUTE });
+    const body = await readJsonObject(req, { context });
     if (!body.ok) return body.response;
 
     const messages = validateMessages(body.data.messages);
     if (!messages) {
-      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'invalid_messages', status: 400 });
-      return jsonError('Messages are required', 400);
+      logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_messages', status: 400 });
+      return finalizeApiResponse(jsonError('Messages are required', 400, { context }), context);
     }
 
     if (body.data.useRAG !== undefined && typeof body.data.useRAG !== 'boolean') {
-      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'invalid_use_rag', status: 400 });
-      return jsonError('Invalid input', 400);
+      logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_use_rag', status: 400 });
+      return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
     const useRAG = body.data.useRAG === true;
 
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     if (lastUserMessage && lastUserMessage.content.length > 500) {
-      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'message_too_long', messageLength: lastUserMessage.content.length, status: 400 });
-      return jsonError('Input too long', 400);
+      logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'message_too_long', messageLength: lastUserMessage.content.length, status: 400 });
+      return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
     }
     if (lastUserMessage && detectPromptInjection(lastUserMessage.content)) {
-      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
-      return jsonError('Invalid input', 400);
+      logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
+      return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      logApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, status: 500 });
-      return jsonError('GROQ_API_KEY not configured', 500);
+      captureAndLogApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, traceId: context.traceId, status: 500 });
+      return finalizeApiResponse(jsonError('GROQ_API_KEY not configured', 500, { context }), context);
     }
 
     // Always inject full knowledge base as base context
@@ -135,16 +137,14 @@ ${fullContext}`;
 
     if (!response.ok) {
       await response.text().catch(() => '');
-      logApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
+      captureAndLogApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
         route: ROUTE,
+        traceId: context.traceId,
         upstreamStatus: response.status,
         status: 500,
-        durationMs: Date.now() - requestStart,
+        durationMs: Date.now() - context.startedAt,
       });
-      return NextResponse.json(
-        { error: 'Failed to get response from Groq API' },
-        { status: 500 }
-      );
+      return finalizeApiResponse(jsonError('Failed to get response from Groq API', 500, { context }), context);
     }
 
     // Create a readable stream for streaming response
@@ -207,6 +207,7 @@ ${fullContext}`;
     const totalDuration = elapsed();
     logApiEvent('api.request_completed', {
       route: ROUTE,
+      traceId: context.traceId,
       status: 200,
       durationMs: totalDuration,
       messageCount: messages.length,
@@ -216,26 +217,23 @@ ${fullContext}`;
 
     const anomaly = detectAnomaly(totalDuration, 200);
     if (anomaly.anomaly) {
-      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, traceId: context.traceId, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
     }
 
-    return new NextResponse(readableStream, {
+    return finalizeApiResponse(new NextResponse(readableStream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
         'X-Retrieved-Docs': JSON.stringify(retrievedDocs.map(({ id, title }) => ({ id, title }))),
       },
-    });
+    }), context);
   } catch (error) {
     const durationMs = elapsed();
     if (error instanceof Error && error.name === 'TimeoutError') {
-      logApiWarning('api.upstream_timeout', { route: ROUTE, status: 504, durationMs });
-      return NextResponse.json({ error: 'Upstream timeout' }, { status: 504 });
+      logApiWarning('api.upstream_timeout', { route: ROUTE, traceId: context.traceId, status: 504, durationMs });
+      return finalizeApiResponse(jsonError('Upstream timeout', 504, { context }), context);
     }
-    logApiError('api.request_failed', error, { route: ROUTE, status: 500, durationMs });
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    captureAndLogApiError('api.request_failed', error, { route: ROUTE, traceId: context.traceId, status: 500, durationMs });
+    return finalizeApiResponse(jsonError('Internal server error', 500, { context }), context);
   }
 }

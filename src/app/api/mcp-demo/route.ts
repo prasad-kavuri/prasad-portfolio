@@ -11,6 +11,7 @@ import {
   logApiWarning,
   readJsonObject,
 } from "@/lib/api";
+import { detectAnomaly, logAPIEvent, startTimer } from "@/lib/observability";
 
 const ROUTE = "/api/mcp-demo";
 
@@ -237,6 +238,7 @@ export async function POST(request: NextRequest) {
 
   const groq = new Groq({ apiKey });
   const startTime = Date.now();
+  const elapsed = startTimer();
 
   try {
     // Step 1: Initial call to Groq to select tools
@@ -340,7 +342,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const totalDuration = Date.now() - startTime;
+    const totalDuration = elapsed();
 
     logApiEvent('api.request_completed', {
       route: ROUTE,
@@ -350,6 +352,11 @@ export async function POST(request: NextRequest) {
       toolCalls: toolCallLog.length,
     });
 
+    const anomaly = detectAnomaly(totalDuration, 200);
+    if (anomaly.anomaly) {
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
+    }
+
     return Response.json({
       query,
       toolsDiscovered: MCP_TOOLS.length,
@@ -358,11 +365,20 @@ export async function POST(request: NextRequest) {
       totalDuration_ms: totalDuration,
     });
   } catch (error) {
+    const totalDuration = elapsed();
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      logApiWarning('api.upstream_timeout', { route: ROUTE, status: 504, durationMs: totalDuration });
+      return Response.json({ error: 'Upstream timeout' }, { status: 504 });
+    }
     logApiError("api.request_failed", error, {
       route: ROUTE,
       status: 500,
-      durationMs: Date.now() - startTime,
+      durationMs: totalDuration,
     });
+    const anomaly = detectAnomaly(totalDuration, 500);
+    if (anomaly.anomaly) {
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'error', durationMs: totalDuration, statusCode: 500, reasons: anomaly.reasons.join('; ') });
+    }
     return Response.json(
       { error: "Failed to process MCP demo request" },
       { status: 500 }

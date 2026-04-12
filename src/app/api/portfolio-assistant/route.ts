@@ -9,6 +9,7 @@ import {
   logApiWarning,
   readJsonObject,
 } from '@/lib/api';
+import { detectAnomaly, logAPIEvent, startTimer } from '@/lib/observability';
 
 const ROUTE = '/api/portfolio-assistant';
 
@@ -55,6 +56,7 @@ function validateMessages(value: unknown): Message[] | null {
 
 export async function POST(req: NextRequest) {
   const requestStart = Date.now();
+  const elapsed = startTimer();
   try {
     const rateLimited = await enforceRateLimit(req, 'anonymous', { route: ROUTE });
     if (rateLimited) return rateLimited;
@@ -202,14 +204,20 @@ ${fullContext}`;
       },
     });
 
+    const totalDuration = elapsed();
     logApiEvent('api.request_completed', {
       route: ROUTE,
       status: 200,
-      durationMs: Date.now() - requestStart,
+      durationMs: totalDuration,
       messageCount: messages.length,
       useRAG,
       retrievedDocs: retrievedDocs.length,
     });
+
+    const anomaly = detectAnomaly(totalDuration, 200);
+    if (anomaly.anomaly) {
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
+    }
 
     return new NextResponse(readableStream, {
       headers: {
@@ -219,11 +227,12 @@ ${fullContext}`;
       },
     });
   } catch (error) {
-    logApiError('api.request_failed', error, {
-      route: ROUTE,
-      status: 500,
-      durationMs: Date.now() - requestStart,
-    });
+    const durationMs = elapsed();
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      logApiWarning('api.upstream_timeout', { route: ROUTE, status: 504, durationMs });
+      return NextResponse.json({ error: 'Upstream timeout' }, { status: 504 });
+    }
+    logApiError('api.request_failed', error, { route: ROUTE, status: 500, durationMs });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

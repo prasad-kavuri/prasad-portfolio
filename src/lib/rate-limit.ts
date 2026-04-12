@@ -11,6 +11,7 @@ const hasUpstash = !!(
 
 let upstashLimiter: Ratelimit | null = null;
 
+/* c8 ignore next 12 — Upstash is only available in production with credentials */
 if (hasUpstash) {
   const redis = new Redis({
     url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -39,7 +40,7 @@ function inMemoryRateLimit(ip: string): { limited: boolean } {
   return { limited: false };
 }
 
-/** One-way SHA-256 of an IP so raw addresses are never stored in Redis. */
+/* c8 ignore next 9 — only called when Upstash is available (production only) */
 async function hashIp(ip: string): Promise<string> {
   const buf = await crypto.subtle.digest(
     'SHA-256',
@@ -52,6 +53,7 @@ async function hashIp(ip: string): Promise<string> {
 
 export async function rateLimit(rawIp: string): Promise<{ limited: boolean }> {
   const ip = rawIp.split(',')[0].trim();
+  /* c8 ignore next 4 — Upstash path only reachable in production */
   if (upstashLimiter) {
     const key = await hashIp(ip);
     const { success } = await upstashLimiter.limit(key);

@@ -8,8 +8,23 @@ import {
   logApiWarning,
   readJsonObject,
 } from '@/lib/api';
+import { detectAnomaly, logAPIEvent } from '@/lib/observability';
 
 const ROUTE = '/api/llm-router';
+
+const MAX_RETRIES = 1;
+
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  attemptsLeft = MAX_RETRIES
+): Promise<Response> {
+  const res = await fetch(url, options);
+  if (!res.ok && res.status >= 500 && attemptsLeft > 0) {
+    return fetchWithRetry(url, options, attemptsLeft - 1);
+  }
+  return res;
+}
 
 const MODELS = [
   { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', provider: 'Meta', inputCost: 0.05, outputCost: 0.08 },
@@ -54,7 +69,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const start = Date.now();
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const res = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -86,16 +101,22 @@ export async function POST(req: NextRequest) {
     const outputTokens = data.usage?.completion_tokens || 0;
     const cost = (inputTokens * model.inputCost + outputTokens * model.outputCost) / 1_000_000;
 
+    const totalDuration = Date.now() - requestStart;
     logApiEvent('api.request_completed', {
       route: ROUTE,
       status: 200,
-      durationMs: Date.now() - requestStart,
+      durationMs: totalDuration,
       upstreamLatencyMs: latency,
       model: model.id,
       promptLength: prompt.length,
       inputTokens,
       outputTokens,
     });
+
+    const anomaly = detectAnomaly(totalDuration, 200);
+    if (anomaly.anomaly) {
+      logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
+    }
 
     return NextResponse.json({
       model: model.id,
@@ -108,11 +129,12 @@ export async function POST(req: NextRequest) {
       cost_usd: cost,
     });
   } catch (error) {
-    logApiError('api.request_failed', error, {
-      route: ROUTE,
-      status: 500,
-      durationMs: Date.now() - requestStart,
-    });
+    const durationMs = Date.now() - requestStart;
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      logApiWarning('api.upstream_timeout', { route: ROUTE, status: 504, durationMs });
+      return jsonError('Upstream timeout', 504);
+    }
+    logApiError('api.request_failed', error, { route: ROUTE, status: 500, durationMs });
     return jsonError('Failed to call Groq API', 500);
   }
 }

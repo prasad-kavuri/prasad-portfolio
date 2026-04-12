@@ -1,0 +1,38 @@
+name: Dependency Check
+
+on:
+  schedule:
+    # Run every Monday at 09:30 UTC (after Dependabot has had time to scan)
+    - cron: '30 9 * * 1'
+  push:
+    paths:
+      - 'package-lock.json'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit for high/critical vulnerabilities
+        # Exit non-zero only for high/critical so low/moderate don't block CI
+        run: npm audit --audit-level=high
+
+      - name: Check for outdated packages
+        # Informational — do not fail the workflow
+        run: npm outdated || true

@@ -127,7 +127,7 @@ export default function MultimodalPage() {
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
       setImageData(objectUrl);
-    } catch (e: any) {
+    } catch {
       setError('Could not load URL — try uploading the image directly instead');
       setImageData(null);
     }

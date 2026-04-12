@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export const metadata = {
   title: 'System Status — Prasad Kavuri',
   description: 'Live system status for prasadkavuri.com',
@@ -90,7 +92,7 @@ export default function StatusPage() {
       </section>
 
       <div className="mt-8 pt-8 border-t border-border text-sm text-muted-foreground">
-        <a href="/" className="hover:underline">← Back to portfolio</a>
+        <Link href="/" className="hover:underline">← Back to portfolio</Link>
       </div>
     </main>
   );

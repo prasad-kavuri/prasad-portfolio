@@ -32,14 +32,14 @@ const AGENTS = [
 ];
 
 const EXAMPLE_URLS = [
-  "https://prasadkavuri.com",
+  "https://www.prasadkavuri.com",
   "https://github.com/prasad-kavuri",
   "https://openai.com",
   "https://anthropic.com",
 ];
 
 export default function MultiAgentPage() {
-  const [url, setUrl] = useState<string>("https://prasadkavuri.com");
+  const [url, setUrl] = useState<string>("https://www.prasadkavuri.com");
   const [status, setStatus] = useState<"idle" | "running" | "done" | "error">("idle");
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string>("");

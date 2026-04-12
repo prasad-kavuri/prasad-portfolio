@@ -7,7 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://prasadkavuri.com"),
+  metadataBase: new URL("https://www.prasadkavuri.com"),
   title: "Prasad Kavuri — VP / Head of AI Engineering",
   description:
     "AI engineering executive leading agentic AI platforms, LLM orchestration, and enterprise transformation. 20+ years experience, 200+ engineers led, India's first Agentic AI platform.",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "LLM Ops",
     "MLOps",
   ],
-  authors: [{ name: "Prasad Kavuri", url: "https://prasadkavuri.com" }],
+  authors: [{ name: "Prasad Kavuri", url: "https://www.prasadkavuri.com" }],
   creator: "Prasad Kavuri",
   openGraph: {
     title: "Prasad Kavuri — VP / Head of AI Engineering",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://prasadkavuri.com",
+    canonical: "https://www.prasadkavuri.com",
   },
 };
 
@@ -87,7 +87,7 @@ export default function RootLayout({
                 "@type": "Person",
                 name: "Prasad Kavuri",
                 jobTitle: "VP / Head of AI Engineering",
-                url: "https://prasadkavuri.com",
+                url: "https://www.prasadkavuri.com",
                 email: "vbkpkavuri@gmail.com",
                 address: {
                   "@type": "PostalAddress",

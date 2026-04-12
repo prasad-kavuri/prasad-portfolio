@@ -10,6 +10,15 @@ export default defineConfig({
     setupFiles: ['./src/__tests__/setup.ts'],
     css: false,
     exclude: ['node_modules', 'e2e/**'],
+    coverage: {
+      provider: 'v8',
+      thresholds: {
+        statements: 80,
+        branches: 80,
+        functions: 80,
+        lines: 80,
+      },
+    },
   },
   resolve: {
     alias: {

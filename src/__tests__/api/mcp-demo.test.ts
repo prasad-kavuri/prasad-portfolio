@@ -55,6 +55,7 @@ describe('POST /api/mcp-demo', () => {
   beforeEach(() => {
     _resetStore();
     vi.clearAllMocks();
+    process.env.GROQ_API_KEY = 'test-key';
     // Default: always return a valid response so requests that reach Groq don't crash
     mockCreate.mockResolvedValue(DEFAULT_GROQ_RESPONSE);
   });

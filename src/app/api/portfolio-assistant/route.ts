@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { rateLimit, detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
+import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
+import {
+  enforceRateLimit,
+  jsonError,
+  logApiError,
+  logApiEvent,
+  logApiWarning,
+  readJsonObject,
+} from '@/lib/api';
+
+const ROUTE = '/api/portfolio-assistant';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-}
-
-interface RequestBody {
-  messages: Message[];
-  useRAG: boolean;
 }
 
 // Simple keyword-based RAG retrieval
@@ -33,46 +38,62 @@ function retrieveRelevantDocuments(query: string, topK = 3) {
     .map(({ score, ...doc }) => doc);
 }
 
+function validateMessages(value: unknown): Message[] | null {
+  if (!Array.isArray(value) || value.length === 0 || value.length > 20) return null;
+
+  const messages: Message[] = [];
+  for (const item of value) {
+    if (!item || typeof item !== 'object') return null;
+    const { role, content } = item as { role?: unknown; content?: unknown };
+    if ((role !== 'user' && role !== 'assistant') || typeof content !== 'string') return null;
+    if (content.length > 1000) return null;
+    messages.push({ role, content });
+  }
+
+  return messages;
+}
+
 export async function POST(req: NextRequest) {
+  const requestStart = Date.now();
   try {
-    const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
-    if ((await rateLimit(ip)).limited) {
-      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    const rateLimited = await enforceRateLimit(req, 'anonymous', { route: ROUTE });
+    if (rateLimited) return rateLimited;
+
+    const body = await readJsonObject(req, { route: ROUTE });
+    if (!body.ok) return body.response;
+
+    const messages = validateMessages(body.data.messages);
+    if (!messages) {
+      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'invalid_messages', status: 400 });
+      return jsonError('Messages are required', 400);
     }
 
-    const { messages, useRAG } = (await req.json()) as RequestBody;
-
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
+    if (body.data.useRAG !== undefined && typeof body.data.useRAG !== 'boolean') {
+      logApiWarning('api.validation_failed', { route: ROUTE, reason: 'invalid_use_rag', status: 400 });
+      return jsonError('Invalid input', 400);
     }
-
-    const invalidMessage = messages.find(
-      m => !m || typeof m !== 'object' || typeof (m as { content?: unknown }).content !== 'string'
-    );
-    if (invalidMessage !== undefined) {
-      return NextResponse.json({ error: 'Invalid message format' }, { status: 400 });
-    }
+    const useRAG = body.data.useRAG === true;
 
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     if (lastUserMessage && lastUserMessage.content.length > 500) {
-      return NextResponse.json({ error: 'Input too long' }, { status: 400 });
+      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'message_too_long', messageLength: lastUserMessage.content.length, status: 400 });
+      return jsonError('Input too long', 400);
     }
     if (lastUserMessage && detectPromptInjection(lastUserMessage.content)) {
-      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+      logApiWarning('api.abnormal_usage', { route: ROUTE, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
+      return jsonError('Invalid input', 400);
     }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(
-        { error: 'GROQ_API_KEY not configured' },
-        { status: 500 }
-      );
+      logApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, status: 500 });
+      return jsonError('GROQ_API_KEY not configured', 500);
     }
 
     // Always inject full knowledge base as base context
     const fullContext = profile.knowledgeBase.join('\n\n');
 
-    let systemPrompt = `You are Prasad Kavuri's AI portfolio assistant.
+    const systemPrompt = `You are Prasad Kavuri's AI portfolio assistant.
 You have complete knowledge about Prasad's professional background.
 Answer questions accurately and specifically using the information below.
 Be concise but informative. Never say you lack context — you have it all below.
@@ -107,11 +128,17 @@ ${fullContext}`;
         temperature: 0.7,
         max_tokens: 1024,
       }),
+      signal: AbortSignal.timeout(30000),
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('Groq API error:', error);
+      await response.text().catch(() => '');
+      logApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
+        route: ROUTE,
+        upstreamStatus: response.status,
+        status: 500,
+        durationMs: Date.now() - requestStart,
+      });
       return NextResponse.json(
         { error: 'Failed to get response from Groq API' },
         { status: 500 }
@@ -175,15 +202,28 @@ ${fullContext}`;
       },
     });
 
+    logApiEvent('api.request_completed', {
+      route: ROUTE,
+      status: 200,
+      durationMs: Date.now() - requestStart,
+      messageCount: messages.length,
+      useRAG,
+      retrievedDocs: retrievedDocs.length,
+    });
+
     return new NextResponse(readableStream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
-        'X-Retrieved-Docs': JSON.stringify(retrievedDocs),
+        'X-Retrieved-Docs': JSON.stringify(retrievedDocs.map(({ id, title }) => ({ id, title }))),
       },
     });
   } catch (error) {
-    console.error('Portfolio assistant error:', error);
+    logApiError('api.request_failed', error, {
+      route: ROUTE,
+      status: 500,
+      durationMs: Date.now() - requestStart,
+    });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

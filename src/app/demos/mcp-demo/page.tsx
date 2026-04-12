@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 interface ToolCall {
   tool: string;
-  args: any;
+  args: Record<string, unknown>;
   result: string;
   duration_ms: number;
 }

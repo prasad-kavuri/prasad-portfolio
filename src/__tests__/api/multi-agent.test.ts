@@ -15,6 +15,17 @@ function makeRequest(body: object, ip = '127.0.0.1') {
   });
 }
 
+function makeRawRequest(body: string, ip = '127.0.0.1') {
+  return new Request('http://localhost/api/multi-agent', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-forwarded-for': ip,
+    },
+    body,
+  });
+}
+
 describe('POST /api/multi-agent', () => {
   beforeEach(() => {
     _resetStore();
@@ -31,6 +42,24 @@ describe('POST /api/multi-agent', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/website_url is required/i);
+  });
+
+  it('returns 400 for malformed JSON', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRawRequest('{bad-json') as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Invalid JSON body');
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 when JSON body is not an object', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRawRequest('null') as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Request body must be a JSON object');
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('returns 400 for URL over 200 chars', async () => {
@@ -79,6 +108,22 @@ describe('POST /api/multi-agent', () => {
     expect(res.status).toBe(400);
   });
 
+  it('returns 400 for 172.16 private network IP (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://172.16.0.5/admin' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for .internal hostnames (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://service.internal/path' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
   it('returns 429 after rate limit exceeded', async () => {
     const { POST } = await import('@/app/api/multi-agent/route');
     const ip = '1.2.3.4';
@@ -99,17 +144,43 @@ describe('POST /api/multi-agent', () => {
     expect(body).toHaveProperty('agents');
   });
 
-  it('returns 500 when HF Space returns non-200', async () => {
+  it('sanitizes string fields returned by the agent backend', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        agents: [
+          {
+            findings: ['Safe finding', '<script>alert("x")</script>Useful'],
+            recommendation: 'Open <a onclick="steal()">this</a> javascript:alert(1)',
+          },
+        ],
+      }),
+    });
+
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    const serialized = JSON.stringify(body);
+    expect(serialized).not.toContain('<script>');
+    expect(serialized).not.toContain('onclick=');
+    expect(serialized).not.toContain('javascript:');
+  });
+
+  it('returns 502 when HF Space returns non-200', async () => {
     mockFetch.mockResolvedValueOnce({ ok: false, text: async () => 'Service unavailable' });
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(502);
+    const body = await res.json();
+    expect(body.error).toBe('Failed to connect to agent backend');
+    expect(JSON.stringify(body)).not.toContain('Service unavailable');
   });
 
-  it('returns 500 when fetch throws', async () => {
+  it('returns 502 when fetch throws', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Connection refused'));
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(502);
   });
 });

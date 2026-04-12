@@ -23,6 +23,17 @@ function makeRequest(body: object, ip = '127.0.0.1') {
   });
 }
 
+function makeRawRequest(body: string, ip = '127.0.0.1') {
+  return new Request('http://localhost/api/llm-router', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-forwarded-for': ip,
+    },
+    body,
+  });
+}
+
 describe('POST /api/llm-router', () => {
   beforeEach(() => {
     _resetStore();
@@ -41,6 +52,24 @@ describe('POST /api/llm-router', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/prompt is required/i);
+  });
+
+  it('returns 400 for malformed JSON', async () => {
+    const { POST } = await import('@/app/api/llm-router/route');
+    const res = await POST(makeRawRequest('{not-json') as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Invalid JSON body');
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 when JSON body is not an object', async () => {
+    const { POST } = await import('@/app/api/llm-router/route');
+    const res = await POST(makeRawRequest('["hello"]') as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Request body must be a JSON object');
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('returns 400 for input over 500 chars', async () => {
@@ -106,6 +135,9 @@ describe('POST /api/llm-router', () => {
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(makeRequest({ prompt: 'hello', model: 'llama-3.1-8b-instant' }) as any);
     expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toBe('Failed to call Groq API');
+    expect(JSON.stringify(body)).not.toContain('Unauthorized');
   });
 
   it('returns 500 when fetch throws', async () => {

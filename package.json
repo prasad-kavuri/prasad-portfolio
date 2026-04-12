@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:coverage": "vitest --coverage",
-    "test:fuzz": "vitest run src/__tests__/fuzz"
+    "test:fuzz": "vitest run src/__tests__/fuzz",
+    "test:evals": "vitest run src/__tests__/evals"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.0.1",

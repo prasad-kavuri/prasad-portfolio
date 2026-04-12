@@ -100,3 +100,47 @@ public/architecture-diagram.svg
 ```
 
 The website renders it in `src/components/sections/Architecture.tsx`. README and this document embed the same file. If the API routes, demo list, or external services change, update the SVG and this document in the same change.
+
+## Patentable Patterns
+
+The following design patterns in this portfolio represent novel combinations of techniques that are not commonly implemented together in production AI systems. They are documented here for intellectual property purposes.
+
+### 1. Semantic Rate Limiting
+
+**Pattern:** Rate limits enforced at the semantic layer (token budget) rather than purely at the HTTP layer (request count).
+
+`src/lib/cost-control.ts` estimates token consumption from raw prompt text before any API call is made. If the estimated cost of a request would exceed the per-IP budget window, the request is rejected at the edge — before Groq is contacted — eliminating wasted upstream spend.
+
+Combined with IP-level SHA-256 hashing (never raw IPs in storage), this creates a privacy-preserving, cost-aware admission controller that operates in sub-millisecond time.
+
+**Novel combination:** HTTP rate limiter + token budget estimator + privacy-preserving IP hash + upstream cost isolation, operating as a unified admission gate.
+
+---
+
+### 2. Cross-Model Orchestration Topology
+
+**Pattern:** A single orchestrator routes queries across heterogeneous models selected per-task by complexity and latency requirements — not by a static routing table.
+
+`src/app/api/llm-router/route.ts` implements dynamic routing: simple factual queries go to `llama-3.1-8b-instant`, moderate queries to `llama-3.3-70b`, and complex multi-step queries to `llama-4-scout`. The router reasons about query structure at inference time rather than relying on pre-classified categories.
+
+**Novel combination:** Real-time query complexity scoring + per-call model selection + unified streaming response format across models of different capability tiers.
+
+---
+
+### 3. Autonomous Tool Discovery via MCP
+
+**Pattern:** The assistant discovers available tools at runtime through the Model Context Protocol manifest rather than having them hardcoded in the system prompt.
+
+`src/app/api/mcp-demo/route.ts` exposes a self-describing tool registry. The LLM receives a dynamic tool manifest per request, selects the appropriate tool, and executes it — all within a single request/response cycle without any out-of-band configuration.
+
+**Novel combination:** Dynamic tool manifest injection + LLM-driven tool selection + structured output parsing + single-round-trip tool execution.
+
+---
+
+### 4. Closed-Loop Evaluation Pipeline
+
+**Pattern:** Production prompts are continuously evaluated against a ground-truth eval suite that runs in CI, closing the loop between deployment and accuracy regression.
+
+`src/__tests__/evals/` contains LLM-as-Judge eval cases (`EvalCase`) with required coverage terms and forbidden topic lists. `scoreResponse` in `src/lib/eval-engine.ts` computes a numeric accuracy score. These run on every commit via `npm run test:evals` — prompt regressions block deployment exactly like failing unit tests.
+
+**Novel combination:** Offline eval scoring (no live API calls) + coverage-based accuracy metric + forbidden-topic penalty + CI integration as a quality gate.

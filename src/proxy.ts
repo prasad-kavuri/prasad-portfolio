@@ -1,14 +1,32 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Specific legacy URL → demo page mappings.
+// Handled here (middleware) in addition to next.config.ts redirects() so that
+// CDN-cached responses that bypass the Next.js redirect layer still land correctly.
+const HTML_REDIRECTS: Record<string, string> = {
+  '/portfolio-assistant.html':      '/demos/portfolio-assistant',
+  '/vector-search-playground.html': '/demos/vector-search',
+  '/vector-search.html':            '/demos/vector-search',
+  '/multimodal-assistant.html':     '/demos/multimodal',
+  '/multi-agent-demo.html':         '/demos/multi-agent',
+  '/multi-agent.html':              '/demos/multi-agent',
+  '/rag-pipeline.html':             '/demos/rag-pipeline',
+  '/quantization.html':             '/demos/quantization',
+  '/llm-router.html':               '/demos/llm-router',
+  '/mcp-demo.html':                 '/demos/mcp-demo',
+  '/resume-generator.html':         '/demos/resume-generator',
+};
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Redirect any .html requests that aren't Next.js internals to /demos.
+  // Redirect .html requests: known slugs → specific demo, unknown → homepage.
   // Handles CDN-cached legacy URLs not covered by next.config.ts redirects().
   if (pathname.endsWith('.html') && !pathname.startsWith('/_next/')) {
+    const destination = HTML_REDIRECTS[pathname] ?? '/';
     return NextResponse.redirect(
-      new URL('/', request.url),
+      new URL(destination, request.url),
       { status: 308 }
     );
   }

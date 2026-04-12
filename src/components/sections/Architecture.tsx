@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useInView } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { FadeUp } from '@/components/ui/motion';
 import { trackEvent } from '@/lib/analytics';
 
@@ -63,7 +63,7 @@ const LAYERS = [
   {
     id: "orchestration",
     number: "03",
-    label: "Agentic Orchestration",
+    label: "Agentic Orchestration Layer",
     description: "Coordinates tasks, agents, memory, and execution",
     color: "violet",
     components: ["Planner Agent", "Specialist Agents", "Multi-Agent Coordination", "Memory / Context", "Guardrails", "Human Approval"]
@@ -96,6 +96,7 @@ const LAYERS = [
 
 export function Architecture() {
   const [activeLayer, setActiveLayer] = useState<string | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const diagramRef = useRef<HTMLDivElement>(null);
   const hasTrackedRef = useRef(false);
@@ -127,71 +128,89 @@ export function Architecture() {
         </FadeUp>
 
         {/* Diagram */}
-        <div ref={diagramRef} className="space-y-1">
-          {LAYERS.map((layer, idx) => (
-            <FadeUp key={layer.id} delay={idx * 0.08}>
-              <div>
-                <div
-                  className={`relative rounded-xl border p-5 cursor-pointer transition-all duration-200
-                    ${activeLayer === layer.id ? 'scale-[1.01] shadow-lg' : 'hover:scale-[1.005]'}
-                    ${colorMap[layer.color as keyof typeof colorMap].border}
-                    ${colorMap[layer.color as keyof typeof colorMap].bg}
-                  `}
-                  onMouseEnter={() => setActiveLayer(layer.id)}
-                  onMouseLeave={() => setActiveLayer(null)}
-                >
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    {/* Left: number + label + description */}
-                    <div className="md:w-64 flex-shrink-0">
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="text-xs font-mono text-slate-500">{layer.number}</span>
-                        <span className={`text-sm font-semibold ${colorMap[layer.color as keyof typeof colorMap].text}`}>
-                          {layer.label}
-                        </span>
+        <div
+          ref={diagramRef}
+          className="rounded-2xl border border-slate-700/70 bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950/25 p-3 shadow-[0_20px_70px_rgba(15,23,42,0.28)] sm:p-4"
+        >
+          <div className="space-y-1">
+            {LAYERS.map((layer, idx) => (
+              <FadeUp key={layer.id} delay={idx * 0.03} duration={0.24} yOffset={14}>
+                <div>
+                  <div
+                    className={`relative rounded-xl border p-5 cursor-pointer transition-all duration-200
+                      ${activeLayer === layer.id ? 'scale-[1.01] shadow-lg' : 'hover:scale-[1.005]'}
+                      ${colorMap[layer.color as keyof typeof colorMap].border}
+                      ${colorMap[layer.color as keyof typeof colorMap].bg}
+                      ${layer.id === 'orchestration' ? 'border-violet-300/55 bg-violet-500/10 shadow-[0_0_28px_rgba(139,92,246,0.14)]' : ''}
+                    `}
+                    onMouseEnter={() => setActiveLayer(layer.id)}
+                    onMouseLeave={() => setActiveLayer(null)}
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center gap-4">
+                      {/* Left: number + label + description */}
+                      <div className="md:w-64 flex-shrink-0">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="text-xs font-mono text-slate-500">{layer.number}</span>
+                          <span className={`font-semibold tracking-[0.01em] ${layer.id === 'orchestration' ? 'text-base text-violet-100' : `text-sm ${colorMap[layer.color as keyof typeof colorMap].text}`}`}>
+                            {layer.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          {layer.description}
+                        </p>
                       </div>
-                      <p className="text-xs text-slate-500 leading-relaxed">
-                        {layer.description}
-                      </p>
-                    </div>
 
-                    {/* Divider line */}
-                    <div className="hidden md:block w-px h-10 bg-slate-700 flex-shrink-0" />
+                      {/* Divider line */}
+                      <div className="hidden md:block w-px h-10 bg-slate-700 flex-shrink-0" />
 
-                    {/* Right: component chips */}
-                    <div className="flex flex-wrap gap-2">
-                      {layer.components.map((component) => (
-                        <span
-                          key={component}
-                          className={`text-xs px-3 py-1 rounded-full border
-                            ${colorMap[layer.color as keyof typeof colorMap].chipBg}
-                            ${colorMap[layer.color as keyof typeof colorMap].chipText}
-                            ${colorMap[layer.color as keyof typeof colorMap].border}
-                          `}
-                        >
-                          {component}
-                        </span>
-                      ))}
+                      {/* Right: component chips */}
+                      <div className="flex flex-wrap gap-2">
+                        {layer.components.map((component) => (
+                          <span
+                            key={component}
+                            className={`text-xs px-3 py-1 rounded-full border
+                              ${colorMap[layer.color as keyof typeof colorMap].chipBg}
+                              ${colorMap[layer.color as keyof typeof colorMap].chipText}
+                              ${colorMap[layer.color as keyof typeof colorMap].border}
+                            `}
+                          >
+                            {component}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
+
+                  {/* Arrow between layers */}
+                  {idx < LAYERS.length - 1 && (
+                    <div className="flex justify-center my-1">
+                      <motion.svg
+                        width="20"
+                        height="16"
+                        viewBox="0 0 20 16"
+                        fill="none"
+                        aria-hidden="true"
+                        initial={shouldReduceMotion ? false : { opacity: 0, y: -4 }}
+                        animate={shouldReduceMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -4 }}
+                        transition={{ duration: shouldReduceMotion ? 0 : 0.22, delay: shouldReduceMotion ? 0 : idx * 0.03 }}
+                      >
+                        <motion.path
+                          d="M10 0 L10 12 M5 8 L10 14 L15 8"
+                          stroke={layer.id === 'orchestration' ? '#c4b5fd' : '#4f46e5'}
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          initial={shouldReduceMotion ? false : { pathLength: 0 }}
+                          animate={shouldReduceMotion || isInView ? { pathLength: 1 } : { pathLength: 0 }}
+                          transition={{ duration: shouldReduceMotion ? 0 : 0.24, delay: shouldReduceMotion ? 0 : idx * 0.03 }}
+                        />
+                      </motion.svg>
+                    </div>
+                  )}
                 </div>
-
-                {/* Arrow between layers */}
-                {idx < LAYERS.length - 1 && (
-                  <div className="flex justify-center my-1">
-                    <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
-                      <path
-                        d="M10 0 L10 12 M5 8 L10 14 L15 8"
-                        stroke="#4f46e5"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
-            </FadeUp>
-          ))}
+              </FadeUp>
+            ))}
+          </div>
         </div>
 
         {/* Bottom Caption */}

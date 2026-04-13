@@ -47,7 +47,7 @@ export default function MultiAgentPage() {
   const [error, setError] = useState<string>("");
   const [currentAgent, setCurrentAgent] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
-  const [reviewMode, setReviewMode] = useState(false);
+  const [reviewMode, setReviewMode] = useState(true);
 
   useEffect(() => {
     if (status !== "running") return;
@@ -208,11 +208,30 @@ export default function MultiAgentPage() {
                   </div>
                 </Card>
                 {idx < AGENTS.length - 1 && (
-                  <div className="hidden md:flex items-center px-2 text-muted-foreground">→</div>
+                  idx === 1 && reviewMode ? (
+                    /* HITL checkpoint marker between Researcher → Strategist */
+                    <div className="hidden md:flex flex-col items-center px-2 gap-1">
+                      <div className="text-muted-foreground text-sm">→</div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className="text-xs px-2 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 whitespace-nowrap font-medium">
+                          ✋ HITL
+                        </span>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">human review</span>
+                      </div>
+                      <div className="text-muted-foreground text-sm">→</div>
+                    </div>
+                  ) : (
+                    <div className="hidden md:flex items-center px-2 text-muted-foreground">→</div>
+                  )
                 )}
               </div>
             ))}
           </div>
+          {reviewMode && (
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+              HITL Checkpoint — enterprise agents pause here for human review before the Strategist runs
+            </p>
+          )}
         </div>
 
         {/* URL Input Section */}
@@ -303,20 +322,47 @@ export default function MultiAgentPage() {
         )}
 
         {status === "pending_review" && pendingResult && (
-          <Card className="bg-card border border-blue-500/40 p-6 mb-12">
-            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div>
-                <h3 className="font-semibold text-blue-300">Pending review</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Review mode is enabled. Approve the agent analysis before showing it as final output.
-                </p>
-                <p className="text-xs text-muted-foreground mt-3">
-                  {pendingResult.agents.length} agents · {pendingResult.total_tokens.toLocaleString()} tokens · {(pendingResult.total_duration_ms / 1000).toFixed(1)}s
-                </p>
-              </div>
+          <Card className="bg-card border border-amber-500/40 p-6 mb-12">
+            {/* HITL header */}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">✋</span>
+              <h3 className="font-semibold text-amber-500">HITL Checkpoint — Human Review Required</h3>
+            </div>
+            <p className="text-xs text-muted-foreground mb-4">
+              Enterprise agents pause here for human review. The Strategist will not run until you approve.
+            </p>
+
+            {/* Researcher findings summary */}
+            {pendingResult.agents.find(a => a.name === "Researcher") && (() => {
+              const researcher = pendingResult.agents.find(a => a.name === "Researcher")!;
+              return (
+                <div className="bg-muted/50 rounded-lg p-4 mb-4 border border-border">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    🔍 Researcher findings — review before Strategist proceeds
+                  </p>
+                  <ul className="space-y-1 mb-3">
+                    {researcher.findings.map((f, i) => (
+                      <li key={i} className="text-sm text-foreground flex gap-2">
+                        <span className="text-amber-500 mt-0.5">•</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-muted-foreground italic border-t border-border pt-2">
+                    {researcher.recommendation}
+                  </p>
+                </div>
+              );
+            })()}
+
+            {/* Stats + actions */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-muted-foreground">
+                {pendingResult.agents.length} agents completed · {pendingResult.total_tokens.toLocaleString()} tokens · {(pendingResult.total_duration_ms / 1000).toFixed(1)}s
+              </p>
               <div className="flex gap-2">
                 <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700">
-                  Approve
+                  ✓ Approve — run Strategist
                 </Button>
                 <Button onClick={handleRegeneratePending} variant="outline">
                   Regenerate

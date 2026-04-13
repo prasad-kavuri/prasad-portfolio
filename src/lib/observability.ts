@@ -241,3 +241,53 @@ export function startTimer(): () => number {
   const start = Date.now();
   return () => Date.now() - start;
 }
+
+// ---------------------------------------------------------------------------
+// End-to-end Trace ID Propagation
+//
+// Flow: client generates traceId → passes as X-Trace-Id request header →
+//       createRequestContext() in api.ts reads it → all log events and LLM
+//       calls include it → full session reconstruction from a single ID.
+//
+// Server side: createRequestContext() (src/lib/api.ts) already reads
+//   req.headers.get('x-trace-id') and passes it to createTraceId().
+// Client side: use generateClientTraceId() + createTracedFetch() below.
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate a UUID v4 trace ID on the client at interaction start.
+ * Pass the returned ID to createTracedFetch() so every request in the
+ * session carries the same traceId through to the server logs.
+ *
+ * @example
+ * const traceId = generateClientTraceId();
+ * const fetcher = createTracedFetch(traceId);
+ * const res = await fetcher('/api/portfolio-assistant', { method: 'POST', ... });
+ */
+export function generateClientTraceId(): string {
+  return crypto.randomUUID();
+}
+
+/**
+ * Returns a fetch wrapper that injects X-Trace-Id and X-Request-Id headers
+ * on every call, enabling end-to-end trace correlation from browser to logs.
+ *
+ * The same traceId appears in:
+ *   1. The initial user interaction event (client)
+ *   2. The API route log (server — via createRequestContext)
+ *   3. The LLM completion call (server — forwarded in logApiEvent)
+ *   4. The response headers (X-Trace-Id echoed back by finalizeApiResponse)
+ */
+export function createTracedFetch(traceId: string) {
+  return (url: string, init: RequestInit = {}): Promise<Response> => {
+    const existingHeaders = (init.headers ?? {}) as Record<string, string>;
+    return fetch(url, {
+      ...init,
+      headers: {
+        ...existingHeaders,
+        'X-Trace-Id': traceId,
+        'X-Request-Id': traceId,
+      },
+    });
+  };
+}

@@ -18,6 +18,9 @@ export function Footer() {
           <Link href="/status" className="hover:text-foreground">
             System Status
           </Link>
+          <Link href="/governance" className="hover:text-foreground">
+            Governance
+          </Link>
         </div>
       </div>
     </footer>

@@ -63,7 +63,7 @@ Verify success explicitly — don't assume "it works" without running the checks
 
 ## Before Committing
 - `npm run build` — must succeed, zero errors
-- `npm run test` — all tests must pass (395 tests, 35 files)
+- `npm run test` — all tests must pass (409 tests, 36 files)
 - `npm audit --audit-level=high` — 0 high/critical vulnerabilities
 
 ## CI/CD

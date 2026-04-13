@@ -25,7 +25,13 @@ describe('url-security host classification', () => {
   it('blocks alternate IPv4 encodings that resolve to internal ranges', () => {
     expect(getHostBlockReason('2130706433')).toBe('ipv4_loopback'); // 127.0.0.1
     expect(getHostBlockReason('0x7f000001')).toBe('ipv4_loopback'); // 127.0.0.1
-    expect(getHostBlockReason('127.1')).toBe('ipv4_loopback'); // shorthand
+    expect(getHostBlockReason('127.1')).toBe('ipv4_loopback'); // 2-part shorthand
+    expect(getHostBlockReason('127.0.1')).toBe('ipv4_loopback'); // 3-part shorthand (line 57)
+  });
+
+  it('returns null for out-of-range IPv4 byte (not classified as private)', () => {
+    // 256.1.2.3 fails parseFlexibleIpv4 range check (line 48) — not a valid IP, not blocked
+    expect(getHostBlockReason('256.1.2.3')).toBeNull();
   });
 
   it('blocks ipv6 local addresses and mapped local addresses', () => {

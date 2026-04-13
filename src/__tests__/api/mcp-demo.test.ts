@@ -311,4 +311,44 @@ describe('POST /api/mcp-demo', () => {
     expect(res.status).toBe(200);
     expect(body.toolCallLog[0].result).toBe('Company not found');
   });
+
+  it('handles array tool arguments gracefully (parseToolArgs non-object fallback)', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'get_experience', arguments: ['not', 'an', 'object'] } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Could not parse.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Test array args' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    // parseToolArgs returns {} for array arguments; get_experience with empty company → 'Company not found'
+    expect(body.toolCallLog[0].result).toBe('Company not found');
+  });
+
+  it('handles invalid JSON string in tool arguments (parseToolArgs catch branch)', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'get_experience', arguments: '{invalid json' } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: 'Could not determine experience.' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Test bad args' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    // parseToolArgs returns {} for invalid JSON; get_experience with empty company → 'Company not found'
+    expect(body.toolCallLog[0].result).toBe('Company not found');
+  });
 });

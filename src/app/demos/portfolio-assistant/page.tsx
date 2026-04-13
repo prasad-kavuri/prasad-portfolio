@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Send, Trash2, Copy, Check } from 'lucide-react';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { resolveReviewCheckpoint } from '@/lib/hitl';
+import { generateClientTraceId, createTracedFetch } from '@/lib/observability';
 
 interface Message {
   id: string;
@@ -16,6 +17,8 @@ interface Message {
 }
 
 export default function PortfolioAssistantPage() {
+  const [traceId] = useState(() => generateClientTraceId());
+  const tracedFetch = useRef(createTracedFetch(traceId));
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +70,7 @@ export default function PortfolioAssistantPage() {
     // Call API with the question
     (async () => {
       try {
-        const response = await fetch('/api/portfolio-assistant', {
+        const response = await tracedFetch.current('/api/portfolio-assistant', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

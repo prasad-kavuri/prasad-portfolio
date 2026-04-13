@@ -13,6 +13,7 @@ import {
 } from '@/lib/api';
 import { detectAnomaly, logAPIEvent } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
+import { checkOutput } from '@/lib/guardrails';
 
 const ROUTE = '/api/llm-router';
 
@@ -144,12 +145,24 @@ export async function POST(req: NextRequest) {
       logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, traceId: context.traceId, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
     }
 
+    const rawContent = data.choices?.[0]?.message?.content ?? '';
+    const guardResult = checkOutput(rawContent, context.traceId);
+    if (!guardResult.isSafe) {
+      logApiWarning('api.guardrail_output_triggered', {
+        route: ROUTE,
+        traceId: context.traceId,
+        issues: guardResult.issues.join(','),
+        score: guardResult.score,
+        status: 200,
+      });
+    }
+
     return finalizeApiResponse(NextResponse.json({
       model: effectiveModel.id,
       requestedModel: model.id,
       modelName: effectiveModel.name,
       provider: effectiveModel.provider,
-      response: sanitizeLLMOutput(data.choices?.[0]?.message?.content ?? ''),
+      response: sanitizeLLMOutput(guardResult.sanitizedOutput ?? rawContent),
       latency_ms: latency,
       input_tokens: inputTokens,
       output_tokens: outputTokens,

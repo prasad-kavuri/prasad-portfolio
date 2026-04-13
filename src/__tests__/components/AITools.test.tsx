@@ -126,7 +126,8 @@ describe('AITools', () => {
   it('renders demo cards with correct titles', () => {
     render(React.createElement(AITools));
     expect(screen.getByText('RAG Pipeline')).toBeInTheDocument();
-    expect(screen.getByText('Multi-Agent System')).toBeInTheDocument();
+    // Multi-Agent System appears twice: once in the featured card and once in the group grid
+    expect(screen.getAllByText('Multi-Agent System').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('LLM Router')).toBeInTheDocument();
     expect(screen.getByText('MCP Tool Demo')).toBeInTheDocument();
     expect(screen.getByText('Resume Generator')).toBeInTheDocument();

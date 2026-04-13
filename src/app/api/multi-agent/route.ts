@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sanitizeLLMOutput } from '@/lib/rate-limit';
+import { checkOutput, validateAgentHandoff } from '@/lib/guardrails';
 import {
   enforceRateLimit,
   createRequestContext,
@@ -136,8 +137,50 @@ export async function POST(req: NextRequest) {
           ? sanitizeLLMOutput(agent.recommendation)
           : agent.recommendation,
       }));
+
+      // Agent-to-agent trust boundary validation
+      const agentNames = ['Analyzer', 'Researcher', 'Strategist'];
+      for (let i = 0; i < agentNames.length - 1; i++) {
+        const fromName = agentNames[i];
+        const toName = agentNames[i + 1];
+        const fromAgent = (data.agents as AgentResult[]).find(
+          (a) => typeof a.name === 'string' && a.name.toLowerCase().includes(fromName.toLowerCase())
+        );
+        if (fromAgent) {
+          const output = [
+            ...(Array.isArray(fromAgent.findings) ? fromAgent.findings : []),
+            typeof fromAgent.recommendation === 'string' ? fromAgent.recommendation : '',
+          ].join(' ');
+          const handoffResult = validateAgentHandoff(fromName, toName, output);
+          if (!handoffResult.isSafe) {
+            logApiWarning('api.agent_handoff_unsafe', {
+              route: ROUTE,
+              traceId: context.traceId,
+              fromAgent: fromName,
+              toAgent: toName,
+              issues: handoffResult.issues.join(','),
+              score: handoffResult.score,
+              status: 200,
+            });
+          }
+        }
+      }
     }
-    trackModelOutput(ROUTE, JSON.stringify(data), 'success');
+
+    // Output guardrail check on the full agent response
+    const fullOutput = JSON.stringify(data);
+    const guardResult = checkOutput(fullOutput, context.traceId);
+    if (!guardResult.isSafe) {
+      logApiWarning('api.guardrail_output_triggered', {
+        route: ROUTE,
+        traceId: context.traceId,
+        issues: guardResult.issues.join(','),
+        score: guardResult.score,
+        status: 200,
+      });
+    }
+
+    trackModelOutput(ROUTE, fullOutput, 'success');
 
     logApiEvent('api.request_completed', {
       route: ROUTE,

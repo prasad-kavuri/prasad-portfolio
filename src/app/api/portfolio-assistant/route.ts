@@ -15,6 +15,8 @@ import {
 import { detectAnomaly, logAPIEvent, startTimer } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
 import { trackModelOutput } from '@/lib/drift-monitor';
+import { checkOutput } from '@/lib/guardrails';
+import { logQueryForEval } from '@/lib/query-log';
 
 const ROUTE = '/api/portfolio-assistant';
 
@@ -244,6 +246,23 @@ ${fullContext}`;
         } finally {
           if (streamedOutput) {
             trackModelOutput(ROUTE, streamedOutput, 'success');
+
+            // Output guardrail check — log warning on unsafe content
+            const guardResult = checkOutput(streamedOutput, context.traceId);
+            if (!guardResult.isSafe) {
+              logApiWarning('api.guardrail_output_triggered', {
+                route: ROUTE,
+                traceId: context.traceId,
+                issues: guardResult.issues.join(','),
+                score: guardResult.score,
+                status: 200,
+              });
+            }
+
+            // Runtime eval loop — log anonymized query+response for live scoring
+            if (lastUserMessage) {
+              logQueryForEval(ROUTE, lastUserMessage.content, streamedOutput, context.traceId);
+            }
           }
           reader.releaseLock();
         }

@@ -61,11 +61,21 @@ export function Hero() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <a
-              href="#tools"
+              href="/demos/multi-agent"
               style={brandStyle}
-              className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium"
+              onClick={() => trackEvent('signature_demo_clicked')}
+              className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium"
             >
-              Explore AI Demos
+              View Signature Demo
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+            <a
+              href="#tools"
+              className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
+            >
+              Explore All Demos
             </a>
             <a
               href={profile.personal.linkedin}

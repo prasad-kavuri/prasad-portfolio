@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { resolveReviewCheckpoint } from "@/lib/hitl";
+import { generateClientTraceId, createTracedFetch } from "@/lib/observability";
 
 interface AgentResult {
   name: string;
@@ -40,6 +41,8 @@ const EXAMPLE_URLS = [
 ];
 
 export default function MultiAgentPage() {
+  const [traceId] = useState(() => generateClientTraceId());
+  const tracedFetch = useRef(createTracedFetch(traceId));
   const [url, setUrl] = useState<string>("https://www.prasadkavuri.com");
   const [status, setStatus] = useState<"idle" | "running" | "pending_review" | "done" | "error">("idle");
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -83,7 +86,7 @@ export default function MultiAgentPage() {
     setCurrentAgent("Analyzer");
 
     try {
-      const res = await fetch("/api/multi-agent", {
+      const res = await tracedFetch.current("/api/multi-agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

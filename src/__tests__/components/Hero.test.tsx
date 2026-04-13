@@ -64,10 +64,16 @@ describe('Hero', () => {
     expect(screen.getByText(/human oversight and governance/i)).toBeDefined();
   });
 
-  it('renders Explore AI Demos CTA linking to #tools', () => {
+  it('renders Explore All Demos CTA linking to #tools', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /Explore AI Demos/i });
+    const link = screen.getByRole('link', { name: /Explore All Demos/i });
     expect(link.getAttribute('href')).toBe('#tools');
+  });
+
+  it('renders View Signature Demo CTA linking to multi-agent demo', () => {
+    render(<Hero />);
+    const link = screen.getByRole('link', { name: /View Signature Demo/i });
+    expect(link.getAttribute('href')).toBe('/demos/multi-agent');
   });
 
   it('renders View LinkedIn CTA', () => {

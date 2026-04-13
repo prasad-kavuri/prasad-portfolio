@@ -39,7 +39,11 @@ const DEMO_GROUPS = [
   }
 ];
 
+const SIGNATURE_DEMO_ID = "multi-agent";
+
 export function AITools() {
+  const signatureDemo = demos.find(d => d.id === SIGNATURE_DEMO_ID);
+
   return (
     <section id="tools" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
@@ -51,6 +55,55 @@ export function AITools() {
           enterprise AI deployments — not just demos, but production-ready
           implementations.
         </p>
+
+        {/* Signature System — featured above the demo grid */}
+        {signatureDemo && (
+          <Link
+            href={signatureDemo.href}
+            className="group block mb-12"
+            onClick={() => trackEvent('demo_opened', { demo: signatureDemo.id, featured: 'true' })}
+          >
+            <div
+              className="rounded-xl border-2 p-6 transition-all group-hover:shadow-lg"
+              style={{ borderColor: 'var(--accent-brand)', background: 'var(--accent-brand)10' }}
+            >
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{signatureDemo.emoji}</span>
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400">
+                        Signature System
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-semibold">{signatureDemo.title}</h3>
+                  </div>
+                </div>
+                <Badge variant={statusVariant[signatureDemo.status]}>
+                  {statusLabel[signatureDemo.status]}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3 max-w-2xl">
+                {signatureDemo.description} Features a human-in-the-loop checkpoint, agent-to-agent
+                trust boundary validation, and end-to-end trace propagation — the patterns enterprise
+                AI deployments require.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {signatureDemo.tags.map(tag => (
+                  <span key={tag} className="text-xs px-2 py-0.5 rounded-full border border-border bg-muted text-muted-foreground">
+                    {tag}
+                  </span>
+                ))}
+                <span className="text-xs px-2 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400">
+                  HITL Checkpoint
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400">
+                  Agent Trust Validation
+                </span>
+              </div>
+            </div>
+          </Link>
+        )}
 
         {DEMO_GROUPS.map((group) => {
           const groupDemos = demos.filter(d => group.ids.includes(d.id));

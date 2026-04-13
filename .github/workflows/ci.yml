@@ -45,12 +45,16 @@ jobs:
         include:
           - project: chromium
             install_browser: chromium
+            with_deps: true
           - project: firefox
             install_browser: firefox
+            with_deps: true
           - project: webkit
             install_browser: webkit
+            with_deps: true
           - project: mobile
             install_browser: webkit
+            with_deps: false
 
     steps:
       - name: Checkout
@@ -71,9 +75,13 @@ jobs:
       - name: Install Playwright browsers
         run: |
           set -euo pipefail
+          install_cmd="npx playwright install ${{ matrix.install_browser }}"
+          if [ "${{ matrix.with_deps }}" = "true" ]; then
+            install_cmd="npx playwright install --with-deps ${{ matrix.install_browser }}"
+          fi
           for attempt in 1 2; do
-            echo "Playwright install attempt ${attempt} for ${{ matrix.install_browser }}"
-            if timeout 8m npx playwright install --with-deps ${{ matrix.install_browser }}; then
+            echo "Playwright install attempt ${attempt} for ${{ matrix.project }} using: ${install_cmd}"
+            if timeout 8m bash -lc "${install_cmd}"; then
               exit 0
             fi
             if [ "${attempt}" -eq 2 ]; then

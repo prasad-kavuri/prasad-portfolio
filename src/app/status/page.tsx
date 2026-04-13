@@ -20,6 +20,18 @@ export default function StatusPage() {
         className="mb-8"
       />
 
+      <section className="mb-8" aria-labelledby="trust-controls-heading">
+        <h2 id="trust-controls-heading" className="text-xl font-semibold mb-4">Trust Controls</h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {STATUS_SNAPSHOT.trustControls.map(([label, detail]) => (
+            <div key={label} className="rounded-lg border border-border p-3">
+              <p className="text-sm font-medium">{label}</p>
+              <p className="text-xs text-muted-foreground mt-1">{detail}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">🟢 All Systems Operational</h2>
         <div className="grid gap-3">

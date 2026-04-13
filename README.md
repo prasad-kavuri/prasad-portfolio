@@ -7,7 +7,7 @@
 > **Signature system:** AI Evaluation Showcase — a closed-loop quality architecture combining offline evals, live drift monitoring, hallucination indicators, and CI gating.
 
 [![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-387%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-vitest%20%2B%20playwright-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25%20lib-brightgreen)]()
 [![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)]()
 [![React](https://img.shields.io/badge/React-19.2.5-blue)]()
@@ -124,10 +124,17 @@ prasad-portfolio/
 | No Hardcoded Secrets | All keys via `process.env`, verified in security tests | Active |
 | Security Disclosure | `public/.well-known/security.txt` with contact + policy | Active |
 
+## HITL Trust Model
+
+- **Autonomous reasoning is scoped:** Agents can propose analysis, but cannot bypass route-level guardrails and policy checks.
+- **Manual review checkpoint is explicit:** Multi-agent strategist execution pauses until human approval is provided.
+- **Decision trace is logged:** Request context and trace IDs are emitted through shared API/observability helpers for auditability.
+- **Guardrails can block output:** Prompt-injection and unsafe-output checks trigger block/redaction behavior before response release.
+
 ## Testing
 
 ```bash
-npm run test           # unit tests (Vitest) — 387 passing, 35 test files
+npm run test           # unit tests (Vitest)
 npm run test:coverage  # coverage report
 npm run test:fuzz      # adversarial/fuzz tests
 npm run test:evals     # LLM-as-Judge eval suite
@@ -163,6 +170,7 @@ lint-and-unit (security audit → lint → unit tests + coverage gates)
 
 - `npm audit --audit-level=high` blocks on any high/critical CVEs
 - Dependabot: weekly dependency updates, major versions require manual review
+- Playwright browser install uses timeout + retry guards to reduce transient runner stalls
 - Playwright report uploaded as artifact on failure (7-day retention)
 
 ## Tech Stack

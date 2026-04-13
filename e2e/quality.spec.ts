@@ -208,6 +208,15 @@ test.describe('Accessibility', () => {
     await expect(page.locator('main')).toBeVisible();
   });
 
+  test('homepage exposes a keyboard skip link to main content', async ({ page }) => {
+    await page.goto('/');
+    await page.keyboard.press('Tab');
+    const skipLink = page.getByRole('link', { name: /Skip to main content/i });
+    await expect(skipLink).toBeVisible();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('main#main-content')).toBeFocused();
+  });
+
   test('page has a <nav> landmark', async ({ page }) => {
     await page.goto('/');
     const nav = page.locator('nav').first();

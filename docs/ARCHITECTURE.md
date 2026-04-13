@@ -176,6 +176,19 @@ This architecture turns evals into an operational feedback loop: scoring, drift 
 
 **Novel combination:** Runtime quality telemetry + offline eval corpus + drift-aware scoring + CI enforcement as a unified release-control mechanism.
 
+---
+
+## AI ROI and Governance
+
+This platform treats governance and economics as engineering controls, not review-time paperwork:
+
+- **Quality cost containment:** `src/lib/eval-engine.ts` and `src/lib/drift-monitor.ts` identify low-fidelity or drifting behavior before release, reducing the downstream cost of hallucination handling and rework.
+- **Compute efficiency controls:** `src/app/api/llm-router/route.ts` plus `src/lib/cost-control.ts` route work to fit-for-purpose models and enforce token-budget guardrails to avoid avoidable inference spend.
+- **Operational risk reduction:** `src/lib/guardrails.ts` and HITL checkpoints in the multi-agent flow constrain unsafe autonomy by requiring policy checks and explicit human approval at high-risk boundaries.
+- **Audit readiness:** `src/lib/api.ts` and `src/lib/observability.ts` provide trace IDs, structured event logs, and standardized response metadata so decisions can be reconstructed during reviews.
+
+The combined effect is practical: AI capabilities can move from pilot mode to repeatable operating systems because quality, spend, risk, and traceability are controlled in the same delivery pipeline.
+
 ## Synthesis
 
 Taken together, orchestration, centralized guardrails, evaluation loops, and observability are treated here as first-class architectural primitives. That framing shifts the system from demo-centric AI to production AI platform engineering: governed, measurable, traceable, and release-safe.

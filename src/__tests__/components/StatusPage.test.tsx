@@ -40,4 +40,13 @@ describe('StatusPage', () => {
     expect(STATUS_SNAPSHOT.services).toHaveLength(10);
     expect(screen.getByText('AI Evaluation Showcase')).toBeInTheDocument();
   });
+
+  it('renders trust controls from centralized snapshot data', () => {
+    render(React.createElement(StatusPage));
+
+    expect(screen.getByText('Trust Controls')).toBeInTheDocument();
+    const [firstLabel, firstDetail] = STATUS_SNAPSHOT.trustControls[0];
+    expect(screen.getByText(firstLabel)).toBeInTheDocument();
+    expect(screen.getByText(firstDetail)).toBeInTheDocument();
+  });
 });

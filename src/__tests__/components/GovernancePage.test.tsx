@@ -47,6 +47,17 @@ describe('GovernancePage', () => {
     });
   });
 
+  it('renders trust control flow from centralized governance snapshot', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')));
+    render(React.createElement(GovernancePage));
+
+    expect(screen.getByText('Trust Control Flow')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(GOVERNANCE_SNAPSHOT.trustFlow[0])).toBeInTheDocument();
+      expect(screen.getByText(GOVERNANCE_SNAPSHOT.trustFlow[1])).toBeInTheDocument();
+    });
+  });
+
   it('overlays live eval snapshot values when api data is available', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,

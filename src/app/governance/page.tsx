@@ -111,6 +111,19 @@ export default function GovernancePage() {
           className="mb-8"
         />
 
+        <section className="mb-8" aria-labelledby="trust-flow-heading">
+          <h2 id="trust-flow-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            Trust Control Flow
+          </h2>
+          <div className="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+            {GOVERNANCE_SNAPSHOT.trustFlow.map((item) => (
+              <div key={item} className="rounded-lg border border-border bg-muted/20 p-3">
+                <p className="text-foreground">{item}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Telemetry Snapshot Grid */}
         <section className="mb-8">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">

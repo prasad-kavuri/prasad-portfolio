@@ -41,6 +41,13 @@ describe('SEO metadata integrity', () => {
     expect(page).toMatch(/#profile-summary/);
   });
 
+  it('homepage includes keyboard-accessible skip link and main content target', () => {
+    const page = readFileSync('src/app/page.tsx', 'utf8');
+    expect(page).toMatch(/Skip to main content/);
+    expect(page).toMatch(/href=\"#main-content\"/);
+    expect(page).toMatch(/main id=\"main-content\"/);
+  });
+
   it('layout.tsx JSON-LD includes Calendly in sameAs', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
     expect(layout).toMatch(/calendly\.com\/vbkpkavuri/);
@@ -112,5 +119,11 @@ describe('SEO metadata integrity', () => {
     const metadataSource = readFileSync('src/app/demos/portfolio-assistant/metadata.ts', 'utf8');
     expect(metadataSource).toMatch(/retrieval/i);
     expect(metadataSource).not.toMatch(/Streaming RAG chatbot/i);
+  });
+
+  it('global styles include visible keyboard focus treatment for links', () => {
+    const globalStyles = readFileSync('src/app/globals.css', 'utf8');
+    expect(globalStyles).toMatch(/a:focus-visible/);
+    expect(globalStyles).toMatch(/outline:\s*2px/);
   });
 });

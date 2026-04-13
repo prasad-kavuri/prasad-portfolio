@@ -34,6 +34,11 @@ describe('architecture artifact and documentation', () => {
       expect(docs).toContain(demo.title);
       expect(docs).toContain(demo.href);
     }
+
+    expect(docs).toContain('AI ROI and Governance');
+    expect(docs).toContain('src/lib/eval-engine.ts');
+    expect(docs).toContain('src/lib/cost-control.ts');
+    expect(docs).toContain('src/lib/guardrails.ts');
   });
 
   it('embeds the canonical architecture artifact in README and docs', () => {

@@ -124,7 +124,8 @@ describe('Hero', () => {
     render(<Hero />);
     expect(screen.getByText(/Trust & Governance at a Glance/i)).toBeDefined();
     expect(screen.getByText(/Centralized prompt injection and output safety checks/i)).toBeDefined();
-    expect(screen.getByText(/HITL approval/i)).toBeDefined();
+    expect(screen.getByText(/Human approval required/i)).toBeDefined();
+    expect(screen.getByText(/Decision trace logged via trace IDs/i)).toBeDefined();
     expect(screen.getByText(/offline eval suites with online drift monitoring/i)).toBeDefined();
     expect(screen.getByText(/Upstash-backed rate limiting/i)).toBeDefined();
     const disclosureLink = screen.getByRole('link', { name: /Responsible disclosure policy/i });

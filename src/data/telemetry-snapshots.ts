@@ -27,11 +27,16 @@ export const STATUS_SNAPSHOT = {
     'SHA-256 IP Hashing — Active',
     'npm audit (CI-enforced) — 0 high/critical CVEs',
   ],
+  trustControls: [
+    ['Autonomous Scope', 'Agent reasoning is bounded by route-level policy and guardrail checks.'],
+    ['Manual Review Checkpoint', 'Multi-agent strategist execution pauses until explicit human approval.'],
+    ['Trace and Audit', 'Trace IDs and structured events create decision-path visibility for reviews.'],
+    ['Abuse and Cost Controls', 'Rate limits and token-cost controls enforce safe runtime budgets.'],
+  ] as SnapshotMetric[],
   testSuite: [
-    ['Unit Tests', '361 passing'],
-    ['E2E Coverage', '4 Playwright projects'],
-    ['Test Files', '32 files'],
-    ['Coverage', '95%+ statements'],
+    ['Unit Tests', 'Vitest suite passing'],
+    ['E2E Coverage', '4 Playwright projects (desktop + mobile)'],
+    ['Coverage Gates', 'API and lib thresholds enforced in CI'],
     ['Fuzz Tests', 'Active'],
     ['LLM Evals', 'Active'],
     ['Chaos Tests', 'Active'],
@@ -47,6 +52,13 @@ export const STATUS_SNAPSHOT = {
 
 export const GOVERNANCE_SNAPSHOT = {
   generatedAtIso: '2026-04-13T03:50:00Z',
+  trustFlow: [
+    'Human approval required before strategist execution',
+    'Execution paused for review at HITL checkpoint',
+    'Policy check passed before response release',
+    'Decision trace logged with request and trace IDs',
+    'Guardrail-triggered outputs are blocked or redacted',
+  ],
   policyControls: [
     { label: 'Content Security Policy', status: 'Active', detail: 'next.config.ts + proxy.ts' },
     { label: 'Rate Limiting (Upstash Redis)', status: 'Active', detail: '10 req / 60s per IP, SHA-256 hash' },

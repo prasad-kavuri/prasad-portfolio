@@ -151,3 +151,31 @@ Combined with IP-level SHA-256 hashing (never raw IPs in storage), this creates 
 `src/__tests__/evals/` contains LLM-as-Judge eval cases (`EvalCase`) with required coverage terms and forbidden topic lists. `scoreResponse` in `src/lib/eval-engine.ts` computes a numeric accuracy score. These run on every commit via `npm run test:evals` — prompt regressions block deployment exactly like failing unit tests.
 
 **Novel combination:** Offline eval scoring (no live API calls) + coverage-based accuracy metric + forbidden-topic penalty + CI integration as a quality gate.
+
+---
+
+### 5. Centralized AI Guardrails Layer
+
+**Pattern:** Guardrails are implemented as a shared platform control plane rather than duplicated route-level utilities.
+
+`src/lib/guardrails.ts` is the canonical module for prompt-injection detection, server-side sanitization, competitor filtering, hallucination heuristics, and agent handoff validation. API routes call this shared module at trust boundaries before upstream model calls and before returning model output.
+
+Architecturally, this centralization reduces drift risk across routes, improves auditability, and keeps policy enforcement changes versioned in one place. The result is a consistent governance boundary for multi-route AI systems.
+
+**Novel combination:** Single guardrail source of truth + route boundary enforcement + reusable issue scoring + compatibility-safe integration across heterogeneous AI endpoints.
+
+---
+
+### 6. Evaluation as Deployment Infrastructure
+
+**Pattern:** Evaluation is treated as production infrastructure, not experiment tooling.
+
+`src/lib/eval-engine.ts` scores responses with LLM-as-Judge style checks, `src/lib/drift-monitor.ts` tracks live output drift signals, and `src/app/api/eval-snapshot/route.ts` surfaces runtime posture. CI gates combine these signals with regression thresholds so quality failures block merges before deployment.
+
+This architecture turns evals into an operational feedback loop: scoring, drift observation, regression detection, and release gating are connected as one lifecycle.
+
+**Novel combination:** Runtime quality telemetry + offline eval corpus + drift-aware scoring + CI enforcement as a unified release-control mechanism.
+
+## Synthesis
+
+Taken together, orchestration, centralized guardrails, evaluation loops, and observability are treated here as first-class architectural primitives. That framing shifts the system from demo-centric AI to production AI platform engineering: governed, measurable, traceable, and release-safe.

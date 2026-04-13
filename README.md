@@ -65,7 +65,8 @@ prasad-portfolio/
 │   │   └── ui/                           # shadcn/ui components
 │   ├── data/
 │   │   ├── profile.json                  # Single source of truth
-│   │   └── demos.ts                      # Demo card definitions
+│   │   ├── demos.ts                      # Demo card definitions
+│   │   └── telemetry-snapshots.ts        # Status/governance snapshot source of truth
 │   └── lib/
 │       ├── rate-limit.ts                 # Upstash rate limiting + IP hashing
 │       ├── observability.ts              # Structured logging, anomaly detection, trace propagation
@@ -73,8 +74,10 @@ prasad-portfolio/
 │       ├── eval-engine.ts                # LLM-as-Judge scoring, offline/online eval cases
 │       ├── drift-monitor.ts              # Model output drift detection
 │       ├── cost-control.ts               # Per-route token cost tracking
+│       ├── url-security.ts               # SSRF hardening for outbound fetch/tool URLs
 │       ├── hitl.ts                       # Human-in-the-loop checkpoint utilities
 │       ├── analytics.ts                  # Usage event tracking
+│       ├── query-log.ts                  # Runtime query capture for eval snapshots
 │       └── api.ts                        # Shared route utilities
 ├── src/__tests__/
 │   ├── api/                              # API route unit tests (incl. resume-download)
@@ -206,34 +209,18 @@ client-side via WebAssembly — no API key required.
 
 This portfolio ships production-grade implementations of the patterns that define enterprise AI in 2026:
 
-### Guardrails Layer (`src/lib/guardrails.ts`)
-- Canonical guardrails module used by API routes for prompt-injection checks and output sanitization
-- Prompt injection detection signatures including template injection and instruction override
-- Competitor mention detection and redaction — 8 competitor names, applied to all LLM output
-- Hallucination heuristics — confidence scoring on long outputs with key-fact presence check
-- Agent handoff validation — `validateAgentHandoff` guards every inter-agent transition
-- Single entry point: `enforceGuardrails(input, output, traceId?)` → `GuardrailResult`
-
-### Closed-Loop Evaluation Pipeline (`src/lib/eval-engine.ts` + `src/lib/drift-monitor.ts`)
-- **LLM-as-Judge** scoring — semantic fidelity, required coverage terms, forbidden topic detection
-- Offline batch evals + online live-traffic sampling via drift monitor
-- Regression gating in CI — PRs blocked if fidelity < 0.85 or hallucination rate > 0.10
-- Interactive demo at [/demos/evaluation-showcase](https://www.prasadkavuri.com/demos/evaluation-showcase)
-
-### Human-in-the-Loop Checkpoint (`src/lib/hitl.ts`)
-- Mandatory approval step between Researcher and Strategist agents
-- Visual HITL badge in the multi-agent demo UI — on by default
-- Demonstrates the enterprise pattern: autonomous agents pause for human review before consequential actions
-
-### End-to-End Trace Propagation (`src/lib/observability.ts`)
-- `generateClientTraceId()` — client generates UUID v4 at interaction start
-- `createTracedFetch(traceId)` — injects `X-Trace-Id` / `X-Request-Id` on every request
-- Server reads via `createRequestContext()` → same ID flows through all logs and LLM calls
-
-### Governance Dashboard (`/governance`)
-- Deterministic snapshot-driven safety metrics from `src/data/telemetry-snapshots.ts` with optional `/api/eval-snapshot` live overlays
-- Policy controls inventory with implementation file references
-- Audit event log — CFO/CTO/CISO framing for enterprise buyers
+- **Semantic rate limiting with privacy-preserving controls** (`src/lib/cost-control.ts`, `src/lib/rate-limit.ts`)  
+  Rate limits combine per-IP windows with token-cost controls and SHA-256 IP hashing, so the platform manages spend and abuse without storing raw user IPs.
+- **Cross-model orchestration** (`src/app/api/llm-router/route.ts`)  
+  Routing selects Groq model tiers by workload characteristics and returns latency/cost telemetry, making model selection an explicit platform primitive.
+- **MCP-style tool integration** (`src/app/api/mcp-demo/route.ts`)  
+  The tool layer demonstrates manifest-driven tool use, argument parsing, execution tracing, and safe output shaping for agentic workflows.
+- **Centralized guardrails** (`src/lib/guardrails.ts`)  
+  Prompt-injection detection, output sanitization, competitor filtering, hallucination heuristics, and agent handoff validation are implemented through one canonical module used across routes.
+- **Closed-loop evaluation and quality gating** (`src/lib/eval-engine.ts`, `src/lib/drift-monitor.ts`, `src/app/api/eval-snapshot/route.ts`)  
+  LLM-as-Judge scoring, drift snapshots, and regression thresholds are treated as deploy-time quality controls, not post-hoc analytics.
+- **Observability and trace propagation** (`src/lib/observability.ts`, `src/lib/api.ts`)  
+  Request context, structured API logs, anomaly signals, and trace IDs propagate across user requests, model calls, and governance views.
 
 ### Why It Matters
 Most AI portfolios show prompts and demos. This one ships the **governance, evaluation, safety infrastructure, and observability** that production AI systems actually require — and all of it is in the test suite and CI pipeline, not just documentation.

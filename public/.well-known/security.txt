@@ -1,4 +1,4 @@
-Contact: mailto:prasad.kavuri@gmail.com
+Contact: mailto:vbkpkavuri@gmail.com
 Preferred-Languages: en
 Canonical: https://www.prasadkavuri.com/.well-known/security.txt
 Policy: https://www.prasadkavuri.com/.well-known/security.txt

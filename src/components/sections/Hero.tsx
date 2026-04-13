@@ -205,7 +205,7 @@ export function Hero() {
               <p><span className="font-medium text-foreground">Quality Loop:</span> Offline eval suites with online drift monitoring and hallucination indicators.</p>
               <p><span className="font-medium text-foreground">Abuse Protection:</span> Upstash-backed rate limiting with privacy-preserving IP hashing.</p>
               <p>
-                <span className="font-medium text-foreground">Auditability:</span> Decision trace logged via trace IDs.{` `}
+                <span className="font-medium text-foreground">Auditability:</span> Decision traces are logged via trace IDs.{` `}
                 <a href="/.well-known/security.txt" className="underline underline-offset-2 hover:no-underline">
                   Responsible disclosure policy
                 </a>.

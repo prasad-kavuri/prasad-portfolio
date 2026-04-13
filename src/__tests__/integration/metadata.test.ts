@@ -91,6 +91,13 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/AI Evaluation Showcase/);
   });
 
+  it('security.txt disclosure contact matches profile email', () => {
+    const securityTxt = readFileSync('public/.well-known/security.txt', 'utf8');
+    const profile = JSON.parse(readFileSync('src/data/profile.json', 'utf8'));
+    expect(securityTxt).toContain(`Contact: mailto:${profile.personal.email}`);
+    expect(securityTxt).toMatch(/Canonical: https:\/\/www\.prasadkavuri\.com\/\.well-known\/security\.txt/);
+  });
+
   it('ai-agent-manifest.json is valid JSON with required fields', () => {
     const raw = readFileSync('public/.well-known/ai-agent-manifest.json', 'utf8');
     const manifest = JSON.parse(raw);

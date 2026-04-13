@@ -104,4 +104,14 @@ export const demos: Demo[] = [
     tags: ["MCP", "Tool Use", "Groq API"],
     status: "live",
   },
+  {
+    id: "evaluation-showcase",
+    emoji: "🎯",
+    title: "AI Evaluation Showcase",
+    description: "Closed-loop LLM evaluation pipeline — semantic fidelity, hallucination detection, guardrails, and CI gating in action.",
+    businessImpact: "Ensures AI quality degradations never reach production",
+    href: "/demos/evaluation-showcase",
+    tags: ["LLM-as-Judge", "Semantic Fidelity", "Guardrails", "CI Gating"],
+    status: "live",
+  },
 ];

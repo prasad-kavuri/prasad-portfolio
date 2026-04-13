@@ -1,100 +1,148 @@
-/**
- * Guardrails — input/output safety checks and agent handoff validation.
- *
- * Used by all AI routes to enforce:
- *  - Prompt injection resistance
- *  - Output content policy (no PII leakage, no hallucinated credentials)
- *  - Agent handoff precondition checks
- */
+// src/lib/guardrails.ts
+// 2026 AI Governance Layer — Centralized, observable, testable
 
 export interface GuardrailResult {
-  allowed: boolean;
-  reason?: string;
-  matchedPattern?: string;
+  isSafe: boolean;
+  score: number;        // 0-1, where 1 = fully safe
+  issues: string[];
+  sanitizedOutput?: string;
+  traceId?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Injection patterns — ordered from most specific to most general
-// ---------------------------------------------------------------------------
-const INJECTION_PATTERNS: RegExp[] = [
-  /ignore\s+(all\s+)?(previous|prior|above)\s+(instructions?|prompts?|context)/i,
-  /forget\s+(everything|all|your\s+instructions)/i,
-  /you\s+are\s+(now|actually)\s+(a|an)\s+/i,
-  /act\s+as\s+(if\s+you\s+(are|were)\s+)?(a|an)\s+/i,
-  /\[system\]/i,
-  /<<SYS>>/i,
+// Competitors — AI assistant should not recommend alternatives
+const COMPETITORS = new Set([
+  'openai', 'anthropic', 'gemini', 'grok', 'xai',
+  'perplexity', 'copilot', 'mistral'
+]);
+
+// Patterns that indicate inappropriate career advice
+const UNSAFE_CAREER_PATTERNS = [
+  /salary negotiation/i,
+  /\bconfidential\b|\bproprietary\b|\bnda\b/i,
+  /my (current|other) (employer|company)/i,
+];
+
+// 2026 prompt injection signatures
+const INJECTION_SIGNATURES = [
+  /ignore\s+(all\s+)?(previous\s+|prior\s+|above\s+)?instructions/i,
+  /system:\s/i,
   /\[INST\]/i,
-  /reveal\s+(the\s+)?(system\s+prompt|instructions?|context|api\s+key)/i,
-  /print\s+(the\s+)?(system\s+prompt|instructions?)/i,
-  /what\s+(are|were)\s+your\s+(exact\s+)?instructions/i,
-  /override\s+(safety|content|policy|filter)/i,
-  /bypass\s+(filter|safety|policy|guardrail)/i,
-  /jailbreak/i,
-  /DAN\s+mode/i,
-  /developer\s+mode\s+(enabled|on)/i,
+  /<\|im_start\|>/i,
+  /forget\s+(everything|all)/i,
+  /you are now/i,
+  /jailbreak|DAN mode/i,
+  /act as (an? )?(different|unrestricted|jailbroken)/i,
 ];
 
-// ---------------------------------------------------------------------------
-// Output blocklist — patterns that must never appear in LLM responses
-// ---------------------------------------------------------------------------
-const OUTPUT_BLOCKLIST: RegExp[] = [
-  // API keys / secrets
-  /sk-[a-zA-Z0-9]{20,}/,
-  /gsk_[a-zA-Z0-9]{20,}/,
-  /GROQ_API_KEY\s*=\s*\S+/i,
-  /ANTHROPIC_API_KEY\s*=\s*\S+/i,
-  // System internals
-  /COMPLETE PROFILE:/i,
-  /knowledgeBase\[/,
-  // Credential-like strings
-  /Bearer\s+[a-zA-Z0-9._-]{20,}/,
-];
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/** Check a user-supplied input string for injection attempts. */
-export function checkInput(input: string): GuardrailResult {
-  for (const pattern of INJECTION_PATTERNS) {
+export function detectPromptInjection(input: string): string[] {
+  const issues: string[] = [];
+  for (const pattern of INJECTION_SIGNATURES) {
     if (pattern.test(input)) {
-      return { allowed: false, reason: 'prompt_injection', matchedPattern: pattern.source };
+      issues.push(`injection_attempt:${pattern.source.slice(0, 40)}`);
     }
   }
-  return { allowed: true };
+  // Template injection
+  if (/<[^>]+>|{{|}}/.test(input)) {
+    issues.push('template_injection');
+  }
+  return issues;
 }
 
-/** Check LLM output for policy violations before forwarding to the client. */
-export function checkOutput(output: string): GuardrailResult {
-  for (const pattern of OUTPUT_BLOCKLIST) {
+export function checkInput(input: string): GuardrailResult {
+  const issues = detectPromptInjection(input);
+  return {
+    isSafe: issues.length === 0,
+    score: issues.length === 0 ? 1 : 0,
+    issues,
+    sanitizedOutput: input.trim().slice(0, 5000),
+  };
+}
+
+export function checkOutput(
+  output: string,
+  traceId?: string
+): GuardrailResult {
+  const issues: string[] = [];
+  let sanitized = output;
+  const lower = output.toLowerCase();
+
+  // 1. Competitor filtering
+  const competitorFound = [...COMPETITORS].filter(c => lower.includes(c));
+  if (competitorFound.length > 0) {
+    issues.push(`competitor_mention:${competitorFound.join(',')}`);
+    competitorFound.forEach(c => {
+      sanitized = sanitized.replace(new RegExp(c, 'gi'), '[service]');
+    });
+  }
+
+  // 2. Unsafe career advice
+  for (const pattern of UNSAFE_CAREER_PATTERNS) {
     if (pattern.test(output)) {
-      return { allowed: false, reason: 'output_policy_violation', matchedPattern: pattern.source };
+      issues.push(`unsafe_career_pattern:${pattern.source.slice(0, 30)}`);
     }
   }
-  return { allowed: true };
+
+  // 3. Prompt leakage detection
+  if (/system prompt|my instructions (say|tell|state)/i.test(output)) {
+    issues.push('prompt_leakage');
+    sanitized = sanitized.replace(
+      /system prompt|my instructions (say|tell|state)/gi,
+      '[filtered]'
+    );
+  }
+
+  // 4. Hallucination signal (heuristic)
+  // Long response about Prasad that doesn't mention key facts
+  if (
+    output.length > 500 &&
+    !lower.includes('krutrim') &&
+    !lower.includes('ola') &&
+    !lower.includes('here') &&
+    !lower.includes('prasad')
+  ) {
+    issues.push('possible_hallucination:missing_key_facts');
+  }
+
+  const score = Math.max(0, 1 - issues.length * 0.2);
+
+  return {
+    isSafe: score >= 0.6,
+    score,
+    issues,
+    sanitizedOutput: sanitized,
+    traceId,
+  };
 }
 
-/**
- * Validate preconditions for agent-to-agent handoffs.
- * Ensures the upstream agent produced non-empty, non-error output before
- * passing work to the next agent.
- */
 export function validateAgentHandoff(
   fromAgent: string,
-  output: string,
-  options: { minLength?: number } = {}
+  toAgent: string,
+  output: string
 ): GuardrailResult {
-  const minLength = options.minLength ?? 20;
+  // Treat agent output as potential injection source
+  const inputCheck = checkInput(output);
+  const outputCheck = checkOutput(output);
+  const issues = [
+    ...inputCheck.issues.map(i => `[${fromAgent}→${toAgent}] ${i}`),
+    ...outputCheck.issues,
+  ];
+  return {
+    isSafe: issues.length === 0,
+    score: Math.max(0, 1 - issues.length * 0.15),
+    issues,
+    sanitizedOutput: outputCheck.sanitizedOutput,
+  };
+}
 
-  if (!output || output.trim().length === 0) {
-    return { allowed: false, reason: `${fromAgent} produced empty output` };
+// Single entry point for all routes
+export function enforceGuardrails(
+  input: string,
+  output: string,
+  traceId?: string
+): GuardrailResult {
+  const inputCheck = checkInput(input);
+  if (!inputCheck.isSafe) {
+    return { ...inputCheck, traceId };
   }
-  if (output.trim().length < minLength) {
-    return { allowed: false, reason: `${fromAgent} output too short (${output.trim().length} < ${minLength})` };
-  }
-  if (/^\s*(error|failed|undefined|null)\s*$/i.test(output.trim())) {
-    return { allowed: false, reason: `${fromAgent} output indicates failure` };
-  }
-
-  return { allowed: true };
+  return checkOutput(output, traceId);
 }

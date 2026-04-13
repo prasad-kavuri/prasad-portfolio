@@ -5,6 +5,30 @@ Production-grade AI engineering portfolio. Next.js 16.2.3 App Router + Turbopack
 **Do NOT assume standard Next.js patterns** — verify in `node_modules/next/dist/docs/`
 before writing any code. APIs, middleware, and config differ from training data.
 
+## Coding Behavior (Karpathy-Inspired)
+
+Four rules that apply to every change. They exist to prevent unfounded assumptions,
+overengineering, and unwanted scope creep — the three most common LLM coding mistakes.
+
+**1. Think Before Coding**
+State assumptions explicitly. If multiple interpretations are valid, surface them rather
+than picking silently. If something is unclear, stop and ask before implementing.
+
+**2. Simplicity First**
+Write the minimum code that solves the stated problem. No speculative abstractions.
+No flexibility that wasn't requested. No error handling for impossible scenarios.
+If it can be 50 lines instead of 200, it should be.
+
+**3. Surgical Changes**
+Touch only what the task requires. Do not improve, reformat, or rename adjacent code.
+Match the existing style. Mention unrelated dead code — don't delete it.
+Every changed line must trace directly to the user's request.
+
+**4. Goal-Driven Execution**
+For multi-step tasks, state a brief plan with verifiable checks before starting.
+Transform vague goals into testable outcomes: build passes, tests pass, coverage gates pass.
+Verify success explicitly — don't assume "it works" without running the checks.
+
 ## Architecture Rules
 1. Rate limit ALL new API routes using `enforceRateLimit` from `src/lib/api.ts`
 2. Log ALL API requests using `startTimer` + `logAPIEvent` from `src/lib/observability.ts`
@@ -35,10 +59,11 @@ before writing any code. APIs, middleware, and config differ from training data.
 | `hitl.ts` | Human-in-the-loop checkpoint utilities |
 | `rate-limit.ts` | Upstash-backed rate limiting + SHA-256 IP hashing |
 | `analytics.ts` | Usage event tracking |
+| `query-log.ts` | Runtime query capture for live eval snapshots |
 
 ## Before Committing
 - `npm run build` — must succeed, zero errors
-- `npm run test` — all tests must pass (336 tests, 29 files)
+- `npm run test` — all tests must pass (395 tests, 35 files)
 - `npm audit --audit-level=high` — 0 high/critical vulnerabilities
 
 ## CI/CD
@@ -52,4 +77,5 @@ Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/pa
 - `profile.personal.title` = "VP / Head of AI Engineering" — do not change without updating layout.tsx
 - All URLs use `https://www.prasadkavuri.com` (with www) — be consistent
 - New demos need entries in BOTH `src/data/demos.ts` AND `src/components/sections/AITools.tsx` (DEMO_GROUPS ids array)
-- `react-hooks/set-state-in-effect` ESLint rule fires on `setState()` inside `useEffect` — use `// eslint-disable-next-line` comment when the pattern is intentional (e.g., client-only hydration-safe init with `useState(null)`)
+- `react-hooks/set-state-in-effect` ESLint rule fires on `setState()` inside `useEffect` — use `// eslint-disable-next-line` when the pattern is intentional (e.g., client-only hydration-safe init with `useState(null)`)
+- Signature system is `evaluation-showcase` (AI Evaluation Showcase) — referenced in Hero, AITools featured card, and README

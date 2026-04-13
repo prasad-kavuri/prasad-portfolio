@@ -27,6 +27,47 @@ VP / Head of AI Engineering. Live at https://www.prasadkavuri.com
 - `src/app/layout.tsx` — Root layout, metadata, JSON-LD schema
 - `src/proxy.ts` — Edge middleware: security headers, .html redirects
 
+## Coding Behavior
+
+These four rules reduce the most common LLM coding mistakes: unfounded assumptions,
+overengineering, and unwanted scope creep. They apply to every change in this repo.
+
+### 1. Think Before Coding
+- State your assumptions explicitly before implementing. If uncertain, ask.
+- If multiple valid interpretations exist, surface them — don't pick silently.
+- If a simpler approach exists, say so before building the complex one.
+- If something is genuinely unclear, stop, name what's confusing, and ask.
+- **This repo non-obvious trap:** Next.js 16.2.3 differs from training data.
+  Verify patterns in `node_modules/next/dist/` before assuming standard behavior.
+
+### 2. Simplicity First
+- Write the minimum code that solves the problem as stated. Nothing speculative.
+- No abstractions for single-use code. No "flexibility" that wasn't requested.
+- No error handling for scenarios that cannot occur in this codebase.
+- No extra comments, docstrings, or type annotations on code you didn't change.
+- If you write 200 lines and it could be 50, rewrite it before submitting.
+- Ask: "Would a senior engineer call this overcomplicated?" If yes, simplify.
+
+### 3. Surgical Changes
+- Touch only what the task requires. Do not "improve" adjacent code.
+- Do not refactor, reformat, rename, or clean up code outside your change.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it — do not delete it.
+- Remove only imports/variables/functions that YOUR changes made unused.
+- Every changed line should trace directly to the user's request.
+
+### 4. Goal-Driven Execution
+- For multi-step tasks, state a brief plan before starting:
+  ```
+  1. [Step] → verify: [check]
+  2. [Step] → verify: [check]
+  ```
+- Transform vague tasks into verifiable goals:
+  - "Add validation" → "Write failing tests for invalid inputs, make them pass"
+  - "Fix the bug" → "Write a test that reproduces it, make it pass"
+  - "Add a route" → "Build passes, tests pass, coverage gates pass"
+- Verify success criteria explicitly — `npm run build` + `npm run test` before done.
+
 ## Critical Rules for Claude Code
 1. ALWAYS add rate limiting to new API routes via `enforceRateLimit` from `src/lib/api.ts`
 2. ALWAYS add observability (`startTimer`, `logAPIEvent`) to API routes

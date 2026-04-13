@@ -79,6 +79,9 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/Prasad Kavuri/);
     expect(llmsTxt).toMatch(/VP \/ Head/);
     expect(llmsTxt).toMatch(/calendly\.com/);
+    const demoLines = llmsTxt.match(/^- .+: https:\/\/www\.prasadkavuri\.com\/demos\//gm) ?? [];
+    expect(demoLines).toHaveLength(10);
+    expect(llmsTxt).toMatch(/AI Evaluation Showcase/);
   });
 
   it('ai-agent-manifest.json is valid JSON with required fields', () => {
@@ -90,6 +93,9 @@ describe('SEO metadata integrity', () => {
     expect(manifest).toHaveProperty('demos');
     expect(manifest.name).toMatch(/Prasad Kavuri/);
     expect(manifest.contact).toHaveProperty('calendly');
+    expect(Array.isArray(manifest.demos)).toBe(true);
+    expect(manifest.demos).toHaveLength(10);
+    expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
   });
 
   it('profile.json personal.title is "VP / Head of AI Engineering"', () => {

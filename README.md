@@ -15,15 +15,15 @@
 | Demo | Category | Tech Stack | Mode |
 |---|---|---|---|
 | [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Core AI | Transformers.js, all-MiniLM-L6-v2 | Browser |
-| [Vector Search](https://www.prasadkavuri.com/demos/vector-search) | Core AI | Transformers.js, PCA, Canvas | Browser |
 | [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | Core AI | Groq, Llama 3.1/4, Qwen3 | Server |
+| [Vector Search](https://www.prasadkavuri.com/demos/vector-search) | Core AI | Transformers.js, PCA, Canvas | Browser |
 | [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Core AI | LLM-as-Judge, eval-engine, drift-monitor | Server |
+| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq, Analyzer+Researcher+Strategist, HITL | Server |
+| [MCP Tool Demo](https://www.prasadkavuri.com/demos/mcp-demo) | Agentic | MCP protocol, Groq tool calling | Server |
 | [AI Portfolio Assistant](https://www.prasadkavuri.com/demos/portfolio-assistant) | Applications | Groq, full-context grounding, retrieval cues, streaming | Server |
 | [Resume Generator](https://www.prasadkavuri.com/demos/resume-generator) | Applications | Groq, Llama 3.3 70B, PDF export | Server |
 | [Multimodal Assistant](https://www.prasadkavuri.com/demos/multimodal) | Applications | Florence-2, WebGPU, Transformers.js | Browser |
 | [Model Quantization](https://www.prasadkavuri.com/demos/quantization) | Applications | ONNX, FP32 vs INT8 benchmark | Browser |
-| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq, Analyzer+Researcher+Strategist, HITL | Server |
-| [MCP Tool Demo](https://www.prasadkavuri.com/demos/mcp-demo) | Agentic | MCP protocol, Groq tool calling | Server |
 
 ## Architecture Overview
 

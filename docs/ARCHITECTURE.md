@@ -46,15 +46,15 @@ The AI services layer contains both server-side and browser-side demos:
 | Demo | Path | Execution mode |
 |---|---|---|
 | RAG Pipeline | `/demos/rag-pipeline` | Browser embeddings and retrieval |
-| Vector Search | `/demos/vector-search` | Browser embeddings and visualization |
 | LLM Router | `/demos/llm-router` | Server route calling Groq |
+| Vector Search | `/demos/vector-search` | Browser embeddings and visualization |
+| AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |
 | Multi-Agent System | `/demos/multi-agent` | Server route plus external agent backend |
 | MCP Tool Demo | `/demos/mcp-demo` | Server route calling Groq tool use |
-| Resume Generator | `/demos/resume-generator` | Server route calling Groq |
 | AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming full-context grounding and retrieval cues |
+| Resume Generator | `/demos/resume-generator` | Server route calling Groq |
 | Multimodal Assistant | `/demos/multimodal` | Browser model execution |
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
-| AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |
 
 The LLM Router demonstrates the cost/latency tradeoff pattern directly. RAG and vector search demonstrate retrieval before generation. Browser demos show local inference patterns that reduce server load and external API cost.
 

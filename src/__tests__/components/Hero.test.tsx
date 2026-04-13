@@ -64,10 +64,11 @@ describe('Hero', () => {
     expect(screen.getByText(/human oversight and governance/i)).toBeDefined();
   });
 
-  it('surfaces AI quality loop callout and evaluation showcase link', () => {
+  it('surfaces signature-system quality callout and evaluation showcase link', () => {
     render(<Hero />);
-    expect(screen.getByText(/AI Quality Loop/i)).toBeDefined();
-    const link = screen.getByRole('link', { name: /Explore AI Evaluation Showcase/i });
+    expect(screen.getByText(/Signature System: AI Evaluation Showcase/i)).toBeDefined();
+    expect(screen.getByText(/Why this matters: quality regressions are surfaced before release/i)).toBeDefined();
+    const link = screen.getByRole('link', { name: /Explore Signature System/i });
     expect(link.getAttribute('href')).toBe('/demos/evaluation-showcase');
   });
 
@@ -116,6 +117,7 @@ describe('Hero', () => {
     render(<Hero />);
     expect(screen.getByText(/Recruiters/i)).toBeDefined();
     expect(screen.getAllByText(/VP \/ Head of AI Engineering/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Signature artifact for interview review/i)).toBeDefined();
   });
 
   it('renders trust and governance summary with responsible disclosure link', () => {

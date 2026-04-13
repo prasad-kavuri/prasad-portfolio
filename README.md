@@ -3,6 +3,8 @@
 > **Live at [prasadkavuri.com](https://www.prasadkavuri.com)**  
 > Production-grade AI engineering portfolio with 10 production demos,
 > enterprise security, full governance layer, and CI/CD pipeline.
+>
+> **Signature system:** AI Evaluation Showcase — a closed-loop quality architecture combining offline evals, live drift monitoring, hallucination indicators, and CI gating.
 
 [![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-387%20passing-brightgreen)]()

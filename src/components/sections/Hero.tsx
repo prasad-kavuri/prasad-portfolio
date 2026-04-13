@@ -61,17 +61,20 @@ export function Hero() {
 
           <div className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-              AI Quality Loop
+              Signature System: AI Evaluation Showcase
             </p>
             <p className="text-sm text-muted-foreground">
               Offline eval suites, live drift monitoring, hallucination indicators, and regression-minded quality gating are built into this platform.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Why this matters: quality regressions are surfaced before release, so AI reliability is managed as an engineering system.
             </p>
             <a
               href="/demos/evaluation-showcase"
               className="mt-2 inline-flex items-center text-xs font-medium hover:underline"
               style={{ color: 'var(--accent-brand)' }}
             >
-              Explore AI Evaluation Showcase
+              Explore Signature System
             </a>
           </div>
 
@@ -147,6 +150,9 @@ export function Hero() {
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Specialized in shipping agentic platforms with evaluation, drift monitoring, and governance controls.
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Signature artifact for interview review: AI Evaluation Showcase (offline + online quality loop).
               </p>
             </div>
             <div className="flex flex-wrap gap-3">

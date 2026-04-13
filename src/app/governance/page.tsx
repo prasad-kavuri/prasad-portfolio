@@ -108,6 +108,7 @@ const POLICY_CONTROLS = [
 export default function GovernancePage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMetrics(freshMetrics()); }, []);
 
   const refresh = () => setMetrics(freshMetrics());

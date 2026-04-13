@@ -29,10 +29,30 @@ describe('url-security host classification', () => {
   });
 
   it('blocks ipv6 local addresses and mapped local addresses', () => {
+    expect(getHostBlockReason('::')).toBe('ipv6_loopback');
     expect(getHostBlockReason('::1')).toBe('ipv6_loopback');
     expect(getHostBlockReason('fe80::1')).toBe('ipv6_link_local');
     expect(getHostBlockReason('fc00::1234')).toBe('ipv6_unique_local');
+    expect(getHostBlockReason('fec0::1')).toBe('ipv6_site_local');
     expect(getHostBlockReason('::ffff:127.0.0.1')).toBe('ipv4_loopback');
+  });
+
+  it('allows public IPv4 addresses', () => {
+    expect(getHostBlockReason('8.8.8.8')).toBeNull();
+    expect(getHostBlockReason('1.1.1.1')).toBeNull();
+  });
+
+  it('allows public IPv6 addresses', () => {
+    expect(getHostBlockReason('2001:db8::1')).toBeNull();
+    expect(getHostBlockReason('2606:4700:4700::1111')).toBeNull();
+  });
+
+  it('blocks empty host', () => {
+    expect(getHostBlockReason('')).toBe('empty_host');
+  });
+
+  it('blocks host with percent-encoding or zone identifiers', () => {
+    expect(getHostBlockReason('169.254.169.254%eth0')).toBe('encoded_or_zone_identifier_host');
   });
 });
 

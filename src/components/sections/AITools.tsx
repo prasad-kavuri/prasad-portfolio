@@ -39,7 +39,7 @@ const DEMO_GROUPS = [
   }
 ];
 
-const SIGNATURE_DEMO_ID = "multi-agent";
+const SIGNATURE_DEMO_ID = "evaluation-showcase";
 
 export function AITools() {
   const signatureDemo = demos.find(d => d.id === SIGNATURE_DEMO_ID);
@@ -55,6 +55,17 @@ export function AITools() {
           enterprise AI deployments — not just demos, but production-ready
           implementations.
         </p>
+
+        <div className="mb-8 rounded-xl border border-border bg-muted/40 p-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+            How AI Quality Is Measured
+          </p>
+          <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
+            <p>Offline LLM-as-Judge eval cases with semantic fidelity scoring.</p>
+            <p>Online drift snapshots with hallucination and anomaly indicators.</p>
+            <p>Regression-aware quality gates designed for release readiness.</p>
+          </div>
+        </div>
 
         {/* Signature System — featured above the demo grid */}
         {signatureDemo && (
@@ -73,7 +84,7 @@ export function AITools() {
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400">
-                        Signature System
+                        Signature Quality System
                       </span>
                     </div>
                     <h3 className="text-lg font-semibold">{signatureDemo.title}</h3>
@@ -84,9 +95,9 @@ export function AITools() {
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground mb-3 max-w-2xl">
-                {signatureDemo.description} Features a human-in-the-loop checkpoint, agent-to-agent
-                trust boundary validation, and end-to-end trace propagation — the patterns enterprise
-                AI deployments require.
+                {signatureDemo.description} Demonstrates the quality loop recruiters and CTOs look for:
+                offline eval coverage, online drift monitoring, hallucination indicators, and CI-ready
+                regression gating.
               </p>
               <div className="flex flex-wrap gap-2">
                 {signatureDemo.tags.map(tag => (
@@ -95,10 +106,10 @@ export function AITools() {
                   </span>
                 ))}
                 <span className="text-xs px-2 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400">
-                  HITL Checkpoint
+                  Drift Monitoring
                 </span>
                 <span className="text-xs px-2 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400">
-                  Agent Trust Validation
+                  Quality Gates
                 </span>
               </div>
             </div>

@@ -64,6 +64,13 @@ describe('Hero', () => {
     expect(screen.getByText(/human oversight and governance/i)).toBeDefined();
   });
 
+  it('surfaces AI quality loop callout and evaluation showcase link', () => {
+    render(<Hero />);
+    expect(screen.getByText(/AI Quality Loop/i)).toBeDefined();
+    const link = screen.getByRole('link', { name: /Explore AI Evaluation Showcase/i });
+    expect(link.getAttribute('href')).toBe('/demos/evaluation-showcase');
+  });
+
   it('renders Explore All Demos CTA linking to #tools', () => {
     render(<Hero />);
     const link = screen.getByRole('link', { name: /Explore All Demos/i });

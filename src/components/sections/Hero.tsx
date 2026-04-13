@@ -50,13 +50,29 @@ export function Hero() {
               "I build production AI systems — not prototypes.",
               "I optimize for cost, latency, and scalability — not just model quality.",
               "I align engineering, product, and business teams around measurable outcomes.",
-              "I design AI systems that combine capability with human oversight and governance.",
+              "I design AI systems with measurable quality loops and human oversight and governance.",
             ].map((line, i) => (
               <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                 <span className="mt-1.5 size-1 rounded-full shrink-0 bg-indigo-500" />
                 <span>{line}</span>
               </div>
             ))}
+          </div>
+
+          <div className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+              AI Quality Loop
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Offline eval suites, live drift monitoring, hallucination indicators, and regression-minded quality gating are built into this platform.
+            </p>
+            <a
+              href="/demos/evaluation-showcase"
+              className="mt-2 inline-flex items-center text-xs font-medium hover:underline"
+              style={{ color: 'var(--accent-brand)' }}
+            >
+              Explore AI Evaluation Showcase
+            </a>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -128,6 +144,9 @@ export function Hero() {
               </p>
               <p className="text-sm text-muted-foreground">
                 Available for VP / Head of AI Engineering roles
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Specialized in shipping agentic platforms with evaluation, drift monitoring, and governance controls.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">

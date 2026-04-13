@@ -20,6 +20,16 @@ vi.mock('@/data/demos', () => ({
       status: 'live',
     },
     {
+      id: 'evaluation-showcase',
+      emoji: '🎯',
+      title: 'AI Evaluation Showcase',
+      description: 'Closed-loop LLM evaluation pipeline.',
+      businessImpact: 'Ensures quality regressions are detected before release',
+      href: '/demos/evaluation-showcase',
+      tags: ['LLM-as-Judge', 'Drift Monitoring'],
+      status: 'live',
+    },
+    {
       id: 'multi-agent',
       emoji: '👥',
       title: 'Multi-Agent System',
@@ -121,6 +131,13 @@ describe('AITools', () => {
     expect(screen.getByText('Core AI Infrastructure')).toBeInTheDocument();
     expect(screen.getByText('Agentic Systems')).toBeInTheDocument();
     expect(screen.getByText('AI Applications')).toBeInTheDocument();
+  });
+
+  it('shows AI quality callout and signature quality labeling', () => {
+    render(React.createElement(AITools));
+    expect(screen.getByText('How AI Quality Is Measured')).toBeInTheDocument();
+    expect(screen.getByText('Signature Quality System')).toBeInTheDocument();
+    expect(screen.getAllByText('AI Evaluation Showcase').length).toBeGreaterThan(0);
   });
 
   it('renders demo cards with correct titles', () => {

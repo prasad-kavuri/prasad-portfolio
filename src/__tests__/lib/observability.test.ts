@@ -8,6 +8,8 @@ import {
   captureAPIError,
   createTraceId,
   detectAnomaly,
+  generateClientTraceId,
+  createTracedFetch,
   getObservabilitySnapshot,
   logAPIEvent,
   startTimer,
@@ -185,5 +187,46 @@ describe('startTimer: request timing', () => {
     await new Promise(r => setTimeout(r, 10));
     const second = stop();
     expect(second).toBeGreaterThanOrEqual(first);
+  });
+});
+
+describe('generateClientTraceId', () => {
+  it('returns a UUID v4 string', () => {
+    const id = generateClientTraceId();
+    expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+  });
+
+  it('returns unique IDs on each call', () => {
+    expect(generateClientTraceId()).not.toBe(generateClientTraceId());
+  });
+});
+
+describe('createTracedFetch', () => {
+  it('injects X-Trace-Id and X-Request-Id headers', async () => {
+    const mockFetch = vi.fn().mockResolvedValue(new Response('ok'));
+    vi.stubGlobal('fetch', mockFetch);
+    const fetcher = createTracedFetch('test-trace-123');
+    await fetcher('/api/test', { method: 'GET' });
+    expect(mockFetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({
+      headers: expect.objectContaining({
+        'X-Trace-Id': 'test-trace-123',
+        'X-Request-Id': 'test-trace-123',
+      }),
+    }));
+    vi.unstubAllGlobals();
+  });
+
+  it('preserves existing headers', async () => {
+    const mockFetch = vi.fn().mockResolvedValue(new Response('ok'));
+    vi.stubGlobal('fetch', mockFetch);
+    const fetcher = createTracedFetch('trace-abc');
+    await fetcher('/api/test', { headers: { 'Content-Type': 'application/json' } });
+    expect(mockFetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({
+      headers: expect.objectContaining({
+        'Content-Type': 'application/json',
+        'X-Trace-Id': 'trace-abc',
+      }),
+    }));
+    vi.unstubAllGlobals();
   });
 });

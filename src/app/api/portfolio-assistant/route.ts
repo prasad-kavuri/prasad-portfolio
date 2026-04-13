@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
 import {
   enforceRateLimit,
   createRequestContext,
@@ -15,7 +14,7 @@ import {
 import { detectAnomaly, logAPIEvent, startTimer } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
 import { trackModelOutput } from '@/lib/drift-monitor';
-import { checkOutput } from '@/lib/guardrails';
+import { checkOutput, isPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
 import { logQueryForEval } from '@/lib/query-log';
 
 const ROUTE = '/api/portfolio-assistant';
@@ -100,7 +99,7 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'message_too_long', messageLength: lastUserMessage.content.length, status: 400 });
       return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
     }
-    if (lastUserMessage && detectPromptInjection(lastUserMessage.content)) {
+    if (lastUserMessage && isPromptInjection(lastUserMessage.content)) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }

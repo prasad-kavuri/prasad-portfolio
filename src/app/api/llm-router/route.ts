@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/rate-limit';
 import {
   enforceRateLimit,
   createRequestContext,
@@ -13,7 +12,7 @@ import {
 } from '@/lib/api';
 import { detectAnomaly, logAPIEvent } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
-import { checkOutput } from '@/lib/guardrails';
+import { checkOutput, isPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
 
 const ROUTE = '/api/llm-router';
 
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
     logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_too_long', promptLength: prompt.length, status: 400 });
     return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
   }
-  if (detectPromptInjection(prompt)) {
+  if (isPromptInjection(prompt)) {
     logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', promptLength: prompt.length, status: 400 });
     return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
   }

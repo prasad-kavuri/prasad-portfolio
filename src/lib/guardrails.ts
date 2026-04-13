@@ -26,12 +26,17 @@ const UNSAFE_CAREER_PATTERNS = [
 const INJECTION_SIGNATURES = [
   /ignore\s+(all\s+)?(previous\s+|prior\s+|above\s+)?instructions/i,
   /system:\s/i,
+  /\[SYSTEM\]/i,
   /\[INST\]/i,
   /<\|im_start\|>/i,
   /forget\s+(everything|all)/i,
   /you are now/i,
+  /reveal\s+(your\s+)?(system\s+)?prompt/i,
+  /pretend\s+(you\s+are|to\s+be)/i,
+  /new\s+personality/i,
   /jailbreak|DAN mode/i,
   /act as (an? )?(different|unrestricted|jailbroken)/i,
+  /act\s+as\s+(a|an)\s+/i,
 ];
 
 export function detectPromptInjection(input: string): string[] {
@@ -46,6 +51,18 @@ export function detectPromptInjection(input: string): string[] {
     issues.push('template_injection');
   }
   return issues;
+}
+
+export function isPromptInjection(input: string): boolean {
+  return detectPromptInjection(input).length > 0;
+}
+
+/** Strip script tags, event handlers, and javascript: URIs from LLM output server-side. */
+export function sanitizeLLMOutput(text: string): string {
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/javascript:/gi, '');
 }
 
 export function checkInput(input: string): GuardrailResult {

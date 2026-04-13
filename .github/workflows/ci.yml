@@ -35,14 +35,22 @@ jobs:
         run: npm run test:coverage
 
   e2e:
-    name: E2E (${{ matrix.browser }})
+    name: E2E (${{ matrix.project }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: lint-and-unit
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, firefox, webkit]
+        include:
+          - project: chromium
+            install_browser: chromium
+          - project: firefox
+            install_browser: firefox
+          - project: webkit
+            install_browser: webkit
+          - project: mobile
+            install_browser: webkit
 
     steps:
       - name: Checkout
@@ -61,14 +69,14 @@ jobs:
         run: npm run build
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: npx playwright install --with-deps ${{ matrix.install_browser }}
 
       - name: Run E2E tests
         run: |
           npx next start &
           SERVER_PID=$!
           npx wait-on http://localhost:3000 --timeout 30000
-          npx playwright test --project=${{ matrix.browser }}
+          npx playwright test --project=${{ matrix.project }}
           kill $SERVER_PID 2>/dev/null || true
         env:
           NODE_ENV: production
@@ -77,6 +85,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.browser }}
+          name: playwright-report-${{ matrix.project }}
           path: playwright-report/
           retention-days: 7

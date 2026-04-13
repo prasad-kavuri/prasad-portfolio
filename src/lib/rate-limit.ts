@@ -1,5 +1,6 @@
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { isPromptInjection, sanitizeLLMOutput as sanitizeFromGuardrails } from '@/lib/guardrails';
 
 export const RATE_LIMIT_MAX = 10;
 export const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -82,27 +83,9 @@ export function _resetStore(): void {
   store.clear();
 }
 
-const INJECTION_PATTERNS = [
-  /ignore\s+(all\s+)?(previous|prior|above)\s+instructions/i,
-  /you\s+are\s+now\s+(a|an)\s+/i,
-  /act\s+as\s+(a|an)\s+/i,
-  /\[SYSTEM\]/i,
-  /\[INST\]/i,
-  /reveal\s+(your\s+)?(system\s+)?prompt/i,
-  /forget\s+(everything|all)\s+(you|above)/i,
-  /pretend\s+(you\s+are|to\s+be)/i,
-  /jailbreak/i,
-  /new\s+personality/i,
-];
-
+// Compatibility exports: canonical guardrail logic now lives in src/lib/guardrails.ts.
 export function detectPromptInjection(input: string): boolean {
-  return INJECTION_PATTERNS.some(pattern => pattern.test(input));
+  return isPromptInjection(input);
 }
 
-/** Strip script tags, event handlers, and javascript: URIs from LLM output server-side. */
-export function sanitizeLLMOutput(text: string): string {
-  return text
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-    .replace(/javascript:/gi, '');
-}
+export const sanitizeLLMOutput = sanitizeFromGuardrails;

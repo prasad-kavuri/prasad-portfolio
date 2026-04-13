@@ -6,8 +6,9 @@ import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 
-// Lightly randomized on load to feel live
+// Lightly randomized on load to emulate production telemetry behavior for portfolio demonstration.
 function jitter(base: number, range: number) {
   return base + Math.floor((Math.random() - 0.5) * 2 * range);
 }
@@ -108,7 +109,7 @@ const SEVERITY_CLS: Record<string, string> = {
 const POLICY_CONTROLS = [
   { label: 'Content Security Policy',         status: 'Active',  detail: 'next.config.ts + proxy.ts' },
   { label: 'Rate Limiting (Upstash Redis)',    status: 'Active',  detail: '10 req / 60s per IP, SHA-256 hash' },
-  { label: 'Prompt Injection Detection',       status: 'Active',  detail: 'src/lib/guardrails.ts — 8 patterns' },
+  { label: 'Prompt Injection Detection',       status: 'Active',  detail: 'src/lib/guardrails.ts — centralized signatures' },
   { label: 'Competitor Mention Filter',        status: 'Active',  detail: 'Redacts 8 competitor names' },
   { label: 'Hallucination Heuristic',          status: 'Active',  detail: 'Key-fact presence check on long outputs' },
   { label: 'XSS Sanitization (DOMPurify)',     status: 'Active',  detail: 'All LLM output before render' },
@@ -176,10 +177,16 @@ export default function GovernancePage() {
           </div>
         </div>
 
-        {/* Live Metrics Grid */}
+        <TelemetryDisclosure
+          label="Mixed telemetry"
+          message="Includes live signals where available plus illustrative and snapshot values for portfolio demonstration of observability, guardrails, and evaluation patterns."
+          className="mb-8"
+        />
+
+        {/* Telemetry Snapshot Grid */}
         <section className="mb-8">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-            Live Metrics
+            Telemetry Snapshot
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {metrics ? (
@@ -221,9 +228,9 @@ export default function GovernancePage() {
                   status="info"
                 />
                 <MetricCard
-                  label="Live Queries Logged"
+                  label="Queries Logged"
                   value={String(metrics.liveQueriesLogged)}
-                  sub="runtime eval loop — anonymized"
+                  sub="runtime loop where available; snapshot fallback"
                   status="info"
                 />
               </>

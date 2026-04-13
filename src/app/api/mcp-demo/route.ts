@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { Groq } from "groq-sdk";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat";
 import profile from "@/data/profile.json";
-import { detectPromptInjection, sanitizeLLMOutput } from "@/lib/rate-limit";
+import { isPromptInjection, sanitizeLLMOutput } from "@/lib/guardrails";
 import {
   enforceRateLimit,
   createRequestContext,
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
     logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'query_too_long', queryLength: query.length, status: 400 });
     return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
   }
-  if (detectPromptInjection(query)) {
+  if (isPromptInjection(query)) {
     logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', queryLength: query.length, status: 400 });
     return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
   }

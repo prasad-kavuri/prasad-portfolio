@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 
 export const metadata = {
   title: 'System Status — Prasad Kavuri',
-  description: 'Live system status for prasadkavuri.com',
+  description: 'System status and telemetry snapshot for prasadkavuri.com',
 };
 
 export default function StatusPage() {
@@ -13,19 +14,25 @@ export default function StatusPage() {
         prasadkavuri.com — last updated April 2026
       </p>
 
+      <TelemetryDisclosure
+        label="Mixed telemetry"
+        message="Includes live service health where available plus snapshot and illustrative metrics for portfolio demonstration."
+        className="mb-8"
+      />
+
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">🟢 All Systems Operational</h2>
         <div className="grid gap-3">
           {[
-            ['AI Portfolio Assistant', 'Live · RAG + Streaming'],
-            ['LLM Router', 'Live · Multi-model'],
-            ['Multi-Agent System', 'Live · Groq'],
-            ['MCP Tool Demo', 'Live · Tool calling'],
-            ['Resume Generator', 'Live · PDF export'],
-            ['RAG Pipeline', 'Live · Browser WASM'],
-            ['Vector Search', 'Live · Browser WASM'],
-            ['Multimodal Assistant', 'Live · WebGPU'],
-            ['Model Quantization', 'Live · ONNX'],
+            ['AI Portfolio Assistant', 'Operational · RAG + Streaming'],
+            ['LLM Router', 'Operational · Multi-model'],
+            ['Multi-Agent System', 'Operational · Groq-backed demo'],
+            ['MCP Tool Demo', 'Operational · Tool calling demo'],
+            ['Resume Generator', 'Operational · PDF export'],
+            ['RAG Pipeline', 'Operational · Browser WASM demo'],
+            ['Vector Search', 'Operational · Browser WASM demo'],
+            ['Multimodal Assistant', 'Operational · WebGPU demo'],
+            ['Model Quantization', 'Operational · ONNX demo'],
           ].map(([name, status]) => (
             <div key={name} className="flex justify-between items-center p-3 rounded-lg border border-border">
               <span className="font-medium">{name}</span>

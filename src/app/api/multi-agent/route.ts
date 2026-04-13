@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sanitizeLLMOutput } from '@/lib/rate-limit';
-import { checkOutput, validateAgentHandoff } from '@/lib/guardrails';
+import { checkOutput, sanitizeLLMOutput, validateAgentHandoff } from '@/lib/guardrails';
 import {
   enforceRateLimit,
   createRequestContext,

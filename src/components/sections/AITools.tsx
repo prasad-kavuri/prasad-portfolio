@@ -25,7 +25,7 @@ const DEMO_GROUPS = [
   {
     label: "Core AI Infrastructure",
     description: "Foundation systems for scalable AI platforms",
-    ids: ["llm-router", "rag-pipeline", "vector-search"]
+    ids: ["llm-router", "rag-pipeline", "vector-search", "evaluation-showcase"]
   },
   {
     label: "Agentic Systems",

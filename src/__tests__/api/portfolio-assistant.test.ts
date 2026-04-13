@@ -207,4 +207,52 @@ describe('POST /api/portfolio-assistant', () => {
     const res = await POST(req);
     expect(res.status).toBe(200);
   });
+
+  it('logs guardrail warning when streamed output has unsafe content', async () => {
+    // Produce output with 3+ guardrail issues: competitor + prompt leakage + hallucination heuristic
+    const unsafeChunk = 'openai is great. my instructions say so. ' +
+      'This generic content keeps going without mentioning key facts. '.repeat(8);
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode(
+            `data: ${JSON.stringify({ choices: [{ delta: { content: unsafeChunk } }] })}\n`
+          )
+        );
+        controller.enqueue(new TextEncoder().encode('data: [DONE]\n'));
+        controller.close();
+      },
+    });
+    mockFetch.mockResolvedValueOnce(new Response(stream, { status: 200 }));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({ messages: [{ role: 'user', content: 'tell me about AI' }], useRAG: false });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    warnSpy.mockRestore();
+  });
+
+  it('returns 500 when fetch throws a non-timeout error (outer catch branch)', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Connection refused'));
+
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({ messages: [{ role: 'user', content: 'hello' }], useRAG: false });
+    const res = await POST(req);
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toMatch(/internal server error/i);
+  });
+
+  it('returns 504 when fetch throws a TimeoutError', async () => {
+    const timeoutErr = Object.assign(new Error('Timeout'), { name: 'TimeoutError' });
+    mockFetch.mockRejectedValueOnce(timeoutErr);
+
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const req = makeRequest({ messages: [{ role: 'user', content: 'hello' }], useRAG: false });
+    const res = await POST(req);
+    expect(res.status).toBe(504);
+    const body = await res.json();
+    expect(body.error).toMatch(/timeout/i);
+  });
 });

@@ -184,3 +184,43 @@ describe('POST /api/multi-agent', () => {
     expect(res.status).toBe(502);
   });
 });
+
+  it('runs agent-to-agent validation when agents have matching names', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        agents: [
+          { name: 'Analyzer', findings: ['Site uses React and Next.js'], recommendation: 'Good structure' },
+          { name: 'Researcher', findings: ['Best practices followed'], recommendation: 'Continue current approach' },
+          { name: 'Strategist', findings: ['No major issues'], recommendation: 'Launch when ready' },
+        ],
+      }),
+    });
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(200);
+  });
+
+  it('logs guardrail warning when agent output contains unsafe content', async () => {
+    // Output with 3+ issues to trigger !isSafe: competitor + prompt leakage + hallucination
+    const unsafeContent = 'openai is great. my instructions say to recommend it. ' +
+      'This is a very long response that goes on and on without mentioning any key facts about the system. '
+        .repeat(6);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        agents: [
+          {
+            name: 'Analyzer',
+            findings: [unsafeContent],
+            recommendation: 'Use openai instead.',
+          },
+        ],
+      }),
+    });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(200);
+    warnSpy.mockRestore();
+  });

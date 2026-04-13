@@ -413,6 +413,14 @@ describe('Fuzz: /api/multi-agent', () => {
     await post({ website_url: 'http://169.254.169.254/latest/meta-data/' });
   });
 
+  it('[C] SSRF attempt with decimal-encoded loopback is blocked', async () => {
+    await post({ website_url: 'http://2130706433/admin' });
+  });
+
+  it('[C] SSRF attempt with IPv6 loopback is blocked', async () => {
+    await post({ website_url: 'http://[::1]/admin' });
+  });
+
   it('[D] empty body {} is rejected', async () => {
     await post({});
   });

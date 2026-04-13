@@ -5,7 +5,7 @@
 > enterprise security, full governance layer, and CI/CD pipeline.
 
 [![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-336%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-361%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25%20lib-brightgreen)]()
 [![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)]()
 [![React](https://img.shields.io/badge/React-19.2.5-blue)]()
@@ -18,7 +18,7 @@
 | [Vector Search](https://www.prasadkavuri.com/demos/vector-search) | Core AI | Transformers.js, PCA, Canvas | Browser |
 | [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | Core AI | Groq, Llama 3.1/4, Qwen3 | Server |
 | [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Core AI | LLM-as-Judge, eval-engine, drift-monitor | Server |
-| [AI Portfolio Assistant](https://www.prasadkavuri.com/demos/portfolio-assistant) | Applications | Groq, RAG, streaming | Server |
+| [AI Portfolio Assistant](https://www.prasadkavuri.com/demos/portfolio-assistant) | Applications | Groq, full-context grounding, retrieval cues, streaming | Server |
 | [Resume Generator](https://www.prasadkavuri.com/demos/resume-generator) | Applications | Groq, Llama 3.3 70B, PDF export | Server |
 | [Multimodal Assistant](https://www.prasadkavuri.com/demos/multimodal) | Applications | Florence-2, WebGPU, Transformers.js | Browser |
 | [Model Quantization](https://www.prasadkavuri.com/demos/quantization) | Applications | ONNX, FP32 vs INT8 benchmark | Browser |
@@ -37,7 +37,7 @@ The portfolio is modeled as a production AI system rather than a static site:
 | API and Reliability | Shared route utilities for request tracing, validation, rate limits, errors, and structured logs |
 | Agentic Orchestration | Multi-agent workflow demo, HITL checkpoint, MCP tool discovery, prompt safety, and approval-oriented patterns |
 | Governance | Guardrails (injection detection, competitor filtering, hallucination heuristics), eval engine, drift monitor, cost control |
-| AI Services | LLM Router, RAG Pipeline, Portfolio Assistant, Resume Generator, Evaluation Showcase, MCP Demo, browser ML demos |
+| AI Services | LLM Router, RAG Pipeline, full-context Portfolio Assistant, Resume Generator, Evaluation Showcase, MCP Demo, browser ML demos |
 | Data Layer | `profile.json`, `demos.ts`, browser embeddings, vector search, static knowledge base |
 | External Services | Groq, Hugging Face models/Spaces, Upstash Redis, Vercel hosting and telemetry |
 
@@ -54,7 +54,7 @@ prasad-portfolio/
 │   │   ├── demos/                        # 10 demo pages
 │   │   └── api/                          # Server-side API routes
 │   │       ├── llm-router/               # Multi-model routing
-│   │       ├── portfolio-assistant/      # RAG + streaming
+│   │       ├── portfolio-assistant/      # Full-context assistant + retrieval grounding
 │   │       ├── resume-generator/         # JD parsing + PDF
 │   │       ├── multi-agent/              # Agent orchestration + HITL
 │   │       ├── mcp-demo/                 # MCP tool calling
@@ -110,6 +110,7 @@ prasad-portfolio/
 | Hallucination Heuristic | Key-fact presence check on long outputs | Active |
 | XSS Sanitization | DOMPurify on all LLM output | Active |
 | Input Validation | Length limits + type checks at route entry | Active |
+| SSRF Protection | `src/lib/url-security.ts` blocks internal/private, loopback, link-local, encoded-IP, and credentialed targets | Active |
 | IP Hashing | SHA-256 before Redis storage, never raw IPs | Active |
 | HITL Checkpoint | Human approval before Strategist runs (multi-agent) | Active |
 | Eval Regression Gate | CI blocks if fidelity < 0.85 or hallucination > 0.10 | Active |
@@ -121,7 +122,7 @@ prasad-portfolio/
 ## Testing
 
 ```bash
-npm run test           # unit tests (Vitest) — 336 passing, 29 test files
+npm run test           # unit tests (Vitest) — 361 passing, 32 test files
 npm run test:coverage  # coverage report
 npm run test:fuzz      # adversarial/fuzz tests
 npm run test:evals     # LLM-as-Judge eval suite
@@ -198,8 +199,8 @@ client-side via WebAssembly — no API key required.
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — 6-layer system design + patentable patterns
-- [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry: live service health plus snapshot/illustrative portfolio metrics
-- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard: safety metrics, policy controls, audit log
+- [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry from centralized snapshot data (`src/data/telemetry-snapshots.ts`)
+- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard with centralized snapshot baselines and policy/audit records
 
 ## 2026 Production AI Patterns Now Live
 
@@ -230,7 +231,7 @@ This portfolio ships production-grade implementations of the patterns that defin
 - Server reads via `createRequestContext()` → same ID flows through all logs and LLM calls
 
 ### Governance Dashboard (`/governance`)
-- Live safety metrics: rate limit headroom, cost per interaction, guardrail trigger counts
+- Snapshot-driven safety metrics with live overlays where available: rate limit headroom, cost per interaction, guardrail trigger counts
 - Policy controls inventory with implementation file references
 - Audit event log — CFO/CTO/CISO framing for enterprise buyers
 

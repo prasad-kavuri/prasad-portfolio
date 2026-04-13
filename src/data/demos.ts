@@ -56,10 +56,10 @@ export const demos: Demo[] = [
     id: "portfolio-assistant",
     emoji: "🤖",
     title: "AI Portfolio Assistant",
-    description: "Streaming RAG-powered assistant over my experience — ask anything about my background and see retrieved context.",
+    description: "Streaming full-context assistant over my experience with optional retrieval-enhanced grounding and cited context cues.",
     businessImpact: "Cuts expert lookup time by making organizational knowledge instantly accessible",
     href: "/demos/portfolio-assistant",
-    tags: ["Vercel AI SDK", "Streaming", "RAG"],
+    tags: ["Vercel AI SDK", "Streaming", "Retrieval Grounding"],
     status: "live",
   },
   {

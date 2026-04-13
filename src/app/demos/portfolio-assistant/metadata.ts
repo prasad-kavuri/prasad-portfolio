@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "AI Portfolio Assistant",
-  description: "RAG-powered streaming assistant over Prasad Kavuri's professional experience. Ask anything about his background.",
+  description: "Streaming portfolio assistant with curated full-context grounding and optional retrieval cues over Prasad Kavuri's professional experience.",
   openGraph: {
     title: "AI Portfolio Assistant — Prasad Kavuri",
-    description: "Streaming RAG chatbot powered by Groq Llama 3.1 with full knowledge base.",
+    description: "Streaming assistant powered by Groq Llama 3.1 with full knowledge injection plus retrieval-assisted grounding.",
     url: "https://prasadkavuri.com/demos/portfolio-assistant",
   },
   alternates: {

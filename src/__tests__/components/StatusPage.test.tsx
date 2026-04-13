@@ -8,6 +8,7 @@ vi.mock('next/link', () => ({
 }));
 
 import StatusPage from '@/app/status/page';
+import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
 
 describe('StatusPage', () => {
   it('shows telemetry disclosure copy', () => {
@@ -22,5 +23,13 @@ describe('StatusPage', () => {
 
     expect(screen.queryByText(/Live ·/i)).not.toBeInTheDocument();
     expect(screen.getAllByText(/Operational ·/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders services from centralized status snapshot data', () => {
+    render(React.createElement(StatusPage));
+
+    const [firstServiceName, firstServiceStatus] = STATUS_SNAPSHOT.services[0];
+    expect(screen.getByText(firstServiceName)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(firstServiceStatus.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toBeInTheDocument();
   });
 });

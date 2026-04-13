@@ -63,10 +63,10 @@ vi.mock('@/data/demos', () => ({
       id: 'portfolio-assistant',
       emoji: '🤖',
       title: 'AI Portfolio Assistant',
-      description: 'Streaming RAG assistant.',
+      description: 'Streaming full-context assistant with retrieval cues.',
       businessImpact: 'Cuts lookup time by making knowledge instantly accessible',
       href: '/demos/portfolio-assistant',
-      tags: ['Streaming', 'RAG'],
+      tags: ['Streaming', 'Retrieval Grounding'],
       status: 'live',
     },
     // Desktop-only demos (ids matched by DESKTOP_ONLY constant in AITools.tsx)

@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
+import { GOVERNANCE_SNAPSHOT } from '@/data/telemetry-snapshots';
 
 // Lightly randomized on load to emulate production telemetry behavior for portfolio demonstration.
 function jitter(base: number, range: number) {
@@ -33,24 +34,35 @@ interface Metrics {
 }
 
 function freshMetrics(snap?: EvalSnapshot): Metrics {
+  const baseline = GOVERNANCE_SNAPSHOT.metricBaselines;
+
   // Use live eval data when available; fall back to estimated values
   const evalFidelity = snap?.liveEval.avgScore != null
     ? snap.liveEval.avgScore.toFixed(2)
-    : (0.94 + (Math.random() - 0.5) * 0.02).toFixed(2);
+    : (
+      baseline.evalFidelityFallback.base +
+      (Math.random() - 0.5) * 2 * baseline.evalFidelityFallback.range
+    ).toFixed(baseline.evalFidelityFallback.digits);
 
   const hallucinationRate = snap?.liveEval.casesRun && snap.liveEval.casesRun > 0
     ? ((1 - snap.liveEval.passed / snap.liveEval.casesRun) * 0.1).toFixed(3)
-    : (0.02 + (Math.random() - 0.5) * 0.005).toFixed(3);
+    : (
+      baseline.hallucinationFallback.base +
+      (Math.random() - 0.5) * 2 * baseline.hallucinationFallback.range
+    ).toFixed(baseline.hallucinationFallback.digits);
 
   return {
-    rateLimitRemaining: jitter(847, 30),
-    rateLimitTotal: 1000,
-    costPerInteraction: (0.0023 + (Math.random() - 0.5) * 0.0004).toFixed(4),
-    guardrailBlocked: jitter(12, 3),
-    guardrailRedacted: jitter(3, 1),
+    rateLimitRemaining: jitter(baseline.rateLimitRemaining.base, baseline.rateLimitRemaining.range),
+    rateLimitTotal: baseline.rateLimitTotal,
+    costPerInteraction: (
+      baseline.costPerInteractionUsd.base +
+      (Math.random() - 0.5) * 2 * baseline.costPerInteractionUsd.range
+    ).toFixed(baseline.costPerInteractionUsd.digits),
+    guardrailBlocked: jitter(baseline.guardrailBlocked.base, baseline.guardrailBlocked.range),
+    guardrailRedacted: jitter(baseline.guardrailRedacted.base, baseline.guardrailRedacted.range),
     evalFidelity,
     hallucinationRate,
-    activeTraceSessions: jitter(3, 2),
+    activeTraceSessions: jitter(baseline.activeTraceSessions.base, baseline.activeTraceSessions.range),
     liveQueriesLogged: snap?.totalQueriesLogged ?? 0,
     lastRefreshed: new Date().toLocaleTimeString(),
   };
@@ -90,34 +102,11 @@ function MetricCard({
   );
 }
 
-const AUDIT_LOG = [
-  { time: '14:07:58', event: 'guardrail.blocked',   detail: 'Prompt injection detected — IP redacted',      severity: 'warn' },
-  { time: '14:05:03', event: 'guardrail.redacted',  detail: 'Competitor mention filtered from output',       severity: 'info' },
-  { time: '14:03:12', event: 'eval.regression',     detail: 'Fidelity Δ +0.02 vs baseline — within gate',   severity: 'ok' },
-  { time: '14:01:44', event: 'rate_limit.triggered',detail: '429 issued to IP hash a93aa730',                severity: 'warn' },
-  { time: '13:58:31', event: 'deploy.passed',       detail: 'CI gate passed — fidelity 0.94, halluc. 0.02', severity: 'ok' },
-  { time: '13:55:09', event: 'guardrail.blocked',   detail: 'Template injection {{}} in query body',         severity: 'warn' },
-  { time: '13:51:22', event: 'eval.completed',      detail: '27 eval cases — 26 pass / 1 warn',              severity: 'ok' },
-];
-
 const SEVERITY_CLS: Record<string, string> = {
   ok:   'bg-green-500/20 text-green-400',
   warn: 'bg-yellow-500/20 text-yellow-400',
   info: 'bg-blue-500/20 text-blue-400',
 };
-
-const POLICY_CONTROLS = [
-  { label: 'Content Security Policy',         status: 'Active',  detail: 'next.config.ts + proxy.ts' },
-  { label: 'Rate Limiting (Upstash Redis)',    status: 'Active',  detail: '10 req / 60s per IP, SHA-256 hash' },
-  { label: 'Prompt Injection Detection',       status: 'Active',  detail: 'src/lib/guardrails.ts — centralized signatures' },
-  { label: 'Competitor Mention Filter',        status: 'Active',  detail: 'Redacts 8 competitor names' },
-  { label: 'Hallucination Heuristic',          status: 'Active',  detail: 'Key-fact presence check on long outputs' },
-  { label: 'XSS Sanitization (DOMPurify)',     status: 'Active',  detail: 'All LLM output before render' },
-  { label: 'IP SHA-256 Hashing',               status: 'Active',  detail: 'Never raw IPs in storage' },
-  { label: 'npm audit (CI-enforced)',          status: 'Active',  detail: '0 high/critical CVEs' },
-  { label: 'Eval Regression Gate',             status: 'Active',  detail: 'fidelity ≥ 0.85, halluc. ≤ 0.10' },
-  { label: 'HITL Checkpoint (Multi-Agent)',    status: 'Active',  detail: 'Human approval before Strategist runs' },
-];
 
 // ---------------------------------------------------------------------------
 // Page
@@ -260,7 +249,7 @@ export default function GovernancePage() {
                 </tr>
               </thead>
               <tbody>
-                {POLICY_CONTROLS.map((c, i) => (
+                {GOVERNANCE_SNAPSHOT.policyControls.map((c, i) => (
                   <tr key={c.label} className={i % 2 === 0 ? 'bg-background' : 'bg-muted/20'}>
                     <td className="px-4 py-2.5 font-medium text-foreground">{c.label}</td>
                     <td className="px-4 py-2.5">
@@ -294,7 +283,7 @@ export default function GovernancePage() {
                 </tr>
               </thead>
               <tbody>
-                {AUDIT_LOG.map((row, i) => (
+                {GOVERNANCE_SNAPSHOT.auditLog.map((row, i) => (
                   <tr key={i} className={i % 2 === 0 ? 'bg-background' : 'bg-muted/20'}>
                     <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{row.time}</td>
                     <td className="px-4 py-2.5 font-mono text-xs text-foreground">{row.event}</td>

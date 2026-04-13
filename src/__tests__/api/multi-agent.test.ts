@@ -78,6 +78,14 @@ describe('POST /api/multi-agent', () => {
     expect(body.error).toBe('Invalid URL');
   });
 
+  it('returns 400 for unsafe protocol URL', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'javascript:alert(1)' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
   it('returns 400 for localhost URL (SSRF protection)', async () => {
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'http://localhost/admin' }) as any);
@@ -102,6 +110,20 @@ describe('POST /api/multi-agent', () => {
     expect(body.error).toBe('URL not allowed');
   });
 
+  it('returns 400 for decimal IPv4 host encoding (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://2130706433/admin' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for shorthand IPv4 host encoding (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://127.1/admin' }) as any);
+    expect(res.status).toBe(400);
+  });
+
   it('returns 400 for internal network IP (SSRF protection)', async () => {
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'http://192.168.1.1/admin' }) as any);
@@ -119,6 +141,28 @@ describe('POST /api/multi-agent', () => {
   it('returns 400 for .internal hostnames (SSRF protection)', async () => {
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'https://service.internal/path' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for ipv6 loopback URL (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://[::1]/admin' }) as any);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for ipv6 link-local URL (SSRF protection)', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'http://[fe80::1]/admin' }) as any);
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 for credentialed URLs', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://user:pass@example.com' }) as any);
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toBe('URL not allowed');

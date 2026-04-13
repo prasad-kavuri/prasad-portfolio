@@ -22,9 +22,9 @@ The current API surface is:
 | Route | Capability | Main implementation notes |
 |---|---|---|
 | `/api/llm-router` | Multi-model routing | Calls Groq models, returns latency/cost metrics, validates prompt/model input |
-| `/api/portfolio-assistant` | Streaming RAG assistant | Streams Groq responses with retrieved profile context |
+| `/api/portfolio-assistant` | Full-context streaming assistant | Streams Groq responses with curated knowledge injection and optional retrieval grounding cues |
 | `/api/resume-generator` | Resume tailoring | Parses job descriptions and returns structured resume JSON |
-| `/api/multi-agent` | Multi-agent analysis | Proxies to the agent backend and validates the target website URL |
+| `/api/multi-agent` | Multi-agent analysis | Proxies to the agent backend with hardened SSRF checks via `src/lib/url-security.ts` |
 | `/api/mcp-demo` | MCP-style tool calling | Lets Groq select and execute profile tools via a JSON-RPC-like tool schema |
 | `/api/resume-download` | Resume redirect | Rate-limited redirect to the public PDF asset |
 
@@ -51,7 +51,7 @@ The AI services layer contains both server-side and browser-side demos:
 | Multi-Agent System | `/demos/multi-agent` | Server route plus external agent backend |
 | MCP Tool Demo | `/demos/mcp-demo` | Server route calling Groq tool use |
 | Resume Generator | `/demos/resume-generator` | Server route calling Groq |
-| AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming RAG |
+| AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming full-context grounding and retrieval cues |
 | Multimodal Assistant | `/demos/multimodal` | Browser model execution |
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
 | AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |
@@ -76,11 +76,16 @@ Security controls are implemented at route boundaries and platform configuration
 - `src/lib/api.ts` validates JSON bodies, standardizes error responses, adds request IDs, and finalizes responses with trace and rate-limit headers.
 - `src/lib/rate-limit.ts` provides Upstash Redis sliding-window rate limiting in production with an in-memory fallback for local/test runs.
 - `src/lib/guardrails.ts` is the canonical guardrail module for prompt-injection detection and server-side LLM output sanitization.
+- `src/lib/url-security.ts` centralizes outbound URL hardening for SSRF prevention (private/internal IPv4, IPv6 local ranges, encoded-IP forms, and credentialed URL blocking).
 - `detectPromptInjection` / `isPromptInjection` block prompt-injection patterns before LLM calls.
 - `sanitizeLLMOutput` strips script tags, event handlers, and `javascript:` URIs from LLM output.
 - API routes enforce input shape and length limits before external calls.
 - Middleware/proxy and Next config provide HTTP security headers such as CSP and COOP/COEP where needed.
 - CI runs `npm audit --audit-level=high`, lint, unit coverage, and Playwright checks across chromium, firefox, webkit, and mobile projects.
+
+## Snapshot Telemetry Data
+
+Status and governance pages use `src/data/telemetry-snapshots.ts` as a centralized source for snapshot labels, service posture summaries, policy controls, audit records, and metric baselines. Runtime overlays (for example `/api/eval-snapshot`) are applied on top of this baseline where live signals are available.
 
 ## Observability
 

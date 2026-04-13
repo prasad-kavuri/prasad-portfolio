@@ -11,6 +11,7 @@ import {
   readJsonObject,
 } from '@/lib/api';
 import { trackModelOutput } from '@/lib/drift-monitor';
+import { isBlockedOutboundUrl } from '@/lib/url-security';
 
 const HF_SPACE_URL = 'https://prasadkavuri-multi-agent-demo.hf.space';
 const ROUTE = '/api/multi-agent';
@@ -24,34 +25,6 @@ interface AgentResult {
 interface AgentBackendResponse {
   agents?: unknown;
   [key: string]: unknown;
-}
-
-function isBlockedHostname(hostname: string): boolean {
-  const host = hostname.toLowerCase();
-  if (
-    host === 'localhost' ||
-    host.endsWith('.localhost') ||
-    host === '0.0.0.0' ||
-    host === '::1' ||
-    host === '[::1]' ||
-    host.endsWith('.internal')
-  ) {
-    return true;
-  }
-
-  const parts = host.split('.').map(part => Number(part));
-  const isIpv4 = parts.length === 4 && parts.every(part => Number.isInteger(part) && part >= 0 && part <= 255);
-  if (!isIpv4) return false;
-
-  const [first, second] = parts;
-  return (
-    first === 0 ||
-    first === 10 ||
-    first === 127 ||
-    (first === 169 && second === 254) ||
-    (first === 172 && second >= 16 && second <= 31) ||
-    (first === 192 && second === 168)
-  );
 }
 
 export async function POST(req: NextRequest) {
@@ -92,13 +65,16 @@ export async function POST(req: NextRequest) {
     return finalizeApiResponse(jsonError('Invalid URL', 400, { context }), context);
   }
 
-  if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-    logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'blocked_protocol', protocol: parsedUrl.protocol, status: 400 });
-    return finalizeApiResponse(jsonError('Invalid URL', 400, { context }), context);
-  }
-
-  if (isBlockedHostname(parsedUrl.hostname)) {
-    logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'blocked_hostname', protocol: parsedUrl.protocol, status: 400 });
+  const urlSafety = isBlockedOutboundUrl(parsedUrl);
+  if (urlSafety.blocked) {
+    logApiWarning('api.abnormal_usage', {
+      route: ROUTE,
+      traceId: context.traceId,
+      reason: urlSafety.reason ?? 'blocked_outbound_url',
+      protocol: parsedUrl.protocol,
+      hostname: parsedUrl.hostname,
+      status: 400,
+    });
     return finalizeApiResponse(jsonError('URL not allowed', 400, { context }), context);
   }
 

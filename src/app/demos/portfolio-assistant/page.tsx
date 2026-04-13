@@ -297,13 +297,13 @@ export default function PortfolioAssistantPage() {
             <div>
               <h1 className="text-2xl font-bold">AI Portfolio Assistant</h1>
               <p className="text-sm text-muted-foreground">
-                Ask anything about Prasad's experience — powered by RAG + Llama
-                3.1
+                Ask anything about Prasad&apos;s experience — full-context
+                grounding with optional retrieval cues via Llama 3.1
               </p>
             </div>
           </div>
 
-          {/* RAG Toggle and Clear */}
+          {/* Retrieval Grounding Toggle and Clear */}
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -312,7 +312,7 @@ export default function PortfolioAssistantPage() {
                 onChange={e => setUseRAG(e.target.checked)}
                 className="w-4 h-4"
               />
-              <span className="text-sm font-medium">RAG Mode</span>
+              <span className="text-sm font-medium">Retrieval Grounding</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input

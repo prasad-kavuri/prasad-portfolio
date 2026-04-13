@@ -24,7 +24,7 @@ interface Message {
   content: string;
 }
 
-// Simple keyword-based RAG retrieval
+// Lightweight keyword retrieval used to prioritize grounding cues.
 function retrieveRelevantDocuments(query: string, topK = 3) {
   const keywords = query.toLowerCase().split(/\s+/);
   const knowledgeBase = profile.knowledgeBase.map((content, idx) => ({
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_approval_state', status: 400 });
       return finalizeApiResponse(jsonError('Invalid approval state', 400, { context }), context);
     }
-    const useRAG = body.data.useRAG === true;
+    const useRetrievalGrounding = body.data.useRAG === true;
 
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     if (lastUserMessage && lastUserMessage.content.length > 500) {
@@ -142,8 +142,8 @@ ${fullContext}`;
 
     let retrievedDocs: Array<{ id: string; title: string; content: string }> = [];
 
-    // Additionally highlight most relevant docs if RAG is enabled
-    if (useRAG && lastUserMessage) {
+    // Full curated context is always present; retrieval cues are additive when enabled.
+    if (useRetrievalGrounding && lastUserMessage) {
       retrievedDocs = retrieveRelevantDocuments(lastUserMessage.content);
     }
 
@@ -275,7 +275,7 @@ ${fullContext}`;
       status: 200,
       durationMs: totalDuration,
       messageCount: recentMessages.length,
-      useRAG,
+      useRAG: useRetrievalGrounding,
       retrievedDocs: retrievedDocs.length,
     });
 

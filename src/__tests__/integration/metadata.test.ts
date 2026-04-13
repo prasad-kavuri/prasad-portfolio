@@ -101,4 +101,10 @@ describe('SEO metadata integrity', () => {
     const profile = JSON.parse(readFileSync('src/data/profile.json', 'utf8'));
     expect(profile.personal.portfolio).toMatch(/www\.prasadkavuri\.com/);
   });
+
+  it('portfolio assistant metadata uses retrieval-grounding language (not strict RAG wording)', () => {
+    const metadataSource = readFileSync('src/app/demos/portfolio-assistant/metadata.ts', 'utf8');
+    expect(metadataSource).toMatch(/retrieval/i);
+    expect(metadataSource).not.toMatch(/Streaming RAG chatbot/i);
+  });
 });

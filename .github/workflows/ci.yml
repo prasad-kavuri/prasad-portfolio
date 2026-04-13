@@ -69,7 +69,20 @@ jobs:
         run: npm run build
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.install_browser }}
+        run: |
+          set -euo pipefail
+          for attempt in 1 2; do
+            echo "Playwright install attempt ${attempt} for ${{ matrix.install_browser }}"
+            if timeout 8m npx playwright install --with-deps ${{ matrix.install_browser }}; then
+              exit 0
+            fi
+            if [ "${attempt}" -eq 2 ]; then
+              echo "Playwright browser install failed after 2 attempts"
+              exit 1
+            fi
+            echo "Install attempt ${attempt} failed; retrying in 15s..."
+            sleep 15
+          done
 
       - name: Run E2E tests
         run: |

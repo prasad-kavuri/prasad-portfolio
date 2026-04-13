@@ -2,10 +2,11 @@ export type SnapshotServiceStatus = [name: string, status: string];
 export type SnapshotMetric = [label: string, value: string];
 export type GovernanceMetricValue = [label: string, value: string, sub: string, status: 'ok' | 'warn' | 'info'];
 
+// Snapshot timestamps are explicit ISO8601 values to keep reviewer-facing telemetry auditable.
 export const STATUS_SNAPSHOT = {
-  generatedAtIso: '2026-04-13T00:00:00.000Z',
-  generatedAtLabel: 'April 2026 snapshot',
+  generatedAtIso: '2026-04-13T03:50:00Z',
   services: [
+    ['AI Evaluation Showcase', 'Operational · Quality and eval gating'],
     ['AI Portfolio Assistant', 'Operational · Full-context + retrieval grounding'],
     ['LLM Router', 'Operational · Multi-model'],
     ['Multi-Agent System', 'Operational · Groq-backed demo'],
@@ -45,8 +46,7 @@ export const STATUS_SNAPSHOT = {
 } as const;
 
 export const GOVERNANCE_SNAPSHOT = {
-  generatedAtIso: '2026-04-13T00:00:00.000Z',
-  generatedAtLabel: 'April 2026 snapshot',
+  generatedAtIso: '2026-04-13T03:50:00Z',
   policyControls: [
     { label: 'Content Security Policy', status: 'Active', detail: 'next.config.ts + proxy.ts' },
     { label: 'Rate Limiting (Upstash Redis)', status: 'Active', detail: '10 req / 60s per IP, SHA-256 hash' },

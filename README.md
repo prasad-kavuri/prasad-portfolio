@@ -5,7 +5,7 @@
 > enterprise security, full governance layer, and CI/CD pipeline.
 
 [![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-361%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-387%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25%20lib-brightgreen)]()
 [![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)]()
 [![React](https://img.shields.io/badge/React-19.2.5-blue)]()
@@ -122,7 +122,7 @@ prasad-portfolio/
 ## Testing
 
 ```bash
-npm run test           # unit tests (Vitest) — 361 passing, 32 test files
+npm run test           # unit tests (Vitest) — 387 passing, 35 test files
 npm run test:coverage  # coverage report
 npm run test:fuzz      # adversarial/fuzz tests
 npm run test:evals     # LLM-as-Judge eval suite
@@ -199,8 +199,8 @@ client-side via WebAssembly — no API key required.
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — 6-layer system design + patentable patterns
-- [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry from centralized snapshot data (`src/data/telemetry-snapshots.ts`)
-- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard with centralized snapshot metrics, policy controls, and audit records
+- [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry from centralized snapshot data (`src/data/telemetry-snapshots.ts`), including all 10 production systems
+- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard with centralized snapshot metrics, policy controls, audit records, and explicit snapshot timestamps
 
 ## 2026 Production AI Patterns Now Live
 

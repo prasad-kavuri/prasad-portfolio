@@ -23,12 +23,12 @@ describe('GovernancePage', () => {
     vi.unstubAllGlobals();
   });
 
-  it('shows mixed telemetry disclosure and snapshot label', async () => {
+  it('shows mixed telemetry disclosure and precise snapshot timestamp', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')));
     render(React.createElement(GovernancePage));
 
     expect(screen.getByText('Mixed telemetry')).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(GOVERNANCE_SNAPSHOT.generatedAtLabel, 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`Snapshot generated at: ${GOVERNANCE_SNAPSHOT.generatedAtIso}`))).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText('Rate Limit Remaining')).toBeInTheDocument();
     });

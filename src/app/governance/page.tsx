@@ -87,8 +87,9 @@ export default function GovernancePage() {
           <div className="flex-1">
             <h1 className="text-4xl font-bold">Governance Dashboard</h1>
             <p className="text-muted-foreground mt-1">
-              Platform safety, cost controls, and eval quality — {GOVERNANCE_SNAPSHOT.generatedAtLabel}
+              Platform safety, cost controls, and eval quality
             </p>
+            <p className="text-xs text-muted-foreground mt-1">Snapshot generated at: {GOVERNANCE_SNAPSHOT.generatedAtIso}</p>
           </div>
           <div className="flex items-center gap-3">
             {metricsView && (

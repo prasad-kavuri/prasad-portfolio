@@ -4,16 +4,15 @@ import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
 
 export const metadata = {
   title: 'System Status — Prasad Kavuri',
-  description: 'System status and telemetry snapshot for prasadkavuri.com',
+  description: 'System status and mixed telemetry snapshot for 10 production AI systems on prasadkavuri.com',
 };
 
 export default function StatusPage() {
   return (
     <main className="min-h-screen bg-background p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">System Status</h1>
-      <p className="text-muted-foreground mb-8">
-        prasadkavuri.com — {STATUS_SNAPSHOT.generatedAtLabel}
-      </p>
+      <p className="text-muted-foreground">prasadkavuri.com</p>
+      <p className="text-sm text-muted-foreground mb-8">Snapshot generated at: {STATUS_SNAPSHOT.generatedAtIso}</p>
 
       <TelemetryDisclosure
         label="Mixed telemetry"

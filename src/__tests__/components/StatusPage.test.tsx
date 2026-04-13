@@ -16,6 +16,7 @@ describe('StatusPage', () => {
 
     expect(screen.getByText('Mixed telemetry')).toBeInTheDocument();
     expect(screen.getByText(/snapshot and illustrative metrics/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`Snapshot generated at: ${STATUS_SNAPSHOT.generatedAtIso}`))).toBeInTheDocument();
   });
 
   it('does not use live status phrasing in service badges', () => {
@@ -31,5 +32,12 @@ describe('StatusPage', () => {
     const [firstServiceName, firstServiceStatus] = STATUS_SNAPSHOT.services[0];
     expect(screen.getByText(firstServiceName)).toBeInTheDocument();
     expect(screen.getByText(new RegExp(firstServiceStatus.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toBeInTheDocument();
+  });
+
+  it('renders all systems from centralized status snapshot data (10 total)', () => {
+    render(React.createElement(StatusPage));
+
+    expect(STATUS_SNAPSHOT.services).toHaveLength(10);
+    expect(screen.getByText('AI Evaluation Showcase')).toBeInTheDocument();
   });
 });

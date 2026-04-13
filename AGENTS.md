@@ -28,7 +28,7 @@ before writing any code. APIs, middleware, and config differ from training data.
 |---|---|
 | `api.ts` | `enforceRateLimit`, `jsonError`, `createRequestContext`, `finalizeApiResponse` |
 | `observability.ts` | `logAPIEvent`, `startTimer`, `detectAnomaly`, `generateClientTraceId`, `createTracedFetch` |
-| `guardrails.ts` | `enforceGuardrails`, `checkInput`, `checkOutput`, `validateAgentHandoff`, `detectPromptInjection` |
+| `guardrails.ts` | Canonical guardrails: `enforceGuardrails`, `checkInput`, `checkOutput`, `validateAgentHandoff`, `detectPromptInjection`, `isPromptInjection`, `sanitizeLLMOutput` |
 | `eval-engine.ts` | `scoreResponse`, `runEvals` — LLM-as-Judge scoring |
 | `drift-monitor.ts` | `trackModelOutput`, `getDriftSnapshot` — output drift detection |
 | `cost-control.ts` | Per-route token cost tracking |

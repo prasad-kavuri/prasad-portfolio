@@ -1,7 +1,7 @@
 # Prasad Kavuri — VP / Head of AI Engineering Portfolio
 
 > **Live at [prasadkavuri.com](https://www.prasadkavuri.com)**  
-> Production-grade AI engineering portfolio with 10 live demos,
+> Production-grade AI engineering portfolio with 10 production demos,
 > enterprise security, full governance layer, and CI/CD pipeline.
 
 [![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
@@ -105,7 +105,7 @@ prasad-portfolio/
 |---|---|---|
 | Content Security Policy | `next.config.ts` + `src/proxy.ts` headers | Active |
 | Rate Limiting | Upstash Redis (@upstash/ratelimit), 10 req/60s per IP | Active |
-| Prompt Injection Guard | `detectPromptInjection` — 8 patterns, all user inputs | Active |
+| Prompt Injection Guard | `src/lib/guardrails.ts` canonical signatures via `detectPromptInjection` / `isPromptInjection` | Active |
 | Competitor Mention Filter | Redacts 8 competitor names from LLM output | Active |
 | Hallucination Heuristic | Key-fact presence check on long outputs | Active |
 | XSS Sanitization | DOMPurify on all LLM output | Active |
@@ -125,7 +125,7 @@ npm run test           # unit tests (Vitest) — 336 passing, 29 test files
 npm run test:coverage  # coverage report
 npm run test:fuzz      # adversarial/fuzz tests
 npm run test:evals     # LLM-as-Judge eval suite
-npm run test:e2e       # Playwright (chromium, firefox, webkit)
+npm run test:e2e       # Playwright (chromium, firefox, webkit, mobile)
 ```
 
 | Layer | Directory | Focus |
@@ -151,7 +151,8 @@ lint-and-unit (security audit → lint → unit tests + coverage gates)
      └─► e2e matrix
               ├── chromium
               ├── firefox
-              └── webkit
+              ├── webkit
+              └── mobile
 ```
 
 - `npm audit --audit-level=high` blocks on any high/critical CVEs
@@ -197,15 +198,16 @@ client-side via WebAssembly — no API key required.
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — 6-layer system design + patentable patterns
-- [System Status](https://www.prasadkavuri.com/status) — Live uptime and health dashboard
-- [Governance](https://www.prasadkavuri.com/governance) — Safety metrics, policy controls, audit log
+- [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry: live service health plus snapshot/illustrative portfolio metrics
+- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard: safety metrics, policy controls, audit log
 
 ## 2026 Production AI Patterns Now Live
 
 This portfolio ships production-grade implementations of the patterns that define enterprise AI in 2026:
 
 ### Guardrails Layer (`src/lib/guardrails.ts`)
-- Prompt injection detection — 8 patterns including template injection and instruction override
+- Canonical guardrails module used by API routes for prompt-injection checks and output sanitization
+- Prompt injection detection signatures including template injection and instruction override
 - Competitor mention detection and redaction — 8 competitor names, applied to all LLM output
 - Hallucination heuristics — confidence scoring on long outputs with key-fact presence check
 - Agent handoff validation — `validateAgentHandoff` guards every inter-agent transition

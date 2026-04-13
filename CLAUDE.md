@@ -51,7 +51,7 @@ demos that are in `demos.ts` but not in that array.
 - `npm run test:coverage` — coverage report (gates: api ≥90% stmts / ≥85% branches, lib ≥95% functions)
 - `npm run test:fuzz` — adversarial tests
 - `npm run test:evals` — LLM-as-Judge eval suite
-- `npm run test:e2e` — Playwright (requires built server)
+- `npm run test:e2e` — Playwright (chromium, firefox, webkit, mobile; requires built server)
 
 ## Security Posture
 CSP (next.config.ts + proxy.ts), rate limiting, prompt injection detection,

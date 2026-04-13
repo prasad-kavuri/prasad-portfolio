@@ -8,7 +8,7 @@ This document describes the real system architecture implemented in this reposit
 
 | Layer | Repo implementation | Purpose |
 |---|---|---|
-| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 9 live demo entry points |
+| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 10 production demo entry points |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
 | Agentic Orchestration Layer | `/api/multi-agent`, `/api/mcp-demo`, `src/app/demos/multi-agent`, `src/app/demos/mcp-demo` | Demonstrates agent coordination, tool discovery, specialist roles, and guarded execution patterns |
 | AI Services Layer | LLM Router, RAG, AI Portfolio Assistant, Resume Generator, Multimodal, Quantization | Hosts the live AI capabilities shown on the site |
@@ -75,11 +75,12 @@ Security controls are implemented at route boundaries and platform configuration
 
 - `src/lib/api.ts` validates JSON bodies, standardizes error responses, adds request IDs, and finalizes responses with trace and rate-limit headers.
 - `src/lib/rate-limit.ts` provides Upstash Redis sliding-window rate limiting in production with an in-memory fallback for local/test runs.
-- `detectPromptInjection` blocks common prompt-injection strings before LLM calls.
+- `src/lib/guardrails.ts` is the canonical guardrail module for prompt-injection detection and server-side LLM output sanitization.
+- `detectPromptInjection` / `isPromptInjection` block prompt-injection patterns before LLM calls.
 - `sanitizeLLMOutput` strips script tags, event handlers, and `javascript:` URIs from LLM output.
 - API routes enforce input shape and length limits before external calls.
 - Middleware/proxy and Next config provide HTTP security headers such as CSP and COOP/COEP where needed.
-- CI runs `npm audit --audit-level=high`, lint, unit coverage, and Playwright checks.
+- CI runs `npm audit --audit-level=high`, lint, unit coverage, and Playwright checks across chromium, firefox, webkit, and mobile projects.
 
 ## Observability
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
-import { isPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
+import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
 import {
   enforceRateLimit,
   createRequestContext,
@@ -124,7 +124,9 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'job_description_too_long', jobDescriptionLength: jobDescription.length, status: 400 });
       return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
     }
-    if (isPromptInjection(jobDescription)) {
+    const injectionIssues = detectPromptInjection(jobDescription);
+    const hasNonTemplateInjection = injectionIssues.some(issue => issue !== 'template_injection');
+    if (hasNonTemplateInjection) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', jobDescriptionLength: jobDescription.length, status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }

@@ -85,7 +85,7 @@ Security controls are implemented at route boundaries and platform configuration
 
 ## Snapshot Telemetry Data
 
-Status and governance pages use `src/data/telemetry-snapshots.ts` as a centralized source for snapshot labels, service posture summaries, policy controls, audit records, and metric baselines. Runtime overlays (for example `/api/eval-snapshot`) are applied on top of this baseline where live signals are available.
+Status and governance pages use `src/data/telemetry-snapshots.ts` as a centralized source for snapshot labels, service posture summaries, policy controls, audit records, and deterministic metric values. Governance metric cards are assembled through `getGovernanceMetricsView(...)`, then optionally augmented with live `/api/eval-snapshot` values when available.
 
 ## Observability
 

@@ -7,66 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
-import { GOVERNANCE_SNAPSHOT } from '@/data/telemetry-snapshots';
-
-// Lightly randomized on load to emulate production telemetry behavior for portfolio demonstration.
-function jitter(base: number, range: number) {
-  return base + Math.floor((Math.random() - 0.5) * 2 * range);
-}
-
-interface EvalSnapshot {
-  totalQueriesLogged: number;
-  liveEval: { casesRun: number; passed: number; avgScore: number | null };
-  drift: { assistantSamples: number; multiAgentSamples: number };
-}
-
-interface Metrics {
-  rateLimitRemaining: number;
-  rateLimitTotal: number;
-  costPerInteraction: string;
-  guardrailBlocked: number;
-  guardrailRedacted: number;
-  evalFidelity: string;
-  hallucinationRate: string;
-  activeTraceSessions: number;
-  liveQueriesLogged: number;
-  lastRefreshed: string;
-}
-
-function freshMetrics(snap?: EvalSnapshot): Metrics {
-  const baseline = GOVERNANCE_SNAPSHOT.metricBaselines;
-
-  // Use live eval data when available; fall back to estimated values
-  const evalFidelity = snap?.liveEval.avgScore != null
-    ? snap.liveEval.avgScore.toFixed(2)
-    : (
-      baseline.evalFidelityFallback.base +
-      (Math.random() - 0.5) * 2 * baseline.evalFidelityFallback.range
-    ).toFixed(baseline.evalFidelityFallback.digits);
-
-  const hallucinationRate = snap?.liveEval.casesRun && snap.liveEval.casesRun > 0
-    ? ((1 - snap.liveEval.passed / snap.liveEval.casesRun) * 0.1).toFixed(3)
-    : (
-      baseline.hallucinationFallback.base +
-      (Math.random() - 0.5) * 2 * baseline.hallucinationFallback.range
-    ).toFixed(baseline.hallucinationFallback.digits);
-
-  return {
-    rateLimitRemaining: jitter(baseline.rateLimitRemaining.base, baseline.rateLimitRemaining.range),
-    rateLimitTotal: baseline.rateLimitTotal,
-    costPerInteraction: (
-      baseline.costPerInteractionUsd.base +
-      (Math.random() - 0.5) * 2 * baseline.costPerInteractionUsd.range
-    ).toFixed(baseline.costPerInteractionUsd.digits),
-    guardrailBlocked: jitter(baseline.guardrailBlocked.base, baseline.guardrailBlocked.range),
-    guardrailRedacted: jitter(baseline.guardrailRedacted.base, baseline.guardrailRedacted.range),
-    evalFidelity,
-    hallucinationRate,
-    activeTraceSessions: jitter(baseline.activeTraceSessions.base, baseline.activeTraceSessions.range),
-    liveQueriesLogged: snap?.totalQueriesLogged ?? 0,
-    lastRefreshed: new Date().toLocaleTimeString(),
-  };
-}
+import { GOVERNANCE_SNAPSHOT, getGovernanceMetricsView, type EvalSnapshotData, type GovernanceMetricsView } from '@/data/telemetry-snapshots';
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -113,15 +54,16 @@ const SEVERITY_CLS: Record<string, string> = {
 // ---------------------------------------------------------------------------
 
 export default function GovernancePage() {
-  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [metricsView, setMetricsView] = useState<GovernanceMetricsView | null>(null);
 
   async function loadMetrics() {
+    const updatedLabel = `Updated ${new Date().toLocaleTimeString()}`;
     try {
       const res = await fetch('/api/eval-snapshot');
-      const snap: EvalSnapshot = res.ok ? await res.json() : {};
-      setMetrics(freshMetrics(snap));
+      const snap: EvalSnapshotData | undefined = res.ok ? await res.json() : undefined;
+      setMetricsView(getGovernanceMetricsView(snap, updatedLabel));
     } catch {
-      setMetrics(freshMetrics());
+      setMetricsView(getGovernanceMetricsView(undefined, updatedLabel));
     }
   }
 
@@ -129,10 +71,6 @@ export default function GovernancePage() {
   useEffect(() => { loadMetrics(); }, []);
 
   const refresh = () => { loadMetrics(); };
-
-  const ratePct = metrics
-    ? Math.round((metrics.rateLimitRemaining / metrics.rateLimitTotal) * 100)
-    : 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -149,12 +87,12 @@ export default function GovernancePage() {
           <div className="flex-1">
             <h1 className="text-4xl font-bold">Governance Dashboard</h1>
             <p className="text-muted-foreground mt-1">
-              Platform safety, cost controls, and eval quality — the infrastructure CFOs and CTOs ask about
+              Platform safety, cost controls, and eval quality — {GOVERNANCE_SNAPSHOT.generatedAtLabel}
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {metrics && (
-              <span className="text-xs text-muted-foreground">Updated {metrics.lastRefreshed}</span>
+            {metricsView && (
+              <span className="text-xs text-muted-foreground">{metricsView.updatedLabel}</span>
             )}
             <button
               onClick={refresh}
@@ -178,51 +116,16 @@ export default function GovernancePage() {
             Telemetry Snapshot
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {metrics ? (
-              <>
+            {metricsView ? (
+              metricsView.cards.map(([label, value, sub, status]) => (
                 <MetricCard
-                  label="Rate Limit Remaining"
-                  value={`${metrics.rateLimitRemaining} / ${metrics.rateLimitTotal}`}
-                  sub={`${ratePct}% capacity available`}
-                  status={ratePct > 50 ? 'ok' : 'warn'}
+                  key={label}
+                  label={label}
+                  value={value}
+                  sub={sub}
+                  status={status}
                 />
-                <MetricCard
-                  label="Cost per Interaction"
-                  value={`$${metrics.costPerInteraction}`}
-                  sub="avg across all API routes"
-                  status="ok"
-                />
-                <MetricCard
-                  label="Guardrail Triggers (24h)"
-                  value={`${metrics.guardrailBlocked} blocked`}
-                  sub={`${metrics.guardrailRedacted} redacted`}
-                  status="warn"
-                />
-                <MetricCard
-                  label="Eval Fidelity Score"
-                  value={metrics.evalFidelity}
-                  sub="LLM-as-Judge, gate ≥ 0.85"
-                  status="ok"
-                />
-                <MetricCard
-                  label="Hallucination Rate"
-                  value={metrics.hallucinationRate}
-                  sub="gate ≤ 0.10 — passing"
-                  status="ok"
-                />
-                <MetricCard
-                  label="Active Trace Sessions"
-                  value={String(metrics.activeTraceSessions)}
-                  sub="end-to-end X-Trace-Id correlation"
-                  status="info"
-                />
-                <MetricCard
-                  label="Queries Logged"
-                  value={String(metrics.liveQueriesLogged)}
-                  sub="runtime loop where available; snapshot fallback"
-                  status="info"
-                />
-              </>
+              ))
             ) : (
               Array.from({ length: 7 }).map((_, i) => (
                 <Card key={i} className="p-5 animate-pulse">

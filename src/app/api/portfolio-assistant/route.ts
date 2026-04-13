@@ -14,7 +14,7 @@ import {
 import { detectAnomaly, logAPIEvent, startTimer } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
 import { trackModelOutput } from '@/lib/drift-monitor';
-import { checkOutput, isPromptInjection as detectPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
+import { checkOutput, detectPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
 import { logQueryForEval } from '@/lib/query-log';
 
 const ROUTE = '/api/portfolio-assistant';
@@ -42,7 +42,11 @@ function retrieveRelevantDocuments(query: string, topK = 3) {
     .filter(doc => doc.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, topK)
-    .map(({ score, ...doc }) => doc);
+    .map(doc => ({
+      id: doc.id,
+      title: doc.title,
+      content: doc.content,
+    }));
 }
 
 // User messages are limited tightly (security). Assistant messages can be
@@ -99,7 +103,7 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'message_too_long', messageLength: lastUserMessage.content.length, status: 400 });
       return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
     }
-    if (lastUserMessage && detectPromptInjection(lastUserMessage.content)) {
+    if (lastUserMessage && detectPromptInjection(lastUserMessage.content).length > 0) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }

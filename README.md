@@ -200,7 +200,7 @@ client-side via WebAssembly — no API key required.
 
 - [Architecture](docs/ARCHITECTURE.md) — 6-layer system design + patentable patterns
 - [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry from centralized snapshot data (`src/data/telemetry-snapshots.ts`)
-- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard with centralized snapshot baselines and policy/audit records
+- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard with centralized snapshot metrics, policy controls, and audit records
 
 ## 2026 Production AI Patterns Now Live
 
@@ -231,7 +231,7 @@ This portfolio ships production-grade implementations of the patterns that defin
 - Server reads via `createRequestContext()` → same ID flows through all logs and LLM calls
 
 ### Governance Dashboard (`/governance`)
-- Snapshot-driven safety metrics with live overlays where available: rate limit headroom, cost per interaction, guardrail trigger counts
+- Deterministic snapshot-driven safety metrics from `src/data/telemetry-snapshots.ts` with optional `/api/eval-snapshot` live overlays
 - Policy controls inventory with implementation file references
 - Audit event log — CFO/CTO/CISO framing for enterprise buyers
 

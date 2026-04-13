@@ -19,8 +19,8 @@ test.describe('Homepage', () => {
     await expect(page.getByText(/cost, latency, and scalability/i)).toBeVisible();
   });
 
-  test('Explore AI Demos button scrolls to tools section', async ({ page }) => {
-    await page.getByRole('link', { name: /Explore AI Demos/i }).first().click();
+  test('Explore All Demos button scrolls to tools section', async ({ page }) => {
+    await page.getByRole('link', { name: /Explore All Demos/i }).first().click();
     await expect(page.locator('#tools')).toBeInViewport({ timeout: 10000 });
   });
 
@@ -32,7 +32,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('AI Applications', { exact: true }).first()).toBeVisible();
   });
 
-  test('all 9 demo cards are present', async ({ page }) => {
+  test('all 10 demo cards are present', async ({ page }) => {
     // Use first() because card titles may appear in multiple elements (heading + aria-label etc.)
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
     await expect(page.getByText('LLM Router').first()).toBeVisible();
@@ -43,6 +43,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Resume Generator').first()).toBeVisible();
     await expect(page.getByText('Multimodal Assistant').first()).toBeVisible();
     await expect(page.getByText('Model Quantization').first()).toBeVisible();
+    await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
   });
 
   test('Desktop badge appears on exactly 3 cards', async ({ page }) => {

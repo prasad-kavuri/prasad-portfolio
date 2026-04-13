@@ -185,6 +185,27 @@ export function Hero() {
               </a>
             </div>
           </div>
+
+          <div
+            className="mt-5 rounded-lg border border-border/80 bg-background/60 p-4"
+            aria-label="Trust and governance summary"
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Trust &amp; Governance at a Glance
+            </p>
+            <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-5">
+              <p><span className="font-medium text-foreground">Guardrails:</span> Centralized prompt injection and output safety checks across AI routes.</p>
+              <p><span className="font-medium text-foreground">Human Oversight:</span> Multi-agent workflows pause for HITL approval before strategist execution.</p>
+              <p><span className="font-medium text-foreground">Quality Loop:</span> Offline eval suites with online drift monitoring and hallucination indicators.</p>
+              <p><span className="font-medium text-foreground">Abuse Protection:</span> Upstash-backed rate limiting with privacy-preserving IP hashing.</p>
+              <p>
+                <span className="font-medium text-foreground">Disclosure:</span>{' '}
+                <a href="/.well-known/security.txt" className="underline underline-offset-2 hover:no-underline">
+                  Responsible disclosure policy
+                </a>.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </>

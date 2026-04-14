@@ -75,11 +75,28 @@ jobs:
       - name: Install Playwright browsers
         run: |
           set -euo pipefail
+          wait_for_dpkg_lock() {
+            # GitHub-hosted runners can have transient apt activity (e.g. apt-daily).
+            for i in $(seq 1 30); do
+              if sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then
+                echo "dpkg lock is held; waiting 10s (attempt ${i}/30)..."
+                sleep 10
+              else
+                return 0
+              fi
+            done
+            echo "dpkg lock still held after waiting 5 minutes"
+            return 1
+          }
+
           install_cmd="npx playwright install ${{ matrix.install_browser }}"
           if [ "${{ matrix.with_deps }}" = "true" ]; then
             install_cmd="npx playwright install --with-deps ${{ matrix.install_browser }}"
           fi
           for attempt in 1 2; do
+            if [ "${{ matrix.with_deps }}" = "true" ]; then
+              wait_for_dpkg_lock
+            fi
             echo "Playwright install attempt ${attempt} for ${{ matrix.project }} using: ${install_cmd}"
             if timeout 8m bash -lc "${install_cmd}"; then
               exit 0

@@ -35,7 +35,7 @@ describe('architecture artifact and documentation', () => {
       expect(docs).toContain(demo.href);
     }
 
-    expect(docs).toContain('AI ROI and Governance');
+    expect(docs).toContain('AI ROI & Governance Model');
     expect(docs).toContain('src/lib/eval-engine.ts');
     expect(docs).toContain('src/lib/cost-control.ts');
     expect(docs).toContain('src/lib/guardrails.ts');

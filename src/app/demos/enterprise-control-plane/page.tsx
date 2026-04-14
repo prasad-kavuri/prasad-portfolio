@@ -180,8 +180,14 @@ export default function EnterpriseControlPlanePage() {
             className="flex border-b border-border"
             onKeyDown={e => {
               const idx = TABS.findIndex(t => t.id === activeTab);
-              if (e.key === 'ArrowRight') setActiveTab(TABS[(idx + 1) % TABS.length].id);
-              if (e.key === 'ArrowLeft')  setActiveTab(TABS[(idx - 1 + TABS.length) % TABS.length].id);
+              let newIdx = idx;
+              if (e.key === 'ArrowRight') newIdx = (idx + 1) % TABS.length;
+              else if (e.key === 'ArrowLeft') newIdx = (idx - 1 + TABS.length) % TABS.length;
+              else return;
+              e.preventDefault();
+              setActiveTab(TABS[newIdx].id);
+              const buttons = e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]');
+              buttons[newIdx]?.focus();
             }}
           >
             {TABS.map(tab => (

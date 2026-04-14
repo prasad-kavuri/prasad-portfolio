@@ -1,7 +1,23 @@
 import { test, expect } from '@playwright/test';
 
+// RFC 5737 documentation IPs reserved for this file: 203.0.113.100–114
+// Must NOT overlap with resume-download.spec.ts (203.0.113.5) or
+// api.spec.ts (203.0.113.10–13, 203.0.113.250).
+//
+// Root cause addressed: the demo page fires 6 concurrent /api/enterprise-sim
+// requests on every page load. With 15 beforeEach navigations sharing the
+// 'unknown' fallback bucket (10 req/60s), tests 3+ would all receive 429.
+// Per-test IP isolation gives each test its own fresh bucket (6 calls < 10 limit).
+let _testIp = 100;
+
 test.describe('Enterprise Control Plane demo', () => {
   test.beforeEach(async ({ page }) => {
+    const testIp = `203.0.113.${_testIp++}`;
+    await page.route('**/api/enterprise-sim**', async route => {
+      await route.continue({
+        headers: { ...route.request().headers(), 'x-forwarded-for': testIp },
+      });
+    });
     await page.goto('/demos/enterprise-control-plane');
   });
 

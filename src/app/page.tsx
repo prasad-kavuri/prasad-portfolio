@@ -74,7 +74,7 @@ export default function Home() {
         <Architecture />
         <SectionBridge text="These systems represent that architecture in action — production implementations, not prototypes." />
         <Expertise />
-        <SectionBridge text="Building these systems draws on six areas where I consistently create value." />
+        <SectionBridge text="Building these systems draws on seven areas where I consistently create value." />
         <Experience />
         <SectionBridge text="Three of those roles became defining transformations — here's how they actually happened." />
         <CaseStudies />

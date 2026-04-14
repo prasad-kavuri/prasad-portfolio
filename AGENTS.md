@@ -101,3 +101,28 @@ Events follow the OpenTelemetry semantic conventions for LLM spans. The `tokenCo
 - No external network calls from within this route
 - Input length cap: all string params max 100 chars
 - Rate limiting: inherits existing middleware rate limiting
+
+## JSON-LD Resume Agent
+
+**File**: `src/lib/resumeJsonLd.ts`
+**Role**: Post-processing utility that converts structured resume fields into schema.org/Person JSON-LD
+
+### Behavior contract
+- Input: `ResumeData` fields mapped from LLM response + profile.json static data
+- Output: valid JSON-LD conforming to `schema.org/Person` vocabulary
+- Never invents data — only maps fields present in input; omits keys for missing fields
+- Deterministic: same input always produces same output
+- Safe: output is JSON only, never contains script content or HTML
+- `worksFor` is ONLY set for experience entries where `endDate === 'Present'` or `endDate` is undefined
+- Response fields added: `jsonLd` (object) and `jsonLdScript` (ready-to-embed `<script>` string)
+
+## Observability Chart
+
+**File**: `src/components/observability/LatencyCostChart.tsx`
+**Role**: Dual-axis SVG chart showing inference latency vs. cost-per-request over 24 hours
+
+### Behavior contract
+- Data is seeded/deterministic (`seededRand(0xdeadbeef)`) — same chart every load
+- `generateData()` and `seededRand()` are exported for unit testing
+- No external dependencies — plain SVG only
+- Used on `/governance` page; in production would connect to `/api/enterprise-sim` or OTEL collector

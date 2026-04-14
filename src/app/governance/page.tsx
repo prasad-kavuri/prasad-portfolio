@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { GOVERNANCE_SNAPSHOT, getGovernanceMetricsView, type EvalSnapshotData, type GovernanceMetricsView } from '@/data/telemetry-snapshots';
+import { LatencyCostChart } from '@/components/observability/LatencyCostChart';
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -214,6 +215,16 @@ export default function GovernancePage() {
                 ))}
               </tbody>
             </table>
+          </Card>
+        </section>
+
+        {/* Token Latency vs Cost chart */}
+        <section className="mb-8" aria-labelledby="latency-cost-heading">
+          <h2 id="latency-cost-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            Token Latency vs. Cost (24h)
+          </h2>
+          <Card className="bg-card border-border p-5">
+            <LatencyCostChart />
           </Card>
         </section>
 

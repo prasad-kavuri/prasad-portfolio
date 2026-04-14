@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import type { JsonLdPerson } from '@/lib/resumeJsonLd';
 import Link from 'next/link';
 import { ArrowLeft, Copy, Check, Download, Loader } from 'lucide-react';
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -18,6 +19,8 @@ interface ResumeData {
   }>;
   skills: string[];
   atsKeywords: string[];
+  jsonLd?: JsonLdPerson;
+  jsonLdScript?: string;
 }
 
 const FOCUS_AREAS = [
@@ -155,6 +158,19 @@ ${resume.atsKeywords.join(', ')}`;
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  // Inject schema.org/Person JSON-LD into <head> when resume is generated
+  useEffect(() => {
+    if (!resume?.jsonLd) return;
+    const existing = document.getElementById('resume-jsonld');
+    if (existing) existing.remove();
+    const script = document.createElement('script');
+    script.id = 'resume-jsonld';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(resume.jsonLd);
+    document.head.appendChild(script);
+    return () => { document.getElementById('resume-jsonld')?.remove(); };
+  }, [resume?.jsonLd]);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-400';
@@ -398,6 +414,46 @@ ${resume.atsKeywords.join(', ')}`;
                     Download
                   </button>
                 </div>
+
+                {/* JSON-LD machine-readable layer */}
+                {resume.jsonLd && (
+                  <details className="mt-4">
+                    <summary className="cursor-pointer text-xs text-muted-foreground flex items-center gap-2 list-none select-none">
+                      <span>▶</span>
+                      <span>JSON-LD machine-readable layer</span>
+                      <span className="text-[11px] bg-muted border border-border/50 rounded px-1.5 py-0.5">
+                        schema.org/Person
+                      </span>
+                    </summary>
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Embedded in the page <code>&lt;head&gt;</code> as{' '}
+                        <code>application/ld+json</code>. AI-driven ATS systems (Greenhouse, Lever, Workday)
+                        parse this layer directly — no OCR required.
+                      </p>
+                      <pre className="text-[11px] leading-relaxed p-3 bg-muted border border-border/50 rounded-lg overflow-auto max-h-72 text-foreground">
+                        {JSON.stringify(resume.jsonLd, null, 2)}
+                      </pre>
+                      <button
+                        onClick={() => {
+                          const blob = new Blob(
+                            [JSON.stringify(resume.jsonLd, null, 2)],
+                            { type: 'application/json' }
+                          );
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = 'resume-structured-data.json';
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="mt-2 text-xs px-3 py-1.5 rounded border border-border hover:bg-muted transition-colors"
+                      >
+                        Download .json
+                      </button>
+                    </div>
+                  </details>
+                )}
               </>
             ) : (
               <div className="h-full flex items-center justify-center text-muted-foreground text-center">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
 import { detectPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
+import { generateResumeJsonLd, renderJsonLdScript } from '@/lib/resumeJsonLd';
 import {
   enforceRateLimit,
   createRequestContext,
@@ -281,6 +282,33 @@ Generate a tailored resume as JSON with this exact structure:
       atsKeywords: parsedResume.atsKeywords.map(k => sanitizeResumeOutput(k)),
     };
 
+    // Generate schema.org/Person JSON-LD for ATS machine-readability
+    const personal = ((profile.personal as unknown as Record<string, string> | undefined) ?? {}) as Record<string, string>;
+    const education = ((profile.education as unknown as Array<Record<string, string>> | undefined) ?? []);
+    const jsonLd = generateResumeJsonLd({
+      name: personal.name ?? 'Prasad Kavuri',
+      headline: personal.title,
+      location: personal.location,
+      summary: sanitized.summary,
+      skills: sanitized.skills,
+      experience: sanitized.experience.map(exp => ({
+        title: exp.title,
+        company: exp.company,
+        endDate: /present/i.test(exp.period) ? 'Present' : exp.period.match(/\d{4}\s*$/)?.[0],
+        description: exp.bullets.join(' '),
+      })),
+      education: education.map(edu => ({
+        degree: edu.degree,
+        institution: edu.institution,
+        fieldOfStudy: edu.field,
+      })),
+      urls: {
+        linkedin:  personal.linkedin,
+        github:    personal.github,
+        portfolio: personal.portfolio,
+      },
+    }, 'https://www.prasadkavuri.com/demos/resume-generator');
+
     logApiEvent('api.request_completed', {
       route: ROUTE,
       traceId: context.traceId,
@@ -291,7 +319,10 @@ Generate a tailored resume as JSON with this exact structure:
       matchScore: parsedResume.matchScore,
     });
 
-    return finalizeApiResponse(NextResponse.json(sanitized), context);
+    return finalizeApiResponse(
+      NextResponse.json({ ...sanitized, jsonLd, jsonLdScript: renderJsonLdScript(jsonLd) }),
+      context
+    );
   } catch (error) {
     captureAndLogApiError('api.request_failed', error, {
       route: ROUTE,

@@ -94,6 +94,30 @@ demos that are in `demos.ts` but not in that array.
 - `npm run test:evals` — LLM-as-Judge eval suite
 - `npm run test:e2e` — Playwright (chromium, firefox, webkit, mobile; requires built server)
 
+## Enterprise Control Plane Demo
+
+**Route**: `/demos/enterprise-control-plane`
+**API**: `/api/enterprise-sim`
+**Components**: `src/components/enterprise/`
+
+### What it demonstrates
+Organisation-wide AI governance: role-based access control (RBAC), group spend limits with token-cost tracking, and OpenTelemetry observability feed. Maps directly to Anthropic's Cowork for Enterprise feature set (April 2026).
+
+### Data model
+All data is simulated via `src/lib/enterpriseMockData.ts` using deterministic seeded generation. No external API calls are made — the API route `/api/enterprise-sim` serves mock data with realistic latency simulation.
+
+### Token pricing model
+Input: $3/MTok | Output: $15/MTok | Cache read: $0.30/MTok | Cache write: $3.75/MTok (Anthropic API pricing as of April 2026).
+
+### Adding new teams or capabilities
+Edit `src/lib/enterpriseMockData.ts`. All types are in `src/components/enterprise/types.ts`. The RBAC panel reads team list dynamically — no hardcoded team names in UI components.
+
+### Running tests
+```bash
+npm run test -- enterprise
+npm run test:e2e -- enterprise-control-plane
+```
+
 ## Security Posture
 CSP (next.config.ts + proxy.ts), rate limiting, prompt injection detection,
 competitor mention redaction, hallucination heuristics, XSS sanitization,

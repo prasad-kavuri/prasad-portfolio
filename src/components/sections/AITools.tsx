@@ -30,7 +30,7 @@ const DEMO_GROUPS = [
   {
     label: "Agentic Systems",
     description: "Autonomous agents and tool-use orchestration",
-    ids: ["multi-agent", "mcp-demo"]
+    ids: ["multi-agent", "mcp-demo", "enterprise-control-plane"]
   },
   {
     label: "AI Applications",

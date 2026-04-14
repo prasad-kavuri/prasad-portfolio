@@ -114,4 +114,14 @@ export const demos: Demo[] = [
     desktopOnly:true,
     status: "live",
   },
+  {
+    id: "enterprise-control-plane",
+    emoji: "🏢",
+    title: "Enterprise Control Plane",
+    description: "Org-wide AI governance dashboard — RBAC, group spend limits with token-cost tracking, and OpenTelemetry observability feed.",
+    businessImpact: "Enables enterprise AI teams to govern access, control costs, and audit AI activity at scale",
+    href: "/demos/enterprise-control-plane",
+    tags: ["Enterprise", "RBAC", "OpenTelemetry", "Token Analytics"],
+    status: "live",
+  },
 ];

@@ -79,3 +79,25 @@ Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/pa
 - New demos need entries in BOTH `src/data/demos.ts` AND `src/components/sections/AITools.tsx` (DEMO_GROUPS ids array)
 - `react-hooks/set-state-in-effect` ESLint rule fires on `setState()` inside `useEffect` — use `// eslint-disable-next-line` when the pattern is intentional (e.g., client-only hydration-safe init with `useState(null)`)
 - Signature system is `evaluation-showcase` (AI Evaluation Showcase) — referenced in Hero, AITools featured card, and README
+
+## Enterprise Simulation Agent
+
+**File**: `src/app/api/enterprise-sim/route.ts`
+**Role**: Simulates the Anthropic Analytics API + OTEL event stream for demo purposes
+
+### Behavior contract
+- Always returns deterministic data (seeded, not random) for the same query params
+- Adds artificial latency (80-200ms) to simulate real API round-trips
+- Never returns real user data, credentials, or external API calls
+- Validates all inputs — returns 400 for invalid params, 500 for unexpected errors with safe messages
+- Token usage data follows Anthropic's actual usage_metadata response shape:
+  `{ input_tokens, output_tokens, cache_read_input_tokens, cache_creation_input_tokens }`
+
+### OTEL event schema
+Events follow the OpenTelemetry semantic conventions for LLM spans. The `tokenCost` field mirrors the `anthropic-beta: usage-metadata-2024` response shape.
+
+### Security constraints
+- No write operations (read-only simulation)
+- No external network calls from within this route
+- Input length cap: all string params max 100 chars
+- Rate limiting: inherits existing middleware rate limiting

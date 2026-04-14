@@ -54,7 +54,7 @@ jobs:
             with_deps: true
           - project: mobile
             install_browser: webkit
-            with_deps: false
+            with_deps: true
 
     steps:
       - name: Checkout

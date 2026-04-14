@@ -179,14 +179,15 @@ export default function EnterpriseControlPlanePage() {
             role="tablist"
             className="flex border-b border-border"
             onKeyDown={e => {
-              const idx = TABS.findIndex(t => t.id === activeTab);
-              let newIdx = idx;
-              if (e.key === 'ArrowRight') newIdx = (idx + 1) % TABS.length;
-              else if (e.key === 'ArrowLeft') newIdx = (idx - 1 + TABS.length) % TABS.length;
-              else return;
+              if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+              const buttons = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]'));
+              const idx = buttons.indexOf(e.target as HTMLElement);
+              if (idx === -1) return;
+              const newIdx = e.key === 'ArrowRight'
+                ? (idx + 1) % buttons.length
+                : (idx - 1 + buttons.length) % buttons.length;
               e.preventDefault();
               setActiveTab(TABS[newIdx].id);
-              const buttons = e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]');
               buttons[newIdx]?.focus();
             }}
           >

@@ -1,166 +1,172 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Browser, type Page, type BrowserContext } from '@playwright/test';
 
-// RFC 5737 documentation IPs reserved for this file: 203.0.113.100–114
-// Must NOT overlap with resume-download.spec.ts (203.0.113.5) or
-// api.spec.ts (203.0.113.10–13, 203.0.113.250).
+// Root cause of prior failures:
+// Each beforeEach navigation fired 6 concurrent /api/enterprise-sim requests.
+// 15 tests × 6 requests = 90 calls, all sharing the 'unknown' fallback IP bucket
+// (10 req/60s in-memory rate limiter). Tests 3+ received 429 on every data call.
 //
-// Root cause addressed: the demo page fires 6 concurrent /api/enterprise-sim
-// requests on every page load. With 15 beforeEach navigations sharing the
-// 'unknown' fallback bucket (10 req/60s), tests 3+ would all receive 429.
-// Per-test IP isolation gives each test its own fresh bucket (6 calls < 10 limit).
-let _testIp = 100;
+// Fix: serial mode + single page load in beforeAll → 6 total API calls (< 10 limit).
+// Tests share the page and interact with tabs rather than reloading between tests.
+
+let sharedPage: Page;
+let sharedContext: BrowserContext;
+const consoleErrors: string[] = [];
 
 test.describe('Enterprise Control Plane demo', () => {
-  test.beforeEach(async ({ page }) => {
-    const testIp = `203.0.113.${_testIp++}`;
-    await page.route('**/api/enterprise-sim**', async route => {
-      await route.continue({
-        headers: { ...route.request().headers(), 'x-forwarded-for': testIp },
-      });
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
+    sharedContext = await browser.newContext();
+    sharedPage = await sharedContext.newPage();
+    // Capture console errors from the initial page load before navigation
+    sharedPage.on('console', msg => {
+      if (msg.type() === 'error') consoleErrors.push(msg.text());
     });
-    await page.goto('/demos/enterprise-control-plane');
+    await sharedPage.goto('/demos/enterprise-control-plane');
+    // Wait for the initial API data to arrive (summary strip is the first indicator)
+    await expect(sharedPage.getByText('Total Teams')).toBeVisible({ timeout: 15000 });
   });
 
-  test('page loads with org summary strip visible', async ({ page }) => {
-    await expect(page.getByText('Total Teams')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('Active Users')).toBeVisible();
+  test.afterAll(async () => {
+    await sharedContext?.close();
   });
 
-  test('all three tabs are present and clickable', async ({ page }) => {
-    await expect(page.getByRole('tab', { name: 'Access Control' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'Spend & Tokens' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'Observability' })).toBeVisible();
+  test('page loads with org summary strip visible', async () => {
+    await expect(sharedPage.getByText('Total Teams')).toBeVisible();
+    await expect(sharedPage.getByText('Active Users')).toBeVisible();
   });
 
-  test('RBAC tab: 5 teams render in team list', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Access Control' }).click();
-    // Wait for data to load
-    await expect(page.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('Marketing').first()).toBeVisible();
-    await expect(page.getByText('Legal').first()).toBeVisible();
-    await expect(page.getByText('Finance').first()).toBeVisible();
-    await expect(page.getByText('Operations').first()).toBeVisible();
+  test('all three tabs are present and clickable', async () => {
+    await expect(sharedPage.getByRole('tab', { name: 'Access Control' })).toBeVisible();
+    await expect(sharedPage.getByRole('tab', { name: 'Spend & Tokens' })).toBeVisible();
+    await expect(sharedPage.getByRole('tab', { name: 'Observability' })).toBeVisible();
   });
 
-  test('RBAC tab: clicking Engineering shows its capability toggles', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Access Control' }).click();
-    await expect(page.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
-    await page.getByText('Engineering').first().click();
-    await expect(page.getByText('Capabilities')).toBeVisible();
-    await expect(page.getByText('Code Generation')).toBeVisible();
+  test('RBAC tab: 5 teams render in team list', async () => {
+    await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
+    await expect(sharedPage.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
+    await expect(sharedPage.getByText('Marketing').first()).toBeVisible();
+    await expect(sharedPage.getByText('Legal').first()).toBeVisible();
+    await expect(sharedPage.getByText('Finance').first()).toBeVisible();
+    await expect(sharedPage.getByText('Operations').first()).toBeVisible();
   });
 
-  test('RBAC tab: toggling a capability shows toast confirmation', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Access Control' }).click();
-    await expect(page.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
-    // Find a toggle switch and click it
-    const toggle = page.getByRole('switch').first();
+  test('RBAC tab: clicking Engineering shows its capability toggles', async () => {
+    await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
+    await expect(sharedPage.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
+    await sharedPage.getByText('Engineering').first().click();
+    await expect(sharedPage.getByText('Capabilities')).toBeVisible();
+    await expect(sharedPage.getByText('Code Generation')).toBeVisible();
+  });
+
+  test('RBAC tab: toggling a capability shows toast confirmation', async () => {
+    await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
+    await expect(sharedPage.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
+    const toggle = sharedPage.getByRole('switch').first();
     await toggle.click();
-    await expect(page.getByText('Change saved (simulated)')).toBeVisible({ timeout: 3000 });
+    await expect(sharedPage.getByText('Change saved (simulated)')).toBeVisible({ timeout: 3000 });
   });
 
-  test('RBAC tab: Legal team connectors are all read-only', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Access Control' }).click();
-    await expect(page.getByText('Legal').first()).toBeVisible({ timeout: 10000 });
-    await page.getByText('Legal').first().click();
-    await expect(page.getByText('Connector Permissions')).toBeVisible();
-    // Legal connectors should show checkmarks only in read column
-    // Verify there are no write/delete checkmarks (the ✓ symbols)
-    const connectorTable = page.locator('table').last();
+  test('RBAC tab: Legal team connectors are all read-only', async () => {
+    await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
+    await expect(sharedPage.getByText('Legal').first()).toBeVisible({ timeout: 10000 });
+    await sharedPage.getByText('Legal').first().click();
+    await expect(sharedPage.getByText('Connector Permissions')).toBeVisible();
+    const connectorTable = sharedPage.locator('table').last();
     await expect(connectorTable).toBeVisible();
   });
 
-  test('Spend tab: budget progress bars are present for all teams', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Spend & Tokens' }).click();
-    await expect(page.getByText('Team Budget Utilization')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('Engineering').first()).toBeVisible();
-    await expect(page.getByText('Marketing').first()).toBeVisible();
+  test('Spend tab: budget progress bars are present for all teams', async () => {
+    await sharedPage.getByRole('tab', { name: 'Spend & Tokens' }).click();
+    await expect(sharedPage.getByText('Team Budget Utilization')).toBeVisible({ timeout: 10000 });
+    await expect(sharedPage.getByText('Engineering').first()).toBeVisible();
+    await expect(sharedPage.getByText('Marketing').first()).toBeVisible();
   });
 
-  test('Spend tab: token cost breakdown table renders', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Spend & Tokens' }).click();
-    await expect(page.getByText('Token Cost Breakdown by Team')).toBeVisible({ timeout: 10000 });
+  test('Spend tab: token cost breakdown table renders', async () => {
+    await sharedPage.getByRole('tab', { name: 'Spend & Tokens' }).click();
+    await expect(sharedPage.getByText('Token Cost Breakdown by Team')).toBeVisible({ timeout: 10000 });
   });
 
-  test('Spend tab: token usage chart renders with SVG element', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Spend & Tokens' }).click();
-    await expect(page.getByText('Token Usage Over Time')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('svg').first()).toBeVisible();
+  test('Spend tab: token usage chart renders with SVG element', async () => {
+    await sharedPage.getByRole('tab', { name: 'Spend & Tokens' }).click();
+    await expect(sharedPage.getByText('Token Usage Over Time')).toBeVisible({ timeout: 10000 });
+    // Target the chart SVG specifically — first() would match the hidden ThemeToggle icon SVG
+    await expect(sharedPage.locator('svg[viewBox="0 0 760 220"]')).toBeVisible();
   });
 
-  test('Spend tab: time range toggle switches chart data', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Spend & Tokens' }).click();
-    await expect(page.getByText('Token Usage Over Time')).toBeVisible({ timeout: 10000 });
-    await page.getByRole('button', { name: '7d' }).click();
-    await expect(page.getByRole('button', { name: '7d' })).toBeVisible();
-    await page.getByRole('button', { name: '30d' }).click();
-    await expect(page.getByRole('button', { name: '30d' })).toBeVisible();
+  test('Spend tab: time range toggle switches chart data', async () => {
+    await sharedPage.getByRole('tab', { name: 'Spend & Tokens' }).click();
+    await expect(sharedPage.getByText('Token Usage Over Time')).toBeVisible({ timeout: 10000 });
+    await sharedPage.getByRole('button', { name: '7d' }).click();
+    await expect(sharedPage.getByRole('button', { name: '7d' })).toBeVisible();
+    await sharedPage.getByRole('button', { name: '30d' }).click();
+    await expect(sharedPage.getByRole('button', { name: '30d' })).toBeVisible();
   });
 
-  test('Observability tab: event feed shows minimum 10 events', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Observability' }).click();
-    await expect(page.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
-    // At least check the feed section is there with some content
-    await expect(page.getByText(/\d+ events/)).toBeVisible();
+  test('Observability tab: event feed shows minimum 10 events', async () => {
+    await sharedPage.getByRole('tab', { name: 'Observability' }).click();
+    await expect(sharedPage.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
+    await expect(sharedPage.getByText(/\d+ events/)).toBeVisible();
   });
 
-  test('Observability tab: team filter reduces visible events', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Observability' }).click();
-    await expect(page.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
-    const teamSelect = page.locator('select').first();
+  test('Observability tab: team filter reduces visible events', async () => {
+    await sharedPage.getByRole('tab', { name: 'Observability' }).click();
+    await expect(sharedPage.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
+    const teamSelect = sharedPage.locator('select').first();
     await teamSelect.selectOption('engineering');
-    // After filter, event count text should change
-    await expect(page.getByText(/\d+ events/)).toBeVisible();
+    await expect(sharedPage.getByText(/\d+ events/)).toBeVisible();
+    // Reset filter so subsequent tests see all events
+    await teamSelect.selectOption('all');
   });
 
-  test('Observability tab: SIEM export button opens modal with NDJSON', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Observability' }).click();
-    await expect(page.getByRole('button', { name: 'Export to SIEM' })).toBeVisible({ timeout: 10000 });
-    await page.getByRole('button', { name: 'Export to SIEM' }).click();
-    await expect(page.getByText('Export to SIEM — Sample NDJSON Payload')).toBeVisible();
-    await expect(page.getByText(/NDJSON/i).first()).toBeVisible();
-    await page.getByRole('button', { name: 'Close' }).click();
+  test('Observability tab: SIEM export button opens modal with NDJSON', async () => {
+    await sharedPage.getByRole('tab', { name: 'Observability' }).click();
+    await expect(sharedPage.getByRole('button', { name: 'Export to SIEM' })).toBeVisible({ timeout: 10000 });
+    await sharedPage.getByRole('button', { name: 'Export to SIEM' }).click();
+    await expect(sharedPage.getByText('Export to SIEM — Sample NDJSON Payload')).toBeVisible();
+    await expect(sharedPage.getByText(/NDJSON/i).first()).toBeVisible();
+    await sharedPage.getByRole('button', { name: 'Close' }).click();
   });
 
-  test('Observability tab: auto-refresh adds events dynamically', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Observability' }).click();
-    await expect(page.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
-    // Enable auto-refresh
-    const autoRefreshToggle = page.getByRole('switch', { name: /auto.refresh/i });
+  test('Observability tab: auto-refresh adds events dynamically', async () => {
+    await sharedPage.getByRole('tab', { name: 'Observability' }).click();
+    await expect(sharedPage.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
+    const autoRefreshToggle = sharedPage.getByRole('switch', { name: /auto.refresh/i });
     await autoRefreshToggle.click();
-    await expect(page.getByText('● Live')).toBeVisible({ timeout: 5000 });
-    // Disable to clean up
+    await expect(sharedPage.getByText('● Live')).toBeVisible({ timeout: 5000 });
     await autoRefreshToggle.click();
   });
 
-  test('architecture note is collapsible', async ({ page }) => {
-    await expect(page.getByText('How this maps to real enterprise deployment')).toBeVisible();
-    const archButton = page.getByRole('button', { name: /How this maps to real enterprise deployment/ });
+  test('architecture note is collapsible', async () => {
+    await expect(sharedPage.getByText('How this maps to real enterprise deployment')).toBeVisible();
+    const archButton = sharedPage.getByRole('button', { name: /How this maps to real enterprise deployment/ });
     await archButton.click();
-    await expect(page.getByText('Analytics API')).toBeVisible();
+    await expect(sharedPage.getByText('Analytics API')).toBeVisible();
     await archButton.click();
-    await expect(page.getByText('Analytics API')).not.toBeVisible();
+    await expect(sharedPage.getByText('Analytics API')).not.toBeVisible();
   });
 
-  test('page has no console errors on load', async ({ page }) => {
-    const errors: string[] = [];
-    page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
-    await page.reload();
-    await page.waitForTimeout(2000);
-    // Filter out known non-critical errors
-    const criticalErrors = errors.filter(e => !e.includes('favicon') && !e.includes('404'));
-    expect(criticalErrors).toHaveLength(0);
+  test('page has no console errors on load', async () => {
+    // Errors were collected during beforeAll navigation — no reload needed.
+    // Filter known non-critical errors: favicon 404s and Vercel analytics/speed-insights
+    // scripts that return HTML in local/CI environments (no Vercel runtime present).
+    const critical = consoleErrors.filter(e =>
+      !e.includes('favicon') &&
+      !e.includes('404') &&
+      !e.includes('_vercel/')
+    );
+    expect(critical).toHaveLength(0);
   });
 
-  test('all interactive elements are keyboard accessible', async ({ page }) => {
-    await page.getByRole('tab', { name: 'Access Control' }).focus();
-    // Arrow right should move to next tab
-    await page.keyboard.press('ArrowRight');
-    await expect(page.getByRole('tab', { name: 'Spend & Tokens' })).toBeFocused();
+  test('all interactive elements are keyboard accessible', async () => {
+    await sharedPage.getByRole('tab', { name: 'Access Control' }).focus();
+    await sharedPage.keyboard.press('ArrowRight');
+    await expect(sharedPage.getByRole('tab', { name: 'Spend & Tokens' })).toBeFocused();
   });
 
-  test('no hardcoded 2024 copyright text', async ({ page }) => {
-    const content = await page.content();
+  test('no hardcoded 2024 copyright text', async () => {
+    const content = await sharedPage.content();
     expect(content).not.toContain('Copyright 2024');
     expect(content).not.toContain('© 2024');
   });

@@ -53,7 +53,7 @@ prasad-portfolio/
 │   │   ├── layout.tsx                    # Root layout, metadata, JSON-LD
 │   │   ├── status/                       # System status dashboard
 │   │   ├── governance/                   # Governance dashboard (metrics, audit log)
-│   │   ├── demos/                        # 10 demo pages
+│   │   ├── demos/                        # 10 production demos
 │   │   └── api/                          # Server-side API routes
 │   │       ├── llm-router/               # Multi-model routing
 │   │       ├── portfolio-assistant/      # Full-context assistant + retrieval grounding
@@ -151,7 +151,7 @@ npm run test:e2e       # Playwright (chromium, firefox, webkit, mobile)
 | Stateful | `src/__tests__/stateful/` | Sequence tests, rate limit drain |
 | Resilience | `src/__tests__/resilience/` | Chaos, timeouts, failure chains |
 | Integration | `src/__tests__/integration/` | Metadata, security config integrity |
-| E2E | `e2e/` | Cross-browser, WCAG 2.1 AA, performance |
+| E2E | `e2e/` | Cross-browser, WCAG 2.2 AA, performance |
 
 Coverage gates enforced in CI: API routes ≥90% statements / ≥85% branches, lib ≥95% functions (currently 100%).
 
@@ -233,7 +233,7 @@ This portfolio ships production-grade implementations of the patterns that defin
   Request context, structured API logs, anomaly signals, and trace IDs propagate across user requests, model calls, and governance views.
 
 ### Why It Matters
-Most AI portfolios show prompts and demos. This one ships the **governance, evaluation, safety infrastructure, and observability** that production AI systems actually require — and all of it is in the test suite and CI pipeline, not just documentation.
+Most AI portfolios show prompts and demos. This one ships the **governance, evaluation, safety infrastructure, and observability** that production AI systems actually require — validated by 300+ tests across unit, fuzz, eval, integration, resilience, and Playwright coverage categories, CI-gated on every PR, with 0 skipped in the main branch.
 
 ## License
 

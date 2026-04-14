@@ -8,7 +8,7 @@ This document describes the real system architecture implemented in this reposit
 
 | Layer | Repo implementation | Purpose |
 |---|---|---|
-| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 10 production demo entry points |
+| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 10 production demos |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
 | Agentic Orchestration Layer | `/api/multi-agent`, `/api/mcp-demo`, `src/app/demos/multi-agent`, `src/app/demos/mcp-demo` | Demonstrates agent coordination, tool discovery, specialist roles, and guarded execution patterns |
 | AI Services Layer | LLM Router, RAG, AI Portfolio Assistant, Resume Generator, Multimodal, Quantization | Hosts the live AI capabilities shown on the site |
@@ -179,16 +179,13 @@ This architecture turns evals into an operational feedback loop: scoring, drift 
 
 ---
 
-## AI ROI and Governance
+## AI ROI & Governance Model
 
-This platform treats governance and economics as engineering controls, not review-time paperwork:
+Without governance controls, hallucinations become a business problem: customer-facing errors erode trust, teams spend cycles on incident response and rollback, and leadership loses confidence in deploying AI to revenue-critical workflows. The risk is not just model quality drift; it is the compounding cost of bad decisions reaching production before anyone can intervene.
 
-- **Quality cost containment:** `src/lib/eval-engine.ts` and `src/lib/drift-monitor.ts` identify low-fidelity or drifting behavior before release, reducing the downstream cost of hallucination handling and rework.
-- **Compute efficiency controls:** `src/app/api/llm-router/route.ts` plus `src/lib/cost-control.ts` route work to fit-for-purpose models and enforce token-budget guardrails to avoid avoidable inference spend.
-- **Operational risk reduction:** `src/lib/guardrails.ts` and HITL checkpoints in the multi-agent flow constrain unsafe autonomy by requiring policy checks and explicit human approval at high-risk boundaries.
-- **Audit readiness:** `src/lib/api.ts` and `src/lib/observability.ts` provide trace IDs, structured event logs, and standardized response metadata so decisions can be reconstructed during reviews.
+This platform addresses that risk as an operating discipline. Eval gating catches regressions before release, reducing rollback and support cost. The HITL checkpoint between Researcher and Strategist prevents unreviewed agent decisions from propagating on high-stakes transitions. Drift monitoring surfaces degradation early, before customers experience it as failure. Centralized observability with trace IDs makes decisions fully auditable end-to-end. Guardrails enforce abuse prevention and input/output safety at the infrastructure layer, so protection does not depend on each feature team re-implementing policy logic.
 
-The combined effect is practical: AI capabilities can move from pilot mode to repeatable operating systems because quality, spend, risk, and traceability are controlled in the same delivery pipeline.
+The operating model is governance-first rather than demo-first: evaluation before deployment, human oversight on critical paths, and full observability from request to response. The result is an AI platform that can scale responsibly, with measurable control over quality, risk, and cost.
 
 ## Synthesis
 

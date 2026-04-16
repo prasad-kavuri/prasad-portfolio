@@ -32,6 +32,7 @@ test.describe('Enterprise Control Plane demo', () => {
   });
 
   test('page loads with org summary strip visible', async () => {
+    await expect(sharedPage.getByText('Executive Snapshot (Seeded Baseline)')).toBeVisible();
     await expect(sharedPage.getByText('Total Teams')).toBeVisible();
     await expect(sharedPage.getByText('Active Users')).toBeVisible();
   });
@@ -106,13 +107,13 @@ test.describe('Enterprise Control Plane demo', () => {
 
   test('Observability tab: event feed shows minimum 10 events', async () => {
     await sharedPage.getByRole('tab', { name: 'Observability' }).click();
-    await expect(sharedPage.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
+    await expect(sharedPage.getByText('Event Feed', { exact: true })).toBeVisible({ timeout: 10000 });
     await expect(sharedPage.getByText(/\d+ events/)).toBeVisible();
   });
 
   test('Observability tab: team filter reduces visible events', async () => {
     await sharedPage.getByRole('tab', { name: 'Observability' }).click();
-    await expect(sharedPage.getByText('Event Feed')).toBeVisible({ timeout: 10000 });
+    await expect(sharedPage.getByText('Event Feed', { exact: true })).toBeVisible({ timeout: 10000 });
     const teamSelect = sharedPage.locator('select').first();
     await teamSelect.selectOption('engineering');
     await expect(sharedPage.getByText(/\d+ events/)).toBeVisible();

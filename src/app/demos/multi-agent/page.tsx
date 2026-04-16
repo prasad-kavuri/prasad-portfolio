@@ -149,6 +149,7 @@ export default function MultiAgentPage() {
   const [reviewMode, setReviewMode] = useState(true);
   const [reviewDraft, setReviewDraft] = useState("");
   const [reviewNote, setReviewNote] = useState("");
+  const [runtimeSeconds, setRuntimeSeconds] = useState(0);
 
   useEffect(() => {
     if (status !== "running") return;
@@ -161,6 +162,15 @@ export default function MultiAgentPage() {
     }, 500);
 
     return () => clearInterval(interval);
+  }, [status]);
+
+  useEffect(() => {
+    if (status !== "running") return;
+    setRuntimeSeconds(0);
+    const timer = setInterval(() => {
+      setRuntimeSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
   }, [status]);
 
   useEffect(() => {
@@ -224,6 +234,31 @@ export default function MultiAgentPage() {
 
   const traceCards = useMemo(() => {
     const source = activeData?.agents ?? [];
+    const domain = (() => {
+      try {
+        return new URL(url).hostname.replace(/^www\./, "");
+      } catch {
+        return "target site";
+      }
+    })();
+
+    const fallbackRecommendation = (agentName: string, stage: StageState) => {
+      if (stage === "running") {
+        if (agentName === "Analyzer") return `Scanning ${domain} for reliability, navigation, and architecture constraints.`;
+        if (agentName === "Researcher") return `Comparing ${domain} against enterprise benchmark patterns and trade-offs.`;
+        return `Synthesizing a decision-ready rollout recommendation for ${domain}.`;
+      }
+      if (stage === "paused") {
+        return "Strategist recommendation is prepared and waiting for explicit human approval.";
+      }
+      if (stage === "completed") {
+        if (agentName === "Analyzer") return "Baseline architecture constraints captured for strategic handoff.";
+        if (agentName === "Researcher") return "Best-practice options and risks summarized for strategist synthesis.";
+        return "Recommendation drafted with constraints, options, and business impact.";
+      }
+      return "Waiting for workflow execution.";
+    };
+
     return AGENTS.map((agent, index) => {
       const found = source.find((a) => a.name === agent.name);
       let state: StageState = "idle";
@@ -240,25 +275,18 @@ export default function MultiAgentPage() {
       if (status === "done") state = "completed";
       if (status === "error") state = "failed";
 
-      const fallbackSummary =
-        state === "running"
-          ? `${agent.name} is processing this request.`
-          : state === "paused"
-          ? "Awaiting human approval before release."
-          : "Waiting for execution.";
-
       return {
         ...agent,
         state,
         sequence: index + 1,
         findings: found?.findings ?? [],
-        recommendation: found?.recommendation ?? fallbackSummary,
+        recommendation: found?.recommendation ?? fallbackRecommendation(agent.name, state),
         confidence: found?.confidence,
         duration_ms: found?.duration_ms,
         tokens: found?.tokens,
       };
     });
-  }, [activeData, currentAgent, progress, status]);
+  }, [activeData, currentAgent, progress, status, url]);
 
   const handleAnalyze = async () => {
     if (!url.trim()) return;
@@ -470,7 +498,9 @@ export default function MultiAgentPage() {
                     return (
                       <li
                         key={stage.id}
-                        className={`rounded-lg border p-3 transition-all ${STATUS_STYLES[stage.state]} ${stage.state === "running" ? "shadow-sm" : ""}`}
+                        className={`rounded-lg border-l-4 p-3 transition-all ${STATUS_STYLES[stage.state]} ${stage.state === "running" ? "shadow-sm ring-1 ring-blue-500/30" : ""} ${
+                          stage.state === "completed" ? "border-l-green-500" : stage.state === "running" ? "border-l-blue-500" : stage.state === "paused" ? "border-l-amber-500" : stage.state === "failed" ? "border-l-red-500" : "border-l-border"
+                        }`}
                         aria-live="polite"
                       >
                         <div className="flex items-start gap-3">
@@ -483,6 +513,7 @@ export default function MultiAgentPage() {
                               <span className="inline-flex items-center gap-1 text-xs font-medium">
                                 {getStateIcon(stage.state)}
                                 {getStateText(stage.state)}
+                                {stage.state === "running" && <span className="inline-block size-1.5 rounded-full bg-blue-500 animate-pulse" />}
                               </span>
                             </div>
                             <p className="mt-0.5 text-xs leading-relaxed opacity-90">{stage.detail}</p>
@@ -504,7 +535,7 @@ export default function MultiAgentPage() {
                 {traceCards.map((agent) => (
                   <div
                     key={agent.id}
-                    className={`rounded-lg border p-4 transition-all ${STATUS_STYLES[agent.state]} ${agent.state === "running" ? "animate-pulse" : ""}`}
+                    className={`rounded-lg border p-4 transition-all ${STATUS_STYLES[agent.state]} ${agent.state === "running" ? "ring-1 ring-blue-500/30" : ""}`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div>
@@ -533,7 +564,7 @@ export default function MultiAgentPage() {
                 <CardContent className="p-4">
                   <div className="mb-2 flex items-center justify-between text-sm">
                     <span className="font-medium">Workflow progress</span>
-                    <span className="text-muted-foreground">{Math.floor(progress)}%</span>
+                    <span className="text-muted-foreground">{Math.floor(progress)}% · {runtimeSeconds}s elapsed</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-muted">
                     <div className="h-2 rounded-full bg-blue-600 transition-all" style={{ width: `${progress}%` }} />
@@ -545,7 +576,7 @@ export default function MultiAgentPage() {
 
           <div className="space-y-6">
             {status === "pending_review" && pendingResult ? (
-              <Card className="border-amber-500/40 bg-amber-500/5">
+              <Card className="border-amber-500/40 bg-amber-500/5 shadow-sm ring-1 ring-amber-500/20">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg text-amber-600 dark:text-amber-300">Human Approval Required</CardTitle>
                   <p className="text-sm text-muted-foreground">
@@ -577,13 +608,13 @@ export default function MultiAgentPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700">
+                    <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-400">
                       Approve
                     </Button>
-                    <Button onClick={handleRegeneratePending} variant="outline">
+                    <Button onClick={handleRegeneratePending} variant="outline" className="focus-visible:ring-2 focus-visible:ring-blue-400">
                       Revise
                     </Button>
-                    <Button onClick={handleCancelPending} variant="outline">
+                    <Button onClick={handleCancelPending} variant="outline" className="focus-visible:ring-2 focus-visible:ring-amber-400">
                       Cancel
                     </Button>
                   </div>

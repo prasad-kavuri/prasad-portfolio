@@ -51,6 +51,8 @@ describe('MultiAgentPage HITL flow', () => {
     await waitFor(() => {
       expect(screen.getByText(/Strategist requires approval to proceed/i)).toBeInTheDocument();
     });
+    expect(screen.getAllByText(/Paused/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/What the Strategist is about to do/i)).toBeInTheDocument();
 
     const reviewInput = screen.getByLabelText(/Strategist revision guidance/i);
     fireEvent.change(reviewInput, { target: { value: 'Revised strategist action for safer rollout.' } });
@@ -72,6 +74,7 @@ describe('MultiAgentPage HITL flow', () => {
     expect(screen.getByText(/Workflow Stages/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Request Intake/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Human Approval/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Execution Trace/i)).toBeInTheDocument();
     expect(screen.getByText(/Business Value of This Pattern/i)).toBeInTheDocument();
   });
 });

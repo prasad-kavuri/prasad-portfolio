@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "name": "Prasad Kavuri — VP / Head of AI Engineering",
-  "description": "Executive AI Engineering leader with 20+ years experience operating 10 production AI systems. Available for VP/Head of AI Engineering roles.",
+  "description": "Executive AI Engineering leader with 20+ years experience operating 12 production AI systems. Available for VP/Head of AI Engineering roles.",
   "contact": {
     "email": "vbkpkavuri@gmail.com",
     "linkedin": "https://linkedin.com/in/pkavuri",
@@ -35,6 +35,8 @@
     {"name": "AI Evaluation Showcase", "url": "https://www.prasadkavuri.com/demos/evaluation-showcase"},
     {"name": "Multi-Agent System", "url": "https://www.prasadkavuri.com/demos/multi-agent"},
     {"name": "MCP Tool Demo", "url": "https://www.prasadkavuri.com/demos/mcp-demo"},
+    {"name": "Enterprise Control Plane", "url": "https://www.prasadkavuri.com/demos/enterprise-control-plane"},
+    {"name": "Browser-Native AI Skill", "url": "https://www.prasadkavuri.com/demos/browser-native-ai-skill"},
     {"name": "AI Portfolio Assistant", "url": "https://www.prasadkavuri.com/demos/portfolio-assistant"},
     {"name": "Resume Generator", "url": "https://www.prasadkavuri.com/demos/resume-generator"},
     {"name": "Multimodal Assistant", "url": "https://www.prasadkavuri.com/demos/multimodal"},

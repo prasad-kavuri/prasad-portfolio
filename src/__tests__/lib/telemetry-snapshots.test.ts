@@ -4,7 +4,7 @@ import { GOVERNANCE_SNAPSHOT, STATUS_SNAPSHOT, getGovernanceMetricsView } from '
 describe('telemetry snapshots', () => {
   it('status snapshot has consistent, non-empty sections with precise timestamp', () => {
     expect(STATUS_SNAPSHOT.generatedAtIso).toMatch(/^\d{4}-\d{2}-\d{2}T.+Z$/);
-    expect(STATUS_SNAPSHOT.services).toHaveLength(10);
+    expect(STATUS_SNAPSHOT.services).toHaveLength(12);
     expect(STATUS_SNAPSHOT.securityPosture.length).toBeGreaterThan(0);
     expect(STATUS_SNAPSHOT.testSuite.length).toBeGreaterThan(0);
     expect(STATUS_SNAPSHOT.stack.length).toBeGreaterThan(0);

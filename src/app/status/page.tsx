@@ -4,7 +4,7 @@ import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
 
 export const metadata = {
   title: 'System Status — Prasad Kavuri',
-  description: 'System status and mixed telemetry snapshot for 10 production AI systems on prasadkavuri.com',
+  description: 'System status and mixed telemetry snapshot for 12 production AI systems on prasadkavuri.com',
 };
 
 export default function StatusPage() {

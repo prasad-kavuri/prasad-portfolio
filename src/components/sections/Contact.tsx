@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import profile from "@/data/profile.json";
 import { Mail, ExternalLink, CalendarDays } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { LinkedInCta } from "@/components/ui/linkedin-cta";
 
 export function Contact() {
   return (
@@ -22,11 +23,13 @@ export function Contact() {
         </div>
 
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <LinkedInCta href={profile.personal.linkedin} />
+
           <Link href={profile.personal.linkedin} target="_blank" rel="noopener noreferrer">
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">
                 <ExternalLink className="size-5" style={{ color: 'var(--accent-brand)' }} />
-                <span>LinkedIn</span>
+                <span>View LinkedIn Profile</span>
               </CardContent>
             </Card>
           </Link>

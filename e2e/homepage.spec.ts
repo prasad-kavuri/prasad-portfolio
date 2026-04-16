@@ -32,18 +32,20 @@ test.describe('Homepage', () => {
     await expect(page.getByText('AI Applications', { exact: true }).first()).toBeVisible();
   });
 
-  test('all 10 demo cards are present', async ({ page }) => {
+  test('all 12 demo cards are present', async ({ page }) => {
     // Use first() because card titles may appear in multiple elements (heading + aria-label etc.)
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
     await expect(page.getByText('LLM Router').first()).toBeVisible();
     await expect(page.getByText('Vector Search').first()).toBeVisible();
     await expect(page.getByText('Multi-Agent System').first()).toBeVisible();
     await expect(page.getByText('MCP Tool Demo').first()).toBeVisible();
+    await expect(page.getByText('Enterprise Control Plane').first()).toBeVisible();
     await expect(page.getByText('AI Portfolio Assistant').first()).toBeVisible();
     await expect(page.getByText('Resume Generator').first()).toBeVisible();
     await expect(page.getByText('Multimodal Assistant').first()).toBeVisible();
     await expect(page.getByText('Model Quantization').first()).toBeVisible();
     await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
+    await expect(page.getByText('Browser-Native AI Skill').first()).toBeVisible();
   });
 
   test('Desktop badge appears on exactly 3 cards', async ({ page }) => {
@@ -81,6 +83,7 @@ test.describe('Homepage', () => {
 
   test('contact section shows role targeting', async ({ page }) => {
     await expect(page.getByText(/Open to VP \/ Head of AI Engineering/i)).toBeVisible();
+    await expect(page.getByRole('link', { name: /Connect on LinkedIn/i }).first()).toBeVisible();
   });
 
   test('recruiter strip is visible with all 3 buttons', async ({ page }) => {

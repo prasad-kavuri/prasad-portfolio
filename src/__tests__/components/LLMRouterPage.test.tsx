@@ -51,6 +51,8 @@ describe('LLMRouterDemo page', () => {
     await waitFor(() => {
       expect(screen.getByText(/Why this route was recommended/i)).toBeInTheDocument();
     });
+    expect(screen.getByText(/Routing Economics Snapshot/i)).toBeInTheDocument();
+    expect(screen.getByText(/Estimated Cost \/ Request/i)).toBeInTheDocument();
     expect(screen.queryByText(/Business Value Projection/i)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('checkbox', { name: /Business Value Mode/i }));

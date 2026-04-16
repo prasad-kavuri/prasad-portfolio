@@ -8,7 +8,7 @@ This document describes the real system architecture implemented in this reposit
 
 | Layer | Repo implementation | Purpose |
 |---|---|---|
-| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 10 production demos |
+| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 12 production demos |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
 | Agentic Orchestration Layer | `/api/multi-agent`, `/api/mcp-demo`, `src/app/demos/multi-agent`, `src/app/demos/mcp-demo` | Demonstrates agent coordination, tool discovery, specialist roles, and guarded execution patterns |
 | AI Services Layer | LLM Router, RAG, AI Portfolio Assistant, Resume Generator, Multimodal, Quantization | Hosts the live AI capabilities shown on the site |
@@ -56,6 +56,7 @@ The AI services layer contains both server-side and browser-side demos:
 | Multimodal Assistant | `/demos/multimodal` | Browser model execution |
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
 | Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, OTEL observability |
+| Browser-Native AI Skill | `/demos/browser-native-ai-skill` | On-device accessibility and agent-readiness analysis |
 
 The LLM Router demonstrates the cost/latency tradeoff pattern directly. RAG and vector search demonstrate retrieval before generation. Browser demos show local inference patterns that reduce server load and external API cost.
 
@@ -87,7 +88,7 @@ Security controls are implemented at route boundaries and platform configuration
 
 ## Snapshot Telemetry Data
 
-Status and governance pages use `src/data/telemetry-snapshots.ts` as a centralized source for precise snapshot timestamps, 10-system inventory, service posture summaries, policy controls, audit records, and deterministic metric values. Governance metric cards are assembled through `getGovernanceMetricsView(...)`, then optionally augmented with live `/api/eval-snapshot` values when available.
+Status and governance pages use `src/data/telemetry-snapshots.ts` as a centralized source for precise snapshot timestamps, service inventory, posture summaries, policy controls, audit records, and deterministic metric values. Governance metric cards are assembled through `getGovernanceMetricsView(...)`, then optionally augmented with live `/api/eval-snapshot` values when available.
 
 ## Observability
 

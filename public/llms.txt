@@ -16,13 +16,15 @@ Book a call: https://calendly.com/vbkpkavuri
 - Ola: 13,000+ B2B customers, 70% cost reduction
 - HERE Technologies: 18 years, Sr Engineer to Director
 
-## Live AI Demos (10 production systems)
+## Live AI Demos (12 production systems)
 - RAG Pipeline: https://www.prasadkavuri.com/demos/rag-pipeline
 - LLM Router: https://www.prasadkavuri.com/demos/llm-router
 - Vector Search: https://www.prasadkavuri.com/demos/vector-search
 - AI Evaluation Showcase: https://www.prasadkavuri.com/demos/evaluation-showcase
 - Multi-Agent System: https://www.prasadkavuri.com/demos/multi-agent
 - MCP Tool Demo: https://www.prasadkavuri.com/demos/mcp-demo
+- Enterprise Control Plane: https://www.prasadkavuri.com/demos/enterprise-control-plane
+- Browser-Native AI Skill: https://www.prasadkavuri.com/demos/browser-native-ai-skill
 - AI Portfolio Assistant: https://www.prasadkavuri.com/demos/portfolio-assistant
 - Resume Generator: https://www.prasadkavuri.com/demos/resume-generator
 - Multimodal Assistant: https://www.prasadkavuri.com/demos/multimodal

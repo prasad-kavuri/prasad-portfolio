@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demos } from "@/data/demos";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Bot, Building2, Database, Eye, FileText, GitBranch, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
+import { ArrowRight, Bot, Building2, Database, Eye, FileText, GitBranch, MonitorCheck, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 const statusLabel: Record<string, string> = {
@@ -26,7 +26,7 @@ const DEMO_GROUPS = [
   {
     label: "Core AI Infrastructure",
     description: "Foundation systems for scalable AI platforms",
-    ids: ["evaluation-showcase", "rag-pipeline", "llm-router", "vector-search"]
+    ids: ["evaluation-showcase", "rag-pipeline", "llm-router", "vector-search", "browser-native-ai-skill"]
   },
   {
     label: "Agentic Systems",
@@ -50,6 +50,7 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
   "multi-agent": Users,
   "mcp-demo": Plug,
   "enterprise-control-plane": Building2,
+  "browser-native-ai-skill": MonitorCheck,
   "portfolio-assistant": Bot,
   "resume-generator": FileText,
   "multimodal": Eye,

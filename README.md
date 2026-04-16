@@ -14,24 +14,22 @@ Production-grade AI engineering portfolio for VP / Head / Sr Director evaluation
 - **MCP Tool Demo**: dynamic tool discovery/invocation pattern for auditable model-to-tool interaction.
 - **Applied AI Experiences**: portfolio assistant, resume generator, multimodal inference, and quantization benchmarks.
 
-## Demo Inventory
+## Live Demos (12 Production Demos)
 
-### Core AI Infrastructure
-- AI Evaluation Showcase
-- RAG Pipeline
-- LLM Router
-- Vector Search
-
-### Agentic Systems
-- Multi-Agent System
-- MCP Tool Demo
-- Enterprise Control Plane
-
-### AI Applications
-- AI Portfolio Assistant
-- Resume Generator
-- Multimodal Assistant
-- Model Quantization
+| Demo | Category | Tech Stack | Business Impact |
+|---|---|---|---|
+| AI Evaluation Showcase | Flagship Quality System | LLM-as-Judge, drift monitor, CI eval gating | Prevents regression risk before release |
+| Enterprise Control Plane | Flagship Governance | RBAC, token analytics, OpenTelemetry | Enables governed AI operations with audit-ready controls |
+| Multi-Agent System | Flagship Agentic Workflow | CrewAI, Groq, HITL checkpoint | Improves decision velocity with controlled autonomy |
+| LLM Router | Core AI Infrastructure | Groq, multi-model orchestration, routing logic | Optimizes inference cost/latency tradeoffs |
+| RAG Pipeline | Core AI Infrastructure | Transformers.js, ChromaDB, browser embeddings | Improves knowledge precision with lower support load |
+| Vector Search | Core AI Infrastructure | sentence-BERT, UMAP, cosine similarity | Accelerates semantic retrieval across enterprise content |
+| Browser-Native AI Skill | Browser-Native AI | On-device analysis, accessibility checks, agent-readiness scoring | Catches UX/automation risks early without data egress |
+| MCP Tool Demo | Agentic Systems | MCP pattern, Groq tool use | Standardizes tool execution with traceable handoffs |
+| AI Portfolio Assistant | AI Applications | Vercel AI SDK, streaming, retrieval cues | Reduces time-to-context for stakeholders |
+| Resume Generator | AI Applications | Structured generation, skill matching, PDF export | Speeds candidate-role alignment workflows |
+| Multimodal Assistant | Local-First AI | Florence-2, WebGPU, Transformers.js | Runs vision tasks locally for privacy/cost efficiency |
+| Model Quantization | Local-First AI | ONNX, INT8 vs FP32 benchmark | Demonstrates model efficiency gains for deployment economics |
 
 ## Visual Proof
 

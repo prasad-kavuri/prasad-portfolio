@@ -70,6 +70,26 @@ vi.mock('@/data/demos', () => ({
       status: 'live',
     },
     {
+      id: 'enterprise-control-plane',
+      emoji: 'Building2',
+      title: 'Enterprise Control Plane',
+      description: 'Org-wide governance dashboard.',
+      businessImpact: 'Governs access, spend, and auditability at scale',
+      href: '/demos/enterprise-control-plane',
+      tags: ['RBAC', 'OpenTelemetry'],
+      status: 'live',
+    },
+    {
+      id: 'browser-native-ai-skill',
+      emoji: 'MonitorCheck',
+      title: 'Browser-Native AI Skill',
+      description: 'On-device accessibility and readiness checks.',
+      businessImpact: 'Finds release risks early without inference egress',
+      href: '/demos/browser-native-ai-skill',
+      tags: ['On-device analysis', 'Accessibility'],
+      status: 'live',
+    },
+    {
       id: 'portfolio-assistant',
       emoji: 'Bot',
       title: 'AI Portfolio Assistant',
@@ -148,6 +168,8 @@ describe('AITools', () => {
     expect(screen.getAllByText('Multi-Agent System').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('LLM Router')).toBeInTheDocument();
     expect(screen.getByText('MCP Tool Demo')).toBeInTheDocument();
+    expect(screen.getByText('Enterprise Control Plane')).toBeInTheDocument();
+    expect(screen.getByText('Browser-Native AI Skill')).toBeInTheDocument();
     expect(screen.getByText('Resume Generator')).toBeInTheDocument();
     expect(screen.getByText('AI Portfolio Assistant')).toBeInTheDocument();
   });

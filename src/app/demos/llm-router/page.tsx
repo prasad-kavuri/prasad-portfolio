@@ -217,6 +217,40 @@ export default function LLMRouterDemo() {
 
         {results && (
           <div className="mb-8">
+            {summary && businessProjection && (
+              <Card className="mb-6 border-border bg-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                  Routing Economics Snapshot
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Routed Model</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      {summary.recommended?.modelName ?? "N/A"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Estimated Cost / Request</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      ${summary.recommended?.cost_usd.toFixed(6) ?? "0.000000"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Premium Baseline</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      ${businessProjection.baseline.cost_usd.toFixed(6)}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Savings vs Baseline</p>
+                    <p className="mt-1 text-sm font-semibold text-emerald-400">
+                      ${businessProjection.perRequestSavings.toFixed(6)}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
             <div className="grid grid-cols-2 gap-4 mb-6">
               {results.map(result => (
                 <Card

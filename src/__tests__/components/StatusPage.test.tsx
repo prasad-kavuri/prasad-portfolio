@@ -34,11 +34,12 @@ describe('StatusPage', () => {
     expect(screen.getByText(new RegExp(firstServiceStatus.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toBeInTheDocument();
   });
 
-  it('renders all systems from centralized status snapshot data (10 total)', () => {
+  it('renders all systems from centralized status snapshot data (12 total)', () => {
     render(React.createElement(StatusPage));
 
-    expect(STATUS_SNAPSHOT.services).toHaveLength(10);
+    expect(STATUS_SNAPSHOT.services).toHaveLength(12);
     expect(screen.getByText('AI Evaluation Showcase')).toBeInTheDocument();
+    expect(screen.getByText('Browser-Native AI Skill')).toBeInTheDocument();
   });
 
   it('renders trust controls from centralized snapshot data', () => {

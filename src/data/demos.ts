@@ -124,4 +124,14 @@ export const demos: Demo[] = [
     tags: ["Enterprise", "RBAC", "OpenTelemetry", "Token Analytics"],
     status: "live",
   },
+  {
+    id: "browser-native-ai-skill",
+    emoji: "MonitorCheck",
+    title: "Browser-Native AI Skill",
+    description: "Reusable browser-native skill that audits page accessibility and agent readiness with on-device analysis and no inference egress.",
+    businessImpact: "Improves deployment readiness by catching UX and automation risks before release",
+    href: "/demos/browser-native-ai-skill",
+    tags: ["On-device analysis", "Accessibility", "Agent readiness"],
+    status: "live",
+  },
 ];

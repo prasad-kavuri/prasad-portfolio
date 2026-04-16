@@ -1,4 +1,5 @@
 import { detectPromptInjection } from '@/lib/guardrails';
+import { validateWorldSceneSpec, type WorldSceneSpec } from '@/lib/world-assets';
 import {
   DEFAULT_WORLD_CONSTRAINTS,
   WORLD_OBJECTIVE_OPTIONS,
@@ -219,5 +220,19 @@ export function validateWorldInput(payload: unknown): WorldGuardrailResult {
       simulationReady,
       image: raw.image as WorldUploadPayload | undefined,
     },
+  };
+}
+
+export function validateWorldSceneForRender(sceneSpec: WorldSceneSpec): { isSafe: boolean; issues: string[] } {
+  const validation = validateWorldSceneSpec(sceneSpec);
+  const issues = [...validation.reasons];
+
+  if (sceneSpec.primitives.length > sceneSpec.primitiveBudget) {
+    issues.push('scene_primitive_budget_exceeded');
+  }
+
+  return {
+    isSafe: issues.length === 0,
+    issues,
   };
 }

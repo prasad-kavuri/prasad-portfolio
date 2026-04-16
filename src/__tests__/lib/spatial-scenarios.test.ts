@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { buildWorldAssetSummary, buildWorldPreview } from '@/lib/world-assets';
+import { buildWorldAssetSummary, buildWorldPreview, buildWorldSceneSpec, validateWorldSceneSpec } from '@/lib/world-assets';
 import { generateWorldWithProvider } from '@/lib/world-generation-adapter';
+import { getWorldExportEligibility, mapSceneSpecToRenderablePrimitives } from '@/lib/world-3d';
 import { hashWorldSeed, pickWorldVariant } from '@/lib/world-prompts';
 
 describe('world generation helpers', () => {
@@ -22,7 +23,7 @@ describe('world generation helpers', () => {
     expect(pickWorldVariant(4, variants)).toBe('B');
   });
 
-  it('builds preview grid and asset summary', () => {
+  it('builds preview grid, scene spec, and asset summary', () => {
     const preview = buildWorldPreview({
       prompt: 'Generate a transit world concept with logistics buffers.',
       region: 'Transit District',
@@ -41,6 +42,20 @@ describe('world generation helpers', () => {
       simulationReady: true,
     });
 
+    const sceneSpec = buildWorldSceneSpec({
+      prompt: 'Generate a transit world concept with logistics buffers.',
+      region: 'Transit District',
+      style: 'mobility-corridor',
+      objective: 'speed',
+      providerMode: 'mock',
+      availability: 'available',
+      simulationReady: true,
+    });
+
+    expect(sceneSpec.primitives.length).toBeGreaterThan(10);
+    expect(validateWorldSceneSpec(sceneSpec).isValid).toBe(true);
+    expect(mapSceneSpecToRenderablePrimitives(sceneSpec)).toHaveLength(sceneSpec.primitives.length);
+    expect(getWorldExportEligibility(sceneSpec).eligible).toBe(true);
     expect(assets.representation).toBe('3dgs-concept');
     expect(assets.simulationReadiness).toBe('ready');
   });
@@ -58,6 +73,7 @@ describe('world generation helpers', () => {
 
     expect(hyworld.mode).toBe('hyworld-adapter');
     expect(hyworld.availability).toBe('fallback');
+    expect(hyworld.sceneSpec.providerMode).toBe('hyworld-adapter');
 
     const mock = await generateWorldWithProvider({
       provider: 'mock',
@@ -71,5 +87,6 @@ describe('world generation helpers', () => {
 
     expect(mock.mode).toBe('mock');
     expect(mock.availability).toBe('available');
+    expect(mock.sceneSpec.exportReadiness).toBe('ready');
   });
 });

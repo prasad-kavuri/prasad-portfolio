@@ -1,4 +1,5 @@
 import type { WorldGenerationOutput } from '@/lib/world-generation';
+import { validateWorldSceneSpec } from '@/lib/world-assets';
 
 export type WorldEvalCheck = {
   id: string;
@@ -21,6 +22,7 @@ export function validateWorldOutputShape(output: WorldGenerationOutput): string[
   if (!Array.isArray(output.traces) || output.traces.length < 5) issues.push('trace_incomplete');
   if (!output.worldArtifact?.worldTitle) issues.push('missing_world_title');
   if (!output.worldArtifact?.preview?.cells?.length) issues.push('missing_world_preview');
+  if (!output.worldArtifact?.sceneSpec || !output.worldArtifact.sceneSpec.primitives?.length) issues.push('missing_scene_spec');
   if (!output.worldArtifact?.assets?.sceneZones?.length) issues.push('missing_scene_zones');
   if (!output.proposedRecommendation?.headline) issues.push('missing_recommendation_headline');
   if (!output.proposedRecommendation?.tradeoffs?.length) issues.push('missing_tradeoffs');
@@ -65,6 +67,26 @@ export function evaluateWorldOutput(output: WorldGenerationOutput): WorldEvalRes
     id: 'constraints_stated',
     passed: includesConstraints,
     detail: includesConstraints ? 'Constraints included.' : 'Constraint coverage is insufficient.',
+  });
+
+  const sceneValidation = output.worldArtifact.sceneSpec
+    ? validateWorldSceneSpec(output.worldArtifact.sceneSpec)
+    : { isValid: false, reasons: ['scene_spec_missing'] };
+  checks.push({
+    id: 'scene_spec_valid',
+    passed: sceneValidation.isValid,
+    detail: sceneValidation.isValid ? 'Scene specification validated.' : sceneValidation.reasons.join(','),
+  });
+
+  const exportReadinessConsistent = output.worldArtifact.sceneSpec
+    ? output.worldArtifact.sceneSpec.exportReadiness === output.worldArtifact.assets.simulationReadiness
+    : false;
+  checks.push({
+    id: 'export_readiness_consistent',
+    passed: exportReadinessConsistent,
+    detail: exportReadinessConsistent
+      ? 'Scene export readiness is aligned with simulation readiness.'
+      : 'Scene export readiness mismatch.',
   });
 
   const approvalStateConsistent = output.status === 'completed'

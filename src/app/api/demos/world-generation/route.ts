@@ -10,7 +10,7 @@ import {
 import { checkOutput } from '@/lib/guardrails';
 import { buildWorldGeneration } from '@/lib/world-generation';
 import { evaluateWorldOutput } from '@/lib/world-eval';
-import { validateWorldInput } from '@/lib/world-guardrails';
+import { validateWorldInput, validateWorldSceneForRender } from '@/lib/world-guardrails';
 
 const ROUTE = '/api/demos/world-generation';
 
@@ -71,6 +71,29 @@ export async function POST(req: NextRequest) {
         }
       : undefined,
   });
+
+  const renderGuard = validateWorldSceneForRender(output.worldArtifact.sceneSpec);
+  if (!renderGuard.isSafe) {
+    logApiWarning('api.world_render_guard_triggered', {
+      route: ROUTE,
+      traceId: context.traceId,
+      issues: renderGuard.issues.join(','),
+      status: 422,
+    });
+
+    return finalizeApiResponse(
+      NextResponse.json(
+        {
+          error: 'World output failed render safety checks',
+          details: renderGuard.issues,
+          requestId: context.traceId,
+        },
+        { status: 422 }
+      ),
+      context,
+      422
+    );
+  }
 
   const evalResult = evaluateWorldOutput(output);
   if (!evalResult.passed) {

@@ -1,8 +1,10 @@
 import {
   buildWorldAssetSummary,
   buildWorldPreview,
+  buildWorldSceneSpec,
   type WorldAssetSummary,
   type WorldPreview,
+  type WorldSceneSpec,
 } from '@/lib/world-assets';
 import { pickWorldVariant, type WorldObjective, type WorldRegion, type WorldStyle } from '@/lib/world-prompts';
 
@@ -29,6 +31,7 @@ export type WorldProviderOutput = {
   availability: 'available' | 'fallback';
   worldTitle: string;
   preview: WorldPreview;
+  sceneSpec: WorldSceneSpec;
   assets: WorldAssetSummary;
   notes: string[];
 };
@@ -55,6 +58,15 @@ class MockWorldProvider implements WorldGenerationProvider {
       objective: input.objective,
       simulationReady: input.simulationReady,
     });
+    const sceneSpec = buildWorldSceneSpec({
+      prompt: input.prompt,
+      region: input.region,
+      objective: input.objective,
+      style: input.style,
+      providerMode: 'mock',
+      availability: 'available',
+      simulationReady: input.simulationReady,
+    });
 
     const variant = pickWorldVariant(input.seed, [
       'Curbside capacity pressure map generated.',
@@ -68,6 +80,7 @@ class MockWorldProvider implements WorldGenerationProvider {
       availability: 'available',
       worldTitle: `${input.region} ${input.style} world concept`,
       preview,
+      sceneSpec,
       assets,
       notes: [
         'Seeded world concept generated locally for deterministic portfolio runs.',
@@ -97,6 +110,15 @@ class HyWorldAdapterProvider implements WorldGenerationProvider {
       objective: input.objective,
       simulationReady: input.simulationReady,
     });
+    const sceneSpec = buildWorldSceneSpec({
+      prompt: input.prompt,
+      region: input.region,
+      objective: input.objective,
+      style: input.style,
+      providerMode: 'hyworld-adapter',
+      availability: 'fallback',
+      simulationReady: input.simulationReady,
+    });
 
     return {
       provider: this.id,
@@ -104,6 +126,7 @@ class HyWorldAdapterProvider implements WorldGenerationProvider {
       availability: 'fallback',
       worldTitle: `${input.region} adapter-backed world concept`,
       preview,
+      sceneSpec,
       assets,
       notes: [
         'HY-World adapter contract is wired, but upstream generation is unavailable in this public portfolio runtime.',

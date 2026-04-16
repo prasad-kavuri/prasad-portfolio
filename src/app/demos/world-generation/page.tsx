@@ -19,7 +19,11 @@ import {
   Sparkles,
   UserCheck,
   WandSparkles,
+  Download,
+  RotateCcw,
+  Layers3,
 } from 'lucide-react';
+import { ProceduralWorldCanvas } from '@/components/demos/world/ProceduralWorldCanvas';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,6 +46,11 @@ import {
 } from '@/lib/world-guardrails';
 import type { WorldEvalResult } from '@/lib/world-eval';
 import type { WorldGenerationOutput, WorldWorkflowStage } from '@/lib/world-generation';
+import {
+  exportWorldSceneAsGlb,
+  getWorldExportEligibility,
+  getWorldSceneComplexity,
+} from '@/lib/world-3d';
 
 
 type RunState = 'idle' | 'running' | 'pending_review' | 'done' | 'error';
@@ -66,15 +75,6 @@ const STAGE_STYLE: Record<WorldWorkflowStage['state'], string> = {
   completed: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
   paused: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
   failed: 'border-red-500/40 bg-red-500/10 text-red-300',
-};
-
-const CELL_CLASS: Record<'road' | 'pedestrian' | 'logistics' | 'pickup' | 'buffer' | 'transit', string> = {
-  road: 'bg-slate-500/70',
-  pedestrian: 'bg-emerald-500/70',
-  logistics: 'bg-blue-500/70',
-  pickup: 'bg-amber-500/80',
-  buffer: 'bg-violet-500/70',
-  transit: 'bg-cyan-500/70',
 };
 
 async function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
@@ -106,6 +106,10 @@ export default function WorldGenerationPage() {
   const [result, setResult] = useState<WorldApiResponse | null>(null);
   const [uploadMetadata, setUploadMetadata] = useState<WorldUploadPayload | undefined>(undefined);
   const [uploadError, setUploadError] = useState('');
+  const [showOverlays, setShowOverlays] = useState(true);
+  const [resetToken, setResetToken] = useState(0);
+  const [exportState, setExportState] = useState<'ready' | 'exporting' | 'failed'>('ready');
+  const [exportMessage, setExportMessage] = useState('');
 
   const desktopSignal = useMemo(() => {
     return 'Desktop-friendly: world preview rendering is optimized for larger displays; mobile uses a lighter fallback view.';
@@ -145,6 +149,8 @@ export default function WorldGenerationPage() {
       }
 
       setResult(payload);
+      setExportState('ready');
+      setExportMessage('');
       setRunState(payload.status === 'pending_review' ? 'pending_review' : 'done');
     } catch {
       setRunState('error');
@@ -212,7 +218,24 @@ export default function WorldGenerationPage() {
     },
   ];
 
-  const worldPreview = result?.worldArtifact.preview;
+  const sceneSpec = result?.worldArtifact.sceneSpec;
+  const sceneComplexity = sceneSpec ? getWorldSceneComplexity(sceneSpec) : null;
+  const exportEligibility = sceneSpec ? getWorldExportEligibility(sceneSpec) : null;
+
+  const handleExportGlb = async () => {
+    if (!sceneSpec) return;
+    setExportState('exporting');
+    setExportMessage('');
+    try {
+      const exportResult = await exportWorldSceneAsGlb(sceneSpec);
+      setExportState('ready');
+      setExportMessage(`GLB exported: ${exportResult.fileName} (${exportResult.byteLength} bytes).`);
+    } catch (error) {
+      setExportState('failed');
+      const message = error instanceof Error ? error.message : 'Scene export failed.';
+      setExportMessage(message);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-background px-6 py-8 text-foreground">
@@ -476,10 +499,10 @@ export default function WorldGenerationPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {!result && (
-                  <p className="text-sm text-muted-foreground">Generate a world to render the scene preview, asset composition, and readiness summary.</p>
+                  <p className="text-sm text-muted-foreground">Generate a world to render the procedural 3D scene preview and export-readiness summary.</p>
                 )}
 
-                {result && worldPreview && (
+                {result && sceneSpec && (
                   <>
                     <div className="rounded-xl border border-border bg-muted/20 p-3">
                       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -487,28 +510,49 @@ export default function WorldGenerationPage() {
                         <div className="flex gap-2">
                           <Badge variant="outline">{result.worldArtifact.providerMode}</Badge>
                           <Badge variant="outline">{result.worldArtifact.availability}</Badge>
+                          <Badge variant="outline">{sceneSpec.exportReadiness === 'ready' ? 'Export Ready' : 'Export Review'}</Badge>
                         </div>
                       </div>
-                      <div
-                        className="grid gap-1 rounded-lg border border-border bg-background/60 p-2"
-                        style={{ gridTemplateColumns: `repeat(${worldPreview.width}, minmax(0, 1fr))` }}
-                        aria-label="Generated world preview grid"
-                      >
-                        {worldPreview.cells.map((cell, idx) => (
-                          <div key={`${cell}-${idx}`} className={`aspect-square rounded-sm ${CELL_CLASS[cell]}`} />
-                        ))}
+
+                      <div className="mb-3 rounded-lg border border-border bg-background/50 p-2">
+                        <ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={resetToken} showOverlays={showOverlays} />
                       </div>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {worldPreview.legend.map((item) => (
-                          <span key={item.type} className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
-                            <span className={`inline-block size-2 rounded-full ${CELL_CLASS[item.type]}`} />
-                            {item.label}
-                          </span>
-                        ))}
+
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => setResetToken((value) => value + 1)}
+                          className="gap-2"
+                        >
+                          <RotateCcw className="size-4" /> Reset View
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={showOverlays ? 'default' : 'outline'}
+                          onClick={() => setShowOverlays((value) => !value)}
+                          className="gap-2"
+                        >
+                          <Layers3 className="size-4" /> {showOverlays ? 'Hide Overlays' : 'Show Overlays'}
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={handleExportGlb}
+                          className="gap-2"
+                          disabled={exportState === 'exporting' || !exportEligibility?.eligible}
+                          data-testid="export-glb-button"
+                        >
+                          {exportState === 'exporting' ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <Download className="size-4" />
+                          )}
+                          Export GLB
+                        </Button>
                       </div>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-3 sm:grid-cols-3">
                       <div className="rounded-lg border border-border bg-muted/20 p-3">
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Mesh concept</p>
                         <p className="mt-1 text-sm">{result.worldArtifact.assets.meshConcept}</p>
@@ -516,6 +560,12 @@ export default function WorldGenerationPage() {
                       <div className="rounded-lg border border-border bg-muted/20 p-3">
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Representation</p>
                         <p className="mt-1 text-sm">{result.worldArtifact.assets.representation}</p>
+                      </div>
+                      <div className="rounded-lg border border-border bg-muted/20 p-3">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Scene complexity</p>
+                        <p className="mt-1 text-sm">
+                          {sceneComplexity?.primitiveCount} / {sceneComplexity?.budget} primitives
+                        </p>
                       </div>
                     </div>
 
@@ -537,11 +587,18 @@ export default function WorldGenerationPage() {
                     <p className="text-sm">
                       <span className="font-medium">Simulation readiness:</span> {result.worldArtifact.assets.simulationReadiness}
                     </p>
+                    <p className="text-sm">
+                      <span className="font-medium">Export status:</span>{' '}
+                      {exportEligibility?.eligible ? 'ready' : `review (${exportEligibility?.reasons.join(', ')})`}
+                    </p>
+                    {exportMessage && (
+                      <p className={`text-sm ${exportState === 'failed' ? 'text-red-400' : 'text-emerald-400'}`}>{exportMessage}</p>
+                    )}
 
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Provider notes</p>
                       <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-                        {result.worldArtifact.notes.map((note) => <li key={note}>{note}</li>)}
+                        {[...result.worldArtifact.notes, ...sceneSpec.warnings].map((note) => <li key={note}>{note}</li>)}
                       </ul>
                     </div>
                   </>

@@ -139,14 +139,15 @@ export const demos: Demo[] = [
     emoji: "Cuboid",
     title: "AI Spatial Intelligence & World Generation",
     description:
-      "Governed text-to-3D world generation for location intelligence, scenario planning, and simulation-ready workflows with approval-gated release.",
+      "Governed text-to-3D world generation with real browser-rendered procedural scene preview, GLB export, and approval-gated release.",
     businessImpact:
       "Accelerates logistics and spatial planning with policy-aware world artifacts that are explainable, reviewable, and simulation-ready",
     href: "/demos/world-generation",
     tags: [
       "World Generation",
       "Spatial AI",
-      "3D Scene Concepts",
+      "Three.js",
+      "GLB Export",
       "Governance",
       "Simulation-Ready",
       "Desktop-Friendly",

@@ -1,5 +1,6 @@
 import { generateWorldWithProvider } from '@/lib/world-generation-adapter';
 import { hashWorldSeed, pickWorldVariant, type WorldConstraintProfile, type WorldObjective, type WorldRegion, type WorldStyle } from '@/lib/world-prompts';
+import { validateWorldSceneSpec, type WorldSceneSpec } from '@/lib/world-assets';
 
 export type WorldStageState = 'idle' | 'running' | 'completed' | 'paused' | 'failed';
 
@@ -75,6 +76,7 @@ export type WorldGenerationOutput = {
       pedestrianAreas: string[];
       simulationReadiness: 'ready' | 'review';
     };
+    sceneSpec: WorldSceneSpec;
     notes: string[];
   };
   governance: {
@@ -131,6 +133,7 @@ export async function buildWorldGeneration(input: {
     provider: input.provider,
     imageRef: input.image,
   });
+  const sceneValidation = validateWorldSceneSpec(providerResult.sceneSpec);
 
   const worldVariant = pickWorldVariant(seed, [
     'Generated congestion-aware lane mesh for downtown routing.',
@@ -180,8 +183,8 @@ export async function buildWorldGeneration(input: {
       actor: 'World Generator',
       action: 'Generated world artifact',
       summary: providerResult.availability === 'fallback'
-        ? 'HY-World adapter fallback engaged; seeded world artifact generated for stable execution.'
-        : 'World artifact generated through deterministic mock provider for repeatable output.',
+        ? 'HY-World adapter fallback engaged; procedural 3D scene spec generated for stable execution and preview export.'
+        : 'Procedural 3D scene spec generated through deterministic mock provider for repeatable output and GLB export.',
       status: 'completed',
       confidence: 0.86,
     },
@@ -232,6 +235,7 @@ export async function buildWorldGeneration(input: {
     businessImpact: objectiveBusinessImpact(input.objective),
     policyNotes: [
       'Policy review completed before world artifact publication.',
+      sceneValidation.isValid ? 'Scene specification validated before release and export.' : `Scene specification review required: ${sceneValidation.reasons.join(', ')}`,
       'World output remains approval-gated for high-impact operational use.',
     ],
     alternativesConsidered: [
@@ -271,6 +275,7 @@ export async function buildWorldGeneration(input: {
       availability: providerResult.availability,
       preview: providerResult.preview,
       assets: providerResult.assets,
+      sceneSpec: providerResult.sceneSpec,
       notes: providerResult.notes,
     },
     governance: {
@@ -278,7 +283,7 @@ export async function buildWorldGeneration(input: {
       policyValidation: 'pass',
       humanApprovalRequired: true,
       auditTraceId: input.traceId,
-      evaluationStatus: input.approvalState === 'approved' ? 'pass' : 'review',
+      evaluationStatus: input.approvalState === 'approved' && sceneValidation.isValid ? 'pass' : 'review',
     },
     businessValue: [
       'Richer spatial context than flat maps for decision preparation',

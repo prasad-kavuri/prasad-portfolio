@@ -24,6 +24,9 @@ describe('world generation eval', () => {
     const evalResult = evaluateWorldOutput(output);
     expect(evalResult.passed).toBe(true);
     expect(evalResult.score).toBe(1);
+    const byId = Object.fromEntries(evalResult.checks.map((check) => [check.id, check]));
+    expect(byId.scene_spec_valid.passed).toBe(true);
+    expect(byId.export_readiness_consistent.passed).toBe(true);
   });
 
   it('reports shape issues for incomplete payload', async () => {
@@ -53,6 +56,10 @@ describe('world generation eval', () => {
           ...output.worldArtifact.preview,
           cells: [],
         },
+        sceneSpec: {
+          ...output.worldArtifact.sceneSpec,
+          primitives: [],
+        },
       },
       proposedRecommendation: {
         ...output.proposedRecommendation,
@@ -64,6 +71,7 @@ describe('world generation eval', () => {
     expect(issues).toContain('trace_incomplete');
     expect(issues).toContain('missing_world_preview');
     expect(issues).toContain('missing_tradeoffs');
+    expect(issues).toContain('missing_scene_spec');
   });
 
   it('flags policy trace and approval-state mismatches', async () => {
@@ -96,6 +104,13 @@ describe('world generation eval', () => {
         constraintsApplied: ['Limited curb inventory'],
         tradeoffs: [],
       },
+      worldArtifact: {
+        ...output.worldArtifact,
+        sceneSpec: {
+          ...output.worldArtifact.sceneSpec,
+          exportReadiness: 'review' as const,
+        },
+      },
     };
 
     const evalResult = evaluateWorldOutput(mismatched);
@@ -105,6 +120,7 @@ describe('world generation eval', () => {
     expect(byId.constraints_stated.passed).toBe(false);
     expect(byId.tradeoff_stated.passed).toBe(false);
     expect(byId.approval_state_consistent.passed).toBe(false);
+    expect(byId.export_readiness_consistent.passed).toBe(false);
     expect(evalResult.passed).toBe(false);
   });
 });

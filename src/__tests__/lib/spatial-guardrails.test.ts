@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   WORLD_UPLOAD_LIMITS,
   validateWorldInput,
+  validateWorldSceneForRender,
   validateWorldUploadPayload,
 } from '@/lib/world-guardrails';
+import { buildWorldSceneSpec } from '@/lib/world-assets';
 
 describe('world guardrails', () => {
   it('rejects non-object payloads', () => {
@@ -126,5 +128,27 @@ describe('world guardrails', () => {
     expect(dimensionResult.isValid).toBe(false);
     expect(dimensionResult.errors).toContain('upload_name_invalid');
     expect(dimensionResult.errors).toContain('upload_dimensions_invalid');
+  });
+
+  it('enforces scene complexity safety for rendering/export', () => {
+    const sceneSpec = buildWorldSceneSpec({
+      prompt: 'Generate a downtown delivery mesh with policy-safe pickup corridors and logistics zones.',
+      region: 'Downtown Core',
+      objective: 'speed',
+      style: 'logistics-grid',
+      providerMode: 'mock',
+      availability: 'available',
+      simulationReady: true,
+    });
+
+    expect(validateWorldSceneForRender(sceneSpec).isSafe).toBe(true);
+
+    const overloaded = {
+      ...sceneSpec,
+      primitiveBudget: 2,
+    };
+    const guarded = validateWorldSceneForRender(overloaded);
+    expect(guarded.isSafe).toBe(false);
+    expect(guarded.issues).toContain('scene_primitive_budget_exceeded');
   });
 });

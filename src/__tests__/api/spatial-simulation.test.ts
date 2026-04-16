@@ -54,6 +54,7 @@ describe('POST /api/demos/world-generation', () => {
     expect(body.workflow).toHaveLength(7);
     expect(body.traces.length).toBeGreaterThanOrEqual(5);
     expect(body.worldArtifact.preview.cells.length).toBeGreaterThan(0);
+    expect(body.worldArtifact.sceneSpec.primitives.length).toBeGreaterThan(0);
     expect(body.governance.humanApprovalRequired).toBe(true);
   });
 
@@ -104,6 +105,7 @@ describe('POST /api/demos/world-generation', () => {
     const body = await response.json();
     expect(body.worldArtifact.providerMode).toBe('hyworld-adapter');
     expect(body.worldArtifact.availability).toBe('fallback');
+    expect(body.worldArtifact.sceneSpec.providerMode).toBe('hyworld-adapter');
   });
 
   it('rejects malformed JSON bodies', async () => {

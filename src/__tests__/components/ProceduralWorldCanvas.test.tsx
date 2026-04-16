@@ -15,8 +15,10 @@ describe('ProceduralWorldCanvas', () => {
       simulationReady: true,
     });
 
-    render(<ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={0} showOverlays={true} />);
+    const { rerender } = render(<ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={0} showOverlays={true} />);
 
+    expect(await screen.findByTestId('world-3d-fallback')).toBeInTheDocument();
+    rerender(<ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={1} showOverlays={false} />);
     expect(await screen.findByTestId('world-3d-fallback')).toBeInTheDocument();
   });
 });

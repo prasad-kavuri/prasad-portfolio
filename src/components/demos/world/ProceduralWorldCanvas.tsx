@@ -44,13 +44,16 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       setFallbackMessage('');
       const scene = new THREE.Scene();
       scene.background = new THREE.Color('#020617');
+      scene.fog = new THREE.Fog('#020617', 60, 140);
 
       const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 250);
-      camera.position.set(26, 28, 30);
+      camera.position.set(28, 24, 32);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       host.innerHTML = '';
       host.appendChild(renderer.domElement);
 
@@ -61,34 +64,56 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       controls.minDistance = 10;
       controls.maxDistance = 75;
       controls.maxPolarAngle = Math.PI / 2.05;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.25;
       controls.target.set(0, 0, 0);
       controls.update();
 
-      const ground = new THREE.Mesh(
-        new THREE.PlaneGeometry(76, 76),
-        new THREE.MeshStandardMaterial({ color: '#0b1220', roughness: 1, metalness: 0 })
+      const baseGround = new THREE.Mesh(
+        new THREE.PlaneGeometry(86, 86),
+        new THREE.MeshStandardMaterial({ color: '#070b14', roughness: 1, metalness: 0 })
       );
-      ground.rotation.x = -Math.PI / 2;
-      scene.add(ground);
+      baseGround.rotation.x = -Math.PI / 2;
+      baseGround.receiveShadow = true;
+      scene.add(baseGround);
+
+      const sceneGround = new THREE.Mesh(
+        new THREE.PlaneGeometry(76, 76),
+        new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: 0.96, metalness: 0.02 })
+      );
+      sceneGround.rotation.x = -Math.PI / 2;
+      sceneGround.position.y = 0.01;
+      sceneGround.receiveShadow = true;
+      scene.add(sceneGround);
 
       const grid = new THREE.GridHelper(76, 38, '#1f2937', '#111827');
       const gridMaterial = grid.material as { transparent: boolean; opacity: number };
       gridMaterial.transparent = true;
-      gridMaterial.opacity = 0.25;
+      gridMaterial.opacity = 0.18;
+      grid.position.y = 0.02;
       scene.add(grid);
 
       for (const primitive of renderables.slice(0, sceneSpec.primitiveBudget)) {
         const geometry = new THREE.BoxGeometry(primitive.size.width, primitive.size.height, primitive.size.depth);
         const material = new THREE.MeshStandardMaterial({
           color: primitive.colorHex,
-          roughness: 0.75,
-          metalness: primitive.kind === 'structure' ? 0.16 : 0.05,
+          roughness:
+            primitive.kind === 'corridor'
+              ? 0.92
+              : primitive.kind === 'structure'
+                ? 0.72
+                : primitive.kind === 'zone-block'
+                  ? 0.8
+                  : 0.88,
+          metalness: primitive.kind === 'structure' ? 0.1 : 0.03,
           opacity: primitive.opacity,
           transparent: primitive.opacity < 1,
         });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(primitive.position.x, primitive.position.y, primitive.position.z);
         mesh.name = primitive.label;
+        mesh.castShadow = primitive.kind !== 'safety-buffer' && primitive.kind !== 'transit-link';
+        mesh.receiveShadow = true;
         scene.add(mesh);
 
         if (showOverlays && primitive.kind === 'safety-buffer') {
@@ -101,14 +126,45 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
         }
       }
 
-      scene.add(new THREE.AmbientLight('#dbeafe', 1.15));
-      const keyLight = new THREE.DirectionalLight('#ffffff', 1.2);
-      keyLight.position.set(14, 30, 14);
+      scene.add(new THREE.HemisphereLight('#dbeafe', '#020617', 0.8));
+      const keyLight = new THREE.DirectionalLight('#f8fafc', 1.05);
+      keyLight.position.set(24, 36, 20);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.set(1024, 1024);
+      keyLight.shadow.camera.near = 1;
+      keyLight.shadow.camera.far = 120;
+      keyLight.shadow.camera.left = -45;
+      keyLight.shadow.camera.right = 45;
+      keyLight.shadow.camera.top = 45;
+      keyLight.shadow.camera.bottom = -45;
       scene.add(keyLight);
 
-      const fillLight = new THREE.DirectionalLight('#93c5fd', 0.65);
-      fillLight.position.set(-12, 20, -8);
+      const fillLight = new THREE.DirectionalLight('#93c5fd', 0.34);
+      fillLight.position.set(-14, 18, -10);
       scene.add(fillLight);
+
+      const bounds = new THREE.Box3();
+      renderables.forEach((primitive) => {
+        const min = new THREE.Vector3(
+          primitive.position.x - primitive.size.width / 2,
+          0,
+          primitive.position.z - primitive.size.depth / 2
+        );
+        const max = new THREE.Vector3(
+          primitive.position.x + primitive.size.width / 2,
+          primitive.position.y + primitive.size.height / 2,
+          primitive.position.z + primitive.size.depth / 2
+        );
+        bounds.expandByPoint(min);
+        bounds.expandByPoint(max);
+      });
+      const center = bounds.getCenter(new THREE.Vector3());
+      const size = bounds.getSize(new THREE.Vector3());
+      const radius = Math.max(size.x, size.z, 14);
+      controls.target.copy(center);
+      camera.position.set(center.x + radius * 1.05, Math.max(14, size.y * 2.1), center.z + radius * 0.95);
+      camera.lookAt(center);
+      controls.update();
 
       const resize = () => {
         if (!host) return;
@@ -136,6 +192,7 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
         observer.disconnect();
         controls.dispose();
         renderer.dispose();
+        renderer.forceContextLoss();
         host.innerHTML = '';
       };
     };

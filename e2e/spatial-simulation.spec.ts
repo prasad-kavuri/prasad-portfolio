@@ -35,7 +35,7 @@ test.describe('World Generation demo', () => {
     await page.getByRole('button', { name: 'Export GLB' }).evaluate((element) => {
       (element as HTMLButtonElement).click();
     });
-    await expect(page.getByText(/GLB exported:|Export unavailable:/i)).toBeVisible();
+    await expect(page.getByText(/Scene exported:|Export unavailable:/i)).toBeVisible();
   });
 
   test('rejects unsupported upload safely', async ({ page }) => {

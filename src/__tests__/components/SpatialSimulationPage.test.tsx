@@ -18,7 +18,12 @@ vi.mock('@/components/theme-toggle', () => ({
 }));
 
 vi.mock('@/components/demos/world/ProceduralWorldCanvas', () => ({
-  ProceduralWorldCanvas: () => React.createElement('div', { 'data-testid': 'world-3d-canvas' }, '3D Canvas'),
+  ProceduralWorldCanvas: ({ resetToken, showOverlays }: { resetToken: number; showOverlays: boolean }) =>
+    React.createElement(
+      'div',
+      { 'data-testid': 'world-3d-canvas' },
+      `3D Canvas reset=${String(resetToken)} overlays=${showOverlays ? 'on' : 'off'}`
+    ),
 }));
 
 vi.mock('@/lib/world-3d', async (importOriginal) => {
@@ -266,8 +271,15 @@ describe('WorldGenerationPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Export GLB/i }));
     await waitFor(() => {
       expect(mockExportWorldSceneAsGlb).toHaveBeenCalledTimes(1);
-      expect(screen.getByText(/GLB exported: world-demo\.glb/i)).toBeInTheDocument();
+      expect(screen.getByText(/Scene exported: world-demo\.glb/i)).toBeInTheDocument();
+      expect(screen.getByText(/Procedural 3D World Artifact/i)).toBeInTheDocument();
     });
+
+    expect(screen.getByTestId('world-3d-canvas')).toHaveTextContent('reset=0 overlays=on');
+    fireEvent.click(screen.getByRole('button', { name: /Hide Overlays/i }));
+    expect(screen.getByTestId('world-3d-canvas')).toHaveTextContent('reset=0 overlays=off');
+    fireEvent.click(screen.getByRole('button', { name: /Reset View/i }));
+    expect(screen.getByTestId('world-3d-canvas')).toHaveTextContent('reset=1 overlays=off');
 
     fireEvent.click(screen.getByRole('button', { name: 'Approve' }));
 

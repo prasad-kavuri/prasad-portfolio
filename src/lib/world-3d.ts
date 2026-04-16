@@ -17,10 +17,42 @@ export type WorldSceneComplexity = {
   isWithinBudget: boolean;
 };
 
+function hashPrimitiveSeed(value: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function heightScaleForKind(kind: WorldScenePrimitive['kind']): number {
+  if (kind === 'structure') return 1.32;
+  if (kind === 'zone-block') return 1.08;
+  if (kind === 'corridor') return 0.1;
+  if (kind === 'transit-link') return 0.14;
+  if (kind === 'safety-buffer') return 0.09;
+  return 1;
+}
+
 export function mapSceneSpecToRenderablePrimitives(sceneSpec: WorldSceneSpec): WorldRenderablePrimitive[] {
   return sceneSpec.primitives.map((primitive) => {
-    const safeHeight = Math.max(0.08, Number(primitive.height.toFixed(2)));
+    const seed = hashPrimitiveSeed(`${sceneSpec.worldId}:${primitive.id}:${primitive.kind}`);
+    const variation = 0.9 + (seed % 13) / 100;
     const isFlat = primitive.kind === 'corridor' || primitive.kind === 'transit-link' || primitive.kind === 'safety-buffer';
+    const scaledHeight = primitive.height * heightScaleForKind(primitive.kind) * variation;
+    const safeHeight = Math.max(0.06, Number(scaledHeight.toFixed(2)));
+    const renderHeight = isFlat ? Math.min(0.12, safeHeight) : safeHeight;
+    const opacity =
+      primitive.kind === 'safety-buffer'
+        ? 0.32
+        : primitive.kind === 'transit-link'
+          ? 0.58
+          : primitive.kind === 'corridor'
+            ? 0.74
+            : primitive.kind === 'zone-block'
+              ? 0.88
+              : 0.9;
 
     return {
       id: primitive.id,
@@ -28,16 +60,16 @@ export function mapSceneSpecToRenderablePrimitives(sceneSpec: WorldSceneSpec): W
       kind: primitive.kind,
       size: {
         width: Number(primitive.size.width.toFixed(2)),
-        height: isFlat ? 0.08 : safeHeight,
+        height: renderHeight,
         depth: Number(primitive.size.depth.toFixed(2)),
       },
       position: {
         x: Number(primitive.position.x.toFixed(2)),
-        y: isFlat ? 0.04 : safeHeight / 2,
+        y: isFlat ? renderHeight / 2 : safeHeight / 2,
         z: Number(primitive.position.z.toFixed(2)),
       },
       colorHex: primitive.colorHex,
-      opacity: primitive.kind === 'safety-buffer' ? 0.45 : 0.9,
+      opacity,
     };
   });
 }

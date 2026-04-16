@@ -229,11 +229,11 @@ export default function WorldGenerationPage() {
     try {
       const exportResult = await exportWorldSceneAsGlb(sceneSpec);
       setExportState('ready');
-      setExportMessage(`GLB exported: ${exportResult.fileName} (${exportResult.byteLength} bytes).`);
+      setExportMessage(`Scene exported: ${exportResult.fileName}`);
     } catch (error) {
       setExportState('failed');
-      const message = error instanceof Error ? error.message : 'Scene export failed.';
-      setExportMessage(message);
+      const message = error instanceof Error ? error.message : 'Export failed — please retry with a smaller scene.';
+      setExportMessage(message.startsWith('Export unavailable:') ? message : `Export failed — ${message}`);
     }
   };
 
@@ -513,6 +513,9 @@ export default function WorldGenerationPage() {
                           <Badge variant="outline">{sceneSpec.exportReadiness === 'ready' ? 'Export Ready' : 'Export Review'}</Badge>
                         </div>
                       </div>
+                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        Procedural 3D World Artifact
+                      </p>
 
                       <div className="mb-3 rounded-lg border border-border bg-background/50 p-2">
                         <ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={resetToken} showOverlays={showOverlays} />

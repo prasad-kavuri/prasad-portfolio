@@ -27,6 +27,19 @@ describe('world 3D rendering helpers', () => {
     expect(first[0].size.height).toBeGreaterThan(0);
   });
 
+  it('applies deterministic height variation by primitive kind', () => {
+    const renderables = mapSceneSpecToRenderablePrimitives(sceneSpec);
+    const structures = renderables.filter((item) => item.kind === 'structure');
+    const corridors = renderables.filter((item) => item.kind === 'corridor');
+
+    expect(structures.length).toBeGreaterThan(0);
+    expect(corridors.length).toBeGreaterThan(0);
+    expect(Math.max(...structures.map((item) => item.size.height))).toBeGreaterThan(
+      Math.max(...corridors.map((item) => item.size.height))
+    );
+    expect(new Set(structures.map((item) => item.size.height)).size).toBeGreaterThan(1);
+  });
+
   it('reports complexity against primitive budget', () => {
     const complexity = getWorldSceneComplexity(sceneSpec);
     expect(complexity.primitiveCount).toBe(sceneSpec.primitives.length);

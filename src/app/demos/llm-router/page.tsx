@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { getRoutingRecommendation } from '@/lib/llm-routing';
 
 interface ModelResult {
   model: string;
@@ -35,40 +36,22 @@ const EXAMPLE_PROMPTS = [
   'Translate Hello how are you to Spanish',
 ];
 
-function getRecommendedModel(prompt: string): string {
-  const lowerPrompt = prompt.toLowerCase();
-
-  // Code-related prompts
-  if (/function|class|def|code|python|javascript|typescript|sql/.test(lowerPrompt)) {
-    return 'qwen/qwen3-32b';
-  }
-
-  // Short prompts or simple facts
-  if (prompt.length < 50 || /what is|who is|when|where|capital/.test(lowerPrompt)) {
-    return 'llama-3.1-8b-instant';
-  }
-
-  // Complex analysis
-  if (/analyze|compare|explain|evaluate|strategy|architecture/.test(lowerPrompt)) {
-    return 'llama-3.3-70b-versatile';
-  }
-
-  // Default
-  return 'meta-llama/llama-4-scout-17b-16e-instruct';
-}
-
 export default function LLMRouterDemo() {
   const [prompt, setPrompt] = useState('');
   const [results, setResults] = useState<ModelResult[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [recommendedModel, setRecommendedModel] = useState('');
+  const [routingRationale, setRoutingRationale] = useState('');
+  const [executiveTradeoff, setExecutiveTradeoff] = useState('');
 
   const handleRunAll = async () => {
     if (!prompt.trim()) return;
 
     setIsLoading(true);
-    const recommended = getRecommendedModel(prompt);
-    setRecommendedModel(recommended);
+    const recommendation = getRoutingRecommendation(prompt);
+    setRecommendedModel(recommendation.model);
+    setRoutingRationale(recommendation.rationale);
+    setExecutiveTradeoff(recommendation.executiveTradeoff);
     setResults(null);
 
     try {
@@ -185,6 +168,18 @@ export default function LLMRouterDemo() {
           </Button>
         </div>
 
+        <Card className="mb-8 border-border bg-card p-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            FinOps Routing Signal
+          </h2>
+          <p className="text-sm text-muted-foreground mb-2">
+            Per-model cost values shown below are illustrative estimates from the configured token-rate table in `/api/llm-router`, used for relative comparison only.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Route intent: prefer lower-cost low-latency tiers for simple queries, then escalate to higher-capability models only when prompt complexity requires it.
+          </p>
+        </Card>
+
         {/* Results Grid */}
         {isLoading && (
           <div className="grid grid-cols-2 gap-4 mb-8">
@@ -274,6 +269,13 @@ export default function LLMRouterDemo() {
                     <p className="font-semibold text-2xl mt-1 text-green-400">{summary.savingsPercent}%</p>
                   </div>
                 </div>
+                {summary.recommended && (
+                  <div className="mt-4 rounded-lg border border-border bg-muted/30 p-4 text-sm">
+                    <p className="font-medium text-foreground">Why this route was recommended</p>
+                    <p className="mt-1 text-muted-foreground">{routingRationale}</p>
+                    <p className="mt-1 text-muted-foreground">{executiveTradeoff}</p>
+                  </div>
+                )}
               </Card>
             )}
           </div>

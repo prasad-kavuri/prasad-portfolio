@@ -78,6 +78,7 @@ Security controls are implemented at route boundaries and platform configuration
 - `src/lib/rate-limit.ts` provides Upstash Redis sliding-window rate limiting in production with an in-memory fallback for local/test runs.
 - `src/lib/guardrails.ts` is the canonical guardrail module for prompt-injection detection and server-side LLM output sanitization.
 - `src/lib/url-security.ts` centralizes outbound URL hardening for SSRF prevention (private/internal IPv4, IPv6 local ranges, encoded-IP forms, and credentialed URL blocking).
+- `src/lib/safe-fetch.ts` provides a reusable server-side outbound fetch wrapper with URL allowlisting and redirect-hop validation.
 - `detectPromptInjection` / `isPromptInjection` block prompt-injection patterns before LLM calls.
 - `sanitizeLLMOutput` strips script tags, event handlers, and `javascript:` URIs from LLM output.
 - API routes enforce input shape and length limits before external calls.

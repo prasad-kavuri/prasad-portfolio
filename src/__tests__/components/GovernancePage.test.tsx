@@ -51,6 +51,7 @@ describe('GovernancePage', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')));
     render(React.createElement(GovernancePage));
 
+    expect(screen.getByText('AI Governance & Trust Model')).toBeInTheDocument();
     expect(screen.getByText('Trust Control Flow')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText(GOVERNANCE_SNAPSHOT.trustFlow[0])).toBeInTheDocument();

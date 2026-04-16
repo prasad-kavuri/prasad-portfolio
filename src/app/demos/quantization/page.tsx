@@ -232,6 +232,17 @@ export default function QuantizationPage() {
           </div>
         </div>
 
+        <Card className="mb-6 border-border bg-card p-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Local-First Inference Posture
+          </p>
+          <div className="mt-2 grid gap-2 text-sm text-muted-foreground md:grid-cols-3">
+            <p><span className="font-medium text-foreground">Privacy:</span> Prompt text is processed in-browser for this demo after model download.</p>
+            <p><span className="font-medium text-foreground">Efficiency:</span> INT8 reduces memory footprint and improves responsiveness on constrained hardware.</p>
+            <p><span className="font-medium text-foreground">Trade-off:</span> Local models improve privacy/cost posture, while frontier server models remain useful for harder tasks.</p>
+          </div>
+        </Card>
+
         {/* Idle State */}
         {status === 'idle' && (
           <Card className="border-border bg-card p-8 text-center">

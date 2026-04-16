@@ -136,6 +136,7 @@ describe('AITools', () => {
   it('shows AI quality callout and signature quality labeling', () => {
     render(React.createElement(AITools));
     expect(screen.getByText('How AI Quality Is Measured')).toBeInTheDocument();
+    expect(screen.getByText('Local-First AI Demos')).toBeInTheDocument();
     expect(screen.getByText('Signature Quality System')).toBeInTheDocument();
     expect(screen.getAllByText('AI Evaluation Showcase').length).toBeGreaterThan(0);
   });

@@ -116,10 +116,12 @@ prasad-portfolio/
 | XSS Sanitization | DOMPurify on all LLM output | Active |
 | Input Validation | Length limits + type checks at route entry | Active |
 | SSRF Protection | `src/lib/url-security.ts` blocks internal/private, loopback, link-local, encoded-IP, and credentialed targets | Active |
+| Safe Outbound Fetch | `src/lib/safe-fetch.ts` validates redirect hops and blocks unsafe redirect targets | Active |
 | IP Hashing | SHA-256 before Redis storage, never raw IPs | Active |
 | HITL Checkpoint | Human approval before Strategist runs (multi-agent) | Active |
 | Eval Regression Gate | CI blocks if fidelity < 0.85 or hallucination > 0.10 | Active |
 | Dependency Scanning | `npm audit --audit-level=high` in CI + Dependabot | Active |
+| Security Policy | `SECURITY.md` + `public/.well-known/security.txt` disclosure channels | Active |
 | COOP/COEP Headers | Required for SharedArrayBuffer / WASM multi-threading | Active |
 | No Hardcoded Secrets | All keys via `process.env`, verified in security tests | Active |
 | Security Disclosure | `public/.well-known/security.txt` with contact + policy | Active |
@@ -208,10 +210,12 @@ npm run dev   # http://localhost:3000
 
 Browser demos (RAG, Vector Search, Multimodal, Quantization) run 100%
 client-side via WebAssembly — no API key required.
+This local-first path is used to demonstrate privacy-aware inference patterns where prompts can remain in the browser for supported workloads.
 
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — 6-layer system design + patentable patterns
+- [Security Policy](SECURITY.md) — vulnerability reporting and AI/agent-specific disclosure guidance
 - [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry from centralized snapshot data (`src/data/telemetry-snapshots.ts`), including all 10 production systems
 - [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard with centralized snapshot metrics, policy controls, audit records, and explicit snapshot timestamps
 

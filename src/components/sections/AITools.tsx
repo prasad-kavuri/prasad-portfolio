@@ -67,6 +67,17 @@ export function AITools() {
           </div>
         </div>
 
+        <div className="mb-8 rounded-xl border border-border bg-card p-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+            Local-First AI Demos
+          </p>
+          <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
+            <p>RAG, Vector Search, Multimodal, and Quantization run in-browser with client-side inference paths.</p>
+            <p>This reduces server-side data exposure for demo workloads and showcases privacy-aware execution patterns.</p>
+            <p>Trade-off is explicit: local execution improves privacy/cost posture, while server models handle heavier reasoning workloads.</p>
+          </div>
+        </div>
+
         {/* Signature System — featured above the demo grid */}
         {signatureDemo && (
           <Link

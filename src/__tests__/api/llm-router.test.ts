@@ -155,4 +155,17 @@ describe('POST /api/llm-router', () => {
     const body = await res.json();
     expect(body.error).toMatch(/groq api/i);
   });
+
+  it('returns 500 when upstream redirect target is blocked by safe fetch', async () => {
+    mockFetch.mockResolvedValueOnce({
+      status: 302,
+      ok: false,
+      headers: new Headers({ location: 'http://127.0.0.1/internal' }),
+    });
+    const { POST } = await import('@/app/api/llm-router/route');
+    const res = await POST(makeRequest({ prompt: 'hello', model: 'llama-3.1-8b-instant' }) as any);
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toBe('Failed to call Groq API');
+  });
 });

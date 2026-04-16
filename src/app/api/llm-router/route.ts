@@ -13,6 +13,7 @@ import {
 import { detectAnomaly, logAPIEvent } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
 import { checkOutput, isPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
+import { safeServerFetch } from '@/lib/safe-fetch';
 
 const ROUTE = '/api/llm-router';
 
@@ -23,7 +24,7 @@ async function fetchWithRetry(
   options: RequestInit,
   attemptsLeft = MAX_RETRIES
 ): Promise<Response> {
-  const res = await fetch(url, options);
+  const res = await safeServerFetch(url, options, { maxRedirects: 1 });
   if (!res.ok && res.status >= 500 && attemptsLeft > 0) {
     return fetchWithRetry(url, options, attemptsLeft - 1);
   }

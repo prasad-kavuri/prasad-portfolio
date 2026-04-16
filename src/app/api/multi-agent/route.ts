@@ -12,6 +12,7 @@ import {
 } from '@/lib/api';
 import { trackModelOutput } from '@/lib/drift-monitor';
 import { isBlockedOutboundUrl } from '@/lib/url-security';
+import { safeServerFetch } from '@/lib/safe-fetch';
 
 const HF_SPACE_URL = 'https://prasadkavuri-multi-agent-demo.hf.space';
 const ROUTE = '/api/multi-agent';
@@ -79,12 +80,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const response = await fetch(`${HF_SPACE_URL}/analyze`, {
+    const response = await safeServerFetch(`${HF_SPACE_URL}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ website_url }),
       signal: AbortSignal.timeout(60000),
-    });
+    }, { maxRedirects: 1 });
 
     if (!response.ok) {
       await response.text().catch(() => '');

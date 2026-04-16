@@ -112,6 +112,20 @@ export default function GovernancePage() {
           className="mb-8"
         />
 
+        <section className="mb-8" aria-labelledby="governance-model-heading">
+          <h2 id="governance-model-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            AI Governance & Trust Model
+          </h2>
+          <Card className="border border-border bg-card p-5">
+            <div className="grid gap-3 text-sm text-muted-foreground md:grid-cols-2">
+              <p><span className="font-medium text-foreground">Evaluation Discipline:</span> Offline eval suites and CI regression thresholds block unsafe quality drift before release.</p>
+              <p><span className="font-medium text-foreground">Guardrail Boundary:</span> Prompt-injection checks and output sanitization are enforced centrally at API trust boundaries.</p>
+              <p><span className="font-medium text-foreground">Human Oversight:</span> High-stakes multi-agent transitions require explicit HITL checkpoint approval before strategist output continues.</p>
+              <p><span className="font-medium text-foreground">Traceable Operations:</span> Structured logs plus trace IDs make request, model, and policy decisions auditable end-to-end.</p>
+            </div>
+          </Card>
+        </section>
+
         <section className="mb-8" aria-labelledby="trust-flow-heading">
           <h2 id="trust-flow-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             Trust Control Flow

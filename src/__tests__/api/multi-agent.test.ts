@@ -227,6 +227,20 @@ describe('POST /api/multi-agent', () => {
     const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
     expect(res.status).toBe(502);
   });
+
+  it('returns 502 when HF upstream redirects to blocked host', async () => {
+    mockFetch.mockResolvedValueOnce({
+      status: 302,
+      ok: false,
+      headers: new Headers({ location: 'http://127.0.0.1/admin' }),
+      text: async () => '',
+    });
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(502);
+    const body = await res.json();
+    expect(body.error).toBe('Failed to connect to agent backend');
+  });
 });
 
   it('runs agent-to-agent validation when agents have matching names', async () => {

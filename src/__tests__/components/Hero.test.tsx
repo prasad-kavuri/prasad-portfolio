@@ -53,7 +53,7 @@ describe('Hero', () => {
 
   it('renders summary paragraph', () => {
     render(<Hero />);
-    expect(screen.getByText(/I lead AI engineering organizations/i)).toBeDefined();
+    expect(screen.getByText(/I've spent the last 20 years building and scaling technology platforms/i)).toBeDefined();
   });
 
   it('renders all 4 differentiator bullets', () => {

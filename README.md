@@ -1,5 +1,7 @@
 # Prasad Kavuri — VP / Head of AI Engineering Portfolio
 
+> **AI Engineering Leader | Built Agentic AI at Krutrim & Ola | LLM Platforms · AI FinOps · 200+ Teams | Chicago**
+>
 > **Live at [prasadkavuri.com](https://www.prasadkavuri.com)**  
 > Production-grade AI engineering portfolio with 10 production demos,
 > enterprise security, full governance layer, and CI/CD pipeline.

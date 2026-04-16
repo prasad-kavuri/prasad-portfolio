@@ -21,13 +21,12 @@ const caseStudies: CaseStudy[] = [
     period: "March 2025 – Present",
     title: "Building India's First Agentic AI Platform",
     challenge:
-      "Fragmented AI capabilities with no unified platform for real-time, production-grade agentic workflows at scale.",
+      "Build a production-scale Agentic AI platform for mobility, commerce, and payments while unifying fragmented models, vendors, and workflows into one reliable operating system.",
     whatILed: [
-      "Multi-model LLM orchestration platform",
-      "Domain-specific AI agents (cab, food, payments)",
-      "Real-time personalization engine",
-      "Enterprise PaaS with SDK/API layer",
-      "Team of 200+ engineers globally",
+      "End-to-end architecture and delivery for Kruti.ai across orchestration, RAG, vector search, and real-time personalization",
+      "Scaled a 200+ global engineering organization delivering 24/7 enterprise PaaS capabilities",
+      "Launched domain-specific AI agents for cab booking, food ordering, bill payments, and image generation",
+      "Defined SDK/API integration strategy to accelerate partner and enterprise adoption",
     ],
     keyDecisions: [
       "Vendor-agnostic architecture to avoid lock-in",
@@ -38,8 +37,8 @@ const caseStudies: CaseStudy[] = [
     impact: [
       "50% latency reduction",
       "40% cost savings",
-      "Production-scale agent deployments",
-      "India's first agentic AI ecosystem",
+      "New B2B and B2C revenue streams at national scale",
+      "India's first production-scale agentic AI ecosystem",
     ],
     roi: "Delivered ~2-3x ROI within 12 months through platform consolidation",
   },
@@ -49,13 +48,12 @@ const caseStudies: CaseStudy[] = [
     period: "Sept 2023 – Feb 2025",
     title: "Scaling AI-Powered Mapping to 13,000+ Enterprise Customers",
     challenge:
-      "Scaling a nascent maps platform into a production-grade B2B product while reducing infrastructure costs by 70% and competing with established global providers.",
+      "Scale Ola Maps into a core cloud-native mobility platform serving enterprise customers at high reliability while materially reducing infrastructure spend.",
     whatILed: [
-      "Cloud-native infrastructure redesign",
-      "AI-powered real-time route optimization",
-      "B2B platform and enterprise API layer",
-      "150+ engineers across US and India",
-      "Strategic vendor partnerships",
+      "Platform transformation across cloud-native infrastructure, LLM-powered routing, and B2B APIs",
+      "AI-powered real-time route optimization for fleet management",
+      "Cross-functional engineering leadership across the US and India",
+      "Delivery acceleration across electric mobility and transport sectors",
     ],
     keyDecisions: [
       "Cloud-native over lift-and-shift migration",
@@ -67,7 +65,7 @@ const caseStudies: CaseStudy[] = [
       "13,000+ B2B enterprise customers",
       "70% infrastructure cost reduction",
       "Millions of daily API calls",
-      "Improved ETA accuracy across fleet",
+      "Improved ETA accuracy and customer satisfaction",
     ],
     roi: "Enabled new recurring revenue through B2B API subscriptions",
   },

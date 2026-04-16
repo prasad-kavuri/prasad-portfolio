@@ -2,7 +2,7 @@
   "personal": {
     "name": "Prasad Kavuri",
     "title": "VP / Head of AI Engineering",
-    "subtitle": "AI/ML Executive Leader",
+    "subtitle": "AI Engineering Leader | Built Agentic AI at Krutrim & Ola | LLM Platforms · AI FinOps · 200+ Teams | Chicago",
     "location": "Naperville, IL (Greater Chicago Area)",
     "email": "vbkpkavuri@gmail.com",
     "phone": "3126232488",
@@ -10,7 +10,7 @@
     "portfolio": "https://www.prasadkavuri.com",
     "github": "https://github.com/prasad-kavuri",
     "languages": ["English", "Hindi", "Telugu", "Urdu"],
-    "summary": "I lead AI engineering organizations that turn generative and agentic AI into production platforms, operating workflows, and measurable business outcomes. My work spans multi-model orchestration, platform architecture, and enterprise transformation across mobility, mapping, and AI-native products.",
+    "summary": "I've spent the last 20 years building and scaling technology platforms-from cloud transformation to what we're now seeing with Agentic AI. What I care about is simple: turning AI from something that looks impressive in a demo into something that actually delivers business value at scale. At Krutrim, I led teams building India's first agentic AI platform (Kruti.ai), working across multi-model orchestration, real-time personalization, and production-grade systems. At Ola, I helped scale mapping and location platforms to support 13,000+ B2B customers. Across both, the focus has been consistent-take complex systems and make them reliable, efficient, and commercially viable. A big part of my work sits in the gap most companies struggle with moving from experimentation to production. That means designing multi-agent workflows that go beyond chat, driving 40-70% cost reductions through smarter model strategies, and building the governance layer that lets enterprises actually trust what they're deploying. I've also spent a significant part of my career building and leading global engineering teams across North America, Europe, and APAC-creating environments where teams can move fast, challenge ideas, and still stay aligned to business outcomes. Right now, I'm focused on helping organizations move past the \"PoC stage\" and actually operationalize AI-especially in environments where scale, cost, and trust matter. I'm based in the Chicago area and always open to conversations around AI strategy, platform engineering, and where this space is heading next.",
     "pills": ["Agentic AI", "LLM Platforms", "Applied AI Strategy", "Global Engineering Leadership"]
   },
   "stats": [
@@ -28,12 +28,11 @@
       "location": "Naperville, IL",
       "duration": "1 year 2 months",
       "highlights": [
-        "Architected India's first Agentic AI platform (Kruti.ai) with 200+ engineers",
-        "Delivered 50% latency reduction and 40% cost savings through multi-model LLM orchestration",
-        "Built RAG pipelines, vector search, and real-time personalization capabilities",
-        "Launched domain-specific AI agents for cab booking, food ordering, bill payments, image generation",
-        "Built enterprise-grade 24/7 PaaS capabilities with SDK/API integration",
-        "Leading enterprise adoption of agentic AI across engineering and product workflows"
+        "Led end-to-end architecture and delivery of India's first Agentic AI platform (Kruti.ai) - spanning multi-model LLM orchestration, RAG pipelines, vector search, and real-time personalization across mobility, commerce, and payments.",
+        "Built and scaled a 200+ global engineering organization delivering enterprise-grade 24/7 PaaS capabilities, integrating diverse AI models and vendors into a unified production ecosystem.",
+        "Launched domain-specific AI agents (cab booking, food ordering, bill payments, image generation), opening new B2B and B2C revenue streams at national scale.",
+        "Drove 50% latency reduction and 40% cost savings through multimodal Agentic AI architecture and intelligent model routing.",
+        "Defined SDK/API integration strategy that accelerated enterprise client adoption and expanded the Kruti.ai agent ecosystem across external partners."
       ],
       "tags": ["Agentic AI", "LLM Orchestration", "RAG", "Vector Search", "PaaS"]
     },
@@ -45,12 +44,10 @@
       "location": "Naperville, IL",
       "duration": "1 year 6 months",
       "highlights": [
-        "Launched Ola Maps B2B platform acquiring 13,000+ enterprise customers",
-        "Reduced infrastructure costs by 70% via cloud-native roadmap",
-        "Scaled to millions of daily API calls",
-        "Introduced AI-powered real-time route optimization boosting ETA accuracy",
-        "Led 150+ engineers across US and India",
-        "Negotiated strategic vendor partnerships for electric mobility adoption"
+        "Led platform transformation for Ola Maps - scaling cloud-native infrastructure, LLM-powered routing, and B2B APIs into a core mobility layer serving 13,000+ enterprise customers.",
+        "Delivered a 70% reduction in infrastructure costs by executing a cloud-native architectural overhaul while maintaining reliability across millions of daily API calls.",
+        "Introduced AI-powered real-time route optimization for fleet management, improving ETA accuracy and measurably lifting customer satisfaction.",
+        "Built and led cross-functional engineering teams across the US and India, accelerating delivery velocity and driving adoption across electric mobility and transport sectors."
       ],
       "tags": ["B2B Platform", "Cloud-Native", "AI Route Optimization", "Fleet Management"]
     },
@@ -302,12 +299,12 @@
     }
   ],
   "knowledgeBase": [
-    "Prasad Kavuri is currently Head of AI Engineering at Krutrim (March 2025 - Present), based in Naperville, IL. He leads enterprise adoption of agentic AI, moving AI from experimentation to measurable operating impact. He leads multi-model Generative and Agentic AI platform development including LLM orchestration, RAG, vector search, and real-time personalization powering India's first Agentic AI ecosystem — Kruti.ai.",
-    "At Krutrim, Prasad led architecture and strategy for India's first Agentic AI platform (Kruti.ai), delivering 50% lower latency and 40% cost savings through multimodal Agentic AI. He built and scaled a global engineering team delivering enterprise-grade 24/7 PaaS capabilities, integrating diverse AI models and vendors into a unified ecosystem.",
-    "At Krutrim, Prasad launched domain-specific AI agents for cab booking, food ordering, bill payments, and image generation, creating new B2B and B2C revenue streams. He drove technology vision for AI orchestration and SDK/API integration, ensuring adoption by enterprise clients and expansion of the Kruti.ai agent ecosystem.",
-    "Prasad was Senior Director of Engineering at Ola (September 2023 - February 2025). He led AI-driven platform transformation for Ola Maps, scaling cloud-native infrastructure, LLM-powered routing, and B2B APIs to 13,000+ customers, driving cost-efficient AI adoption across mobility.",
-    "At Ola, Prasad defined and executed a cloud-native roadmap that reduced infrastructure costs by 70% while enabling Ola Maps to scale API usage across millions of daily calls. He directed strategy and engineering for Ola Maps driving 13K+ B2B customers and built cross-functional engineering teams across the US and India.",
-    "At Ola, Prasad introduced AI-powered real-time route optimization for fleet management, boosting ETA accuracy and customer satisfaction. He negotiated and managed strategic vendor partnerships, driving operational efficiency and accelerating adoption in electric mobility and transport sectors.",
+    "Prasad Kavuri is currently Head of AI Engineering at Krutrim (March 2025 - Present), based in Naperville, IL. He led end-to-end architecture and delivery of India's first Agentic AI platform (Kruti.ai) spanning multi-model LLM orchestration, RAG pipelines, vector search, and real-time personalization across mobility, commerce, and payments.",
+    "At Krutrim, Prasad built and scaled a 200+ global engineering organization delivering enterprise-grade 24/7 PaaS capabilities and integrating diverse AI models and vendors into a unified production ecosystem. He defined SDK/API integration strategy that accelerated enterprise client adoption and expanded the Kruti.ai agent ecosystem.",
+    "At Krutrim, Prasad launched domain-specific AI agents for cab booking, food ordering, bill payments, and image generation, opening new B2B and B2C revenue streams at national scale. He also drove 50% latency reduction and 40% cost savings through multimodal Agentic AI architecture and intelligent model routing.",
+    "Prasad was Senior Director of Engineering at Ola (September 2023 - February 2025). He led platform transformation for Ola Maps, scaling cloud-native infrastructure, LLM-powered routing, and B2B APIs into a core mobility layer serving 13,000+ enterprise customers.",
+    "At Ola, Prasad delivered a 70% reduction in infrastructure costs by executing a cloud-native architectural overhaul while maintaining reliability across millions of daily API calls. He built and led cross-functional engineering teams across the US and India to accelerate delivery velocity.",
+    "At Ola, Prasad introduced AI-powered real-time route optimization for fleet management, improving ETA accuracy and customer satisfaction while driving adoption across electric mobility and transport sectors.",
     "Prasad spent 18+ years at HERE Technologies (May 2005 - September 2023) in Chicago, IL, progressing from Senior Engineer to Director of Engineering for Highly Automated Driving. He managed a global team of 85+ engineers and delivered autonomous driving datasets for major OEMs.",
     "Prasad's AI and ML skills: Agentic AI Architecture, Multi-Model LLM Orchestration, RAG, Vector Search and Embeddings, Transformer Models and BERT, Real-time Personalization, AI Agent Development, CrewAI, LangGraph, LLM Ops and MLOps.",
     "Prasad's cloud and infrastructure skills: AWS, Azure, GCP, Kubernetes and Microservices, CI/CD and DevOps, Infrastructure as Code, Cloud-Native Architecture, API Platform Development, PaaS and Platform Ecosystems.",

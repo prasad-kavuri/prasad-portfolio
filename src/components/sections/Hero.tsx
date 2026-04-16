@@ -29,7 +29,7 @@ export function Hero() {
                 {profile.personal.name}
               </h1>
               <p className="text-lg text-muted-foreground">
-                {profile.personal.title} · {profile.personal.subtitle}
+                {profile.personal.subtitle}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {profile.personal.pills.map((pill) => (

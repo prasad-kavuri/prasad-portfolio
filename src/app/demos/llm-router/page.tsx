@@ -43,6 +43,8 @@ export default function LLMRouterDemo() {
   const [recommendedModel, setRecommendedModel] = useState('');
   const [routingRationale, setRoutingRationale] = useState('');
   const [executiveTradeoff, setExecutiveTradeoff] = useState('');
+  const [businessValueMode, setBusinessValueMode] = useState(false);
+  const [projectedRequests, setProjectedRequests] = useState<number>(10000);
 
   const handleRunAll = async () => {
     if (!prompt.trim()) return;
@@ -114,7 +116,18 @@ export default function LLMRouterDemo() {
     return { fastest, cheapest, recommended, savingsPercent };
   };
 
+  const getBusinessProjection = () => {
+    if (!summary?.recommended || !results) return null;
+    const validResults = results.filter((r) => !r.error);
+    const baseline = validResults.reduce((a, b) => (a.cost_usd > b.cost_usd ? a : b));
+    const perRequestSavings = Math.max(0, baseline.cost_usd - summary.recommended.cost_usd);
+    const projectedSavings = perRequestSavings * projectedRequests;
+    const latencyDelta = baseline.latency_ms - summary.recommended.latency_ms;
+    return { baseline, perRequestSavings, projectedSavings, latencyDelta };
+  };
+
   const summary = getSummary();
+  const businessProjection = getBusinessProjection();
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -178,6 +191,15 @@ export default function LLMRouterDemo() {
           <p className="text-sm text-muted-foreground">
             Route intent: prefer lower-cost low-latency tiers for simple queries, then escalate to higher-capability models only when prompt complexity requires it.
           </p>
+          <label className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+            <input
+              type="checkbox"
+              checked={businessValueMode}
+              onChange={(e) => setBusinessValueMode(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <span>Business Value Mode</span>
+          </label>
         </Card>
 
         {/* Results Grid */}
@@ -274,6 +296,34 @@ export default function LLMRouterDemo() {
                     <p className="font-medium text-foreground">Why this route was recommended</p>
                     <p className="mt-1 text-muted-foreground">{routingRationale}</p>
                     <p className="mt-1 text-muted-foreground">{executiveTradeoff}</p>
+                  </div>
+                )}
+                {businessValueMode && businessProjection && (
+                  <div className="mt-4 rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 text-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-medium text-foreground">Business Value Projection</p>
+                      <div className="flex items-center gap-2">
+                        {[10000, 50000, 100000].map((volume) => (
+                          <button
+                            key={volume}
+                            onClick={() => setProjectedRequests(volume)}
+                            className={`px-2 py-1 rounded text-xs border ${
+                              projectedRequests === volume
+                                ? 'bg-blue-600 text-white border-blue-600'
+                                : 'border-border text-muted-foreground'
+                            }`}
+                          >
+                            {volume.toLocaleString()}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="mt-2 text-muted-foreground">
+                      Illustrative estimate at {projectedRequests.toLocaleString()} requests: routing to {summary.recommended?.modelName ?? 'recommended tier'} instead of {businessProjection.baseline.modelName} saves about <span className="font-medium text-foreground">${businessProjection.projectedSavings.toFixed(2)}</span> with a per-request delta of ${businessProjection.perRequestSavings.toFixed(6)}.
+                    </p>
+                    <p className="mt-1 text-muted-foreground">
+                      Latency difference versus highest-cost tier: {businessProjection.latencyDelta >= 0 ? '+' : ''}{businessProjection.latencyDelta}ms.
+                    </p>
                   </div>
                 )}
               </Card>

@@ -220,6 +220,10 @@ export default function QuantizationPage() {
             <p className="mt-1 text-muted-foreground">
               Compare FP32 vs INT8 inference — real benchmarks in your browser
             </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Badge className="bg-green-500/15 text-green-700 border border-green-500/30">Runs on device</Badge>
+              <Badge className="bg-blue-500/15 text-blue-700 border border-blue-500/30">Privacy-preserving local inference</Badge>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />

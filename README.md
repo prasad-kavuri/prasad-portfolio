@@ -130,8 +130,15 @@ prasad-portfolio/
 
 - **Autonomous reasoning is scoped:** Agents can propose analysis, but cannot bypass route-level guardrails and policy checks.
 - **Manual review checkpoint is explicit:** Multi-agent strategist execution pauses until human approval is provided.
+- **Approval gate is visible in UI:** The multi-agent demo exposes a strategist approval checkpoint with approve/revise/cancel controls before release.
 - **Decision trace is logged:** Request context and trace IDs are emitted through shared API/observability helpers for auditability.
 - **Guardrails can block output:** Prompt-injection and unsafe-output checks trigger block/redaction behavior before response release.
+
+## Executive Signals in Demo UX
+
+- **FinOps business mode:** LLM Router includes a Business Value Mode that projects illustrative cost deltas and savings based on routing outcomes.
+- **Privacy-preserving local inference:** Browser demos (RAG, Quantization, Multimodal) explicitly label when inference/retrieval runs locally.
+- **Controlled autonomy:** Multi-agent review flow shows how strategic recommendations are gated by human approval.
 
 ## Testing
 

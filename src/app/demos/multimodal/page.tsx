@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { ArrowLeft, Upload, Loader } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
 
 type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'error';
@@ -195,6 +196,10 @@ export default function MultimodalPage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Multimodal AI Assistant</h1>
             <p className="mt-1 text-muted-foreground">Run vision models in your browser</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Badge className="bg-green-500/15 text-green-700 border border-green-500/30">In-browser inference</Badge>
+              <Badge className="bg-blue-500/15 text-blue-700 border border-blue-500/30">Image analysis stays local after load</Badge>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />

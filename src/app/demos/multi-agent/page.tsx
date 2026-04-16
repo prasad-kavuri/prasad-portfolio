@@ -51,6 +51,8 @@ export default function MultiAgentPage() {
   const [currentAgent, setCurrentAgent] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
   const [reviewMode, setReviewMode] = useState(true);
+  const [reviewDraft, setReviewDraft] = useState("");
+  const [reviewNote, setReviewNote] = useState("");
 
   useEffect(() => {
     if (status !== "running") return;
@@ -82,6 +84,8 @@ export default function MultiAgentPage() {
     setError("");
     setResult(null);
     setPendingResult(null);
+    setReviewDraft("");
+    setReviewNote("");
     setProgress(0);
     setCurrentAgent("Analyzer");
 
@@ -107,6 +111,8 @@ export default function MultiAgentPage() {
         const checkpoint = resolveReviewCheckpoint(data, reviewMode);
         if (checkpoint.status === "pending") {
           setPendingResult(checkpoint.pending);
+          const strategist = checkpoint.pending.agents.find((a) => a.name === "Strategist");
+          setReviewDraft(strategist?.recommendation ?? "");
           setStatus("pending_review");
         } else {
           setResult(checkpoint.approved);
@@ -121,14 +127,46 @@ export default function MultiAgentPage() {
 
   const handleApprovePending = () => {
     if (!pendingResult) return;
-    setResult(pendingResult);
+    const revised = reviewDraft.trim();
+    const nextResult = revised
+      ? {
+          ...pendingResult,
+          agents: pendingResult.agents.map((agent) =>
+            agent.name === "Strategist"
+              ? { ...agent, recommendation: revised }
+              : agent
+          ),
+        }
+      : pendingResult;
+    setResult(nextResult);
     setPendingResult(null);
+    setReviewNote("");
     setStatus("done");
   };
 
   const handleRegeneratePending = () => {
+    if (!pendingResult) return;
+    const revised = reviewDraft.trim();
+    if (!revised) {
+      setReviewNote("Add revision guidance before applying a strategist edit.");
+      return;
+    }
+    setPendingResult({
+      ...pendingResult,
+      agents: pendingResult.agents.map((agent) =>
+        agent.name === "Strategist"
+          ? { ...agent, recommendation: revised }
+          : agent
+      ),
+    });
+    setReviewNote("Revision applied. Approve to release strategist output.");
+  };
+
+  const handleCancelPending = () => {
     setPendingResult(null);
-    handleAnalyze();
+    setReviewDraft("");
+    setReviewNote("");
+    setStatus("idle");
   };
 
   const getConfidenceBadgeColor = (confidence: number) => {
@@ -332,7 +370,7 @@ export default function MultiAgentPage() {
               <h3 className="font-semibold text-amber-500">HITL Checkpoint — Human Review Required</h3>
             </div>
             <p className="text-xs text-muted-foreground mb-4">
-              Enterprise agents pause here for human review. The Strategist will not run until you approve.
+              Strategist requires approval to proceed. This gate keeps high-impact recommendations under explicit human control for enterprise risk management.
             </p>
 
             {/* Researcher findings summary */}
@@ -358,6 +396,28 @@ export default function MultiAgentPage() {
               );
             })()}
 
+            {pendingResult.agents.find((a) => a.name === "Strategist") && (
+              <div className="bg-muted/50 rounded-lg p-4 mb-4 border border-border">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  Proposed Strategist next action
+                </p>
+                <textarea
+                  aria-label="Strategist revision guidance"
+                  value={reviewDraft}
+                  onChange={(e) => {
+                    setReviewDraft(e.target.value);
+                    setReviewNote("");
+                  }}
+                  rows={4}
+                  className="w-full rounded border border-border bg-background p-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Review or revise the strategist recommendation before release."
+                />
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Controlled autonomy pattern: agents propose, humans approve or revise before strategic output is finalized.
+                </p>
+              </div>
+            )}
+
             {/* Stats + actions */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">
@@ -365,13 +425,17 @@ export default function MultiAgentPage() {
               </p>
               <div className="flex gap-2">
                 <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700">
-                  ✓ Approve — run Strategist
+                  ✓ Approve & release
                 </Button>
                 <Button onClick={handleRegeneratePending} variant="outline">
-                  Regenerate
+                  Revise
+                </Button>
+                <Button onClick={handleCancelPending} variant="outline">
+                  Cancel
                 </Button>
               </div>
             </div>
+            {reviewNote && <p className="mt-2 text-xs text-muted-foreground">{reviewNote}</p>}
           </Card>
         )}
 

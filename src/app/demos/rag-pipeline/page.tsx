@@ -124,6 +124,10 @@ export default function RAGPipelinePage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground">RAG Pipeline Demo</h1>
             <p className="mt-1 text-muted-foreground">Retrieval-Augmented Generation with local embeddings</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Badge className="bg-green-500/15 text-green-700 border border-green-500/30">Runs in Browser</Badge>
+              <Badge className="bg-blue-500/15 text-blue-700 border border-blue-500/30">Privacy-preserving local retrieval</Badge>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />

@@ -17,6 +17,8 @@ describe('QuantizationPage', () => {
   it('renders local-first privacy/efficiency context', () => {
     render(React.createElement(QuantizationPage));
     expect(screen.getByText('Model Quantization Demo')).toBeInTheDocument();
+    expect(screen.getByText('Runs on device')).toBeInTheDocument();
+    expect(screen.getByText('Privacy-preserving local inference')).toBeInTheDocument();
     expect(screen.getByText('Local-First Inference Posture')).toBeInTheDocument();
     expect(screen.getByText(/processed in-browser/i)).toBeInTheDocument();
   });

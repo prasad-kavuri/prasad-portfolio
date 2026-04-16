@@ -33,6 +33,12 @@ Production-grade AI engineering portfolio for VP / Head / Sr Director evaluation
 - Multimodal Assistant
 - Model Quantization
 
+## Visual Proof
+
+Flagship workflow proof artifact (Multi-Agent execution rail + human approval checkpoint):
+
+![Multi-Agent workflow proof artifact](./public/readme-multi-agent-workflow-proof.svg)
+
 ## Architecture
 
 Six-layer enterprise AI architecture:

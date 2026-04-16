@@ -1,0 +1,78 @@
+<svg width="1400" height="860" viewBox="0 0 1400 860" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Multi-Agent workflow proof artifact with human approval checkpoint">
+  <rect width="1400" height="860" fill="#0B1220"/>
+  <rect x="40" y="36" width="1320" height="788" rx="20" fill="#111827" stroke="#374151"/>
+
+  <text x="84" y="96" fill="#F9FAFB" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">Multi-Agent System — Workflow Proof Artifact</text>
+  <text x="84" y="128" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="16">Analyzer → Researcher → Strategist with explicit human approval and traceable output.</text>
+
+  <rect x="84" y="166" width="128" height="30" rx="15" fill="#1F2937" stroke="#4B5563"/>
+  <text x="112" y="186" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">CrewAI</text>
+  <rect x="224" y="166" width="112" height="30" rx="15" fill="#1F2937" stroke="#4B5563"/>
+  <text x="256" y="186" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">Groq</text>
+  <rect x="348" y="166" width="164" height="30" rx="15" fill="#1F2937" stroke="#4B5563"/>
+  <text x="382" y="186" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">Human Approval</text>
+  <rect x="524" y="166" width="176" height="30" rx="15" fill="#1F2937" stroke="#4B5563"/>
+  <text x="554" y="186" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">Traceable Decisions</text>
+
+  <rect x="84" y="232" width="760" height="520" rx="14" fill="#0F172A" stroke="#334155"/>
+  <text x="112" y="270" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Workflow Rail + Execution Trace</text>
+
+  <rect x="112" y="294" width="704" height="56" rx="10" fill="#0B1220" stroke="#334155"/>
+  <text x="136" y="318" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">1. Request Intake</text>
+  <text x="136" y="338" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12">Target validation and execution context setup</text>
+  <text x="716" y="326" fill="#22C55E" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">COMPLETED</text>
+
+  <rect x="112" y="362" width="704" height="56" rx="10" fill="#0B1220" stroke="#334155"/>
+  <text x="136" y="386" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">2. Analyzer</text>
+  <text x="136" y="406" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12">Identified reliability constraints and workflow bottlenecks</text>
+  <text x="716" y="394" fill="#22C55E" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">COMPLETED</text>
+
+  <rect x="112" y="430" width="704" height="56" rx="10" fill="#0B1220" stroke="#334155"/>
+  <text x="136" y="454" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">3. Researcher</text>
+  <text x="136" y="474" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12">Benchmarked options, highlighted trade-offs, prepared strategic context</text>
+  <text x="716" y="462" fill="#22C55E" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">COMPLETED</text>
+
+  <rect x="112" y="498" width="704" height="56" rx="10" fill="#1E1B4B" stroke="#6366F1"/>
+  <text x="136" y="522" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">4. Strategist</text>
+  <text x="136" y="542" fill="#C7D2FE" font-family="Inter, Arial, sans-serif" font-size="12">Synthesized recommendation with rationale and rollout path</text>
+  <text x="726" y="530" fill="#60A5FA" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">RUNNING</text>
+
+  <rect x="112" y="566" width="704" height="56" rx="10" fill="#3F2A0A" stroke="#F59E0B"/>
+  <text x="136" y="590" fill="#FEF3C7" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">5. Human Approval</text>
+  <text x="136" y="610" fill="#FDE68A" font-family="Inter, Arial, sans-serif" font-size="12">Decision checkpoint before strategic output release</text>
+  <text x="734" y="598" fill="#F59E0B" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">PAUSED</text>
+
+  <rect x="112" y="634" width="704" height="56" rx="10" fill="#0B1220" stroke="#334155"/>
+  <text x="136" y="658" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">6. Final Output</text>
+  <text x="136" y="678" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12">Executive recommendation with constraints, alternatives, and business impact</text>
+  <text x="744" y="666" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">IDLE</text>
+
+  <rect x="872" y="232" width="444" height="520" rx="14" fill="#0F172A" stroke="#334155"/>
+  <text x="900" y="270" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Approval + Output Panel</text>
+
+  <rect x="900" y="296" width="388" height="168" rx="12" fill="#3F2A0A" stroke="#F59E0B"/>
+  <text x="924" y="326" fill="#FEF3C7" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">Human Approval Required</text>
+  <text x="924" y="348" fill="#FDE68A" font-family="Inter, Arial, sans-serif" font-size="12">Strategist requires approval before release.</text>
+  <text x="924" y="368" fill="#FDE68A" font-family="Inter, Arial, sans-serif" font-size="12">Why: controlled autonomy for enterprise risk management.</text>
+  <rect x="924" y="390" width="340" height="42" rx="8" fill="#0B1220" stroke="#92400E"/>
+  <text x="940" y="416" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">Proposed action: rollout gated by trace and QA checks.</text>
+
+  <rect x="924" y="440" width="80" height="28" rx="8" fill="#166534"/>
+  <text x="946" y="458" fill="#DCFCE7" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">Approve</text>
+  <rect x="1012" y="440" width="68" height="28" rx="8" fill="#1F2937" stroke="#4B5563"/>
+  <text x="1031" y="458" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">Revise</text>
+  <rect x="1088" y="440" width="64" height="28" rx="8" fill="#1F2937" stroke="#4B5563"/>
+  <text x="1107" y="458" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">Cancel</text>
+
+  <rect x="900" y="486" width="388" height="126" rx="12" fill="#0B1220" stroke="#334155"/>
+  <text x="924" y="514" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Business Value Summary</text>
+  <text x="924" y="536" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="12">• Faster decision cycles</text>
+  <text x="924" y="556" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="12">• Safer AI execution via approval gates</text>
+  <text x="924" y="576" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="12">• Clear auditability with trace IDs</text>
+  <text x="924" y="596" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="12">• Better specialist coordination</text>
+
+  <rect x="900" y="626" width="388" height="96" rx="12" fill="#0B1220" stroke="#334155"/>
+  <text x="924" y="654" fill="#E5E7EB" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Traceability</text>
+  <text x="924" y="676" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="12">Trace ID: trace-hitl-demo-2026</text>
+  <text x="924" y="696" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="12">Decision path logged across all six stages.</text>
+</svg>

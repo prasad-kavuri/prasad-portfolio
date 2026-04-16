@@ -2,31 +2,58 @@
 
 Live site: https://www.prasadkavuri.com
 
-## What This Is
+Production-grade AI engineering portfolio for VP / Head / Sr Director evaluation. The site demonstrates how agentic AI systems are designed, governed, and operated beyond prototype stage.
 
-This is a production-style AI engineering portfolio built to demonstrate real enterprise AI patterns — not a toy demo. It showcases the architectural thinking, system design, and production engineering behind the work I've done at Krutrim and Ola.
+## What This Portfolio Demonstrates
 
-## What It Demonstrates
+- **AI Evaluation Showcase (Signature System)**: closed-loop quality architecture with offline evals, semantic fidelity scoring, hallucination checks, drift monitoring, and release gating.
+- **Multi-Agent System (Flagship Workflow)**: Analyzer → Researcher → Strategist orchestration with explicit human approval before strategic output release.
+- **LLM Router**: model routing with latency/cost/quality trade-off framing for FinOps-aware inference decisions.
+- **RAG + Vector Search**: browser-executed retrieval patterns using Transformers.js embeddings for local-first knowledge workflows.
+- **Governance and Control Plane**: guardrails, RBAC signals, traceability, token-spend visibility, and enterprise trust controls.
+- **MCP Tool Demo**: dynamic tool discovery/invocation pattern for auditable model-to-tool interaction.
+- **Applied AI Experiences**: portfolio assistant, resume generator, multimodal inference, and quantization benchmarks.
 
-- **Agentic Orchestration** — Multi-agent system with Analyzer, Researcher, and Strategist agents running real LLM calls via CrewAI and Groq
-- **LLM Evaluation Loop** — Offline eval suites, semantic fidelity scoring, hallucination detection, drift monitoring, and CI-ready regression gating
-- **RAG Pipeline** — Real retrieval-augmented generation with Transformers.js embeddings and ChromaDB, running in-browser
-- **Multi-Model Routing** — Live cost/latency/quality tradeoff routing across Llama 3.1 8B, 70B, and Mixtral via Groq
-- **AI Governance** — RBAC, token spend controls, guardrails, HITL checkpoints, trace ID propagation, and OpenTelemetry observability
-- **Enterprise Control Plane** — Org-wide AI governance dashboard with group spend limits and audit feeds
-- **MCP Tool Use** — Model Context Protocol in action: LLM discovers and invokes tools dynamically
-- **Local-First AI** — Florence-2 multimodal, ONNX quantization benchmarks, and vector search running fully in-browser via WebGPU
+## Demo Inventory
+
+### Core AI Infrastructure
+- AI Evaluation Showcase
+- RAG Pipeline
+- LLM Router
+- Vector Search
+
+### Agentic Systems
+- Multi-Agent System
+- MCP Tool Demo
+- Enterprise Control Plane
+
+### AI Applications
+- AI Portfolio Assistant
+- Resume Generator
+- Multimodal Assistant
+- Model Quantization
 
 ## Architecture
 
-Six-layer enterprise AI architecture: Users → AI Experience → Agentic Orchestration → Intelligence → Tools/Data → Business Outcomes. Full diagram at https://www.prasadkavuri.com/#architecture.
-Canonical diagram asset: `public/architecture-diagram.svg`.
+Six-layer enterprise AI architecture:
+`Users → AI Experience → Agentic Orchestration → Intelligence → Tools/Data → Business Outcomes`
+
+Architecture section: https://www.prasadkavuri.com/#architecture
+Canonical diagram asset: `public/architecture-diagram.svg`
+
+## Trust, Governance, and Quality Posture
+
+- Human-in-the-loop checkpoint for high-impact strategist output
+- Prompt injection and output-safety guardrails in shared AI route controls
+- Trace ID propagation for request-level auditability
+- Drift snapshots + eval gating to reduce regression risk
+- Rate limiting and abuse controls for production-safe exposure
 
 ## Stack
 
 Next.js · TypeScript · Tailwind CSS · CrewAI · Groq · Transformers.js · ChromaDB · ONNX · OpenTelemetry · Upstash
 
-## Running Locally
+## Local Development
 
 ```bash
 npm install
@@ -34,6 +61,15 @@ npm run dev
 ```
 
 Open http://localhost:3000
+
+## Testing and Quality Gates
+
+```bash
+npm test
+npm run build
+```
+
+The repository includes component, API, integration, evaluation, fuzz, resilience, and Playwright coverage to keep demo behavior and trust controls reliable.
 
 ## About
 

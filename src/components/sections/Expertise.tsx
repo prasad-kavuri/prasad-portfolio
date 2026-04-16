@@ -71,7 +71,7 @@ export function Expertise() {
           What I Bring to an Organization
         </h2>
         <p className="text-muted-foreground mb-16 max-w-2xl">
-          Seven areas where I consistently drive impact — from technical architecture
+          Five high-signal areas where I consistently drive impact — from technical architecture
           to organizational transformation.
         </p>
 

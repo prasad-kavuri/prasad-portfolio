@@ -64,6 +64,11 @@ describe('Hero', () => {
     expect(screen.getByText(/human oversight and governance/i)).toBeDefined();
   });
 
+  it('renders top-fold POV statement', () => {
+    render(<Hero />);
+    expect(screen.getByText(/Most AI programs fail in production/i)).toBeDefined();
+  });
+
   it('surfaces signature-system quality callout and evaluation showcase link', () => {
     render(<Hero />);
     expect(screen.getByText(/Signature System: AI Evaluation Showcase/i)).toBeDefined();
@@ -117,18 +122,18 @@ describe('Hero', () => {
     render(<Hero />);
     expect(screen.getByText(/Recruiters/i)).toBeDefined();
     expect(screen.getAllByText(/VP \/ Head of AI Engineering/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Signature artifact for interview review/i)).toBeDefined();
+    expect(screen.getByText(/Signature review artifact/i)).toBeDefined();
   });
 
   it('renders trust and governance summary with responsible disclosure link', () => {
     render(<Hero />);
     expect(screen.getByText(/Trust & Governance at a Glance/i)).toBeDefined();
-    expect(screen.getByText(/Centralized prompt injection and output safety checks/i)).toBeDefined();
-    expect(screen.getByText(/Human approval required/i)).toBeDefined();
-    expect(screen.getByText(/Decision traces are logged via trace IDs/i)).toBeDefined();
-    expect(screen.getByText(/offline eval suites with online drift monitoring/i)).toBeDefined();
+    expect(screen.getByText(/prompt-injection and output safety checks/i)).toBeDefined();
+    expect(screen.getByText(/Approval checkpoints on high-impact transitions/i)).toBeDefined();
+    expect(screen.getByText(/Decision traces and trace IDs are visible/i)).toBeDefined();
+    expect(screen.getByText(/Offline eval suites plus online drift monitoring/i)).toBeDefined();
     expect(screen.getByText(/Upstash-backed rate limiting/i)).toBeDefined();
-    const disclosureLink = screen.getByRole('link', { name: /Responsible disclosure policy/i });
+    const disclosureLink = screen.getByRole('link', { name: /security.txt/i });
     expect(disclosureLink.getAttribute('href')).toBe('/.well-known/security.txt');
   });
 

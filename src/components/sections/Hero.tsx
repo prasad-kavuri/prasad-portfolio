@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedCounter } from "@/components/ui/counter";
+import { GovernancePillars } from "@/components/ui/governance-pillars";
 import profile from "@/data/profile.json";
 import { trackEvent } from "@/lib/analytics";
 
@@ -14,9 +15,9 @@ const brandStyle = {
 export function Hero() {
   return (
     <>
-      <section className="py-20">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4">
-          <div className="flex flex-col gap-8 md:flex-row md:items-center">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <Image
               src="/profile-photo.jpg"
               width={120}
@@ -28,7 +29,7 @@ export function Hero() {
               <h1 id="profile-name" className="text-3xl font-semibold">
                 {profile.personal.name}
               </h1>
-              <p className="text-lg text-muted-foreground">
+              <p className="mt-1 max-w-3xl text-lg text-muted-foreground">
                 {profile.personal.subtitle}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -41,25 +42,29 @@ export function Hero() {
             </div>
           </div>
 
-          <p id="profile-summary" className="mt-8 max-w-2xl leading-relaxed text-muted-foreground">
+          <p id="profile-summary" className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             {profile.personal.summary}
           </p>
 
-          <div className="mt-6 mb-2 space-y-2">
+          <p className="mt-4 max-w-3xl rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm font-medium text-foreground">
+            Most AI programs fail in production because cost discipline, governance, and operational ownership are bolted on too late.
+          </p>
+
+          <div className="mt-5 space-y-2.5">
             {[
               "I build production AI systems — not prototypes.",
               "I optimize for cost, latency, and scalability — not just model quality.",
               "I align engineering, product, and business teams around measurable outcomes.",
               "I design AI systems with measurable quality loops and human oversight and governance.",
             ].map((line, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <span className="mt-1.5 size-1 rounded-full shrink-0 bg-indigo-500" />
-                <span>{line}</span>
+              <div key={i} className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+                <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
+                <span className={i === 0 ? "font-semibold text-foreground" : ""}>{line}</span>
               </div>
             ))}
           </div>
 
-          <div className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
+          <div className="mt-5 rounded-xl border border-border bg-muted/30 p-4 sm:p-5">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
               Signature System: AI Evaluation Showcase
             </p>
@@ -78,7 +83,7 @@ export function Hero() {
             </a>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-2.5 sm:gap-3">
             <a
               href="/demos/multi-agent"
               style={brandStyle}
@@ -103,20 +108,20 @@ export function Hero() {
               onClick={() => trackEvent('linkedin_clicked')}
               className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
             >
-              View LinkedIn
-            </a>
+                View LinkedIn
+              </a>
           </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {profile.stats.map((s) => (
-              <div key={s.label} className="rounded-lg bg-muted p-4">
-                <AnimatedCounter value={s.value} className="text-2xl font-semibold" />
-                <p className="text-xs text-muted-foreground">{s.label}</p>
+              <div key={s.label} className="rounded-xl border border-border bg-muted/60 px-4 py-3.5">
+                <AnimatedCounter value={s.value} className="text-2xl font-semibold tracking-tight" />
+                <p className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-10 border-t border-border pt-8">
+          <div className="mt-8 border-t border-border pt-7">
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Currently Exploring
             </p>
@@ -125,10 +130,10 @@ export function Hero() {
                 On-device Small Language Models
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
-                🔗 Agent-to-Agent (A2A) Protocol
+                Agent-to-Agent (A2A) Protocol
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
-                🔍 LLM Observability and Tracing
+                LLM Observability and Tracing
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
                 Multimodal Agentic Workflows
@@ -138,24 +143,24 @@ export function Hero() {
         </div>
       </section>
 
-      <div className="border-y border-border bg-muted/40 py-6">
+      <div className="border-y border-border bg-muted/40 py-7">
         <div className="mx-auto max-w-5xl px-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 For Recruiters and Hiring Managers
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="mt-1 text-sm font-medium text-foreground">
                 Available for VP / Head of AI Engineering roles
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Specialized in shipping agentic platforms with evaluation, drift monitoring, and governance controls.
+              <p className="mt-1 text-xs text-muted-foreground">
+                I build and scale production AI platforms with evaluation loops, governance controls, and measurable business outcomes.
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Signature artifact for interview review: AI Evaluation Showcase (offline + online quality loop).
+              <p className="mt-1 text-xs text-muted-foreground">
+                Signature review artifact: AI Evaluation Showcase (offline + online quality loop).
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2.5">
               <a
                 href="/api/resume-download"
                 target="_blank"
@@ -193,24 +198,19 @@ export function Hero() {
           </div>
 
           <div
-            className="mt-5 rounded-lg border border-border/80 bg-background/60 p-4"
+            className="mt-5 rounded-xl border border-border/80 bg-background/60 p-4 sm:p-5"
             aria-label="Trust and governance summary"
           >
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Trust &amp; Governance at a Glance
             </p>
-            <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-5">
-              <p><span className="font-medium text-foreground">Guardrails:</span> Centralized prompt injection and output safety checks across AI routes.</p>
-              <p><span className="font-medium text-foreground">Human Oversight:</span> Human approval required; execution pauses for review before strategist execution.</p>
-              <p><span className="font-medium text-foreground">Quality Loop:</span> Offline eval suites with online drift monitoring and hallucination indicators.</p>
-              <p><span className="font-medium text-foreground">Abuse Protection:</span> Upstash-backed rate limiting with privacy-preserving IP hashing.</p>
-              <p>
-                <span className="font-medium text-foreground">Auditability:</span> Decision traces are logged via trace IDs.{` `}
-                <a href="/.well-known/security.txt" className="underline underline-offset-2 hover:no-underline">
-                  Responsible disclosure policy
-                </a>.
-              </p>
-            </div>
+            <GovernancePillars className="mt-3" />
+            <p className="mt-2 text-xs text-muted-foreground">
+              Responsible disclosure policy:{` `}
+              <a href="/.well-known/security.txt" className="underline underline-offset-2 hover:no-underline">
+                security.txt
+              </a>
+            </p>
           </div>
         </div>
       </div>

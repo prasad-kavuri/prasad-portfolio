@@ -46,7 +46,7 @@ describe('MultiAgentPage HITL flow', () => {
   it('pauses at strategist approval gate with approve/revise/cancel controls', async () => {
     render(React.createElement(MultiAgentPage));
 
-    fireEvent.click(screen.getByRole('button', { name: /Start Multi-Agent Analysis/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Run workflow/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/Strategist requires approval to proceed/i)).toBeInTheDocument();
@@ -60,10 +60,18 @@ describe('MultiAgentPage HITL flow', () => {
       expect(screen.getByText(/Revision applied/i)).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /Approve & release/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^Approve$/i }));
 
     await waitFor(() => {
       expect(screen.getByText('Revised strategist action for safer rollout.')).toBeInTheDocument();
     });
+  });
+
+  it('renders workflow rail and business value panel', () => {
+    render(React.createElement(MultiAgentPage));
+    expect(screen.getByText(/Workflow Stages/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Request Intake/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Human Approval/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Business Value of This Pattern/i)).toBeInTheDocument();
   });
 });

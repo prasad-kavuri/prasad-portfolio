@@ -1,14 +1,31 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ComponentType } from "react";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Bot,
+  CheckCircle2,
+  Circle,
+  ClipboardList,
+  Clock3,
+  Loader2,
+  PlayCircle,
+  Search,
+  Shield,
+  SquareTerminal,
+  TriangleAlert,
+  UserCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GovernancePillars } from "@/components/ui/governance-pillars";
 import { resolveReviewCheckpoint } from "@/lib/hitl";
-import { generateClientTraceId, createTracedFetch } from "@/lib/observability";
+import { createTracedFetch, generateClientTraceId } from "@/lib/observability";
 
 interface AgentResult {
   name: string;
@@ -27,10 +44,65 @@ interface AnalysisResult {
   total_tokens: number;
 }
 
+type RunStatus = "idle" | "running" | "pending_review" | "done" | "error";
+type StageState = "idle" | "running" | "completed" | "paused" | "failed";
+
+type WorkflowStageId =
+  | "request-intake"
+  | "analyzer"
+  | "researcher"
+  | "strategist"
+  | "human-approval"
+  | "final-output";
+
 const AGENTS = [
-  { name: "Analyzer", emoji: "🌐", role: "Technical site analysis" },
-  { name: "Researcher", emoji: "🔍", role: "Best practices research" },
-  { name: "Strategist", emoji: "S", role: "Action plan creation" },
+  { id: "analyzer", name: "Analyzer", role: "Technical site analysis" },
+  { id: "researcher", name: "Researcher", role: "Best-practice and benchmark review" },
+  { id: "strategist", name: "Strategist", role: "Action plan proposal" },
+] as const;
+
+const WORKFLOW_STAGES: {
+  id: WorkflowStageId;
+  label: string;
+  detail: string;
+  icon: ComponentType<{ className?: string }>;
+}[] = [
+  {
+    id: "request-intake",
+    label: "Request Intake",
+    detail: "Validate target and initialize execution context.",
+    icon: SquareTerminal,
+  },
+  {
+    id: "analyzer",
+    label: "Analyzer",
+    detail: "Surface architecture, reliability, and UX signals.",
+    icon: Search,
+  },
+  {
+    id: "researcher",
+    label: "Researcher",
+    detail: "Compare against known patterns and best practices.",
+    icon: Bot,
+  },
+  {
+    id: "strategist",
+    label: "Strategist",
+    detail: "Draft decision-ready recommendation and rollout path.",
+    icon: ClipboardList,
+  },
+  {
+    id: "human-approval",
+    label: "Human Approval",
+    detail: "Checkpoint before high-impact recommendation release.",
+    icon: UserCheck,
+  },
+  {
+    id: "final-output",
+    label: "Final Output",
+    detail: "Publish executive-readable recommendation and rationale.",
+    icon: BadgeCheck,
+  },
 ];
 
 const EXAMPLE_URLS = [
@@ -40,11 +112,35 @@ const EXAMPLE_URLS = [
   "https://anthropic.com",
 ];
 
+const STATUS_STYLES: Record<StageState, string> = {
+  idle: "border-border bg-muted/40 text-muted-foreground",
+  running: "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-300",
+  completed: "border-green-500/40 bg-green-500/10 text-green-600 dark:text-green-300",
+  paused: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-300",
+  failed: "border-red-500/40 bg-red-500/10 text-red-600 dark:text-red-300",
+};
+
+function getStateIcon(state: StageState) {
+  if (state === "running") return <Loader2 className="size-4 animate-spin" aria-hidden="true" />;
+  if (state === "completed") return <CheckCircle2 className="size-4" aria-hidden="true" />;
+  if (state === "paused") return <Clock3 className="size-4" aria-hidden="true" />;
+  if (state === "failed") return <TriangleAlert className="size-4" aria-hidden="true" />;
+  return <Circle className="size-4" aria-hidden="true" />;
+}
+
+function getStateText(state: StageState) {
+  if (state === "running") return "Running";
+  if (state === "completed") return "Completed";
+  if (state === "paused") return "Paused";
+  if (state === "failed") return "Failed";
+  return "Idle";
+}
+
 export default function MultiAgentPage() {
   const [traceId] = useState(() => generateClientTraceId());
   const tracedFetch = useRef(createTracedFetch(traceId));
   const [url, setUrl] = useState<string>("https://www.prasadkavuri.com");
-  const [status, setStatus] = useState<"idle" | "running" | "pending_review" | "done" | "error">("idle");
+  const [status, setStatus] = useState<RunStatus>("idle");
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [pendingResult, setPendingResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string>("");
@@ -77,6 +173,93 @@ export default function MultiAgentPage() {
     }
   }, [progress, currentAgent]);
 
+  const activeData = pendingResult ?? result;
+
+  const workflowStates = useMemo(() => {
+    const getStageState = (stageId: WorkflowStageId): StageState => {
+      if (status === "error") {
+        if (stageId === "request-intake" || stageId === "analyzer" || stageId === "researcher") {
+          return "failed";
+        }
+        return "idle";
+      }
+
+      if (status === "idle") return "idle";
+
+      if (status === "running") {
+        if (stageId === "request-intake") return "completed";
+        if (stageId === "analyzer") {
+          if (currentAgent === "Analyzer") return "running";
+          return progress >= 33 ? "completed" : "idle";
+        }
+        if (stageId === "researcher") {
+          if (currentAgent === "Researcher") return "running";
+          return progress >= 66 ? "completed" : "idle";
+        }
+        if (stageId === "strategist") {
+          return currentAgent === "Strategist" ? "running" : "idle";
+        }
+        return "idle";
+      }
+
+      if (status === "pending_review") {
+        if (["request-intake", "analyzer", "researcher"].includes(stageId)) return "completed";
+        if (stageId === "strategist" || stageId === "human-approval") return "paused";
+        return "idle";
+      }
+
+      if (status === "done") {
+        if (stageId === "human-approval" && !reviewMode) return "idle";
+        return "completed";
+      }
+
+      return "idle";
+    };
+
+    return WORKFLOW_STAGES.map((stage) => ({
+      ...stage,
+      state: getStageState(stage.id),
+    }));
+  }, [status, currentAgent, progress, reviewMode]);
+
+  const traceCards = useMemo(() => {
+    const source = activeData?.agents ?? [];
+    return AGENTS.map((agent, index) => {
+      const found = source.find((a) => a.name === agent.name);
+      let state: StageState = "idle";
+      if (status === "running") {
+        if (currentAgent === agent.name) state = "running";
+        else if ((agent.name === "Analyzer" && progress >= 33) || (agent.name === "Researcher" && progress >= 66)) {
+          state = "completed";
+        }
+      }
+      if (status === "pending_review") {
+        if (agent.name === "Strategist") state = "paused";
+        else state = "completed";
+      }
+      if (status === "done") state = "completed";
+      if (status === "error") state = "failed";
+
+      const fallbackSummary =
+        state === "running"
+          ? `${agent.name} is processing this request.`
+          : state === "paused"
+          ? "Awaiting human approval before release."
+          : "Waiting for execution.";
+
+      return {
+        ...agent,
+        state,
+        sequence: index + 1,
+        findings: found?.findings ?? [],
+        recommendation: found?.recommendation ?? fallbackSummary,
+        confidence: found?.confidence,
+        duration_ms: found?.duration_ms,
+        tokens: found?.tokens,
+      };
+    });
+  }, [activeData, currentAgent, progress, status]);
+
   const handleAnalyze = async () => {
     if (!url.trim()) return;
 
@@ -107,6 +290,7 @@ export default function MultiAgentPage() {
       const data = (await res.json()) as AnalysisResult;
       setProgress(100);
       setCurrentAgent("");
+
       setTimeout(() => {
         const checkpoint = resolveReviewCheckpoint(data, reviewMode);
         if (checkpoint.status === "pending") {
@@ -118,7 +302,7 @@ export default function MultiAgentPage() {
           setResult(checkpoint.approved);
           setStatus("done");
         }
-      }, 500);
+      }, 350);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       setStatus("error");
@@ -132,9 +316,7 @@ export default function MultiAgentPage() {
       ? {
           ...pendingResult,
           agents: pendingResult.agents.map((agent) =>
-            agent.name === "Strategist"
-              ? { ...agent, recommendation: revised }
-              : agent
+            agent.name === "Strategist" ? { ...agent, recommendation: revised } : agent
           ),
         }
       : pendingResult;
@@ -151,12 +333,11 @@ export default function MultiAgentPage() {
       setReviewNote("Add revision guidance before applying a strategist edit.");
       return;
     }
+
     setPendingResult({
       ...pendingResult,
       agents: pendingResult.agents.map((agent) =>
-        agent.name === "Strategist"
-          ? { ...agent, recommendation: revised }
-          : agent
+        agent.name === "Strategist" ? { ...agent, recommendation: revised } : agent
       ),
     });
     setReviewNote("Revision applied. Approve to release strategist output.");
@@ -169,392 +350,339 @@ export default function MultiAgentPage() {
     setStatus("idle");
   };
 
-  const getConfidenceBadgeColor = (confidence: number) => {
-    if (confidence >= 80) return "bg-green-500/20 text-green-700 border-green-300";
-    if (confidence >= 60) return "bg-yellow-500/20 text-yellow-700 border-yellow-300";
-    return "bg-orange-500/20 text-orange-700 border-orange-300";
-  };
-
-  const getAgentStatus = (agentName: string) => {
-    if (status !== "running") {
-      if (status === "done") return "Done";
-      return "Waiting";
-    }
-    if (currentAgent === agentName) return "Running";
-    if (AGENTS.indexOf(AGENTS.find((a) => a.name === agentName)!) < AGENTS.indexOf(AGENTS.find((a) => a.name === currentAgent)!)) {
-      return "Done";
-    }
-    return "Waiting";
-  };
+  const strategist = activeData?.agents.find((a) => a.name === "Strategist");
+  const analyzer = activeData?.agents.find((a) => a.name === "Analyzer");
+  const researcher = activeData?.agents.find((a) => a.name === "Researcher");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <div className="border-b border-border bg-background sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-              </Link>
-            </div>
+      <div className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+          <div className="mb-4 flex items-center gap-2">
+            <ThemeToggle />
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="mr-2 size-4" />
+                Back
+              </Button>
+            </Link>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Multi-Agent AI System</h1>
-            <p className="text-muted-foreground mt-1">
-              Three specialized AI agents collaborate to analyze websites and provide strategic recommendations
-            </p>
-            <label className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-              <input
-                type="checkbox"
-                checked={reviewMode}
-                onChange={(e) => setReviewMode(e.target.checked)}
-                className="w-4 h-4"
-              />
-              <span>Enable Review Mode</span>
-            </label>
+
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <h1 className="text-3xl font-bold tracking-tight">Multi-Agent System</h1>
+              <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+                Controlled multi-agent workflow with explicit human approval, traceable decisions, and executive-ready recommendations.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {["CrewAI", "Groq", "Human Approval", "Traceable Decisions"].map((item) => (
+                <Badge key={item} variant="outline" className="bg-muted/40">
+                  {item}
+                </Badge>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Agent Workflow Visualization */}
-        <div className="mb-12">
-          <h2 className="text-lg font-semibold mb-4">Agent Workflow</h2>
-          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-2">
-            {AGENTS.map((agent, idx) => (
-              <div key={agent.name} className="flex items-center w-full md:w-auto">
-                <Card className="flex-1 md:flex-none p-4 bg-card border-border">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{agent.emoji}</span>
-                    <div className="flex-1 md:flex-none">
-                      <h3 className="font-semibold text-sm">{agent.name}</h3>
-                      <p className="text-xs text-muted-foreground">{agent.role}</p>
-                    </div>
-                    <Badge
-                      className={`text-xs font-medium ${
-                        getAgentStatus(agent.name) === "Running"
-                          ? "bg-blue-500/20 text-blue-700 border-blue-300 animate-pulse"
-                          : getAgentStatus(agent.name) === "Done"
-                          ? "bg-green-500/20 text-green-700 border-green-300"
-                          : "bg-gray-500/20 text-gray-700 border-gray-300"
-                      } border`}
-                    >
-                      {getAgentStatus(agent.name)}
-                    </Badge>
-                  </div>
-                </Card>
-                {idx < AGENTS.length - 1 && (
-                  idx === 1 && reviewMode ? (
-                    /* HITL checkpoint marker between Researcher → Strategist */
-                    <div className="hidden md:flex flex-col items-center px-2 gap-1">
-                      <div className="text-muted-foreground text-sm">→</div>
-                      <div className="flex flex-col items-center gap-0.5">
-                        <span className="text-xs px-2 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 whitespace-nowrap font-medium">
-                          ✋ HITL
-                        </span>
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">human review</span>
-                      </div>
-                      <div className="text-muted-foreground text-sm">→</div>
-                    </div>
-                  ) : (
-                    <div className="hidden md:flex items-center px-2 text-muted-foreground">→</div>
-                  )
-                )}
-              </div>
-            ))}
-          </div>
-          {reviewMode && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
-              HITL Checkpoint — enterprise agents pause here for human review before the Strategist runs
-            </p>
-          )}
-        </div>
-
-        {/* URL Input Section */}
-        <Card className="bg-card border-border p-6 mb-12">
-          <label className="block text-sm font-medium text-muted-foreground mb-4">
-            Website URL to Analyze
-          </label>
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter a website URL..."
-            className="w-full bg-background border border-border rounded px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:border-blue-500"
-            disabled={status === "running"}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && status !== "running") {
-                handleAnalyze();
-              }
-            }}
-          />
-
-          {/* Example URLs */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {EXAMPLE_URLS.map((example) => (
-              <button
-                key={example}
-                onClick={() => setUrl(example)}
-                className="px-3 py-1 bg-muted hover:bg-muted/80 border border-border rounded text-xs text-muted-foreground transition-colors disabled:opacity-50"
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <Card className="mb-6 border-border bg-card/80 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex-1">
+              <label htmlFor="workflow-url" className="block text-sm font-semibold text-foreground">
+                Request Intake
+              </label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Enter a site to analyze. The workflow runs Analyzer → Researcher → Strategist, then pauses for human approval.
+              </p>
+              <input
+                id="workflow-url"
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com"
+                className="mt-3 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={status === "running"}
-              >
-                {example.replace("https://", "")}
-              </button>
-            ))}
-          </div>
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && status !== "running") {
+                    handleAnalyze();
+                  }
+                }}
+              />
+              <div className="mt-3 flex flex-wrap gap-2">
+                {EXAMPLE_URLS.slice(0, 2).map((example) => (
+                  <button
+                    key={example}
+                    onClick={() => setUrl(example)}
+                    className="rounded-md border border-border bg-muted/60 px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted"
+                    disabled={status === "running"}
+                  >
+                    Example: {example.replace("https://", "")}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          <Button
-            onClick={handleAnalyze}
-            disabled={status === "running" || !url.trim()}
-            className="mt-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-          >
-            {status === "running" ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Users className="w-4 h-4 mr-2" />
-                Start Multi-Agent Analysis
-              </>
-            )}
-          </Button>
+            <div className="flex flex-col items-start gap-2">
+              <label className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={reviewMode}
+                  onChange={(e) => setReviewMode(e.target.checked)}
+                  className="size-4"
+                />
+                Enable Human Review Mode
+              </label>
+              <Button
+                onClick={handleAnalyze}
+                disabled={status === "running" || !url.trim()}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {status === "running" ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Running workflow...
+                  </>
+                ) : (
+                  <>
+                    <PlayCircle className="mr-2 size-4" />
+                    Run workflow
+                  </>
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground">Trace ID: <span className="font-mono">{traceId}</span></p>
+            </div>
+          </div>
         </Card>
 
-        {/* Progress Section */}
-        {status === "running" && (
-          <Card className="bg-card border-border p-6 mb-12">
-            <div className="mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium">Analysis Progress</span>
-                <span className="text-xs text-muted-foreground">{Math.floor(progress)}%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {currentAgent && (
-                <>
-                  {currentAgent} Agent
-                  <span className="inline-block ml-1">
-                    <span className="animate-bounce">.</span>
-                    <span className="animate-bounce" style={{ animationDelay: "0.1s" }}>
-                      .
-                    </span>
-                    <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>
-                      .
-                    </span>
-                  </span>
-                </>
-              )}
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">This may take 15-30 seconds...</p>
-          </Card>
-        )}
-
-        {status === "pending_review" && pendingResult && (
-          <Card className="bg-card border border-amber-500/40 p-6 mb-12">
-            {/* HITL header */}
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">✋</span>
-              <h3 className="font-semibold text-amber-500">HITL Checkpoint — Human Review Required</h3>
-            </div>
-            <p className="text-xs text-muted-foreground mb-4">
-              Strategist requires approval to proceed. This gate keeps high-impact recommendations under explicit human control for enterprise risk management.
-            </p>
-
-            {/* Researcher findings summary */}
-            {pendingResult.agents.find(a => a.name === "Researcher") && (() => {
-              const researcher = pendingResult.agents.find(a => a.name === "Researcher")!;
-              return (
-                <div className="bg-muted/50 rounded-lg p-4 mb-4 border border-border">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    🔍 Researcher findings — review before Strategist proceeds
-                  </p>
-                  <ul className="space-y-1 mb-3">
-                    {researcher.findings.map((f, i) => (
-                      <li key={i} className="text-sm text-foreground flex gap-2">
-                        <span className="text-amber-500 mt-0.5">•</span>
-                        <span>{f}</span>
+        <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-6">
+            <Card className="border-border bg-card/70">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Workflow Stages</CardTitle>
+                <p className="text-xs text-muted-foreground">Persistent execution rail with explicit state visibility.</p>
+              </CardHeader>
+              <CardContent>
+                <ol className="space-y-2" aria-label="Workflow stages">
+                  {workflowStates.map((stage, idx) => {
+                    const Icon = stage.icon;
+                    return (
+                      <li
+                        key={stage.id}
+                        className={`rounded-lg border p-3 transition-all ${STATUS_STYLES[stage.state]} ${stage.state === "running" ? "shadow-sm" : ""}`}
+                        aria-live="polite"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="rounded-md border border-current/30 p-1.5">
+                            <Icon className="size-4" aria-hidden="true" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="text-sm font-semibold">{idx + 1}. {stage.label}</p>
+                              <span className="inline-flex items-center gap-1 text-xs font-medium">
+                                {getStateIcon(stage.state)}
+                                {getStateText(stage.state)}
+                              </span>
+                            </div>
+                            <p className="mt-0.5 text-xs leading-relaxed opacity-90">{stage.detail}</p>
+                          </div>
+                        </div>
                       </li>
-                    ))}
-                  </ul>
-                  <p className="text-xs text-muted-foreground italic border-t border-border pt-2">
-                    {researcher.recommendation}
-                  </p>
-                </div>
-              );
-            })()}
+                    );
+                  })}
+                </ol>
+              </CardContent>
+            </Card>
 
-            {pendingResult.agents.find((a) => a.name === "Strategist") && (
-              <div className="bg-muted/50 rounded-lg p-4 mb-4 border border-border">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Proposed Strategist next action
-                </p>
-                <textarea
-                  aria-label="Strategist revision guidance"
-                  value={reviewDraft}
-                  onChange={(e) => {
-                    setReviewDraft(e.target.value);
-                    setReviewNote("");
-                  }}
-                  rows={4}
-                  className="w-full rounded border border-border bg-background p-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Review or revise the strategist recommendation before release."
-                />
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Controlled autonomy pattern: agents propose, humans approve or revise before strategic output is finalized.
-                </p>
-              </div>
+            <Card className="border-border bg-card/70">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Execution Trace</CardTitle>
+                <p className="text-xs text-muted-foreground">Structured agent trace with sequence, summary, and status.</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {traceCards.map((agent) => (
+                  <div
+                    key={agent.id}
+                    className={`rounded-lg border p-4 transition-all ${STATUS_STYLES[agent.state]} ${agent.state === "running" ? "animate-pulse" : ""}`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold">#{agent.sequence} {agent.name}</p>
+                        <p className="text-xs opacity-90">{agent.role}</p>
+                      </div>
+                      <span className="text-xs font-medium">{getStateText(agent.state)}</span>
+                    </div>
+
+                    <p className="mt-2 text-sm leading-relaxed">
+                      {agent.findings[0] ?? agent.recommendation}
+                    </p>
+
+                    <div className="mt-2 flex flex-wrap gap-3 text-[11px] opacity-80">
+                      {agent.confidence !== undefined && <span>Confidence: {agent.confidence}%</span>}
+                      {agent.duration_ms !== undefined && <span>{agent.duration_ms}ms</span>}
+                      {agent.tokens !== undefined && <span>{agent.tokens} tokens</span>}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {status === "running" && (
+              <Card className="border-border bg-card/70">
+                <CardContent className="p-4">
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="font-medium">Workflow progress</span>
+                    <span className="text-muted-foreground">{Math.floor(progress)}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-muted">
+                    <div className="h-2 rounded-full bg-blue-600 transition-all" style={{ width: `${progress}%` }} />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            {status === "pending_review" && pendingResult ? (
+              <Card className="border-amber-500/40 bg-amber-500/5">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg text-amber-600 dark:text-amber-300">Human Approval Required</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Strategist requires approval to proceed. This checkpoint enforces controlled autonomy for high-impact recommendations.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="rounded-lg border border-border bg-background/60 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Proposed Strategist Action</p>
+                    <textarea
+                      aria-label="Strategist revision guidance"
+                      value={reviewDraft}
+                      onChange={(e) => {
+                        setReviewDraft(e.target.value);
+                        setReviewNote("");
+                      }}
+                      rows={5}
+                      className="mt-2 w-full rounded border border-border bg-background p-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Review or revise the recommendation before release."
+                    />
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Why this gate exists: protects strategic decisions with explicit human oversight and accountable release control.
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-background/60 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">What the Strategist is about to do</p>
+                    <p className="mt-1 text-sm text-foreground">{reviewDraft || strategist?.recommendation}</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700">
+                      Approve
+                    </Button>
+                    <Button onClick={handleRegeneratePending} variant="outline">
+                      Revise
+                    </Button>
+                    <Button onClick={handleCancelPending} variant="outline">
+                      Cancel
+                    </Button>
+                  </div>
+
+                  {reviewNote && <p className="text-xs text-muted-foreground">{reviewNote}</p>}
+                </CardContent>
+              </Card>
+            ) : status === "done" && result ? (
+              <Card className="border-border bg-card/70">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Final Recommendation</CardTitle>
+                  <p className="text-xs text-muted-foreground">Executive-ready output with rationale and trade-off context.</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="rounded-lg border border-border bg-muted/40 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Recommendation</p>
+                    <p className="mt-1 text-sm text-foreground">{strategist?.recommendation}</p>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-lg border border-border bg-background/60 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Rationale</p>
+                      <p className="mt-1 text-sm text-foreground">{researcher?.findings[0] ?? "Synthesized from analyzer and researcher outputs."}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-background/60 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Constraints Considered</p>
+                      <p className="mt-1 text-sm text-foreground">{analyzer?.findings[0] ?? "Latency, reliability, and implementation complexity."}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-background/60 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Alternatives / Trade-offs</p>
+                      <p className="mt-1 text-sm text-foreground">{researcher?.findings[1] ?? "Compared implementation speed vs long-term operability."}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-background/60 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Business Outcome</p>
+                      <p className="mt-1 text-sm text-foreground">Faster decision cycles with explicit governance and audit-ready traceability.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 rounded-lg border border-border bg-background/70 p-3 text-xs text-muted-foreground">
+                    <span>Total duration: {(result.total_duration_ms / 1000).toFixed(1)}s</span>
+                    <span>Total tokens: {result.total_tokens.toLocaleString()}</span>
+                    <span>Trace ID: <span className="font-mono text-foreground">{traceId}</span></span>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : status === "error" ? (
+              <Card className="border-red-500/40 bg-red-500/5">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-red-600 dark:text-red-300">Workflow Failed</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                  <Button
+                    onClick={() => {
+                      setStatus("idle");
+                      setError("");
+                    }}
+                    variant="outline"
+                    className="mt-3"
+                  >
+                    Retry
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border-border bg-card/70">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Final Output Panel</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Run the workflow to generate a structured recommendation with rationale, constraints, and trade-off framing.
+                  </p>
+                </CardContent>
+              </Card>
             )}
 
-            {/* Stats + actions */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs text-muted-foreground">
-                {pendingResult.agents.length} agents completed · {pendingResult.total_tokens.toLocaleString()} tokens · {(pendingResult.total_duration_ms / 1000).toFixed(1)}s
-              </p>
-              <div className="flex gap-2">
-                <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700">
-                  ✓ Approve & release
-                </Button>
-                <Button onClick={handleRegeneratePending} variant="outline">
-                  Revise
-                </Button>
-                <Button onClick={handleCancelPending} variant="outline">
-                  Cancel
-                </Button>
-              </div>
-            </div>
-            {reviewNote && <p className="mt-2 text-xs text-muted-foreground">{reviewNote}</p>}
-          </Card>
-        )}
-
-        {/* Results Section */}
-        {status === "done" && result && (
-          <div className="mb-12">
-            {/* Summary Bar */}
-            <div className="bg-card border border-border rounded-lg p-4 mb-6 flex flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">Total Duration:</span>
-                <span className="text-sm font-semibold">{(result.total_duration_ms / 1000).toFixed(1)}s</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">Total Tokens:</span>
-                <span className="text-sm font-semibold">{result.total_tokens.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">Agents:</span>
-                <span className="text-sm font-semibold">{result.agents.length}</span>
-              </div>
-            </div>
-
-            {/* Agent Results */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {result.agents.map((agent) => (
-                <Card key={agent.name} className="bg-card border-border">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <CardTitle className="text-lg">{agent.name}</CardTitle>
-                        <p className="text-xs text-muted-foreground mt-1">{agent.role}</p>
-                      </div>
-                      <Badge className={`text-xs ${getConfidenceBadgeColor(agent.confidence)} border`}>
-                        {agent.confidence}%
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Findings */}
-                    <div>
-                      <h4 className="text-sm font-semibold mb-2">Findings</h4>
-                      <ul className="text-xs text-muted-foreground space-y-1">
-                        {agent.findings.map((finding, idx) => (
-                          <li key={idx} className="flex gap-2">
-                            <span className="text-blue-500">•</span>
-                            <span>{finding}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Recommendation */}
-                    <div>
-                      <h4 className="text-sm font-semibold mb-2">Recommendation</h4>
-                      <div className="bg-muted rounded p-3 text-xs text-muted-foreground border border-border">
-                        {agent.recommendation}
-                      </div>
-                    </div>
-
-                    {/* Stats Footer */}
-                    <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t border-border">
-                      <span>{agent.duration_ms}ms</span>
-                      <span>{agent.tokens} tokens</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Error Section */}
-        {status === "error" && (
-          <Card className="bg-red-500/10 border border-red-300 p-6 mb-12">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h3 className="font-semibold text-red-700">Analysis Failed</h3>
-                <p className="text-sm text-red-600 mt-1">{error}</p>
-              </div>
-              <Button
-                onClick={() => {
-                  setStatus("idle");
-                  setError("");
-                }}
-                variant="outline"
-                size="sm"
-              >
-                Retry
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        {/* Benefits Section */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-8">Why Multi-Agent AI?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-card border-border p-6">
-              <div className="text-2xl mb-3">🧠</div>
-              <h3 className="font-semibold mb-2">Specialized Expertise</h3>
-              <p className="text-sm text-muted-foreground">
-                Each agent focuses on specific domains, providing targeted and accurate analysis from their area of expertise.
-              </p>
+            <Card className="border-border bg-card/70">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Business Value of This Pattern</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
+                <p><span className="font-medium text-foreground">Faster decisions:</span> parallel specialist analysis shortens cycle time.</p>
+                <p><span className="font-medium text-foreground">Safer execution:</span> approval checkpoints prevent unreviewed strategic actions.</p>
+                <p><span className="font-medium text-foreground">Clear auditability:</span> trace IDs and stage history support review.</p>
+                <p><span className="font-medium text-foreground">Better coordination:</span> scoped agent roles reduce ambiguity in recommendations.</p>
+              </CardContent>
             </Card>
 
-            <Card className="bg-card border-border p-6">
-              <div className="text-2xl mb-3">🤝</div>
-              <h3 className="font-semibold mb-2">Collaborative Intelligence</h3>
-              <p className="text-sm text-muted-foreground">
-                Agents build on each other's work, combining insights to create comprehensive recommendations.
-              </p>
-            </Card>
-
-            <Card className="bg-card border-border p-6">
-              <div className="text-2xl mb-3">📈</div>
-              <h3 className="font-semibold mb-2">Scalable Architecture</h3>
-              <p className="text-sm text-muted-foreground">
-                New agents can be added seamlessly to handle additional analysis tasks and domains.
-              </p>
+            <Card className="border-border bg-card/70" aria-label="Trust controls">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Shield className="size-4" />
+                  Governance Controls in This Demo
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <GovernancePillars compact />
+              </CardContent>
             </Card>
           </div>
         </div>

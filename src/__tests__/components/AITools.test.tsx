@@ -90,6 +90,16 @@ vi.mock('@/data/demos', () => ({
       status: 'live',
     },
     {
+      id: 'spatial-simulation',
+      emoji: 'Map',
+      title: 'AI Spatial Intelligence & Simulation',
+      description: 'Governed spatial planning and scenario simulation.',
+      businessImpact: 'Improves location-aware planning with policy-aware decision support',
+      href: '/demos/spatial-simulation',
+      tags: ['Spatial AI', 'Governance', 'Desktop-Friendly'],
+      status: 'live',
+    },
+    {
       id: 'portfolio-assistant',
       emoji: 'Bot',
       title: 'AI Portfolio Assistant',
@@ -170,6 +180,7 @@ describe('AITools', () => {
     expect(screen.getByText('MCP Tool Demo')).toBeInTheDocument();
     expect(screen.getByText('Enterprise Control Plane')).toBeInTheDocument();
     expect(screen.getByText('Native Browser AI Skill')).toBeInTheDocument();
+    expect(screen.getByText('AI Spatial Intelligence & Simulation')).toBeInTheDocument();
     expect(screen.getByText('Resume Generator')).toBeInTheDocument();
     expect(screen.getByText('AI Portfolio Assistant')).toBeInTheDocument();
   });
@@ -192,10 +203,10 @@ describe('AITools', () => {
     expect(liveBadges.length).toBeGreaterThan(0);
   });
 
-  it('renders Desktop badge on exactly 3 cards', () => {
+  it('renders Desktop badge on exactly 4 cards', () => {
     render(React.createElement(AITools));
     const desktopBadges = screen.getAllByText('Desktop');
-    expect(desktopBadges.length).toBe(3);
+    expect(desktopBadges.length).toBe(4);
   });
 
   it('Desktop badge appears on Vector Search', () => {
@@ -214,6 +225,12 @@ describe('AITools', () => {
     render(React.createElement(AITools));
     const quantCard = screen.getByText('Model Quantization').closest('a');
     expect(quantCard?.textContent).toContain('Desktop');
+  });
+
+  it('Desktop badge appears on AI Spatial Intelligence & Simulation', () => {
+    render(React.createElement(AITools));
+    const spatialCard = screen.getByText('AI Spatial Intelligence & Simulation').closest('a');
+    expect(spatialCard?.textContent).toContain('Desktop');
   });
 
   it('does NOT show Desktop badge on RAG Pipeline', () => {

@@ -134,4 +134,23 @@ export const demos: Demo[] = [
     tags: ["Chrome Prompt API", "Gemini Nano", "WASM"],
     status: "live",
   },
+  {
+    id: "spatial-simulation",
+    emoji: "Map",
+    title: "AI Spatial Intelligence & Simulation",
+    description:
+      "Governed spatial scenario planning for logistics and site operations with policy checks, explainable outputs, and approval-gated recommendations.",
+    businessImpact:
+      "Improves location-aware operational planning through safer, faster scenario analysis and decision traceability",
+    href: "/demos/spatial-simulation",
+    tags: [
+      "Spatial AI",
+      "Simulation",
+      "Governance",
+      "Agentic Planning",
+      "Desktop-Friendly",
+    ],
+    desktopOnly: true,
+    status: "live",
+  },
 ];

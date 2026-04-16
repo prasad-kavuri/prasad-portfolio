@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demos } from "@/data/demos";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Bot, Building2, Database, Eye, FileText, GitBranch, MonitorCheck, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
+import { ArrowRight, Bot, Building2, Database, Eye, FileText, GitBranch, Map, MonitorCheck, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 const statusLabel: Record<string, string> = {
@@ -20,7 +20,7 @@ const statusVariant: Record<string, "default" | "secondary" | "outline"> = {
   "coming-soon": "outline",
 };
 
-const DESKTOP_ONLY = ["quantization", "multimodal", "vector-search"];
+const DESKTOP_ONLY = ["quantization", "multimodal", "vector-search", "spatial-simulation"];
 
 const DEMO_GROUPS = [
   {
@@ -31,7 +31,7 @@ const DEMO_GROUPS = [
   {
     label: "Agentic Systems",
     description: "Autonomous agents and tool-use orchestration",
-    ids: ["multi-agent", "mcp-demo", "enterprise-control-plane"]
+    ids: ["multi-agent", "mcp-demo", "enterprise-control-plane", "spatial-simulation"]
   },
   {
     label: "AI Applications",
@@ -50,6 +50,7 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
   "multi-agent": Users,
   "mcp-demo": Plug,
   "enterprise-control-plane": Building2,
+  "spatial-simulation": Map,
   "browser-native-ai-skill": MonitorCheck,
   "portfolio-assistant": Bot,
   "resume-generator": FileText,

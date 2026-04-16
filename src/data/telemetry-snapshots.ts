@@ -16,6 +16,7 @@ export const STATUS_SNAPSHOT = {
     ['RAG Pipeline', 'Operational · Browser WASM demo'],
     ['Vector Search', 'Operational · Browser WASM demo'],
     ['Native Browser AI Skill', 'Operational · On-device audit skill'],
+    ['AI Spatial Intelligence & Simulation', 'Operational · Governed spatial planning'],
     ['Multimodal Assistant', 'Operational · WebGPU demo'],
     ['Model Quantization', 'Operational · ONNX demo'],
   ] satisfies SnapshotServiceStatus[],

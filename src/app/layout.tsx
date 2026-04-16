@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.prasadkavuri.com"),
   title: "Prasad Kavuri — VP / Head of AI Engineering",
   description:
-    "AI engineering executive leading 12 production AI systems across agentic workflows, LLM orchestration, and enterprise transformation. 20+ years experience, 200+ engineers led, India's first Agentic AI platform.",
+    "AI engineering executive leading 13 production AI systems across agentic workflows, LLM orchestration, and enterprise transformation. 20+ years experience, 200+ engineers led, India's first Agentic AI platform.",
   keywords: [
     "AI Engineering",
     "Agentic AI",
@@ -123,7 +123,7 @@ export const metadata: Metadata = {
   creator: "Prasad Kavuri",
   openGraph: {
     title: "Prasad Kavuri — VP / Head of AI Engineering",
-    description: "AI Engineering Executive. 12 production AI systems. 20+ years. 200+ engineers led. Open to VP/Head of AI Engineering roles.",
+    description: "AI Engineering Executive. 13 production AI systems. 20+ years. 200+ engineers led. Open to VP/Head of AI Engineering roles.",
     url: "https://www.prasadkavuri.com",
     siteName: "Prasad Kavuri",
     images: [{ url: "https://www.prasadkavuri.com/profile-photo.jpg", width: 400, height: 400, alt: "Prasad Kavuri" }],
@@ -132,7 +132,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Prasad Kavuri — VP / Head of AI Engineering",
-    description: "AI Engineering Executive. 12 production AI systems. 20+ years. Open to VP/Head of AI roles.",
+    description: "AI Engineering Executive. 13 production AI systems. 20+ years. Open to VP/Head of AI roles.",
     images: ["https://www.prasadkavuri.com/profile-photo.jpg"],
     creator: "@prasadkavuri",
   },

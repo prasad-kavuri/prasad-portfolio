@@ -32,7 +32,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('AI Applications', { exact: true }).first()).toBeVisible();
   });
 
-  test('all 12 demo cards are present', async ({ page }) => {
+  test('all 13 demo cards are present', async ({ page }) => {
     // Use first() because card titles may appear in multiple elements (heading + aria-label etc.)
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
     await expect(page.getByText('LLM Router').first()).toBeVisible();
@@ -46,11 +46,12 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Model Quantization').first()).toBeVisible();
     await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
     await expect(page.getByText('Native Browser AI Skill').first()).toBeVisible();
+    await expect(page.getByText('AI Spatial Intelligence & Simulation').first()).toBeVisible();
   });
 
-  test('Desktop badge appears on exactly 3 cards', async ({ page }) => {
+  test('Desktop badge appears on exactly 5 cards', async ({ page }) => {
     const desktopBadges = page.getByText('Desktop');
-    await expect(desktopBadges).toHaveCount(3);
+    await expect(desktopBadges).toHaveCount(5);
   });
 
   test('transformation framework section is visible', async ({ page }) => {

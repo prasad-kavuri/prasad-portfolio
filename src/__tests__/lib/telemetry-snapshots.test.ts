@@ -4,7 +4,7 @@ import { GOVERNANCE_SNAPSHOT, STATUS_SNAPSHOT, getGovernanceMetricsView } from '
 describe('telemetry snapshots', () => {
   it('status snapshot has consistent, non-empty sections with precise timestamp', () => {
     expect(STATUS_SNAPSHOT.generatedAtIso).toMatch(/^\d{4}-\d{2}-\d{2}T.+Z$/);
-    expect(STATUS_SNAPSHOT.services).toHaveLength(12);
+    expect(STATUS_SNAPSHOT.services).toHaveLength(13);
     expect(STATUS_SNAPSHOT.securityPosture.length).toBeGreaterThan(0);
     expect(STATUS_SNAPSHOT.testSuite.length).toBeGreaterThan(0);
     expect(STATUS_SNAPSHOT.stack.length).toBeGreaterThan(0);
@@ -14,6 +14,7 @@ describe('telemetry snapshots', () => {
     const names = STATUS_SNAPSHOT.services.map(([name]) => name);
     expect(new Set(names).size).toBe(names.length);
     expect(names).toContain('AI Evaluation Showcase');
+    expect(names).toContain('AI Spatial Intelligence & Simulation');
   });
 
   it('governance snapshot has centralized controls, logs, and deterministic metric snapshot', () => {

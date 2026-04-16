@@ -87,10 +87,11 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/VP \/ Head/);
     expect(llmsTxt).toMatch(/calendly\.com/);
     const demoLines = llmsTxt.match(/^- .+: https:\/\/www\.prasadkavuri\.com\/demos\//gm) ?? [];
-    expect(demoLines).toHaveLength(12);
+    expect(demoLines).toHaveLength(13);
     expect(llmsTxt).toMatch(/AI Evaluation Showcase/);
     expect(llmsTxt).toMatch(/Enterprise Control Plane/);
     expect(llmsTxt).toMatch(/Native Browser AI Skill/);
+    expect(llmsTxt).toMatch(/AI Spatial Intelligence & Simulation/);
   });
 
   it('security.txt disclosure contact matches profile email', () => {
@@ -110,10 +111,11 @@ describe('SEO metadata integrity', () => {
     expect(manifest.name).toMatch(/Prasad Kavuri/);
     expect(manifest.contact).toHaveProperty('calendly');
     expect(Array.isArray(manifest.demos)).toBe(true);
-    expect(manifest.demos).toHaveLength(12);
+    expect(manifest.demos).toHaveLength(13);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Enterprise Control Plane')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(true);
+    expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Spatial Intelligence & Simulation')).toBe(true);
   });
 
   it('profile.json personal.title is "VP / Head of AI Engineering"', () => {

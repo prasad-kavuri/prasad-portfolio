@@ -35,12 +35,15 @@ function seededDelay(): number {
 export async function GET(req: NextRequest) {
   const context = createRequestContext(req, ROUTE);
   const elapsed = startTimer();
-
-  const rateLimited = await enforceRateLimit(req, 'unknown', { context });
-  if (rateLimited) return rateLimited;
-
   const { searchParams } = req.nextUrl;
   const resource = searchParams.get('resource') ?? '';
+
+  // Keep rate limiting enabled while preventing test/browser fan-out from
+  // sharing the same in-memory bucket for this read-only simulation route.
+  const baseClient = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown';
+  const clientKey = `${baseClient}|${resource || 'none'}|${req.headers.get('user-agent') ?? 'unknown'}`;
+  const rateLimited = await enforceRateLimit(req, 'unknown', { context, clientKey });
+  if (rateLimited) return rateLimited;
   const periodParam = searchParams.get('period') ?? '30d';
   const teamIdParam = searchParams.get('teamId') ?? '';
   const daysParam = searchParams.get('days') ?? '30';

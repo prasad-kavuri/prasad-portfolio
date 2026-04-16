@@ -33,6 +33,7 @@ type RequestMeta = {
   route?: string;
   traceId?: string;
   context?: RequestContext;
+  clientKey?: string;
 };
 
 const LOG_IP_SALT = process.env.LOG_IP_SALT ?? 'portfolio-api';
@@ -179,9 +180,9 @@ export async function enforceRateLimit(
   fallback = 'anonymous',
   meta: RequestMeta = {}
 ): Promise<NextResponse | null> {
-  const clientIp = getClientIp(req, fallback);
-  const userHash = await hashLogValue(clientIp.split(',')[0].trim());
-  const result = await rateLimit(clientIp);
+  const clientKey = meta.clientKey ?? getClientIp(req, fallback);
+  const userHash = await hashLogValue(clientKey.split(',')[0].trim());
+  const result = await rateLimit(clientKey);
   if (meta.context) {
     meta.context.rateLimit = result;
     meta.context.userHash = userHash;

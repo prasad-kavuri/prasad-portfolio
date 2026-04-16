@@ -127,11 +127,11 @@ export const demos: Demo[] = [
   {
     id: "browser-native-ai-skill",
     emoji: "MonitorCheck",
-    title: "Browser-Native AI Skill",
-    description: "Reusable browser-native skill that audits page accessibility and agent readiness with on-device analysis and no inference egress.",
-    businessImpact: "Improves deployment readiness by catching UX and automation risks before release",
+    title: "Native Browser AI Skill",
+    description: "A reusable Chrome AI Skill that audits webpage accessibility using on-device Gemini Nano.",
+    businessImpact: "0ms Latency and 100% Privacy (Edge-inference) for accessibility auditing workflows",
     href: "/demos/browser-native-ai-skill",
-    tags: ["On-device analysis", "Accessibility", "Agent readiness"],
+    tags: ["Chrome Prompt API", "Gemini Nano", "WASM"],
     status: "live",
   },
 ];

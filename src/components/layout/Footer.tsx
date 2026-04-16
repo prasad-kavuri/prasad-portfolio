@@ -1,14 +1,16 @@
 import Link from "next/link";
 import profile from "@/data/profile.json";
-import { LinkedInCta } from "@/components/ui/linkedin-cta";
+import { LinkedInCTA } from "@/components/ui/LinkedInCTA";
 
 export function Footer() {
   return (
     <footer className="border-t py-8">
-      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row">
-        <p>© {new Date().getFullYear()} Prasad Kavuri</p>
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end sm:gap-6">
-          <LinkedInCta href={profile.personal.linkedin} className="h-9 px-3 py-1.5 text-xs sm:text-sm" />
+      <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 text-sm text-muted-foreground">
+        <LinkedInCTA href={profile.personal.linkedin} />
+
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <p>© {new Date().getFullYear()} Prasad Kavuri</p>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end sm:gap-6">
           <Link href={profile.personal.github} target="_blank" className="hover:text-foreground">
             GitHub
           </Link>
@@ -21,6 +23,7 @@ export function Footer() {
           <Link href="/governance" className="hover:text-foreground">
             Governance
           </Link>
+          </div>
         </div>
       </div>
     </footer>

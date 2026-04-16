@@ -82,7 +82,7 @@ vi.mock('@/data/demos', () => ({
     {
       id: 'browser-native-ai-skill',
       emoji: 'MonitorCheck',
-      title: 'Browser-Native AI Skill',
+      title: 'Native Browser AI Skill',
       description: 'On-device accessibility and readiness checks.',
       businessImpact: 'Finds release risks early without inference egress',
       href: '/demos/browser-native-ai-skill',
@@ -169,7 +169,7 @@ describe('AITools', () => {
     expect(screen.getByText('LLM Router')).toBeInTheDocument();
     expect(screen.getByText('MCP Tool Demo')).toBeInTheDocument();
     expect(screen.getByText('Enterprise Control Plane')).toBeInTheDocument();
-    expect(screen.getByText('Browser-Native AI Skill')).toBeInTheDocument();
+    expect(screen.getByText('Native Browser AI Skill')).toBeInTheDocument();
     expect(screen.getByText('Resume Generator')).toBeInTheDocument();
     expect(screen.getByText('AI Portfolio Assistant')).toBeInTheDocument();
   });

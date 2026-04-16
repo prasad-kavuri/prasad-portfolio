@@ -39,7 +39,7 @@ describe('StatusPage', () => {
 
     expect(STATUS_SNAPSHOT.services).toHaveLength(12);
     expect(screen.getByText('AI Evaluation Showcase')).toBeInTheDocument();
-    expect(screen.getByText('Browser-Native AI Skill')).toBeInTheDocument();
+    expect(screen.getByText('Native Browser AI Skill')).toBeInTheDocument();
   });
 
   it('renders trust controls from centralized snapshot data', () => {

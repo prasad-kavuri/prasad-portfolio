@@ -16,20 +16,20 @@ Production-grade AI engineering portfolio for VP / Head / Sr Director evaluation
 
 ## Live Demos (12 Production Demos)
 
-| Demo | Category | Tech Stack | Business Impact |
-|---|---|---|---|
-| AI Evaluation Showcase | Flagship Quality System | LLM-as-Judge, drift monitor, CI eval gating | Prevents regression risk before release |
-| Enterprise Control Plane | Flagship Governance | RBAC, token analytics, OpenTelemetry | Enables governed AI operations with audit-ready controls |
-| Multi-Agent System | Flagship Agentic Workflow | CrewAI, Groq, HITL checkpoint | Improves decision velocity with controlled autonomy |
-| LLM Router | Core AI Infrastructure | Groq, multi-model orchestration, routing logic | Optimizes inference cost/latency tradeoffs |
-| RAG Pipeline | Core AI Infrastructure | Transformers.js, ChromaDB, browser embeddings | Improves knowledge precision with lower support load |
-| Vector Search | Core AI Infrastructure | sentence-BERT, UMAP, cosine similarity | Accelerates semantic retrieval across enterprise content |
-| Browser-Native AI Skill | Browser-Native AI | On-device analysis, accessibility checks, agent-readiness scoring | Catches UX/automation risks early without data egress |
-| MCP Tool Demo | Agentic Systems | MCP pattern, Groq tool use | Standardizes tool execution with traceable handoffs |
-| AI Portfolio Assistant | AI Applications | Vercel AI SDK, streaming, retrieval cues | Reduces time-to-context for stakeholders |
-| Resume Generator | AI Applications | Structured generation, skill matching, PDF export | Speeds candidate-role alignment workflows |
-| Multimodal Assistant | Local-First AI | Florence-2, WebGPU, Transformers.js | Runs vision tasks locally for privacy/cost efficiency |
-| Model Quantization | Local-First AI | ONNX, INT8 vs FP32 benchmark | Demonstrates model efficiency gains for deployment economics |
+| Demo Name | Key Technology (2026 Standards) | Business Impact (ROI) |
+|---|---|---|
+| AI Evaluation Showcase | LLM-as-Judge, semantic fidelity scoring, drift monitoring, CI eval gating | Prevents regression leakage and reduces rollback spend |
+| Enterprise Control Plane | RBAC, token-spend analytics, OpenTelemetry event feed | Improves governance posture and enforces spend accountability |
+| Multi-Agent System | CrewAI orchestration, Groq inference, HITL approval checkpoint | Faster cross-functional decisions with controlled autonomy |
+| LLM Router | Multi-model routing, latency/cost telemetry, policy-based model selection | 40-70% cost reduction potential through route-to-fit inference |
+| RAG Pipeline | Transformers.js embeddings, ChromaDB retrieval, browser execution | Higher answer precision with lower support escalation volume |
+| Vector Search | sentence-BERT embeddings, UMAP mapping, cosine retrieval | Speeds enterprise knowledge discovery and analyst throughput |
+| MCP Tool Demo | Model Context Protocol pattern, dynamic tool invocation | Increases reliability via structured tool-use contracts |
+| AI Portfolio Assistant | Vercel AI SDK streaming, retrieval-grounded context injection | Shortens stakeholder time-to-context for key decisions |
+| Resume Generator | Structured generation, role-fit scoring, PDF export pipeline | Reduces turnaround time for candidate-role alignment |
+| Multimodal Assistant | Florence-2, WebGPU acceleration, in-browser OCR/captioning | Lowers vision pipeline cost with local-first execution |
+| Model Quantization | ONNX runtime benchmarking, INT8 vs FP32 profiling | Improves inference efficiency and deployment economics |
+| Native Browser AI Skill | Chrome Prompt API, Gemini Nano, WASM | Zero-latency inference and 100% privacy through on-device execution |
 
 ## Visual Proof
 

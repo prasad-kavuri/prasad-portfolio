@@ -21,6 +21,12 @@ const SAMPLE_HTML = `<main>
   <a href="/terms">Terms</a>
 </main>`;
 
+const SKILL_MANIFEST = {
+  name: "Gemini Nano Accessibility Auditor",
+  prompt: "Audit this page for WCAG accessibility issues and return actionable fixes with severity.",
+  icon: "shield-check",
+};
+
 function runChecks(input: string): CheckResult[] {
   const hasMain = /<main[\s>]/i.test(input);
   const hasNav = /<nav[\s>]/i.test(input);
@@ -62,10 +68,21 @@ function runChecks(input: string): CheckResult[] {
 export default function BrowserNativeAISkillPage() {
   const [markup, setMarkup] = useState(SAMPLE_HTML);
   const [ran, setRan] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">("idle");
 
   const checks = useMemo(() => runChecks(markup), [markup]);
   const passed = checks.filter((c) => c.ok).length;
   const score = Math.round((passed / checks.length) * 100);
+  const manifestJson = JSON.stringify(SKILL_MANIFEST, null, 2);
+
+  const handleCopyManifest = async () => {
+    try {
+      await navigator.clipboard.writeText(manifestJson);
+      setCopyStatus("success");
+    } catch {
+      setCopyStatus("error");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -76,7 +93,7 @@ export default function BrowserNativeAISkillPage() {
             <ArrowLeft className="size-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Browser-Native AI Skill</h1>
+            <h1 className="text-3xl font-bold">Native Browser AI Skill</h1>
             <p className="text-muted-foreground mt-1">
               Accessibility and agent-readiness checks run locally in browser with no server-side inference egress.
             </p>
@@ -114,6 +131,28 @@ export default function BrowserNativeAISkillPage() {
               Run Local Skill Audit
             </button>
           </div>
+        </Card>
+
+        <Card className="mb-6 border-border bg-card p-5">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">AI Skill Manifest</p>
+            <button
+              type="button"
+              onClick={handleCopyManifest}
+              className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+            >
+              Copy AI Skill Manifest
+            </button>
+          </div>
+          <pre className="overflow-x-auto rounded-lg border border-border bg-background p-3 text-xs text-foreground">
+            {manifestJson}
+          </pre>
+          {copyStatus === "success" && (
+            <p className="mt-2 text-xs text-emerald-500">Manifest copied to clipboard.</p>
+          )}
+          {copyStatus === "error" && (
+            <p className="mt-2 text-xs text-red-500">Unable to copy manifest from this browser.</p>
+          )}
         </Card>
 
         {ran && (

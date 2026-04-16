@@ -16,9 +16,25 @@ import BrowserNativeAISkillPage from '@/app/demos/browser-native-ai-skill/page';
 describe('BrowserNativeAISkillPage', () => {
   it('renders page heading and privacy badges', () => {
     render(<BrowserNativeAISkillPage />);
-    expect(screen.getByRole('heading', { name: 'Browser-Native AI Skill' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Native Browser AI Skill' })).toBeInTheDocument();
     expect(screen.getByText('Runs in browser')).toBeInTheDocument();
     expect(screen.getByText('No model egress')).toBeInTheDocument();
+  });
+
+  it('copies AI skill manifest via clipboard action', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+
+    render(<BrowserNativeAISkillPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Copy AI Skill Manifest/i }));
+
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('"name": "Gemini Nano Accessibility Auditor"')
+    );
+    expect(await screen.findByText('Manifest copied to clipboard.')).toBeInTheDocument();
   });
 
   it('runs local audit and shows mixed pass/review outcomes', () => {

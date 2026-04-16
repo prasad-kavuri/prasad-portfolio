@@ -45,7 +45,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Multimodal Assistant').first()).toBeVisible();
     await expect(page.getByText('Model Quantization').first()).toBeVisible();
     await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
-    await expect(page.getByText('Browser-Native AI Skill').first()).toBeVisible();
+    await expect(page.getByText('Native Browser AI Skill').first()).toBeVisible();
   });
 
   test('Desktop badge appears on exactly 3 cards', async ({ page }) => {

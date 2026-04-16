@@ -90,7 +90,7 @@ describe('SEO metadata integrity', () => {
     expect(demoLines).toHaveLength(12);
     expect(llmsTxt).toMatch(/AI Evaluation Showcase/);
     expect(llmsTxt).toMatch(/Enterprise Control Plane/);
-    expect(llmsTxt).toMatch(/Browser-Native AI Skill/);
+    expect(llmsTxt).toMatch(/Native Browser AI Skill/);
   });
 
   it('security.txt disclosure contact matches profile email', () => {
@@ -113,7 +113,7 @@ describe('SEO metadata integrity', () => {
     expect(manifest.demos).toHaveLength(12);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Enterprise Control Plane')).toBe(true);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'Browser-Native AI Skill')).toBe(true);
+    expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(true);
   });
 
   it('profile.json personal.title is "VP / Head of AI Engineering"', () => {

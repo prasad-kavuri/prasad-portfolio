@@ -15,7 +15,7 @@ export const STATUS_SNAPSHOT = {
     ['Resume Generator', 'Operational · PDF export'],
     ['RAG Pipeline', 'Operational · Browser WASM demo'],
     ['Vector Search', 'Operational · Browser WASM demo'],
-    ['Browser-Native AI Skill', 'Operational · On-device audit skill'],
+    ['Native Browser AI Skill', 'Operational · On-device audit skill'],
     ['Multimodal Assistant', 'Operational · WebGPU demo'],
     ['Model Quantization', 'Operational · ONNX demo'],
   ] satisfies SnapshotServiceStatus[],

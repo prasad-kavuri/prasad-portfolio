@@ -55,6 +55,9 @@ const VALUE_AREAS = [
 ];
 
 export function Expertise() {
+  // Keep 06 and 07 in source for easy restore; render top 5 for recruiter scan density.
+  const visibleAreas = VALUE_AREAS.filter((area) => Number(area.number) <= 5);
+
   return (
     <section id="expertise" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
@@ -74,7 +77,7 @@ export function Expertise() {
 
         {/* 2x3 Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {VALUE_AREAS.map((area, index) => (
+          {visibleAreas.map((area, index) => (
             <FadeUp key={area.number} delay={index * 0.08}>
               <div
                 className="group rounded-xl border border-border p-6 hover:border-indigo-500/50 hover:shadow-sm transition-all duration-200"

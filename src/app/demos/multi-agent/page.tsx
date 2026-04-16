@@ -30,7 +30,7 @@ interface AnalysisResult {
 const AGENTS = [
   { name: "Analyzer", emoji: "🌐", role: "Technical site analysis" },
   { name: "Researcher", emoji: "🔍", role: "Best practices research" },
-  { name: "Strategist", emoji: "🎯", role: "Action plan creation" },
+  { name: "Strategist", emoji: "S", role: "Action plan creation" },
 ];
 
 const EXAMPLE_URLS = [

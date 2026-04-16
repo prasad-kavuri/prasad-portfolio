@@ -122,7 +122,7 @@ export function Hero() {
             </p>
             <div className="flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
-                ⚡ On-device Small Language Models
+                On-device Small Language Models
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
                 🔗 Agent-to-Agent (A2A) Protocol
@@ -131,7 +131,7 @@ export function Hero() {
                 🔍 LLM Observability and Tracing
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
-                🎯 Multimodal Agentic Workflows
+                Multimodal Agentic Workflows
               </span>
             </div>
           </div>

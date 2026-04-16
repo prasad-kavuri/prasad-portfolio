@@ -11,7 +11,7 @@ vi.mock('@/data/demos', () => ({
   demos: [
     {
       id: 'rag-pipeline',
-      emoji: '🚀',
+      emoji: 'Database',
       title: 'RAG Pipeline',
       description: 'Real retrieval-augmented generation.',
       businessImpact: 'Enables faster decisions across enterprise knowledge systems',
@@ -21,7 +21,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'evaluation-showcase',
-      emoji: '🎯',
+      emoji: 'ShieldCheck',
       title: 'AI Evaluation Showcase',
       description: 'Closed-loop LLM evaluation pipeline.',
       businessImpact: 'Ensures quality regressions are detected before release',
@@ -31,7 +31,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'multi-agent',
-      emoji: '👥',
+      emoji: 'Users',
       title: 'Multi-Agent System',
       description: 'CrewAI-powered agents.',
       businessImpact: 'Improves decision speed across specialized business workflows',
@@ -41,7 +41,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'llm-router',
-      emoji: '🔄',
+      emoji: 'GitBranch',
       title: 'LLM Router',
       description: 'Multi-model routing.',
       businessImpact: 'Optimizes cost and latency in AI inference pipelines',
@@ -51,7 +51,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'mcp-demo',
-      emoji: '🔌',
+      emoji: 'Plug',
       title: 'MCP Tool Demo',
       description: 'MCP in action.',
       businessImpact: 'Improves reliability through standardized tool access',
@@ -61,7 +61,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'resume-generator',
-      emoji: '📄',
+      emoji: 'FileText',
       title: 'Resume Generator',
       description: 'Tailored resume from JD.',
       businessImpact: 'Reduces recruiting cycle time through faster alignment',
@@ -71,7 +71,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'portfolio-assistant',
-      emoji: '🤖',
+      emoji: 'Bot',
       title: 'AI Portfolio Assistant',
       description: 'Streaming full-context assistant with retrieval cues.',
       businessImpact: 'Cuts lookup time by making knowledge instantly accessible',
@@ -82,7 +82,7 @@ vi.mock('@/data/demos', () => ({
     // Desktop-only demos (ids matched by DESKTOP_ONLY constant in AITools.tsx)
     {
       id: 'vector-search',
-      emoji: '🔎',
+      emoji: 'Search',
       title: 'Vector Search',
       description: 'Semantic search with embeddings.',
       businessImpact: 'Accelerates knowledge discovery across enterprise content',
@@ -92,7 +92,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'multimodal',
-      emoji: '🎭',
+      emoji: 'Eye',
       title: 'Multimodal Assistant',
       description: 'Florence-2 image captioning.',
       businessImpact: 'Lowers processing costs by running vision closer to users',
@@ -102,7 +102,7 @@ vi.mock('@/data/demos', () => ({
     },
     {
       id: 'quantization',
-      emoji: '⚡',
+      emoji: 'Zap',
       title: 'Model Quantization',
       description: 'Live ONNX benchmark.',
       businessImpact: 'Reduces infrastructure overhead through faster production models',

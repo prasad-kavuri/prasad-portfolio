@@ -13,7 +13,7 @@ export type Demo = {
 export const demos: Demo[] = [
   {
     id: "rag-pipeline",
-    emoji: "🚀",
+    emoji: "Database",
     title: "RAG Pipeline",
     description: "Real retrieval-augmented generation with Transformers.js embeddings and ChromaDB — runs entirely in your browser.",
     businessImpact: "Enables faster decisions across enterprise knowledge systems at lower support cost",
@@ -23,7 +23,7 @@ export const demos: Demo[] = [
   },
   {
     id: "llm-router",
-    emoji: "🔄",
+    emoji: "GitBranch",
     title: "LLM Router",
     description: "Real multi-model routing across Llama 3.1 8B, 70B, and Mixtral — see live latency, cost, and quality trade-offs.",
     businessImpact: "Optimizes cost and latency in large-scale AI inference pipelines",
@@ -33,7 +33,7 @@ export const demos: Demo[] = [
   },
   {
     id: "vector-search",
-    emoji: "🔎",
+    emoji: "Search",
     title: "Vector Search",
     description: "Semantic search with real sentence-BERT embeddings and UMAP visualisation of the embedding space.",
     businessImpact: "Accelerates knowledge discovery across large enterprise content repositories",
@@ -44,7 +44,7 @@ export const demos: Demo[] = [
   },
   {
     id: "evaluation-showcase",
-    emoji: "🎯",
+    emoji: "ShieldCheck",
     title: "AI Evaluation Showcase",
     description: "Closed-loop LLM evaluation pipeline — semantic fidelity, hallucination detection, guardrails, and CI gating in action.",
     businessImpact: "Ensures AI quality degradations never reach production",
@@ -54,7 +54,7 @@ export const demos: Demo[] = [
   },
   {
     id: "multi-agent",
-    emoji: "👥",
+    emoji: "Users",
     title: "Multi-Agent System",
     description: "CrewAI-powered agents with real LLM calls via Groq — Analyzer, Researcher, and Strategist collaborating in real time.",
     businessImpact: "Improves decision speed by coordinating specialized workflows across business functions",
@@ -64,7 +64,7 @@ export const demos: Demo[] = [
   },
   {
     id: "mcp-demo",
-    emoji: "🔌",
+    emoji: "Plug",
     title: "MCP Tool Demo",
     description: "Model Context Protocol in action — watch an LLM discover and call tools to answer questions about Prasad's background.",
     businessImpact: "Improves reliability by standardizing tool access across agent workflows",
@@ -74,7 +74,7 @@ export const demos: Demo[] = [
   },
   {
     id: "portfolio-assistant",
-    emoji: "🤖",
+    emoji: "Bot",
     title: "AI Portfolio Assistant",
     description: "Streaming full-context assistant over my experience with optional retrieval-enhanced grounding and cited context cues.",
     businessImpact: "Cuts expert lookup time by making organizational knowledge instantly accessible",
@@ -84,7 +84,7 @@ export const demos: Demo[] = [
   },
   {
     id: "resume-generator",
-    emoji: "📄",
+    emoji: "FileText",
     title: "Resume Generator",
     description: "Paste a job description, get a tailored resume with skill matching scores and selection reasoning.",
     businessImpact: "Reduces recruiting cycle time through faster candidate-role alignment",
@@ -94,7 +94,7 @@ export const demos: Demo[] = [
   },
   {
     id: "multimodal",
-    emoji: "🎭",
+    emoji: "Eye",
     title: "Multimodal Assistant",
     description: "Florence-2 image captioning and OCR running in-browser via Transformers.js — no server, no API key.",
     businessImpact: "Lowers processing costs by running vision workflows closer to users",
@@ -105,7 +105,7 @@ export const demos: Demo[] = [
   },
   {
     id: "quantization",
-    emoji: "⚡",
+    emoji: "Zap",
     title: "Model Quantization",
     description: "Live ONNX benchmark comparing INT8 vs FP32 inference — real file sizes, real latency, real quality diff.",
     businessImpact: "Reduces infrastructure overhead through smaller, faster production models",
@@ -116,7 +116,7 @@ export const demos: Demo[] = [
   },
   {
     id: "enterprise-control-plane",
-    emoji: "🏢",
+    emoji: "Building2",
     title: "Enterprise Control Plane",
     description: "Org-wide AI governance dashboard — RBAC, group spend limits with token-cost tracking, and OpenTelemetry observability feed.",
     businessImpact: "Enables enterprise AI teams to govern access, control costs, and audit AI activity at scale",

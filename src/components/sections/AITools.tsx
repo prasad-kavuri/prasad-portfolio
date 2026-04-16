@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demos } from "@/data/demos";
-import { ArrowRight } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { ArrowRight, Bot, Building2, Database, Eye, FileText, GitBranch, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 const statusLabel: Record<string, string> = {
@@ -40,6 +41,20 @@ const DEMO_GROUPS = [
 ];
 
 const SIGNATURE_DEMO_ID = "evaluation-showcase";
+
+const DEMO_ICONS: Record<string, LucideIcon> = {
+  "evaluation-showcase": ShieldCheck,
+  "rag-pipeline": Database,
+  "llm-router": GitBranch,
+  "vector-search": Search,
+  "multi-agent": Users,
+  "mcp-demo": Plug,
+  "enterprise-control-plane": Building2,
+  "portfolio-assistant": Bot,
+  "resume-generator": FileText,
+  "multimodal": Eye,
+  "quantization": Zap,
+};
 
 export function AITools() {
   const signatureDemo = demos.find(d => d.id === SIGNATURE_DEMO_ID);
@@ -91,7 +106,10 @@ export function AITools() {
             >
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{signatureDemo.emoji}</span>
+                  {(() => {
+                    const SignatureIcon = DEMO_ICONS[signatureDemo.id];
+                    return SignatureIcon ? <SignatureIcon className="size-6 text-muted-foreground" aria-hidden="true" /> : null;
+                  })()}
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400">
@@ -156,7 +174,10 @@ export function AITools() {
                     <Card className="h-full transition-shadow group-hover:shadow-md">
                       <CardHeader className="pb-2">
                         <div className="flex items-start justify-between gap-2">
-                          <span className="text-2xl">{demo.emoji}</span>
+                          {(() => {
+                            const DemoIcon = DEMO_ICONS[demo.id];
+                            return DemoIcon ? <DemoIcon className="size-6 text-muted-foreground" aria-hidden="true" /> : null;
+                          })()}
                           <div className="flex items-center gap-1.5">
                             {DESKTOP_ONLY.includes(demo.id) && (
                               <span className="text-xs px-2 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400">

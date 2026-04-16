@@ -1,253 +1,40 @@
-# Prasad Kavuri — VP / Head of AI Engineering Portfolio
+# Prasad Kavuri — AI Engineering Portfolio
 
-> **AI Engineering Leader | Built Agentic AI at Krutrim & Ola | LLM Platforms · AI FinOps · 200+ Teams | Chicago**
->
-> **Live at [prasadkavuri.com](https://www.prasadkavuri.com)**  
-> Production-grade AI engineering portfolio with 10 production demos,
-> enterprise security, full governance layer, and CI/CD pipeline.
->
-> **Signature system:** AI Evaluation Showcase — a closed-loop quality architecture combining offline evals, live drift monitoring, hallucination indicators, and CI gating.
+Live site: https://www.prasadkavuri.com
 
-[![CI](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad-kavuri/prasad-portfolio/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-vitest%20%2B%20playwright-brightgreen)]()
-[![Coverage](https://img.shields.io/badge/coverage-100%25%20lib-brightgreen)]()
-[![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)]()
-[![React](https://img.shields.io/badge/React-19.2.5-blue)]()
+## What This Is
 
-## Live Demos
+This is a production-style AI engineering portfolio built to demonstrate real enterprise AI patterns — not a toy demo. It showcases the architectural thinking, system design, and production engineering behind the work I've done at Krutrim and Ola.
 
-| Demo | Category | Tech Stack | Mode |
-|---|---|---|---|
-| [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Core AI | Transformers.js, all-MiniLM-L6-v2 | Browser |
-| [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | Core AI | Groq, Llama 3.1/4, Qwen3 | Server |
-| [Vector Search](https://www.prasadkavuri.com/demos/vector-search) | Core AI | Transformers.js, PCA, Canvas | Browser |
-| [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Core AI | LLM-as-Judge, eval-engine, drift-monitor | Server |
-| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq, Analyzer+Researcher+Strategist, HITL | Server |
-| [MCP Tool Demo](https://www.prasadkavuri.com/demos/mcp-demo) | Agentic | MCP protocol, Groq tool calling | Server |
-| [AI Portfolio Assistant](https://www.prasadkavuri.com/demos/portfolio-assistant) | Applications | Groq, full-context grounding, retrieval cues, streaming | Server |
-| [Resume Generator](https://www.prasadkavuri.com/demos/resume-generator) | Applications | Groq, Llama 3.3 70B, PDF export | Server |
-| [Multimodal Assistant](https://www.prasadkavuri.com/demos/multimodal) | Applications | Florence-2, WebGPU, Transformers.js | Browser |
-| [Model Quantization](https://www.prasadkavuri.com/demos/quantization) | Applications | ONNX, FP32 vs INT8 benchmark | Browser |
+## What It Demonstrates
 
-## Architecture Overview
+- **Agentic Orchestration** — Multi-agent system with Analyzer, Researcher, and Strategist agents running real LLM calls via CrewAI and Groq
+- **LLM Evaluation Loop** — Offline eval suites, semantic fidelity scoring, hallucination detection, drift monitoring, and CI-ready regression gating
+- **RAG Pipeline** — Real retrieval-augmented generation with Transformers.js embeddings and ChromaDB, running in-browser
+- **Multi-Model Routing** — Live cost/latency/quality tradeoff routing across Llama 3.1 8B, 70B, and Mixtral via Groq
+- **AI Governance** — RBAC, token spend controls, guardrails, HITL checkpoints, trace ID propagation, and OpenTelemetry observability
+- **Enterprise Control Plane** — Org-wide AI governance dashboard with group spend limits and audit feeds
+- **MCP Tool Use** — Model Context Protocol in action: LLM discovers and invokes tools dynamically
+- **Local-First AI** — Florence-2 multimodal, ONNX quantization benchmarks, and vector search running fully in-browser via WebGPU
 
-![Portfolio AI system architecture](public/architecture-diagram.svg)
+## Architecture
 
-The portfolio is modeled as a production AI system rather than a static site:
+Six-layer enterprise AI architecture: Users → AI Experience → Agentic Orchestration → Intelligence → Tools/Data → Business Outcomes. Full diagram at https://www.prasadkavuri.com/#architecture.
+Canonical diagram asset: `public/architecture-diagram.svg`.
 
-| Layer | Implementation |
-|---|---|
-| UI Layer | Next.js App Router, Tailwind CSS, Framer Motion, Vercel Analytics |
-| API and Reliability | Shared route utilities for request tracing, validation, rate limits, errors, and structured logs |
-| Agentic Orchestration | Multi-agent workflow demo, HITL checkpoint, MCP tool discovery, prompt safety, and approval-oriented patterns |
-| Governance | Guardrails (injection detection, competitor filtering, hallucination heuristics), eval engine, drift monitor, cost control |
-| AI Services | LLM Router, RAG Pipeline, full-context Portfolio Assistant, Resume Generator, Evaluation Showcase, MCP Demo, browser ML demos |
-| Data Layer | `profile.json`, `demos.ts`, browser embeddings, vector search, static knowledge base |
-| External Services | Groq, Hugging Face models/Spaces, Upstash Redis, Vercel hosting and telemetry |
+## Stack
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full system-level breakdown, including routing, security, and observability.
+Next.js · TypeScript · Tailwind CSS · CrewAI · Groq · Transformers.js · ChromaDB · ONNX · OpenTelemetry · Upstash
 
-```
-prasad-portfolio/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx                      # Main portfolio page
-│   │   ├── layout.tsx                    # Root layout, metadata, JSON-LD
-│   │   ├── status/                       # System status dashboard
-│   │   ├── governance/                   # Governance dashboard (metrics, audit log)
-│   │   ├── demos/                        # 10 production demos
-│   │   └── api/                          # Server-side API routes
-│   │       ├── llm-router/               # Multi-model routing
-│   │       ├── portfolio-assistant/      # Full-context assistant + retrieval grounding
-│   │       ├── resume-generator/         # JD parsing + PDF
-│   │       ├── multi-agent/              # Agent orchestration + HITL
-│   │       ├── mcp-demo/                 # MCP tool calling
-│   │       ├── evaluation-showcase/      # Eval pipeline API
-│   │       └── resume-download/          # PDF download
-│   ├── components/
-│   │   ├── sections/                     # Hero, AITools, Experience, etc.
-│   │   └── ui/                           # shadcn/ui components
-│   ├── data/
-│   │   ├── profile.json                  # Single source of truth
-│   │   ├── demos.ts                      # Demo card definitions
-│   │   └── telemetry-snapshots.ts        # Status/governance snapshot source of truth
-│   └── lib/
-│       ├── rate-limit.ts                 # Upstash rate limiting + IP hashing
-│       ├── observability.ts              # Structured logging, anomaly detection, trace propagation
-│       ├── guardrails.ts                 # Injection detection, competitor filter, hallucination heuristics
-│       ├── eval-engine.ts                # LLM-as-Judge scoring, offline/online eval cases
-│       ├── drift-monitor.ts              # Model output drift detection
-│       ├── cost-control.ts               # Per-route token cost tracking
-│       ├── url-security.ts               # SSRF hardening for outbound fetch/tool URLs
-│       ├── hitl.ts                       # Human-in-the-loop checkpoint utilities
-│       ├── analytics.ts                  # Usage event tracking
-│       ├── query-log.ts                  # Runtime query capture for eval snapshots
-│       └── api.ts                        # Shared route utilities
-├── src/__tests__/
-│   ├── api/                              # API route unit tests (incl. resume-download)
-│   ├── components/                       # Component tests
-│   ├── evals/                            # LLM accuracy eval tests
-│   ├── fuzz/                             # Adversarial/fuzz tests
-│   ├── integration/                      # Cross-cutting integration tests
-│   ├── lib/                              # Library unit tests (incl. drift-monitor)
-│   ├── resilience/                       # Chaos + failure chain tests
-│   └── stateful/                         # Sequence + rate limit tests
-├── e2e/                                  # Playwright E2E tests
-├── docs/
-│   └── ARCHITECTURE.md                  # Full system architecture + patentable patterns
-├── .github/
-│   ├── workflows/ci.yml                  # Parallel CI pipeline
-│   └── dependabot.yml                    # Automated dependency updates
-└── public/
-    ├── robots.txt                        # SEO + crawler config
-    ├── llms.txt                          # AI crawler hint file
-    └── .well-known/
-        ├── security.txt                  # Security contact + disclosure policy
-        └── ai-agent-manifest.json        # Machine-readable profile
-```
-
-## Security
-
-| Control | Implementation | Status |
-|---|---|---|
-| Content Security Policy | `next.config.ts` + `src/proxy.ts` headers | Active |
-| Rate Limiting | Upstash Redis (@upstash/ratelimit), 10 req/60s per IP | Active |
-| Prompt Injection Guard | `src/lib/guardrails.ts` canonical signatures via `detectPromptInjection` / `isPromptInjection` | Active |
-| Competitor Mention Filter | Redacts 8 competitor names from LLM output | Active |
-| Hallucination Heuristic | Key-fact presence check on long outputs | Active |
-| XSS Sanitization | DOMPurify on all LLM output | Active |
-| Input Validation | Length limits + type checks at route entry | Active |
-| SSRF Protection | `src/lib/url-security.ts` blocks internal/private, loopback, link-local, encoded-IP, and credentialed targets | Active |
-| Safe Outbound Fetch | `src/lib/safe-fetch.ts` validates redirect hops and blocks unsafe redirect targets | Active |
-| IP Hashing | SHA-256 before Redis storage, never raw IPs | Active |
-| HITL Checkpoint | Human approval before Strategist runs (multi-agent) | Active |
-| Eval Regression Gate | CI blocks if fidelity < 0.85 or hallucination > 0.10 | Active |
-| Dependency Scanning | `npm audit --audit-level=high` in CI + Dependabot | Active |
-| Security Policy | `SECURITY.md` + `public/.well-known/security.txt` disclosure channels | Active |
-| COOP/COEP Headers | Required for SharedArrayBuffer / WASM multi-threading | Active |
-| No Hardcoded Secrets | All keys via `process.env`, verified in security tests | Active |
-| Security Disclosure | `public/.well-known/security.txt` with contact + policy | Active |
-
-## HITL Trust Model
-
-- **Autonomous reasoning is scoped:** Agents can propose analysis, but cannot bypass route-level guardrails and policy checks.
-- **Manual review checkpoint is explicit:** Multi-agent strategist execution pauses until human approval is provided.
-- **Approval gate is visible in UI:** The multi-agent demo exposes a strategist approval checkpoint with approve/revise/cancel controls before release.
-- **Decision trace is logged:** Request context and trace IDs are emitted through shared API/observability helpers for auditability.
-- **Guardrails can block output:** Prompt-injection and unsafe-output checks trigger block/redaction behavior before response release.
-
-## Executive Signals in Demo UX
-
-- **FinOps business mode:** LLM Router includes a Business Value Mode that projects illustrative cost deltas and savings based on routing outcomes.
-- **Privacy-preserving local inference:** Browser demos (RAG, Quantization, Multimodal) explicitly label when inference/retrieval runs locally.
-- **Controlled autonomy:** Multi-agent review flow shows how strategic recommendations are gated by human approval.
-
-## Testing
+## Running Locally
 
 ```bash
-npm run test           # unit tests (Vitest)
-npm run test:coverage  # coverage report
-npm run test:fuzz      # adversarial/fuzz tests
-npm run test:evals     # LLM-as-Judge eval suite
-npm run test:e2e       # Playwright (chromium, firefox, webkit, mobile)
-```
-
-| Layer | Directory | Focus |
-|---|---|---|
-| API Routes | `src/__tests__/api/` | Handler logic, validation, error states |
-| Components | `src/__tests__/components/` | Rendering, interaction, accessibility |
-| Library | `src/__tests__/lib/` | Rate limiting, observability, guardrails, drift, eval engine |
-| LLM Evals | `src/__tests__/evals/` | Guardrail accuracy, injection detection, hallucination scoring |
-| Fuzz | `src/__tests__/fuzz/` | Adversarial inputs, edge cases |
-| Stateful | `src/__tests__/stateful/` | Sequence tests, rate limit drain |
-| Resilience | `src/__tests__/resilience/` | Chaos, timeouts, failure chains |
-| Integration | `src/__tests__/integration/` | Metadata, security config integrity |
-| E2E | `e2e/` | Cross-browser, WCAG 2.2 AA, performance |
-
-Coverage gates enforced in CI: API routes ≥90% statements / ≥85% branches, lib ≥95% functions (currently 100%).
-
-## CI/CD Pipeline
-
-Two-job parallel pipeline on every push to `main` and every PR:
-
-```
-lint-and-unit (security audit → lint → unit tests + coverage gates)
-     └─► e2e matrix
-              ├── chromium
-              ├── firefox
-              ├── webkit
-              └── mobile
-```
-
-- `npm audit --audit-level=high` blocks on any high/critical CVEs
-- Dependabot: weekly dependency updates, major versions require manual review
-- Playwright browser install uses timeout + retry guards to reduce transient runner stalls
-- Playwright report uploaded as artifact on failure (7-day retention)
-
-## Tech Stack
-
-**Framework:** Next.js 16.2.3 (App Router + Turbopack), React 19.2.5  
-**Styling:** Tailwind CSS v4, shadcn/ui, Framer Motion 12  
-**AI/ML:** @huggingface/transformers v4 (WASM/WebGPU), Groq SDK  
-**Security:** @upstash/ratelimit, @upstash/redis, DOMPurify  
-**Testing:** Vitest 4, Playwright 1.59, @axe-core/playwright  
-**Observability:** @vercel/analytics, @vercel/speed-insights, structured JSON logging  
-**Deployment:** Vercel (edge middleware, CDN)
-
-## Local Development
-
-```bash
-git clone https://github.com/prasad-kavuri/prasad-portfolio.git
-cd prasad-portfolio
 npm install
-
-# Copy and fill environment variables
-cp .env.local.example .env.local
-
-npm run dev   # http://localhost:3000
+npm run dev
 ```
 
-## Environment Variables
+Open http://localhost:3000
 
-| Variable | Required | Description |
-|---|---|---|
-| `GROQ_API_KEY` | Yes | Groq API — console.groq.com |
-| `UPSTASH_REDIS_REST_URL` | Yes | Rate limiting (in-memory fallback in dev) |
-| `UPSTASH_REDIS_REST_TOKEN` | Yes | Rate limiting |
-| `ANTHROPIC_API_KEY` | Optional | Future use |
-| `NEXT_PUBLIC_APP_URL` | Optional | Defaults to http://localhost:3000 |
+## About
 
-Browser demos (RAG, Vector Search, Multimodal, Quantization) run 100%
-client-side via WebAssembly — no API key required.
-This local-first path is used to demonstrate privacy-aware inference patterns where prompts can remain in the browser for supported workloads.
-
-## Documentation
-
-- [Architecture](docs/ARCHITECTURE.md) — 6-layer system design + patentable patterns
-- [Security Policy](SECURITY.md) — vulnerability reporting and AI/agent-specific disclosure guidance
-- [System Status](https://www.prasadkavuri.com/status) — Mixed telemetry from centralized snapshot data (`src/data/telemetry-snapshots.ts`), including all 10 production systems
-- [Governance](https://www.prasadkavuri.com/governance) — Mixed telemetry governance dashboard with centralized snapshot metrics, policy controls, audit records, and explicit snapshot timestamps
-
-## 2026 Production AI Patterns Now Live
-
-This portfolio ships production-grade implementations of the patterns that define enterprise AI in 2026:
-
-- **Semantic rate limiting with privacy-preserving controls** (`src/lib/cost-control.ts`, `src/lib/rate-limit.ts`)  
-  Rate limits combine per-IP windows with token-cost controls and SHA-256 IP hashing, so the platform manages spend and abuse without storing raw user IPs.
-- **Cross-model orchestration** (`src/app/api/llm-router/route.ts`)  
-  Routing selects Groq model tiers by workload characteristics and returns latency/cost telemetry, making model selection an explicit platform primitive.
-- **MCP-style tool integration** (`src/app/api/mcp-demo/route.ts`)  
-  The tool layer demonstrates manifest-driven tool use, argument parsing, execution tracing, and safe output shaping for agentic workflows.
-- **Centralized guardrails** (`src/lib/guardrails.ts`)  
-  Prompt-injection detection, output sanitization, competitor filtering, hallucination heuristics, and agent handoff validation are implemented through one canonical module used across routes.
-- **Closed-loop evaluation and quality gating** (`src/lib/eval-engine.ts`, `src/lib/drift-monitor.ts`, `src/app/api/eval-snapshot/route.ts`)  
-  LLM-as-Judge scoring, drift snapshots, and regression thresholds are treated as deploy-time quality controls, not post-hoc analytics.
-- **Observability and trace propagation** (`src/lib/observability.ts`, `src/lib/api.ts`)  
-  Request context, structured API logs, anomaly signals, and trace IDs propagate across user requests, model calls, and governance views.
-
-### Why It Matters
-Most AI portfolios show prompts and demos. This one ships the **governance, evaluation, safety infrastructure, and observability** that production AI systems actually require — validated by 300+ tests across unit, fuzz, eval, integration, resilience, and Playwright coverage categories, CI-gated on every PR, with 0 skipped in the main branch.
-
-## License
-
-MIT — © 2026 Prasad Kavuri
+Built by Prasad Kavuri — AI Engineering Leader with 20+ years scaling production AI platforms at Krutrim, Ola, and HERE Technologies. Open to VP / Head of AI Engineering roles in the Chicago area and beyond.

@@ -91,7 +91,7 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/AI Evaluation Showcase/);
     expect(llmsTxt).toMatch(/Enterprise Control Plane/);
     expect(llmsTxt).toMatch(/Native Browser AI Skill/);
-    expect(llmsTxt).toMatch(/AI Spatial Intelligence & Simulation/);
+    expect(llmsTxt).toMatch(/AI Spatial Intelligence & World Generation/);
   });
 
   it('security.txt disclosure contact matches profile email', () => {
@@ -115,7 +115,7 @@ describe('SEO metadata integrity', () => {
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Enterprise Control Plane')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(true);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Spatial Intelligence & Simulation')).toBe(true);
+    expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Spatial Intelligence & World Generation')).toBe(true);
   });
 
   it('profile.json personal.title is "VP / Head of AI Engineering"', () => {

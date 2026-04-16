@@ -14,7 +14,7 @@ describe('telemetry snapshots', () => {
     const names = STATUS_SNAPSHOT.services.map(([name]) => name);
     expect(new Set(names).size).toBe(names.length);
     expect(names).toContain('AI Evaluation Showcase');
-    expect(names).toContain('AI Spatial Intelligence & Simulation');
+    expect(names).toContain('AI Spatial Intelligence & World Generation');
   });
 
   it('governance snapshot has centralized controls, logs, and deterministic metric snapshot', () => {

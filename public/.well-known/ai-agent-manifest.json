@@ -41,6 +41,6 @@
     {"name": "Resume Generator", "url": "https://www.prasadkavuri.com/demos/resume-generator"},
     {"name": "Multimodal Assistant", "url": "https://www.prasadkavuri.com/demos/multimodal"},
     {"name": "Model Quantization", "url": "https://www.prasadkavuri.com/demos/quantization"},
-    {"name": "AI Spatial Intelligence & Simulation", "url": "https://www.prasadkavuri.com/demos/spatial-simulation"}
+    {"name": "AI Spatial Intelligence & World Generation", "url": "https://www.prasadkavuri.com/demos/world-generation"}
   ]
 }

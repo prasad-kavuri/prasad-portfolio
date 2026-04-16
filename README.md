@@ -13,6 +13,7 @@ Production-grade AI engineering portfolio for VP / Head / Sr Director evaluation
 - **Governance and Control Plane**: guardrails, RBAC signals, traceability, token-spend visibility, and enterprise trust controls.
 - **MCP Tool Demo**: dynamic tool discovery/invocation pattern for auditable model-to-tool interaction.
 - **Applied AI Experiences**: portfolio assistant, resume generator, multimodal inference, and quantization benchmarks.
+- **Spatial World Generation**: governed text-to-3D world concept generation with adapter-based provider fallback (`hyworld` contract + deterministic mock output).
 
 ## Live Demos (13 Production Demos)
 
@@ -30,7 +31,7 @@ Production-grade AI engineering portfolio for VP / Head / Sr Director evaluation
 | Multimodal Assistant | Florence-2, WebGPU acceleration, in-browser OCR/captioning | Lowers vision pipeline cost with local-first execution |
 | Model Quantization | ONNX runtime benchmarking, INT8 vs FP32 profiling | Improves inference efficiency and deployment economics |
 | Native Browser AI Skill | Chrome Prompt API, Gemini Nano, WASM | Zero-latency inference and 100% privacy through on-device execution |
-| AI Spatial Intelligence & Simulation | Governed simulation pipeline, policy checks, approval gating, structured trace output | Strengthens logistics and location planning with policy-aware, explainable decision support (desktop-friendly) |
+| AI Spatial Intelligence & World Generation | Text-to-3D world generation, provider adapter (`hyworld` + deterministic `mock` fallback), policy checks, approval gating | Strengthens logistics and location planning with governed, explainable world artifacts ready for simulation handoff (desktop-friendly) |
 
 ## Visual Proof
 

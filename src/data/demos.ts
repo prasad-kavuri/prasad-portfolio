@@ -135,19 +135,20 @@ export const demos: Demo[] = [
     status: "live",
   },
   {
-    id: "spatial-simulation",
-    emoji: "Map",
-    title: "AI Spatial Intelligence & Simulation",
+    id: "world-generation",
+    emoji: "Cuboid",
+    title: "AI Spatial Intelligence & World Generation",
     description:
-      "Governed spatial scenario planning for logistics and site operations with policy checks, explainable outputs, and approval-gated recommendations.",
+      "Governed text-to-3D world generation for location intelligence, scenario planning, and simulation-ready workflows with approval-gated release.",
     businessImpact:
-      "Improves location-aware operational planning through safer, faster scenario analysis and decision traceability",
-    href: "/demos/spatial-simulation",
+      "Accelerates logistics and spatial planning with policy-aware world artifacts that are explainable, reviewable, and simulation-ready",
+    href: "/demos/world-generation",
     tags: [
+      "World Generation",
       "Spatial AI",
-      "Simulation",
+      "3D Scene Concepts",
       "Governance",
-      "Agentic Planning",
+      "Simulation-Ready",
       "Desktop-Friendly",
     ],
     desktopOnly: true,

@@ -14,17 +14,17 @@ vi.mock('@/components/theme-toggle', () => ({
   ThemeToggle: () => React.createElement('button', { 'aria-label': 'Toggle theme' }, 'Theme'),
 }));
 
-import SpatialSimulationPage from '@/app/demos/spatial-simulation/page';
+import WorldGenerationPage from '@/app/demos/world-generation/page';
 
-describe('SpatialSimulationPage', () => {
+describe('WorldGenerationPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders title and desktop-friendly signal', () => {
-    render(<SpatialSimulationPage />);
+    render(<WorldGenerationPage />);
 
-    expect(screen.getByRole('heading', { name: 'AI Spatial Intelligence & Simulation' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'AI Spatial Intelligence & World Generation' })).toBeInTheDocument();
     expect(screen.getByText('Desktop-Friendly')).toBeInTheDocument();
     expect(screen.getByText(/Desktop-friendly:/i)).toBeInTheDocument();
   });
@@ -36,19 +36,19 @@ describe('SpatialSimulationPage', () => {
         json: async () => ({
           status: 'pending_review',
           workflow: [
-            { id: 'scenario-intake', label: 'Scenario Intake', description: 'd', state: 'completed' },
-            { id: 'spatial-planner', label: 'Spatial Planner', description: 'd', state: 'completed' },
-            { id: 'world-builder', label: 'World / Scene Builder', description: 'd', state: 'completed' },
-            { id: 'simulation-analyst', label: 'Simulation Analyst', description: 'd', state: 'completed' },
+            { id: 'prompt-intake', label: 'Prompt Intake', description: 'd', state: 'completed' },
+            { id: 'scene-intent', label: 'Scene Intent Parsing', description: 'd', state: 'completed' },
+            { id: 'world-generation', label: 'World Generation', description: 'd', state: 'completed' },
+            { id: 'asset-structuring', label: 'Asset Structuring', description: 'd', state: 'completed' },
             { id: 'policy-review', label: 'Policy & Safety Review', description: 'd', state: 'completed' },
             { id: 'human-approval', label: 'Human Approval', description: 'd', state: 'paused' },
-            { id: 'final-recommendation', label: 'Final Recommendation', description: 'd', state: 'idle' },
+            { id: 'final-world-output', label: 'Final World Output', description: 'd', state: 'idle' },
           ],
           traces: [
-            { sequence: 1, actor: 'Scenario Intake', action: 'validate', summary: 'ok', status: 'completed' },
-            { sequence: 2, actor: 'Spatial Planner', action: 'plan', summary: 'ok', status: 'completed' },
-            { sequence: 3, actor: 'World / Scene Builder', action: 'scene', summary: 'ok', status: 'completed' },
-            { sequence: 4, actor: 'Simulation Analyst', action: 'simulate', summary: 'ok', status: 'completed' },
+            { sequence: 1, actor: 'Prompt Intake', action: 'validate', summary: 'ok', status: 'completed' },
+            { sequence: 2, actor: 'Scene Intent Parser', action: 'intent', summary: 'ok', status: 'completed' },
+            { sequence: 3, actor: 'World Generator', action: 'generate', summary: 'ok', status: 'completed' },
+            { sequence: 4, actor: 'Asset Structuring', action: 'assets', summary: 'ok', status: 'completed' },
             { sequence: 5, actor: 'Policy & Safety Review', action: 'policy', summary: 'ok', status: 'completed' },
             { sequence: 6, actor: 'Human Approval', action: 'approve', summary: 'Approval checkpoint', status: 'paused' },
           ],
@@ -60,6 +60,28 @@ describe('SpatialSimulationPage', () => {
             evaluationStatus: 'review',
           },
           businessValue: ['value'],
+          worldArtifact: {
+            worldTitle: 'Downtown concept',
+            provider: 'hyworld-adapter',
+            providerMode: 'hyworld-adapter',
+            availability: 'fallback',
+            preview: {
+              width: 2,
+              height: 2,
+              cells: ['road', 'pickup', 'logistics', 'pedestrian'],
+              legend: [{ type: 'road', label: 'Route corridor' }],
+            },
+            assets: {
+              meshConcept: 'mesh',
+              representation: 'mesh-concept',
+              sceneZones: ['z1'],
+              routeCorridors: ['c1'],
+              loadingAreas: ['l1'],
+              pedestrianAreas: ['p1'],
+              simulationReadiness: 'ready',
+            },
+            notes: ['fallback note'],
+          },
           proposedRecommendation: {
             headline: 'headline',
             rationale: 'rationale',
@@ -68,7 +90,7 @@ describe('SpatialSimulationPage', () => {
             businessImpact: 'impact',
             policyNotes: ['note'],
             alternativesConsidered: ['alt'],
-            nextAction: 'Approve or revise recommended rollout before pilot execution.',
+            nextAction: 'Approve or revise world concept before simulation/export handoff.',
           },
           evaluation: {
             passed: true,
@@ -80,6 +102,8 @@ describe('SpatialSimulationPage', () => {
             prompt: 'prompt',
             region: 'Downtown Core',
             objective: 'speed',
+            style: 'logistics-grid',
+            simulationReady: true,
             constraints: {
               budgetLevel: 'medium',
               congestionSensitivity: 'medium',
@@ -103,6 +127,28 @@ describe('SpatialSimulationPage', () => {
             evaluationStatus: 'pass',
           },
           businessValue: ['value'],
+          worldArtifact: {
+            worldTitle: 'Downtown concept',
+            provider: 'mock-world-provider',
+            providerMode: 'mock',
+            availability: 'available',
+            preview: {
+              width: 2,
+              height: 2,
+              cells: ['road', 'pickup', 'logistics', 'pedestrian'],
+              legend: [{ type: 'road', label: 'Route corridor' }],
+            },
+            assets: {
+              meshConcept: 'mesh',
+              representation: 'mesh-concept',
+              sceneZones: ['z1'],
+              routeCorridors: ['c1'],
+              loadingAreas: ['l1'],
+              pedestrianAreas: ['p1'],
+              simulationReadiness: 'ready',
+            },
+            notes: ['mock note'],
+          },
           proposedRecommendation: {
             headline: 'headline',
             rationale: 'rationale',
@@ -111,7 +157,7 @@ describe('SpatialSimulationPage', () => {
             businessImpact: 'impact',
             policyNotes: ['note'],
             alternativesConsidered: ['alt'],
-            nextAction: 'Launch a 2-week pilot in the highest-friction corridor and monitor ETA variance + safety events.',
+            nextAction: 'Export this world concept into simulation planning and run scenario stress tests against peak demand windows.',
           },
           finalRecommendation: {
             headline: 'headline',
@@ -121,7 +167,7 @@ describe('SpatialSimulationPage', () => {
             businessImpact: 'impact',
             policyNotes: ['note'],
             alternativesConsidered: ['alt'],
-            nextAction: 'Launch a 2-week pilot in the highest-friction corridor and monitor ETA variance + safety events.',
+            nextAction: 'Export this world concept into simulation planning and run scenario stress tests against peak demand windows.',
           },
           evaluation: {
             passed: true,
@@ -133,6 +179,8 @@ describe('SpatialSimulationPage', () => {
             prompt: 'prompt',
             region: 'Downtown Core',
             objective: 'speed',
+            style: 'logistics-grid',
+            simulationReady: true,
             constraints: {
               budgetLevel: 'medium',
               congestionSensitivity: 'medium',
@@ -143,9 +191,9 @@ describe('SpatialSimulationPage', () => {
         }),
       });
 
-    render(<SpatialSimulationPage />);
+    render(<WorldGenerationPage />);
 
-    fireEvent.click(screen.getByRole('button', { name: /Run governed simulation/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Generate governed world/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/Human Approval Required/i)).toBeInTheDocument();

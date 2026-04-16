@@ -40,7 +40,7 @@ describe('StatusPage', () => {
     expect(STATUS_SNAPSHOT.services).toHaveLength(13);
     expect(screen.getByText('AI Evaluation Showcase')).toBeInTheDocument();
     expect(screen.getByText('Native Browser AI Skill')).toBeInTheDocument();
-    expect(screen.getByText('AI Spatial Intelligence & Simulation')).toBeInTheDocument();
+    expect(screen.getByText('AI Spatial Intelligence & World Generation')).toBeInTheDocument();
   });
 
   it('renders trust controls from centralized snapshot data', () => {

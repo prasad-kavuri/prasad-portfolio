@@ -90,12 +90,12 @@ vi.mock('@/data/demos', () => ({
       status: 'live',
     },
     {
-      id: 'spatial-simulation',
+      id: 'world-generation',
       emoji: 'Map',
-      title: 'AI Spatial Intelligence & Simulation',
+      title: 'AI Spatial Intelligence & World Generation',
       description: 'Governed spatial planning and scenario simulation.',
       businessImpact: 'Improves location-aware planning with policy-aware decision support',
-      href: '/demos/spatial-simulation',
+      href: '/demos/world-generation',
       tags: ['Spatial AI', 'Governance', 'Desktop-Friendly'],
       status: 'live',
     },
@@ -180,7 +180,7 @@ describe('AITools', () => {
     expect(screen.getByText('MCP Tool Demo')).toBeInTheDocument();
     expect(screen.getByText('Enterprise Control Plane')).toBeInTheDocument();
     expect(screen.getByText('Native Browser AI Skill')).toBeInTheDocument();
-    expect(screen.getByText('AI Spatial Intelligence & Simulation')).toBeInTheDocument();
+    expect(screen.getByText('AI Spatial Intelligence & World Generation')).toBeInTheDocument();
     expect(screen.getByText('Resume Generator')).toBeInTheDocument();
     expect(screen.getByText('AI Portfolio Assistant')).toBeInTheDocument();
   });
@@ -227,9 +227,9 @@ describe('AITools', () => {
     expect(quantCard?.textContent).toContain('Desktop');
   });
 
-  it('Desktop badge appears on AI Spatial Intelligence & Simulation', () => {
+  it('Desktop badge appears on AI Spatial Intelligence & World Generation', () => {
     render(React.createElement(AITools));
-    const spatialCard = screen.getByText('AI Spatial Intelligence & Simulation').closest('a');
+    const spatialCard = screen.getByText('AI Spatial Intelligence & World Generation').closest('a');
     expect(spatialCard?.textContent).toContain('Desktop');
   });
 

@@ -25,7 +25,7 @@ Book a call: https://calendly.com/vbkpkavuri
 - MCP Tool Demo: https://www.prasadkavuri.com/demos/mcp-demo
 - Enterprise Control Plane: https://www.prasadkavuri.com/demos/enterprise-control-plane
 - Native Browser AI Skill: https://www.prasadkavuri.com/demos/browser-native-ai-skill
-- AI Spatial Intelligence & Simulation: https://www.prasadkavuri.com/demos/spatial-simulation
+- AI Spatial Intelligence & World Generation: https://www.prasadkavuri.com/demos/world-generation
 - AI Portfolio Assistant: https://www.prasadkavuri.com/demos/portfolio-assistant
 - Resume Generator: https://www.prasadkavuri.com/demos/resume-generator
 - Multimodal Assistant: https://www.prasadkavuri.com/demos/multimodal

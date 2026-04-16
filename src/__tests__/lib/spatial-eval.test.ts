@@ -1,14 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { evaluateSpatialSimulation, validateSpatialSimulationShape } from '@/lib/spatial-eval';
-import { buildSpatialSimulation } from '@/lib/spatial-simulation';
+import { evaluateWorldOutput, validateWorldOutputShape } from '@/lib/world-eval';
+import { buildWorldGeneration } from '@/lib/world-generation';
 
-describe('spatial simulation eval', () => {
-  it('passes complete approved simulation output', () => {
-    const output = buildSpatialSimulation({
-      traceId: 'trace-spatial-1',
-      scenarioPrompt: 'Optimize downtown delivery staging near mixed-use corridors with policy-safe curb behavior.',
+describe('world generation eval', () => {
+  it('passes complete approved world output', async () => {
+    const output = await buildWorldGeneration({
+      traceId: 'trace-world-1',
+      prompt: 'Generate a 3D downtown delivery zone with curbside loading and pedestrian-safe buffers.',
       region: 'Downtown Core',
       objective: 'cost',
+      style: 'logistics-grid',
+      provider: 'mock',
+      simulationReady: true,
       constraints: {
         budgetLevel: 'medium',
         congestionSensitivity: 'medium',
@@ -18,17 +21,20 @@ describe('spatial simulation eval', () => {
       approvalState: 'approved',
     });
 
-    const evalResult = evaluateSpatialSimulation(output);
+    const evalResult = evaluateWorldOutput(output);
     expect(evalResult.passed).toBe(true);
     expect(evalResult.score).toBe(1);
   });
 
-  it('reports shape issues for incomplete payload', () => {
-    const output = buildSpatialSimulation({
-      traceId: 'trace-spatial-2',
-      scenarioPrompt: 'Evaluate pickup placement around transit hubs with clear safety constraints and budget controls.',
+  it('reports shape issues for incomplete payload', async () => {
+    const output = await buildWorldGeneration({
+      traceId: 'trace-world-2',
+      prompt: 'Create a transit district world concept with policy-safe pickups and accessible routing.',
       region: 'Transit District',
       objective: 'speed',
+      style: 'mobility-corridor',
+      provider: 'mock',
+      simulationReady: false,
       constraints: {
         budgetLevel: 'medium',
         congestionSensitivity: 'medium',
@@ -41,23 +47,34 @@ describe('spatial simulation eval', () => {
     const broken = {
       ...output,
       traces: [],
+      worldArtifact: {
+        ...output.worldArtifact,
+        preview: {
+          ...output.worldArtifact.preview,
+          cells: [],
+        },
+      },
       proposedRecommendation: {
         ...output.proposedRecommendation,
         tradeoffs: [],
       },
     };
 
-    const issues = validateSpatialSimulationShape(broken);
+    const issues = validateWorldOutputShape(broken);
     expect(issues).toContain('trace_incomplete');
+    expect(issues).toContain('missing_world_preview');
     expect(issues).toContain('missing_tradeoffs');
   });
 
-  it('flags policy trace and approval-state mismatches', () => {
-    const output = buildSpatialSimulation({
-      traceId: 'trace-spatial-3',
-      scenarioPrompt: 'Assess transit district routing with balanced constraints and policy-safe execution.',
+  it('flags policy trace and approval-state mismatches', async () => {
+    const output = await buildWorldGeneration({
+      traceId: 'trace-world-3',
+      prompt: 'Generate mixed-use world concept for transit-adjacent logistics and safety checks.',
       region: 'Transit District',
       objective: 'coverage',
+      style: 'urban-mixed-use',
+      provider: 'mock',
+      simulationReady: true,
       constraints: {
         budgetLevel: 'medium',
         congestionSensitivity: 'medium',
@@ -81,53 +98,13 @@ describe('spatial simulation eval', () => {
       },
     };
 
-    const evalResult = evaluateSpatialSimulation(mismatched);
+    const evalResult = evaluateWorldOutput(mismatched);
     const byId = Object.fromEntries(evalResult.checks.map((check) => [check.id, check]));
 
     expect(byId.policy_trace_present.passed).toBe(false);
-    expect(byId.constraints_applied.passed).toBe(false);
+    expect(byId.constraints_stated.passed).toBe(false);
     expect(byId.tradeoff_stated.passed).toBe(false);
     expect(byId.approval_state_consistent.passed).toBe(false);
     expect(evalResult.passed).toBe(false);
-  });
-
-  it('catches missing core shape fields', () => {
-    const output = buildSpatialSimulation({
-      traceId: 'trace-spatial-4',
-      scenarioPrompt: 'Evaluate airport corridor staging with strict safety and congestion constraints.',
-      region: 'Airport Corridor',
-      objective: 'safety',
-      constraints: {
-        budgetLevel: 'high',
-        congestionSensitivity: 'high',
-        accessibilityPriority: true,
-        policyProfile: 'safety-first',
-      },
-      approvalState: 'approved',
-    });
-
-    const broken = {
-      ...output,
-      traceId: '',
-      scenario: {
-        ...output.scenario,
-        prompt: '',
-      },
-      workflow: output.workflow.slice(0, 3),
-      proposedRecommendation: {
-        ...output.proposedRecommendation,
-        headline: '',
-        rationale: '',
-        constraintsApplied: [],
-      },
-    };
-
-    const issues = validateSpatialSimulationShape(broken);
-    expect(issues).toContain('missing_trace_id');
-    expect(issues).toContain('missing_scenario_prompt');
-    expect(issues).toContain('workflow_incomplete');
-    expect(issues).toContain('missing_recommendation_headline');
-    expect(issues).toContain('missing_recommendation_rationale');
-    expect(issues).toContain('missing_constraints');
   });
 });

@@ -17,16 +17,19 @@ test.describe('World Generation demo', () => {
 
     await expect(page.getByText('Human Approval Required', { exact: true })).toBeVisible();
     await expect(page.getByText('Approval checkpoint', { exact: true })).toBeVisible();
-    await expect(page.getByTestId('approval-status-label')).toContainText('Awaiting human approval');
+    await expect(page.getByTestId('approval-status-label')).toContainText('Awaiting approval');
     await expect(page.getByTestId('preview-generation-label')).toContainText('Procedural 3D (Fallback Active)');
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
+    await expect(page.getByTestId('scenario-baseline')).toBeVisible();
+    await page.getByTestId('scenario-safety').click();
+    await expect(page.getByText(/Safety-optimized scenario/i)).toBeVisible();
     await expect(page.getByRole('button', { name: 'Export GLB' })).toBeVisible();
     await page.getByRole('button', { name: 'Approve' }).evaluate((element) => {
       (element as HTMLButtonElement).click();
     });
-    await expect(page.getByText(/Human Approval Required/i)).toHaveCount(0);
+    await expect(page.getByText(/Human Approval Required/i)).toBeVisible();
     await expect(page.getByText(/Evaluation: pass/i)).toBeVisible();
-    await expect(page.getByTestId('approval-status-label')).toContainText('Approved by reviewer');
+    await expect(page.getByTestId('approval-status-label')).toContainText('Approved');
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
   });
 
@@ -40,6 +43,22 @@ test.describe('World Generation demo', () => {
       (element as HTMLButtonElement).click();
     });
     await expect(page.getByTestId('export-feedback')).toContainText(/Scene exported:|Export failed — please retry/i);
+  });
+
+  test('supports revision request without blanking preview and expanded preview open/close', async ({ page }) => {
+    await page.goto('/demos/world-generation');
+    await page.getByRole('button', { name: /Generate governed world/i }).click();
+
+    await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
+    await page.getByRole('button', { name: 'Request Revision' }).click();
+    await expect(page.getByTestId('approval-status-label')).toContainText('Revision requested');
+    await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
+
+    await page.getByTestId('expand-preview-button').click();
+    await expect(page.getByTestId('expanded-preview-modal')).toBeVisible();
+    await page.getByRole('button', { name: /Close Preview/i }).click();
+    await expect(page.getByTestId('expanded-preview-modal')).toHaveCount(0);
+    await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
   });
 
   test('does not show approval when generation payload is missing artifact content', async ({ page }) => {

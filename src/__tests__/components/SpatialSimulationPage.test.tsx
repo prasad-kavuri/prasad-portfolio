@@ -172,7 +172,7 @@ describe('WorldGenerationPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Human Approval Required/i)).toBeInTheDocument();
-      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Awaiting human approval/i);
+      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Awaiting approval/i);
       expect(screen.getByTestId('preview-generation-label')).toHaveTextContent(/Procedural 3D \(Fallback Active\)/i);
     });
   });
@@ -312,9 +312,9 @@ describe('WorldGenerationPage', () => {
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(screen.getByText(/Evaluation: pass/i)).toBeInTheDocument();
-      expect(screen.queryByText(/Human Approval Required/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/Human Approval Required/i)).toBeInTheDocument();
       expect(screen.getByText(/Procedural 3D World Artifact/i)).toBeInTheDocument();
-      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Approved by reviewer/i);
+      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Approved/i);
     });
   });
 
@@ -545,9 +545,232 @@ describe('WorldGenerationPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Generate governed world/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Auto-approved \(low risk scenario\)/i);
+      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Auto-approved \(low risk\)/i);
       expect(screen.getByTestId('preview-generation-label')).toHaveTextContent(/Procedural 3D \(Deterministic Mock\)/i);
     });
+  });
+
+  it('supports revision request while preserving preview and scenario switching', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        status: 'pending_review',
+        workflow: [
+          { id: 'prompt-intake', label: 'Prompt Intake', description: 'd', state: 'completed' },
+          { id: 'scene-intent', label: 'Scene Intent Parsing', description: 'd', state: 'completed' },
+          { id: 'world-generation', label: 'World Generation', description: 'd', state: 'completed' },
+          { id: 'asset-structuring', label: 'Asset Structuring', description: 'd', state: 'completed' },
+          { id: 'policy-review', label: 'Policy & Safety Review', description: 'd', state: 'completed' },
+          { id: 'human-approval', label: 'Human Approval', description: 'd', state: 'paused' },
+          { id: 'final-world-output', label: 'Final World Output', description: 'd', state: 'idle' },
+        ],
+        traces: [],
+        governance: {
+          guardrailsEnforced: true,
+          policyValidation: 'pass',
+          humanApprovalRequired: true,
+          auditTraceId: 'trace-revision',
+          evaluationStatus: 'review',
+        },
+        businessValue: ['value'],
+        worldArtifact: {
+          worldTitle: 'Revision concept',
+          provider: 'hyworld-adapter',
+          providerMode: 'hyworld-adapter',
+          availability: 'fallback',
+          preview: {
+            width: 2,
+            height: 2,
+            cells: ['road', 'pickup', 'logistics', 'pedestrian'],
+            legend: [{ type: 'road', label: 'Route corridor' }],
+          },
+          assets: {
+            meshConcept: 'mesh',
+            representation: 'mesh-concept',
+            sceneZones: ['z1'],
+            routeCorridors: ['c1'],
+            loadingAreas: ['l1'],
+            pedestrianAreas: ['p1'],
+            simulationReadiness: 'ready',
+          },
+          sceneSpec: {
+            worldId: 'world-revision',
+            title: 'scene',
+            region: 'Downtown Core',
+            objective: 'speed',
+            style: 'logistics-grid',
+            providerMode: 'hyworld-adapter',
+            availability: 'fallback',
+            exportReadiness: 'ready',
+            simulationReadiness: 'ready',
+            warnings: [],
+            primitiveBudget: 42,
+            primitives: [
+              {
+                id: 'ops-core',
+                label: 'Operations Core',
+                kind: 'zone-block',
+                position: { x: 0, z: 0 },
+                size: { width: 4, depth: 4 },
+                height: 2,
+                colorHex: '#2563eb',
+              },
+            ],
+          },
+          notes: ['fallback note'],
+        },
+        proposedRecommendation: {
+          headline: 'headline',
+          rationale: 'rationale',
+          tradeoffs: ['tradeoff'],
+          constraintsApplied: ['constraint'],
+          businessImpact: 'impact',
+          policyNotes: ['note'],
+          alternativesConsidered: ['alt'],
+          nextAction: 'Approve or revise world concept before simulation/export handoff.',
+        },
+        evaluation: {
+          passed: true,
+          score: 1,
+          checks: [],
+        },
+        traceId: 'trace-revision',
+        scenario: {
+          prompt: 'prompt',
+          region: 'Downtown Core',
+          objective: 'speed',
+          style: 'logistics-grid',
+          simulationReady: true,
+          constraints: {
+            budgetLevel: 'medium',
+            congestionSensitivity: 'medium',
+            accessibilityPriority: true,
+            policyProfile: 'balanced',
+          },
+        },
+      }),
+    });
+
+    render(<WorldGenerationPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Generate governed world/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('scenario-baseline')).toBeInTheDocument();
+      expect(screen.getByTestId('world-3d-canvas')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Request Revision/i }));
+    expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Revision requested/i);
+    expect(screen.getByTestId('world-3d-canvas')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('scenario-safety'));
+    expect(screen.getByText(/Safety-optimized scenario/i)).toBeInTheDocument();
+  });
+
+  it('opens and closes expanded preview without losing the active artifact', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        status: 'pending_review',
+        workflow: [],
+        traces: [],
+        governance: {
+          guardrailsEnforced: true,
+          policyValidation: 'pass',
+          humanApprovalRequired: true,
+          auditTraceId: 'trace-expand',
+          evaluationStatus: 'review',
+        },
+        businessValue: ['value'],
+        worldArtifact: {
+          worldTitle: 'Expanded concept',
+          provider: 'hyworld-adapter',
+          providerMode: 'hyworld-adapter',
+          availability: 'fallback',
+          preview: {
+            width: 2,
+            height: 2,
+            cells: ['road', 'pickup', 'logistics', 'pedestrian'],
+            legend: [{ type: 'road', label: 'Route corridor' }],
+          },
+          assets: {
+            meshConcept: 'mesh',
+            representation: 'mesh-concept',
+            sceneZones: ['z1'],
+            routeCorridors: ['c1'],
+            loadingAreas: ['l1'],
+            pedestrianAreas: ['p1'],
+            simulationReadiness: 'ready',
+          },
+          sceneSpec: {
+            worldId: 'world-expand',
+            title: 'scene',
+            region: 'Downtown Core',
+            objective: 'speed',
+            style: 'logistics-grid',
+            providerMode: 'hyworld-adapter',
+            availability: 'fallback',
+            exportReadiness: 'ready',
+            simulationReadiness: 'ready',
+            warnings: [],
+            primitiveBudget: 42,
+            primitives: [
+              {
+                id: 'ops-core',
+                label: 'Operations Core',
+                kind: 'zone-block',
+                position: { x: 0, z: 0 },
+                size: { width: 4, depth: 4 },
+                height: 2,
+                colorHex: '#2563eb',
+              },
+            ],
+          },
+          notes: ['fallback note'],
+        },
+        proposedRecommendation: {
+          headline: 'headline',
+          rationale: 'rationale',
+          tradeoffs: ['tradeoff'],
+          constraintsApplied: ['constraint'],
+          businessImpact: 'impact',
+          policyNotes: ['note'],
+          alternativesConsidered: ['alt'],
+          nextAction: 'Approve or revise world concept before simulation/export handoff.',
+        },
+        evaluation: {
+          passed: true,
+          score: 1,
+          checks: [],
+        },
+        traceId: 'trace-expand',
+        scenario: {
+          prompt: 'prompt',
+          region: 'Downtown Core',
+          objective: 'speed',
+          style: 'logistics-grid',
+          simulationReady: true,
+          constraints: {
+            budgetLevel: 'medium',
+            congestionSensitivity: 'medium',
+            accessibilityPriority: true,
+            policyProfile: 'balanced',
+          },
+        },
+      }),
+    });
+
+    render(<WorldGenerationPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Generate governed world/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('expand-preview-button')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId('expand-preview-button'));
+    expect(screen.getByTestId('expanded-preview-modal')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Close Preview/i }));
+    expect(screen.queryByTestId('expanded-preview-modal')).not.toBeInTheDocument();
+    expect(screen.getByText(/Procedural 3D World Artifact/i)).toBeInTheDocument();
   });
 
   it('does not enter approval when artifact readiness validation fails', async () => {

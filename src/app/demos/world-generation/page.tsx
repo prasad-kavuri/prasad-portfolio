@@ -23,6 +23,9 @@ import {
   RotateCcw,
   Layers3,
   Info,
+  Maximize2,
+  Minimize2,
+  X,
 } from 'lucide-react';
 import { ProceduralWorldCanvas } from '@/components/demos/world/ProceduralWorldCanvas';
 import { WorldPreviewErrorBoundary } from '@/components/demos/world/WorldPreviewErrorBoundary';
@@ -54,13 +57,22 @@ import {
   getWorldSceneComplexity,
 } from '@/lib/world-3d';
 import {
-  type WorldWorkflowStatus,
+  type WorldArtifactSession,
   type WorldCanonicalArtifact,
   buildArtifactSession,
   INITIAL_WORLD_WORKFLOW_STATE,
   validateRenderableArtifact,
   worldWorkflowReducer,
 } from '@/lib/world-workflow-state';
+import {
+  type ApprovalStatus,
+  type ScenarioVariantId,
+  approvalStatusLabel,
+  buildScenarioComparisonSummary,
+  buildScenarioVariants,
+  deriveApprovalStatus,
+  transitionApprovalStatus,
+} from '@/lib/world-product-upgrades';
 
 
 type WorldApiResponse = WorldGenerationOutput & {
@@ -79,14 +91,6 @@ function getPreviewGenerationLabel(artifact: WorldCanonicalArtifact): string {
   if (artifact.availability === 'fallback') return 'Procedural 3D (Fallback Active)';
   if (artifact.providerMode === 'hyworld-adapter') return 'Model-assisted preview active';
   return 'Procedural 3D (Deterministic Mock)';
-}
-
-function getApprovalStatusLabel(result: WorldApiResponse | null, status: WorldWorkflowStatus): string | null {
-  if (!result) return null;
-  if (!result.governance.humanApprovalRequired) return 'Auto-approved (low risk scenario)';
-  if (status === 'approval') return 'Awaiting human approval';
-  if (status === 'completed') return 'Approved by reviewer';
-  return null;
 }
 
 const STAGE_ICONS: Record<WorldWorkflowStage['id'], typeof Orbit> = {
@@ -135,6 +139,11 @@ export default function WorldGenerationPage() {
   const [uploadError, setUploadError] = useState('');
   const [showOverlays, setShowOverlays] = useState(true);
   const [resetToken, setResetToken] = useState(0);
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
+  const [approvalStatus, setApprovalStatus] = useState<ApprovalStatus>('awaiting');
+  const [approvalContextMessage, setApprovalContextMessage] = useState('');
+  const [activeScenarioVariant, setActiveScenarioVariant] = useState<ScenarioVariantId>('baseline');
+  const [revisionBaselineSession, setRevisionBaselineSession] = useState<WorldArtifactSession | null>(null);
   const [exportState, setExportState] = useState<'ready' | 'exporting' | 'failed'>('ready');
   const [exportMessage, setExportMessage] = useState('');
   const [workflowState, dispatchWorkflow] = useReducer(worldWorkflowReducer, INITIAL_WORLD_WORKFLOW_STATE);
@@ -233,6 +242,19 @@ export default function WorldGenerationPage() {
       } else {
         dispatchWorkflow({ type: 'ENTER_COMPLETED' });
       }
+      setApprovalStatus(
+        deriveApprovalStatus({
+          requiresHumanApproval: payload.governance.humanApprovalRequired,
+          workflowStatus: payload.status === 'pending_review' ? 'approval' : 'completed',
+          outputStatus: payload.status,
+        })
+      );
+      setApprovalContextMessage(
+        payload.governance.humanApprovalRequired
+          ? 'Human review required before releasing this simulation-ready artifact.'
+          : 'Auto-approved (low risk scenario).'
+      );
+      setActiveScenarioVariant('baseline');
     } catch {
       dispatchWorkflow({ type: 'SET_ERROR', message: 'World generation request failed. Please retry in a moment.' });
     }
@@ -271,21 +293,28 @@ export default function WorldGenerationPage() {
     }
   };
 
-  const handleApprove = async () => {
+  const handleApprove = () => {
     if (workflowState.status !== 'approval' || !artifactSession?.validation.valid) {
       dispatchWorkflow({ type: 'SET_ERROR', message: 'Approval blocked until a valid world artifact is visible.' });
       return;
     }
     dispatchWorkflow({ type: 'APPROVE_ARTIFACT', note: revisionNote });
+    setApprovalStatus((current) => transitionApprovalStatus(current, 'approve'));
+    setApprovalContextMessage('Approved for downstream planning decisions.');
     setRevisionNote('');
   };
 
   const handleRevise = () => {
-    dispatchWorkflow({ type: 'SET_ERROR', message: 'Revision requested. Update prompt, style, or constraints before rerunning.' });
+    if (artifactSession && !revisionBaselineSession) {
+      setRevisionBaselineSession(artifactSession);
+    }
+    setApprovalStatus((current) => transitionApprovalStatus(current, 'revise'));
+    setApprovalContextMessage('Revision requested. Current artifact retained for comparison while preparing a new run.');
   };
 
   const handleCancel = () => {
-    dispatchWorkflow({ type: 'SET_ERROR', message: 'Approval canceled. World artifact not finalized.' });
+    setApprovalStatus((current) => transitionApprovalStatus(current, 'cancel'));
+    setApprovalContextMessage('Approval canceled. Artifact is preserved for review but not finalized.');
   };
 
   const workflow = result?.workflow ?? [];
@@ -303,7 +332,35 @@ export default function WorldGenerationPage() {
   const sceneComplexity = sceneSpec ? getWorldSceneComplexity(sceneSpec) : null;
   const exportEligibility = sceneSpec && artifactReadiness.valid ? getWorldExportEligibility(sceneSpec) : null;
   const previewGenerationLabel = canonicalArtifact ? getPreviewGenerationLabel(canonicalArtifact) : null;
-  const approvalStatusLabel = getApprovalStatusLabel(result, workflowState.status);
+  const approvalStatusText = result ? approvalStatusLabel(approvalStatus) : null;
+  const scenarioVariants = useMemo(() => {
+    if (!canonicalArtifact || !result) return [];
+    return buildScenarioVariants({
+      artifact: canonicalArtifact,
+      recommendation: result.proposedRecommendation,
+    });
+  }, [canonicalArtifact, result]);
+  const selectedScenario = scenarioVariants.find((variant) => variant.id === activeScenarioVariant) ?? scenarioVariants[0];
+  const revisionDelta = useMemo(() => {
+    if (!revisionBaselineSession || !canonicalArtifact) return null;
+    if (revisionBaselineSession.artifact.worldId === canonicalArtifact.worldId) return null;
+    return {
+      primitiveDelta: canonicalArtifact.primitiveCount - revisionBaselineSession.artifact.primitiveCount,
+      corridorDelta: canonicalArtifact.routeCorridors.length - revisionBaselineSession.artifact.routeCorridors.length,
+      zoneDelta: canonicalArtifact.sceneZones.length - revisionBaselineSession.artifact.sceneZones.length,
+    };
+  }, [canonicalArtifact, revisionBaselineSession]);
+
+  useEffect(() => {
+    if (!isPreviewExpanded) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsPreviewExpanded(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isPreviewExpanded]);
 
   const handleExportGlb = async () => {
     if (!sceneSpec || !artifactReadiness.valid) return;
@@ -632,9 +689,9 @@ export default function WorldGenerationPage() {
                             {previewGenerationLabel}
                           </Badge>
                         )}
-                        {approvalStatusLabel && (
+                        {approvalStatusText && (
                           <Badge variant="outline" data-testid="approval-status-label">
-                            <Info className="mr-1 size-3" /> {approvalStatusLabel}
+                            <Info className="mr-1 size-3" /> {approvalStatusText}
                           </Badge>
                         )}
                       </div>
@@ -642,11 +699,17 @@ export default function WorldGenerationPage() {
                         Procedural 3D World Artifact
                       </p>
 
-                      <div className="mb-3 rounded-lg border border-border bg-background/50 p-2">
-                        <WorldPreviewErrorBoundary worldId={canonicalArtifact.worldId}>
-                          <ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={resetToken} showOverlays={showOverlays} />
-                        </WorldPreviewErrorBoundary>
-                      </div>
+                      {!isPreviewExpanded ? (
+                        <div className="mb-3 rounded-lg border border-border bg-background/50 p-2">
+                          <WorldPreviewErrorBoundary worldId={canonicalArtifact.worldId}>
+                            <ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={resetToken} showOverlays={showOverlays} />
+                          </WorldPreviewErrorBoundary>
+                        </div>
+                      ) : (
+                        <div className="mb-3 rounded-lg border border-border bg-background/30 p-4 text-sm text-muted-foreground">
+                          Preview is currently expanded.
+                        </div>
+                      )}
 
                       <div className="flex flex-wrap gap-2">
                         <Button
@@ -678,6 +741,15 @@ export default function WorldGenerationPage() {
                             <Download className="size-4" />
                           )}
                           Export GLB
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsPreviewExpanded(true)}
+                          className="gap-2"
+                          data-testid="expand-preview-button"
+                        >
+                          <Maximize2 className="size-4" /> Expand Preview
                         </Button>
                       </div>
                     </div>
@@ -749,6 +821,80 @@ export default function WorldGenerationPage() {
               </CardContent>
             </Card>
 
+            {selectedScenario && canonicalArtifact && result && (
+              <Card className="border-border bg-card">
+                <CardHeader>
+                  <CardTitle>Scenario Comparison</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {scenarioVariants.map((variant) => (
+                      <Button
+                        key={variant.id}
+                        type="button"
+                        size="sm"
+                        variant={activeScenarioVariant === variant.id ? 'default' : 'outline'}
+                        onClick={() => setActiveScenarioVariant(variant.id)}
+                        data-testid={`scenario-${variant.id}`}
+                      >
+                        {variant.label}
+                      </Button>
+                    ))}
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                    <p className="font-medium">{selectedScenario.label}</p>
+                    <p className="mt-1 text-muted-foreground">{buildScenarioComparisonSummary(selectedScenario)}</p>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Objective</p>
+                      <p className="mt-1">{selectedScenario.objective}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Complexity</p>
+                      <p className="mt-1">{selectedScenario.complexity}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Route corridor differences</p>
+                      <p className="mt-1">{selectedScenario.routeDifference}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Zone differences</p>
+                      <p className="mt-1">{selectedScenario.zoneDifference}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Policy / safety notes</p>
+                      <p className="mt-1">{selectedScenario.policyNote}</p>
+                    </div>
+                    <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Business impact</p>
+                      <p className="mt-1">{selectedScenario.businessImpact}</p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Recommendation tradeoff</p>
+                    <p className="mt-1">{selectedScenario.tradeoff}</p>
+                    <p className="mt-2 text-muted-foreground">{selectedScenario.recommendation}</p>
+                  </div>
+
+                  {revisionDelta && (
+                    <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-100">
+                      <p className="font-medium">Revision Delta vs Previous Artifact</p>
+                      <p className="mt-1">
+                        Primitive delta: {revisionDelta.primitiveDelta >= 0 ? '+' : ''}
+                        {revisionDelta.primitiveDelta}, corridor delta: {revisionDelta.corridorDelta >= 0 ? '+' : ''}
+                        {revisionDelta.corridorDelta}, zone delta: {revisionDelta.zoneDelta >= 0 ? '+' : ''}
+                        {revisionDelta.zoneDelta}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle>Final World Output</CardTitle>
@@ -782,7 +928,7 @@ export default function WorldGenerationPage() {
               </CardContent>
             </Card>
 
-            {workflowState.status === 'approval' && canonicalArtifact && artifactReadiness.valid && result && (
+            {(workflowState.status === 'approval' || approvalStatus !== 'awaiting') && canonicalArtifact && artifactReadiness.valid && result && (
               <Card className="border-amber-500/40 bg-amber-500/10">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-amber-200">
@@ -791,7 +937,10 @@ export default function WorldGenerationPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <p className="text-sm text-amber-100">
-                    World output is paused because this artifact can drive high-impact operational or infrastructure decisions.
+                    Approval required because this simulation-ready artifact could influence downstream planning decisions.
+                  </p>
+                  <p className="text-sm text-amber-100">
+                    {approvalContextMessage || 'This output is intended for downstream planning and should be approved before use.'}
                   </p>
                   <p className="text-sm text-amber-100">Next action: {result.proposedRecommendation.nextAction}</p>
                   <label className="block text-xs font-semibold uppercase tracking-wide text-amber-200" htmlFor="revision-note">
@@ -804,11 +953,15 @@ export default function WorldGenerationPage() {
                     className="h-20 w-full rounded-md border border-amber-500/40 bg-background/80 p-2 text-sm text-foreground"
                     placeholder="Optional: add reviewer feedback before revise."
                   />
-                  <div className="flex flex-wrap gap-2">
-                    <Button onClick={handleApprove}>Approve</Button>
-                    <Button variant="secondary" onClick={handleRevise}>Revise</Button>
-                    <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-                  </div>
+                  {approvalStatus !== 'auto_approved' ? (
+                    <div className="flex flex-wrap gap-2">
+                      <Button onClick={handleApprove}>Approve</Button>
+                      <Button variant="secondary" onClick={handleRevise}>Request Revision</Button>
+                      <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-emerald-300">Auto-approved (low risk).</p>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -858,6 +1011,46 @@ export default function WorldGenerationPage() {
           </div>
         </div>
       </div>
+      {isPreviewExpanded && canonicalArtifact && sceneSpec && artifactReadiness.valid && (
+        <div className="fixed inset-0 z-50 bg-black/80 p-4 backdrop-blur-sm" data-testid="expanded-preview-modal" role="dialog" aria-modal="true">
+          <div className="mx-auto flex h-full w-full max-w-6xl flex-col rounded-xl border border-border bg-background/95 p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold">{canonicalArtifact.worldTitle}</p>
+                <p className="text-xs text-muted-foreground">Expanded world preview</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant={showOverlays ? 'default' : 'outline'}
+                  onClick={() => setShowOverlays((value) => !value)}
+                  className="gap-2"
+                >
+                  <Layers3 className="size-4" /> {showOverlays ? 'Hide Overlays' : 'Show Overlays'}
+                </Button>
+                <Button type="button" variant="secondary" onClick={() => setResetToken((value) => value + 1)} className="gap-2">
+                  <RotateCcw className="size-4" /> Reset View
+                </Button>
+                <Button type="button" onClick={handleExportGlb} className="gap-2" disabled={exportState === 'exporting' || !exportEligibility?.eligible}>
+                  {exportState === 'exporting' ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
+                  Export GLB
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setIsPreviewExpanded(false)} className="gap-2">
+                  <Minimize2 className="size-4" /> Close Preview
+                </Button>
+                <Button type="button" variant="ghost" onClick={() => setIsPreviewExpanded(false)} aria-label="Close expanded preview">
+                  <X className="size-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="min-h-0 flex-1 rounded-lg border border-border bg-background/50 p-2">
+              <WorldPreviewErrorBoundary worldId={canonicalArtifact.worldId}>
+                <ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={resetToken} showOverlays={showOverlays} />
+              </WorldPreviewErrorBoundary>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

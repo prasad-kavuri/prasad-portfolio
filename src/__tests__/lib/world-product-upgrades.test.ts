@@ -26,6 +26,22 @@ describe('world product upgrades helpers', () => {
         outputStatus: 'completed',
       })
     ).toBe('auto_approved');
+
+    expect(
+      deriveApprovalStatus({
+        requiresHumanApproval: true,
+        workflowStatus: 'completed',
+        outputStatus: 'completed',
+      })
+    ).toBe('approved');
+
+    expect(
+      deriveApprovalStatus({
+        requiresHumanApproval: true,
+        workflowStatus: 'reviewing',
+        outputStatus: 'pending_review',
+      })
+    ).toBe('awaiting');
   });
 
   it('transitions approval states deterministically', () => {

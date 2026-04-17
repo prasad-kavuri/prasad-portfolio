@@ -177,4 +177,31 @@ describe('world generation API sequencing guards', () => {
     expect(body.status).toBe('pending_review');
     expect(body.worldArtifact.sceneSpec.primitives.length).toBeGreaterThan(0);
   });
+
+  it('accepts fallback provider artifacts when renderable payload is complete', async () => {
+    mockBuildWorldGeneration.mockResolvedValue(
+      makePayload({
+        worldArtifact: {
+          ...makePayload().worldArtifact,
+          providerMode: 'hyworld-adapter',
+          availability: 'fallback',
+          sceneSpec: {
+            ...makePayload().worldArtifact.sceneSpec,
+            providerMode: 'hyworld-adapter',
+            availability: 'fallback',
+          },
+          notes: ['fallback note'],
+        },
+      })
+    );
+
+    const { POST } = await import('@/app/api/demos/world-generation/route');
+    const response = await POST(makeRequest() as never);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.status).toBe('pending_review');
+    expect(body.worldArtifact.availability).toBe('fallback');
+    expect(body.worldArtifact.sceneSpec.primitives.length).toBeGreaterThan(0);
+  });
 });

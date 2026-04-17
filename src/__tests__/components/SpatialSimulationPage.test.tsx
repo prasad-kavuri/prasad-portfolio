@@ -176,8 +176,7 @@ describe('WorldGenerationPage', () => {
   });
 
   it('shows approval panel when API returns pending_review and finalizes after approval', async () => {
-    mockFetch
-      .mockResolvedValueOnce({
+    mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           status: 'pending_review',
@@ -227,7 +226,7 @@ describe('WorldGenerationPage', () => {
               simulationReadiness: 'ready',
             },
             sceneSpec: {
-              worldId: 'world-abcd',
+              worldId: 'world-ef01',
               title: 'scene',
               region: 'Downtown Core',
               objective: 'speed',
@@ -282,107 +281,6 @@ describe('WorldGenerationPage', () => {
             },
           },
         }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          status: 'completed',
-          workflow: [],
-          traces: [],
-          governance: {
-            guardrailsEnforced: true,
-            policyValidation: 'pass',
-            humanApprovalRequired: true,
-            auditTraceId: 'trace-2',
-            evaluationStatus: 'pass',
-          },
-          businessValue: ['value'],
-          worldArtifact: {
-            worldTitle: 'Downtown concept',
-            provider: 'mock-world-provider',
-            providerMode: 'mock',
-            availability: 'available',
-            preview: {
-              width: 2,
-              height: 2,
-              cells: ['road', 'pickup', 'logistics', 'pedestrian'],
-              legend: [{ type: 'road', label: 'Route corridor' }],
-            },
-            assets: {
-              meshConcept: 'mesh',
-              representation: 'mesh-concept',
-              sceneZones: ['z1'],
-              routeCorridors: ['c1'],
-              loadingAreas: ['l1'],
-              pedestrianAreas: ['p1'],
-              simulationReadiness: 'ready',
-            },
-            sceneSpec: {
-              worldId: 'world-ef01',
-              title: 'scene',
-              region: 'Downtown Core',
-              objective: 'speed',
-              style: 'logistics-grid',
-              providerMode: 'mock',
-              availability: 'available',
-              exportReadiness: 'ready',
-              simulationReadiness: 'ready',
-              warnings: [],
-              primitiveBudget: 42,
-              primitives: [
-                {
-                  id: 'ops-core',
-                  label: 'Operations Core',
-                  kind: 'zone-block',
-                  position: { x: 0, z: 0 },
-                  size: { width: 4, depth: 4 },
-                  height: 2,
-                  colorHex: '#2563eb',
-                },
-              ],
-            },
-            notes: ['mock note'],
-          },
-          proposedRecommendation: {
-            headline: 'headline',
-            rationale: 'rationale',
-            tradeoffs: ['tradeoff'],
-            constraintsApplied: ['constraint'],
-            businessImpact: 'impact',
-            policyNotes: ['note'],
-            alternativesConsidered: ['alt'],
-            nextAction: 'Export this world concept into simulation planning and run scenario stress tests against peak demand windows.',
-          },
-          finalRecommendation: {
-            headline: 'headline',
-            rationale: 'rationale',
-            tradeoffs: ['tradeoff'],
-            constraintsApplied: ['constraint'],
-            businessImpact: 'impact',
-            policyNotes: ['note'],
-            alternativesConsidered: ['alt'],
-            nextAction: 'Export this world concept into simulation planning and run scenario stress tests against peak demand windows.',
-          },
-          evaluation: {
-            passed: true,
-            score: 1,
-            checks: [],
-          },
-          traceId: 'trace-2',
-          scenario: {
-            prompt: 'prompt',
-            region: 'Downtown Core',
-            objective: 'speed',
-            style: 'logistics-grid',
-            simulationReady: true,
-            constraints: {
-              budgetLevel: 'medium',
-              congestionSensitivity: 'medium',
-              accessibilityPriority: true,
-              policyProfile: 'balanced',
-            },
-          },
-        }),
       });
 
     render(<WorldGenerationPage />);
@@ -409,9 +307,10 @@ describe('WorldGenerationPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Approve' }));
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(screen.getByText(/Evaluation: pass/i)).toBeInTheDocument();
       expect(screen.queryByText(/Human Approval Required/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/Procedural 3D World Artifact/i)).toBeInTheDocument();
     });
   });
 

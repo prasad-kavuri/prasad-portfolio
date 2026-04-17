@@ -12,9 +12,34 @@ type Props = {
 
 export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const mountCountRef = useRef(0);
   const [fallbackMessage, setFallbackMessage] = useState<string>('');
+  const WORLD_DEBUG = process.env.NODE_ENV !== 'production';
 
   const renderables = useMemo(() => mapSceneSpecToRenderablePrimitives(sceneSpec), [sceneSpec]);
+
+  useEffect(() => {
+    mountCountRef.current += 1;
+    if (WORLD_DEBUG) {
+      // eslint-disable-next-line no-console
+      console.info('[world-generation-debug] preview.mount', {
+        worldId: sceneSpec.worldId,
+        mountCount: mountCountRef.current,
+        primitiveCount: sceneSpec.primitives.length,
+        renderableCount: renderables.length,
+        resetToken,
+      });
+    }
+    return () => {
+      if (WORLD_DEBUG) {
+        // eslint-disable-next-line no-console
+        console.info('[world-generation-debug] preview.unmount', {
+          worldId: sceneSpec.worldId,
+          mountCount: mountCountRef.current,
+        });
+      }
+    };
+  }, [WORLD_DEBUG, renderables.length, resetToken, sceneSpec.primitives.length, sceneSpec.worldId]);
 
   useEffect(() => {
     const host = containerRef.current;
@@ -23,6 +48,13 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
     const prefersFallback = window.innerWidth < 900;
     if (prefersFallback) {
       setFallbackMessage('Desktop interaction recommended. Mobile fallback is active to preserve stability.');
+      if (WORLD_DEBUG) {
+        // eslint-disable-next-line no-console
+        console.info('[world-generation-debug] preview.fallback.mobile', {
+          worldId: sceneSpec.worldId,
+          renderableCount: renderables.length,
+        });
+      }
       return;
     }
 
@@ -30,6 +62,13 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
     const context = probe.getContext('webgl') || probe.getContext('experimental-webgl');
     if (!context) {
       setFallbackMessage('WebGL unavailable on this device. Showing structured scene metadata fallback.');
+      if (WORLD_DEBUG) {
+        // eslint-disable-next-line no-console
+        console.info('[world-generation-debug] preview.fallback.webgl_unavailable', {
+          worldId: sceneSpec.worldId,
+          renderableCount: renderables.length,
+        });
+      }
       return;
     }
 
@@ -125,6 +164,15 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
           scene.add(ring);
         }
       }
+      if (WORLD_DEBUG) {
+        // eslint-disable-next-line no-console
+        console.info('[world-generation-debug] preview.scene_built', {
+          worldId: sceneSpec.worldId,
+          renderableCount: renderables.length,
+          primitiveBudget: sceneSpec.primitiveBudget,
+          overlayEnabled: showOverlays,
+        });
+      }
 
       scene.add(new THREE.HemisphereLight('#dbeafe', '#020617', 0.8));
       const keyLight = new THREE.DirectionalLight('#f8fafc', 1.05);
@@ -203,7 +251,7 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       mounted = false;
       cleanup?.();
     };
-  }, [renderables, resetToken, sceneSpec.primitiveBudget, showOverlays]);
+  }, [WORLD_DEBUG, renderables, resetToken, sceneSpec.primitiveBudget, sceneSpec.worldId, showOverlays]);
 
   if (fallbackMessage) {
     return (

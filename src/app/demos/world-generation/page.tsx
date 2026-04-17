@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useReducer, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useReducer, useState, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
@@ -24,6 +24,7 @@ import {
   Layers3,
 } from 'lucide-react';
 import { ProceduralWorldCanvas } from '@/components/demos/world/ProceduralWorldCanvas';
+import { WorldPreviewErrorBoundary } from '@/components/demos/world/WorldPreviewErrorBoundary';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -52,6 +53,7 @@ import {
   getWorldSceneComplexity,
 } from '@/lib/world-3d';
 import {
+  buildArtifactSession,
   INITIAL_WORLD_WORKFLOW_STATE,
   validateRenderableArtifact,
   worldWorkflowReducer,
@@ -61,6 +63,14 @@ import {
 type WorldApiResponse = WorldGenerationOutput & {
   evaluation: WorldEvalResult;
 };
+
+const WORLD_DEBUG = process.env.NODE_ENV !== 'production';
+
+function logWorldDebug(event: string, details: Record<string, unknown>) {
+  if (!WORLD_DEBUG) return;
+  // eslint-disable-next-line no-console
+  console.info(`[world-generation-debug] ${event}`, details);
+}
 
 const STAGE_ICONS: Record<WorldWorkflowStage['id'], typeof Orbit> = {
   'prompt-intake': ClipboardList,
@@ -104,7 +114,6 @@ export default function WorldGenerationPage() {
   const [simulationReady, setSimulationReady] = useState(true);
   const [constraints, setConstraints] = useState<WorldConstraintProfile>(DEFAULT_WORLD_CONSTRAINTS);
   const [revisionNote, setRevisionNote] = useState('');
-  const [result, setResult] = useState<WorldApiResponse | null>(null);
   const [uploadMetadata, setUploadMetadata] = useState<WorldUploadPayload | undefined>(undefined);
   const [uploadError, setUploadError] = useState('');
   const [showOverlays, setShowOverlays] = useState(true);
@@ -112,14 +121,43 @@ export default function WorldGenerationPage() {
   const [exportState, setExportState] = useState<'ready' | 'exporting' | 'failed'>('ready');
   const [exportMessage, setExportMessage] = useState('');
   const [workflowState, dispatchWorkflow] = useReducer(worldWorkflowReducer, INITIAL_WORLD_WORKFLOW_STATE);
+  const artifactSession = workflowState.artifactSession;
+  const result = (artifactSession?.response as WorldApiResponse | undefined) ?? null;
+  const canonicalArtifact = artifactSession?.artifact ?? null;
+  const artifactReadiness = artifactSession?.validation ?? validateRenderableArtifact(null);
 
   const desktopSignal = useMemo(() => {
     return 'Desktop-friendly: world preview rendering is optimized for larger displays; mobile uses a lighter fallback view.';
   }, []);
 
-  const runGeneration = async (approvalState: 'pending' | 'approved') => {
-    dispatchWorkflow({ type: 'VALIDATING' });
-    dispatchWorkflow({ type: 'GENERATING' });
+  useEffect(() => {
+    logWorldDebug('workflow.transition', {
+      status: workflowState.status,
+      hasArtifactSession: Boolean(artifactSession),
+      worldId: canonicalArtifact?.worldId ?? null,
+      hasSceneSpec: Boolean(canonicalArtifact?.sceneSpec),
+      primitiveCount: canonicalArtifact?.primitiveCount ?? 0,
+      previewCells: canonicalArtifact?.preview.cells.length ?? 0,
+      exportReady: canonicalArtifact?.exportReady ?? false,
+      renderablePrimitiveCount: artifactReadiness.renderablePrimitiveCount,
+    });
+  }, [artifactReadiness.renderablePrimitiveCount, artifactSession, canonicalArtifact, workflowState.status]);
+
+  useEffect(() => {
+    if (!artifactSession) return;
+    logWorldDebug('artifact.transition', {
+      status: workflowState.status,
+      worldId: artifactSession.artifact.worldId,
+      previewCells: artifactSession.validation.previewCellCount,
+      renderablePrimitiveCount: artifactSession.validation.renderablePrimitiveCount,
+      exportReady: artifactSession.artifact.exportReady,
+      approvalState: artifactSession.artifact.approvalState,
+    });
+  }, [artifactSession, workflowState.status]);
+
+  const runGeneration = async () => {
+    dispatchWorkflow({ type: 'BEGIN_VALIDATING' });
+    dispatchWorkflow({ type: 'BEGIN_GENERATING' });
     setExportState('ready');
     setExportMessage('');
 
@@ -136,7 +174,7 @@ export default function WorldGenerationPage() {
           simulationReady,
           constraints,
           image: uploadMetadata,
-          approvalState,
+          approvalState: 'pending',
         }),
       });
 
@@ -148,30 +186,37 @@ export default function WorldGenerationPage() {
       if (!response.ok) {
         const details = payload.details?.length ? ` (${payload.details.join(', ')})` : '';
         dispatchWorkflow({ type: 'SET_ERROR', message: `${payload.error ?? 'Unable to generate world'}${details}` });
-        setResult(null);
         return;
       }
 
-      dispatchWorkflow({ type: 'RENDERING' });
-      const artifactCheck = validateRenderableArtifact(payload);
+      dispatchWorkflow({ type: 'BEGIN_STRUCTURING' });
+      dispatchWorkflow({ type: 'BEGIN_REVIEWING' });
+      const session = buildArtifactSession(payload);
+      const artifactCheck = session.validation;
+      logWorldDebug('artifact.received', {
+        status: payload.status,
+        hasWorldArtifact: Boolean(payload.worldArtifact),
+        hasSceneSpec: Boolean(payload.worldArtifact?.sceneSpec),
+        primitiveCount: session.artifact.primitiveCount,
+        renderablePrimitiveCount: artifactCheck.renderablePrimitiveCount,
+        previewCells: artifactCheck.previewCellCount,
+        exportReady: artifactCheck.exportEligible,
+      });
       if (!artifactCheck.valid) {
         dispatchWorkflow({
           type: 'SET_ERROR',
           message: `World artifact failed readiness checks: ${artifactCheck.reasons.join(', ')}`,
         });
-        setResult(null);
         return;
       }
 
-      setResult(payload);
-      dispatchWorkflow({ type: 'ARTIFACT_READY' });
+      dispatchWorkflow({ type: 'SET_ARTIFACT_READY', session });
       if (payload.status === 'pending_review') {
         dispatchWorkflow({ type: 'ENTER_APPROVAL' });
       } else {
         dispatchWorkflow({ type: 'ENTER_COMPLETED' });
       }
     } catch {
-      setResult(null);
       dispatchWorkflow({ type: 'SET_ERROR', message: 'World generation request failed. Please retry in a moment.' });
     }
   };
@@ -210,22 +255,19 @@ export default function WorldGenerationPage() {
   };
 
   const handleApprove = async () => {
-    if (workflowState.lifecycle !== 'approval') {
+    if (workflowState.status !== 'approval' || !artifactSession?.validation.valid) {
       dispatchWorkflow({ type: 'SET_ERROR', message: 'Approval blocked until a valid world artifact is visible.' });
       return;
     }
-    await runGeneration('approved');
+    dispatchWorkflow({ type: 'APPROVE_ARTIFACT', note: revisionNote });
+    setRevisionNote('');
   };
 
   const handleRevise = () => {
-    setResult(null);
-    dispatchWorkflow({ type: 'RESET' });
     dispatchWorkflow({ type: 'SET_ERROR', message: 'Revision requested. Update prompt, style, or constraints before rerunning.' });
   };
 
   const handleCancel = () => {
-    setResult(null);
-    dispatchWorkflow({ type: 'RESET' });
     dispatchWorkflow({ type: 'SET_ERROR', message: 'Approval canceled. World artifact not finalized.' });
   };
 
@@ -240,8 +282,7 @@ export default function WorldGenerationPage() {
     },
   ];
 
-  const sceneSpec = result?.worldArtifact.sceneSpec;
-  const artifactReadiness = useMemo(() => validateRenderableArtifact(result), [result]);
+  const sceneSpec = canonicalArtifact?.sceneSpec;
   const sceneComplexity = sceneSpec ? getWorldSceneComplexity(sceneSpec) : null;
   const exportEligibility = sceneSpec && artifactReadiness.valid ? getWorldExportEligibility(sceneSpec) : null;
 
@@ -459,14 +500,18 @@ export default function WorldGenerationPage() {
                 </div>
 
                 <Button
-                  onClick={() => runGeneration('pending')}
+                  onClick={runGeneration}
                   disabled={
-                    workflowState.lifecycle === 'validating' ||
-                    workflowState.lifecycle === 'generating' ||
-                    workflowState.lifecycle === 'rendering'
+                    workflowState.status === 'validating' ||
+                    workflowState.status === 'generating' ||
+                    workflowState.status === 'structuring' ||
+                    workflowState.status === 'reviewing'
                   }
                 >
-                  {workflowState.lifecycle === 'validating' || workflowState.lifecycle === 'generating' || workflowState.lifecycle === 'rendering' ? (
+                  {workflowState.status === 'validating' ||
+                  workflowState.status === 'generating' ||
+                  workflowState.status === 'structuring' ||
+                  workflowState.status === 'reviewing' ? (
                     <><Loader2 className="mr-2 size-4 animate-spin" />Generating world...</>
                   ) : (
                     <><WandSparkles className="mr-2 size-4" />Generate governed world</>
@@ -528,33 +573,37 @@ export default function WorldGenerationPage() {
                 <CardTitle>Generated World Preview</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {!result && workflowState.lifecycle === 'idle' && (
+                {!canonicalArtifact && workflowState.status === 'idle' && (
                   <p className="text-sm text-muted-foreground">Generate a world to render the procedural 3D scene preview and export-readiness summary.</p>
                 )}
-                {!result && (workflowState.lifecycle === 'validating' || workflowState.lifecycle === 'generating' || workflowState.lifecycle === 'rendering') && (
+                {!canonicalArtifact &&
+                  (workflowState.status === 'validating' ||
+                    workflowState.status === 'generating' ||
+                    workflowState.status === 'structuring' ||
+                    workflowState.status === 'reviewing') && (
                   <div className="rounded-xl border border-border bg-muted/20 p-4 text-sm text-muted-foreground">
                     Preparing world artifact preview...
                   </div>
                 )}
-                {!result && workflowState.lifecycle === 'error' && (
+                {!canonicalArtifact && workflowState.status === 'error' && (
                   <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-100">
                     World generation failed before a renderable artifact was available. Revise inputs and retry.
                   </div>
                 )}
-                {result && !artifactReadiness.valid && (
+                {canonicalArtifact && !artifactReadiness.valid && (
                   <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-100">
                     Generated output is incomplete for preview/approval: {artifactReadiness.reasons.join(', ')}
                   </div>
                 )}
 
-                {result && sceneSpec && artifactReadiness.valid && (
+                {canonicalArtifact && sceneSpec && artifactReadiness.valid && (
                   <>
                     <div className="rounded-xl border border-border bg-muted/20 p-3">
                       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                        <p className="text-sm font-semibold">{result.worldArtifact.worldTitle}</p>
+                        <p className="text-sm font-semibold">{canonicalArtifact.worldTitle}</p>
                         <div className="flex gap-2">
-                          <Badge variant="outline">{result.worldArtifact.providerMode}</Badge>
-                          <Badge variant="outline">{result.worldArtifact.availability}</Badge>
+                          <Badge variant="outline">{canonicalArtifact.providerMode}</Badge>
+                          <Badge variant="outline">{canonicalArtifact.availability}</Badge>
                           <Badge variant="outline">{sceneSpec.exportReadiness === 'ready' ? 'Export Ready' : 'Export Review'}</Badge>
                         </div>
                       </div>
@@ -563,7 +612,9 @@ export default function WorldGenerationPage() {
                       </p>
 
                       <div className="mb-3 rounded-lg border border-border bg-background/50 p-2">
-                        <ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={resetToken} showOverlays={showOverlays} />
+                        <WorldPreviewErrorBoundary worldId={canonicalArtifact.worldId}>
+                          <ProceduralWorldCanvas sceneSpec={sceneSpec} resetToken={resetToken} showOverlays={showOverlays} />
+                        </WorldPreviewErrorBoundary>
                       </div>
 
                       <div className="flex flex-wrap gap-2">
@@ -603,11 +654,11 @@ export default function WorldGenerationPage() {
                     <div className="grid gap-3 sm:grid-cols-3">
                       <div className="rounded-lg border border-border bg-muted/20 p-3">
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Mesh concept</p>
-                        <p className="mt-1 text-sm">{result.worldArtifact.assets.meshConcept}</p>
+                        <p className="mt-1 text-sm">{canonicalArtifact.meshConcept}</p>
                       </div>
                       <div className="rounded-lg border border-border bg-muted/20 p-3">
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Representation</p>
-                        <p className="mt-1 text-sm">{result.worldArtifact.assets.representation}</p>
+                        <p className="mt-1 text-sm">{canonicalArtifact.representation}</p>
                       </div>
                       <div className="rounded-lg border border-border bg-muted/20 p-3">
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Scene complexity</p>
@@ -621,19 +672,20 @@ export default function WorldGenerationPage() {
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Scene zones</p>
                         <ul className="mt-1 list-disc space-y-1 pl-4 text-sm">
-                          {result.worldArtifact.assets.sceneZones.map((zone) => <li key={zone}>{zone}</li>)}
+                          {canonicalArtifact.sceneZones.map((zone) => <li key={zone}>{zone}</li>)}
                         </ul>
                       </div>
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Route corridors</p>
                         <ul className="mt-1 list-disc space-y-1 pl-4 text-sm">
-                          {result.worldArtifact.assets.routeCorridors.map((corridor) => <li key={corridor}>{corridor}</li>)}
+                          {canonicalArtifact.routeCorridors.map((corridor) => <li key={corridor}>{corridor}</li>)}
                         </ul>
                       </div>
                     </div>
 
                     <p className="text-sm">
-                      <span className="font-medium">Simulation readiness:</span> {result.worldArtifact.assets.simulationReadiness}
+                      <span className="font-medium">Simulation readiness:</span>{' '}
+                      {canonicalArtifact.simulationReady ? 'ready' : 'review'}
                     </p>
                     <p className="text-sm">
                       <span className="font-medium">Export status:</span>{' '}
@@ -646,7 +698,7 @@ export default function WorldGenerationPage() {
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Provider notes</p>
                       <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-                        {[...result.worldArtifact.notes, ...sceneSpec.warnings].map((note) => <li key={note}>{note}</li>)}
+                        {canonicalArtifact.warnings.map((note) => <li key={note}>{note}</li>)}
                       </ul>
                     </div>
                   </>
@@ -687,7 +739,7 @@ export default function WorldGenerationPage() {
               </CardContent>
             </Card>
 
-            {workflowState.lifecycle === 'approval' && result && artifactReadiness.valid && (
+            {workflowState.status === 'approval' && canonicalArtifact && artifactReadiness.valid && result && (
               <Card className="border-amber-500/40 bg-amber-500/10">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-amber-200">
@@ -752,7 +804,7 @@ export default function WorldGenerationPage() {
               </CardContent>
             </Card>
 
-            {(workflowState.lifecycle === 'error' || uploadError) && (
+            {(workflowState.status === 'error' || uploadError) && (
               <Card className="border-red-500/40 bg-red-500/10">
                 <CardContent className="p-4 text-sm text-red-200">
                   <p className="flex items-center gap-2 font-medium"><AlertTriangle className="size-4" /> Safe failure mode active</p>

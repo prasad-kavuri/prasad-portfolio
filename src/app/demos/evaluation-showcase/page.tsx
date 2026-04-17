@@ -223,7 +223,7 @@ function DriftTimeline({ animate }: { animate: boolean }) {
   useEffect(() => {
     if (!animate) { setWidths([0, 0, 0, 0]); return; }
     points.forEach((p, i) => {
-      const t = setTimeout(() => {
+      setTimeout(() => {
         setWidths(prev => {
           const next = [...prev];
           next[i] = p.value * 100;
@@ -341,6 +341,7 @@ function ScenarioPanel() {
 
   useEffect(() => {
     if (scenario === 'drift') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDriftAnimated(false);
       const t = setTimeout(() => setDriftAnimated(true), 50);
       return () => clearTimeout(t);

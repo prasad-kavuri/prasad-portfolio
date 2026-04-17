@@ -1,11 +1,12 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Loader, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
+import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
 
 type Status = 'idle' | 'loading-fp32' | 'loading-int8' | 'ready' | 'benchmarking' | 'done';
 
@@ -49,6 +50,11 @@ export default function QuantizationPage() {
   const [results, setResults] = useState<BenchmarkResults | null>(null);
   const modelsRef = useRef<ModelRefs>({ fp32: null, int8: null });
 
+  useEffect(() => {
+    const cancelPreload = preloadTransformersOnIdle();
+    return () => cancelPreload();
+  }, []);
+
   const loadModels = async () => {
     setStatus('loading-fp32');
     setProgress(0);
@@ -56,8 +62,7 @@ export default function QuantizationPage() {
     setResults(null);
 
     try {
-      // @ts-ignore
-      const { pipeline, env } = await import('@huggingface/transformers');
+      const { pipeline, env } = await loadTransformersModule();
       env.allowLocalModels = false;
       env.allowRemoteModels = true;
 

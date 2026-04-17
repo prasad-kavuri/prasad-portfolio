@@ -37,7 +37,7 @@ describe('BrowserNativeAISkillPage', () => {
     expect(await screen.findByText('Manifest copied to clipboard.')).toBeInTheDocument();
   });
 
-  it('runs local audit and shows mixed pass/review outcomes', () => {
+  it('runs local audit and shows mixed pass/review outcomes', async () => {
     render(<BrowserNativeAISkillPage />);
 
     fireEvent.change(screen.getByLabelText(/Page markup input/i), {
@@ -45,13 +45,13 @@ describe('BrowserNativeAISkillPage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /Run Local Skill Audit/i }));
 
-    expect(screen.getByText('Skill Output')).toBeInTheDocument();
-    expect(screen.getByText(/Readiness Score:/i)).toBeInTheDocument();
-    expect(screen.getAllByText('Pass').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Needs review').length).toBeGreaterThan(0);
+    expect(await screen.findByText('Skill Output')).toBeInTheDocument();
+    expect(await screen.findByText(/Readiness Score:/i)).toBeInTheDocument();
+    expect((await screen.findAllByText('Pass')).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText('Needs review')).length).toBeGreaterThan(0);
   });
 
-  it('supports fully ready markup path with all checks passing', () => {
+  it('supports fully ready markup path with all checks passing', async () => {
     render(<BrowserNativeAISkillPage />);
 
     fireEvent.change(screen.getByLabelText(/Page markup input/i), {
@@ -62,11 +62,11 @@ describe('BrowserNativeAISkillPage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /Run Local Skill Audit/i }));
 
-    expect(screen.getByText('Readiness Score: 100%')).toBeInTheDocument();
+    expect(await screen.findByText('Readiness Score: 100%')).toBeInTheDocument();
     expect(screen.queryByText('Needs review')).not.toBeInTheDocument();
   });
 
-  it('flags missing landmarks when markup has no main or nav regions', () => {
+  it('flags missing landmarks when markup has no main or nav regions', async () => {
     render(<BrowserNativeAISkillPage />);
 
     fireEvent.change(screen.getByLabelText(/Page markup input/i), {
@@ -74,11 +74,11 @@ describe('BrowserNativeAISkillPage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /Run Local Skill Audit/i }));
 
-    expect(screen.getByText('Add <main> or <nav> landmarks.')).toBeInTheDocument();
-    expect(screen.getByText('Readiness Score: 75%')).toBeInTheDocument();
+    expect(await screen.findByText('Add <main> or <nav> landmarks.')).toBeInTheDocument();
+    expect(await screen.findByText('Readiness Score: 75%')).toBeInTheDocument();
   });
 
-  it('flags focus and automation readiness when no supporting metadata is present', () => {
+  it('flags focus and automation readiness when no supporting metadata is present', async () => {
     render(<BrowserNativeAISkillPage />);
 
     fireEvent.change(screen.getByLabelText(/Page markup input/i), {
@@ -86,7 +86,7 @@ describe('BrowserNativeAISkillPage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /Run Local Skill Audit/i }));
 
-    expect(screen.getByText('Add focus or ARIA metadata for resilient automation.')).toBeInTheDocument();
-    expect(screen.getByText('Readiness Score: 75%')).toBeInTheDocument();
+    expect(await screen.findByText('Add focus or ARIA metadata for resilient automation.')).toBeInTheDocument();
+    expect(await screen.findByText('Readiness Score: 75%')).toBeInTheDocument();
   });
 });

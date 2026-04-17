@@ -118,6 +118,26 @@ describe('SEO metadata integrity', () => {
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Spatial Intelligence & World Generation')).toBe(true);
   });
 
+  it('ai-agent-manifest.json includes indexing-friendly enrichment fields', () => {
+    const raw = readFileSync('public/.well-known/ai-agent-manifest.json', 'utf8');
+    const manifest = JSON.parse(raw);
+
+    expect(manifest).toHaveProperty('experience_summary');
+    expect(manifest).toHaveProperty('credentials');
+    expect(manifest).toHaveProperty('agent_capabilities');
+    expect(manifest).toHaveProperty('domains');
+    expect(manifest).toHaveProperty('target_roles');
+    expect(manifest).toHaveProperty('certifications');
+
+    expect(manifest.credentials.companies).toEqual(
+      expect.arrayContaining(['Krutrim', 'Ola', 'HERE Technologies'])
+    );
+    expect(manifest.credentials.focus_areas).toEqual(
+      expect.arrayContaining(['Enterprise AI Platforms', 'Agentic AI Systems', 'AI governance'])
+    );
+    expect(manifest.certifications[0].name).toContain('Google Cloud Certified - Generative AI Leader');
+  });
+
   it('profile.json personal.title is "VP / Head of AI Engineering"', () => {
     const profile = JSON.parse(readFileSync('src/data/profile.json', 'utf8'));
     expect(profile.personal.title).toBe('VP / Head of AI Engineering');

@@ -1,11 +1,12 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
 
 const KNOWLEDGE_BASE = [
   { id: 1, title: 'Kruti.ai — Agentic AI Platform', content: 'Led end-to-end architecture and delivery of India\'s first Agentic AI platform at Krutrim across multi-model orchestration, RAG pipelines, vector search, and real-time personalization. Drove 50% latency reduction and 40% cost savings through intelligent model routing.' },
@@ -35,6 +36,11 @@ export default function RAGPipelinePage() {
   const pipelineRef = useRef<any>(null);
   const embeddingsRef = useRef<Map<number, number[]>>(new Map());
 
+  useEffect(() => {
+    const cancelPreload = preloadTransformersOnIdle();
+    return () => cancelPreload();
+  }, []);
+
   const cosineSimilarity = (a: number[], b: number[]) => {
     let dot = 0, magA = 0, magB = 0;
     for (let i = 0; i < a.length; i++) {
@@ -53,8 +59,7 @@ export default function RAGPipelinePage() {
       setProgressMsg('Importing Transformers.js...');
       setProgress(5);
 
-      // @ts-ignore
-      const { pipeline, env } = await import('@huggingface/transformers');
+      const { pipeline, env } = await loadTransformersModule();
       env.allowLocalModels = false;
       env.allowRemoteModels = true;
 

@@ -1,11 +1,12 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Upload, Loader } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
+import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
 
 type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'error';
 type TaskType = 'classify' | 'zero-shot';
@@ -32,6 +33,11 @@ export default function MultimodalPage() {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const dragOverRef = useRef(false);
 
+  useEffect(() => {
+    const cancelPreload = preloadTransformersOnIdle();
+    return () => cancelPreload();
+  }, []);
+
   const loadModels = async () => {
     setStatus('loading-model');
     setProgress(0);
@@ -40,8 +46,7 @@ export default function MultimodalPage() {
       setProgressMsg('Importing Transformers.js...');
       setProgress(5);
 
-      // @ts-ignore
-      const { pipeline, env } = await import('@huggingface/transformers');
+      const { pipeline, env } = await loadTransformersModule();
       env.allowLocalModels = false;
       env.allowRemoteModels = true;
 

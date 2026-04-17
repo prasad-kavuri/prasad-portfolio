@@ -18,6 +18,54 @@
     "Multi-Agent Systems",
     "AI Governance"
   ],
+  "experience_summary": {
+    "years": 20,
+    "leadership_scope": "Enterprise AI platform strategy, global engineering leadership, and operational governance.",
+    "career_highlights": [
+      "Ex-Krutrim: built and scaled enterprise-grade Agentic AI platform capabilities",
+      "Ex-Ola: delivered platform transformation for Ola Maps and large-scale enterprise adoption",
+      "Ex-HERE: led global mobility and mapping engineering programs for automotive ecosystems"
+    ]
+  },
+  "credentials": {
+    "companies": ["Krutrim", "Ola", "HERE Technologies"],
+    "focus_areas": [
+      "Enterprise AI Platforms",
+      "Agentic AI Systems",
+      "Multi-model orchestration",
+      "AI governance",
+      "RAG and retrieval systems",
+      "Real-time personalization",
+      "Mobility, maps, and platform leadership"
+    ]
+  },
+  "agent_capabilities": [
+    "Design and scale governed multi-model AI platforms",
+    "Lead retrieval architecture and RAG quality programs",
+    "Drive model routing, latency optimization, and cost control",
+    "Build enterprise-safe AI governance and observability controls",
+    "Translate executive objectives into measurable AI product outcomes"
+  ],
+  "domains": [
+    "Enterprise AI",
+    "Mobility",
+    "Maps and geospatial platforms",
+    "Developer platforms",
+    "Autonomous systems"
+  ],
+  "target_roles": [
+    "VP AI Engineering",
+    "Head of AI Engineering",
+    "Head of AI Platform",
+    "Director/Senior Director AI Engineering"
+  ],
+  "certifications": [
+    {
+      "name": "Google Cloud Certified - Generative AI Leader",
+      "issuer": "Google Cloud",
+      "status": "active"
+    }
+  ],
   "experience_years": 20,
   "notable_achievements": [
     "Architected India's first Agentic AI platform (Kruti.ai)",

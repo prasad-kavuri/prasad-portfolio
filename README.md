@@ -10,7 +10,7 @@ Production-grade AI engineering portfolio for VP / Head / Sr Director evaluation
 - **Multi-Agent System (Flagship Workflow)**: Analyzer → Researcher → Strategist orchestration with explicit human approval before strategic output release.
 - **LLM Router**: model routing with latency/cost/quality trade-off framing for FinOps-aware inference decisions.
 - **RAG + Vector Search**: browser-executed retrieval patterns using Transformers.js embeddings for local-first knowledge workflows.
-- **Governance and Control Plane**: guardrails, RBAC signals, traceability, token-spend visibility, and enterprise trust controls.
+- **Governance and Control Plane**: guardrails, RBAC signals, traceability, token-spend visibility, and enterprise trust controls with a dynamic drift detect → remediate → stabilize simulation.
 - **MCP Tool Demo**: dynamic tool discovery/invocation pattern for auditable model-to-tool interaction.
 - **Applied AI Experiences**: portfolio assistant, resume generator, multimodal inference, and quantization benchmarks.
 - **Spatial World Generation**: governed text-to-3D world generation with real browser-rendered procedural 3D preview, GLB export, and adapter-based provider fallback (`hyworld` contract + deterministic mock output).
@@ -52,7 +52,7 @@ Canonical diagram asset: `public/architecture-diagram.svg`
 - Human-in-the-loop checkpoint for high-impact strategist output
 - Prompt injection and output-safety guardrails in shared AI route controls
 - Trace ID propagation for request-level auditability
-- Drift snapshots + eval gating to reduce regression risk
+- Drift snapshots + deterministic self-healing remediation lifecycle (auto + HITL paths) to reduce regression risk
 - Rate limiting and abuse controls for production-safe exposure
 
 ## Stack

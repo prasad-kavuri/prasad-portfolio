@@ -2,17 +2,12 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-type CheckResult = {
-  key: string;
-  label: string;
-  ok: boolean;
-  detail: string;
-};
+import { scheduleIdleTask } from "@/lib/client-scheduler";
+import { runBrowserAuditChecks, type BrowserAuditCheckResult } from "@/lib/browser-ai-audit";
 
 const SAMPLE_HTML = `<main>
   <h1>Checkout</h1>
@@ -27,53 +22,27 @@ const SKILL_MANIFEST = {
   icon: "shield-check",
 };
 
-function runChecks(input: string): CheckResult[] {
-  const hasMain = /<main[\s>]/i.test(input);
-  const hasNav = /<nav[\s>]/i.test(input);
-  const imgWithoutAlt = /<img\b(?![^>]*\balt=)[^>]*>/i.test(input);
-  const unlabeledButton = /<button\b[^>]*>\s*<\/button>/i.test(input);
-  const hasTabIndex = /tabindex=/i.test(input);
-  const hasAriaLabels = /aria-label=/i.test(input);
-
-  return [
-    {
-      key: "landmarks",
-      label: "Semantic landmarks",
-      ok: hasMain || hasNav,
-      detail: hasMain || hasNav ? "Core landmarks detected." : "Add <main> or <nav> landmarks.",
-    },
-    {
-      key: "alt-text",
-      label: "Image accessibility",
-      ok: !imgWithoutAlt,
-      detail: imgWithoutAlt ? "At least one image is missing alt text." : "Image alt coverage looks good.",
-    },
-    {
-      key: "controls",
-      label: "Interactive control labels",
-      ok: !unlabeledButton,
-      detail: unlabeledButton ? "Found a button with no accessible label." : "Buttons have visible/accessible labels.",
-    },
-    {
-      key: "focus",
-      label: "Keyboard and agent readiness",
-      ok: hasTabIndex || hasAriaLabels || hasMain,
-      detail: hasTabIndex || hasAriaLabels || hasMain
-        ? "Structure supports keyboard and automation navigation."
-        : "Add focus or ARIA metadata for resilient automation.",
-    },
-  ];
-}
-
 export default function BrowserNativeAISkillPage() {
   const [markup, setMarkup] = useState(SAMPLE_HTML);
   const [ran, setRan] = useState(false);
+  const [isAuditing, setIsAuditing] = useState(false);
+  const [auditResults, setAuditResults] = useState<BrowserAuditCheckResult[] | null>(null);
   const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">("idle");
 
-  const checks = useMemo(() => runChecks(markup), [markup]);
+  const checks = useMemo(() => auditResults ?? [], [auditResults]);
   const passed = checks.filter((c) => c.ok).length;
-  const score = Math.round((passed / checks.length) * 100);
+  const score = checks.length > 0 ? Math.round((passed / checks.length) * 100) : 0;
   const manifestJson = JSON.stringify(SKILL_MANIFEST, null, 2);
+
+  const runAudit = () => {
+    setRan(true);
+    setIsAuditing(true);
+    const cancel = scheduleIdleTask(() => {
+      setAuditResults(runBrowserAuditChecks(markup));
+      setIsAuditing(false);
+    }, 1500);
+    return cancel;
+  };
 
   const handleCopyManifest = async () => {
     try {
@@ -125,10 +94,17 @@ export default function BrowserNativeAISkillPage() {
           <div className="mt-4">
             <button
               type="button"
-              onClick={() => setRan(true)}
+              onClick={runAudit}
               className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700"
+              disabled={isAuditing}
             >
-              Run Local Skill Audit
+              {isAuditing ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="size-3.5 animate-spin" /> Running Local Skill Audit
+                </span>
+              ) : (
+                "Run Local Skill Audit"
+              )}
             </button>
           </div>
         </Card>
@@ -166,6 +142,11 @@ export default function BrowserNativeAISkillPage() {
                 <span className="text-sm font-medium">Readiness Score: {score}%</span>
               </div>
             </div>
+            {isAuditing && (
+              <p className="mb-3 text-xs text-muted-foreground">
+                Running local checks off the critical render path to keep UI responsive.
+              </p>
+            )}
             <div className="space-y-3">
               {checks.map((check) => (
                 <div key={check.key} className="rounded-lg border border-border bg-muted/30 px-3 py-2">

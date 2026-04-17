@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import React from 'react';
 import { RBACPanel } from '@/components/enterprise/RBACPanel';
 import { SpendAnalyticsPanel } from '@/components/enterprise/SpendAnalyticsPanel';
@@ -183,6 +183,8 @@ describe('Enterprise components', () => {
     render(<ObservabilityFeed events={events} />);
 
     expect(screen.getByText('Event Feed', { exact: true })).toBeInTheDocument();
+    expect(screen.getByTestId('drift-status-badge')).toHaveTextContent(/Stable/i);
+    expect(screen.getByTestId('drift-event-log')).toBeInTheDocument();
     expect(screen.getByText(/3 events/i)).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'legal' } });
@@ -205,8 +207,26 @@ describe('Enterprise components', () => {
     const liveToggle = screen.getByRole('switch', { name: /toggle auto-refresh/i });
     fireEvent.click(liveToggle);
     expect(screen.getByText(/● Live/i)).toBeInTheDocument();
-    vi.advanceTimersByTime(4100);
+    act(() => {
+      vi.advanceTimersByTime(4100);
+    });
     fireEvent.click(liveToggle);
+
+    fireEvent.click(screen.getByTestId('mode-human'));
+    act(() => {
+      vi.advanceTimersByTime(15000);
+    });
+    expect(screen.getByTestId('hitl-approval-panel')).toBeInTheDocument();
+    expect(screen.getByText(/Awaiting human approval/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('hitl-approve'));
+    expect(screen.getByTestId('drift-status-badge')).toHaveTextContent(/Remediating|Stabilized/i);
+    expect(screen.getByTestId('drift-event-log')).toHaveTextContent(/Fallback model engaged|Evaluation check passed|System stabilized/i);
+
+    fireEvent.click(screen.getByTestId('mode-auto'));
+    act(() => {
+      vi.advanceTimersByTime(20000);
+    });
+    expect(screen.getByTestId('drift-status-badge')).toHaveTextContent(/Stabilized|Stable/i);
   });
 
   it('TokenUsageChart renders controls and toggles time range and breakdown mode', () => {

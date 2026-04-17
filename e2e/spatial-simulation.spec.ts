@@ -1,4 +1,12 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
+
+async function clickStable(locator: Locator) {
+  await locator.scrollIntoViewIfNeeded();
+  await locator.evaluate((element: Element) => {
+    element.scrollIntoView({ block: 'center', inline: 'center' });
+    (element as HTMLElement).click();
+  });
+}
 
 test.describe('World Generation demo', () => {
   test('renders desktop-friendly governed world-generation experience', async ({ page }) => {
@@ -21,7 +29,7 @@ test.describe('World Generation demo', () => {
     await expect(page.getByTestId('preview-generation-label')).toContainText('Procedural 3D (Fallback Active)');
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
     await expect(page.getByTestId('scenario-baseline')).toBeVisible();
-    await page.getByTestId('scenario-safety').click();
+    await clickStable(page.getByTestId('scenario-safety'));
     await expect(page.getByText(/Safety-optimized scenario/i)).toBeVisible();
     await expect(page.getByRole('button', { name: 'Export GLB' })).toBeVisible();
     await page.getByRole('button', { name: 'Approve' }).evaluate((element) => {
@@ -50,13 +58,13 @@ test.describe('World Generation demo', () => {
     await page.getByRole('button', { name: /Generate governed world/i }).click();
 
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
-    await page.getByRole('button', { name: 'Request Revision' }).click();
+    await clickStable(page.getByRole('button', { name: 'Request Revision' }));
     await expect(page.getByTestId('approval-status-label')).toContainText('Revision requested');
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
 
-    await page.getByTestId('expand-preview-button').click();
+    await clickStable(page.getByTestId('expand-preview-button'));
     await expect(page.getByTestId('expanded-preview-modal')).toBeVisible();
-    await page.getByRole('button', { name: /Close Preview/i }).click();
+    await clickStable(page.getByRole('button', { name: /Close Preview/i }));
     await expect(page.getByTestId('expanded-preview-modal')).toHaveCount(0);
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
   });

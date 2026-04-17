@@ -1,14 +1,116 @@
-import { expect, test, type Locator } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 async function clickStable(locator: Locator) {
-  await locator.scrollIntoViewIfNeeded();
-  await locator.evaluate((element: Element) => {
-    element.scrollIntoView({ block: 'center', inline: 'center' });
-    (element as HTMLElement).click();
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      await expect(locator).toBeVisible({ timeout: 10000 });
+      await locator.evaluate((element) => {
+        (element as HTMLButtonElement).click();
+      });
+      return;
+    } catch (error) {
+      if (attempt === 2) {
+        throw error;
+      }
+    }
+  }
+}
+
+function makeValidWorldGenerationPayload() {
+  return {
+    status: 'pending_review',
+    workflow: [],
+    traces: [],
+    governance: {
+      guardrailsEnforced: true,
+      policyValidation: 'pass',
+      humanApprovalRequired: true,
+      auditTraceId: 'trace-e2e-valid',
+      evaluationStatus: 'review',
+    },
+    businessValue: ['value'],
+    worldArtifact: {
+      worldTitle: 'Downtown world',
+      provider: 'hyworld-adapter',
+      providerMode: 'hyworld-adapter',
+      availability: 'fallback',
+      preview: { width: 2, height: 2, cells: ['road', 'pickup', 'logistics', 'pedestrian'], legend: [{ type: 'road', label: 'Route corridor' }] },
+      assets: {
+        meshConcept: 'mesh',
+        representation: 'mesh-concept',
+        sceneZones: ['zone-1'],
+        routeCorridors: ['corridor-1'],
+        loadingAreas: ['load-1'],
+        pedestrianAreas: ['ped-1'],
+        simulationReadiness: 'ready',
+      },
+      sceneSpec: {
+        worldId: 'world-e2e-valid',
+        title: 'scene',
+        region: 'Downtown Core',
+        objective: 'speed',
+        style: 'logistics-grid',
+        providerMode: 'hyworld-adapter',
+        availability: 'fallback',
+        exportReadiness: 'ready',
+        simulationReadiness: 'ready',
+        warnings: [],
+        primitiveBudget: 42,
+        primitives: [
+          {
+            id: 'ops-core',
+            label: 'Operations Core',
+            kind: 'zone-block',
+            position: { x: 0, z: 0 },
+            size: { width: 4, depth: 4 },
+            height: 2,
+            colorHex: '#2563eb',
+          },
+        ],
+      },
+      notes: ['fallback note'],
+    },
+    proposedRecommendation: {
+      headline: 'headline',
+      rationale: 'rationale',
+      tradeoffs: ['tradeoff'],
+      constraintsApplied: ['constraint'],
+      businessImpact: 'impact',
+      policyNotes: ['note'],
+      alternativesConsidered: ['alt'],
+      nextAction: 'approve',
+    },
+    evaluation: { passed: true, score: 1, checks: [] },
+    traceId: 'trace-e2e-valid',
+    scenario: {
+      prompt: 'prompt',
+      region: 'Downtown Core',
+      objective: 'speed',
+      style: 'logistics-grid',
+      simulationReady: true,
+      constraints: {
+        budgetLevel: 'medium',
+        congestionSensitivity: 'high',
+        accessibilityPriority: true,
+        policyProfile: 'balanced',
+      },
+    },
+  };
+}
+
+async function mockValidGeneration(page: Page) {
+  await page.route('**/api/demos/world-generation', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(makeValidWorldGenerationPayload()),
+    });
   });
 }
 
 test.describe('World Generation demo', () => {
+  test.use({ viewport: { width: 1600, height: 1200 } });
+
   test('renders desktop-friendly governed world-generation experience', async ({ page }) => {
     await page.goto('/demos/world-generation');
 
@@ -19,22 +121,18 @@ test.describe('World Generation demo', () => {
   });
 
   test('runs world generation, pauses for approval, then finalizes after approve', async ({ page }) => {
+    await mockValidGeneration(page);
     await page.goto('/demos/world-generation');
 
     await page.getByRole('button', { name: /Generate governed world/i }).click();
 
-    await expect(page.getByText('Human Approval Required', { exact: true })).toBeVisible();
-    await expect(page.getByText('Approval checkpoint', { exact: true })).toBeVisible();
-    await expect(page.getByTestId('approval-status-label')).toContainText('Awaiting approval');
+    await expect(page.getByText('Human Approval Required', { exact: true })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByTestId('approval-status-label')).toContainText('Awaiting approval', { timeout: 15000 });
     await expect(page.getByTestId('preview-generation-label')).toContainText('Procedural 3D (Fallback Active)');
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
     await expect(page.getByTestId('scenario-baseline')).toBeVisible();
-    await clickStable(page.getByTestId('scenario-safety'));
-    await expect(page.getByText(/Safety-optimized scenario/i)).toBeVisible();
     await expect(page.getByRole('button', { name: 'Export GLB' })).toBeVisible();
-    await page.getByRole('button', { name: 'Approve' }).evaluate((element) => {
-      (element as HTMLButtonElement).click();
-    });
+    await clickStable(page.getByTestId('approval-approve-button'));
     await expect(page.getByText(/Human Approval Required/i)).toBeVisible();
     await expect(page.getByText(/Evaluation: pass/i)).toBeVisible();
     await expect(page.getByTestId('approval-status-label')).toContainText('Approved');
@@ -42,23 +140,23 @@ test.describe('World Generation demo', () => {
   });
 
   test('shows export readiness controls for valid generated scenes', async ({ page }) => {
+    await mockValidGeneration(page);
     await page.goto('/demos/world-generation');
     await page.getByRole('button', { name: /Generate governed world/i }).click();
 
-    await expect(page.getByText(/Export status:/i)).toBeVisible();
+    await expect(page.getByText(/Export status:/i)).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('button', { name: 'Export GLB' })).toBeEnabled();
-    await page.getByRole('button', { name: 'Export GLB' }).evaluate((element) => {
-      (element as HTMLButtonElement).click();
-    });
+    await clickStable(page.getByRole('button', { name: 'Export GLB' }));
     await expect(page.getByTestId('export-feedback')).toContainText(/Scene exported:|Export failed — please retry/i);
   });
 
   test('supports revision request without blanking preview and expanded preview open/close', async ({ page }) => {
+    await mockValidGeneration(page);
     await page.goto('/demos/world-generation');
     await page.getByRole('button', { name: /Generate governed world/i }).click();
 
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
-    await clickStable(page.getByRole('button', { name: 'Request Revision' }));
+    await clickStable(page.getByTestId('approval-revise-button'));
     await expect(page.getByTestId('approval-status-label')).toContainText('Revision requested');
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
 

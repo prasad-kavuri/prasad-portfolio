@@ -955,9 +955,9 @@ export default function WorldGenerationPage() {
                   />
                   {approvalStatus !== 'auto_approved' ? (
                     <div className="flex flex-wrap gap-2">
-                      <Button onClick={handleApprove}>Approve</Button>
-                      <Button variant="secondary" onClick={handleRevise}>Request Revision</Button>
-                      <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                      <Button onClick={handleApprove} data-testid="approval-approve-button">Approve</Button>
+                      <Button variant="secondary" onClick={handleRevise} data-testid="approval-revise-button">Request Revision</Button>
+                      <Button variant="outline" onClick={handleCancel} data-testid="approval-cancel-button">Cancel</Button>
                     </div>
                   ) : (
                     <p className="text-sm text-emerald-300">Auto-approved (low risk).</p>

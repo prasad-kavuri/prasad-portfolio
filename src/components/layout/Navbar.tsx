@@ -6,6 +6,7 @@ const links = [
   { href: "#expertise", label: "Expertise" },
   { href: "#experience", label: "Experience" },
   { href: "#contact", label: "Contact" },
+  { href: "/for-recruiters", label: "For Recruiters" },
 ];
 
 export function Navbar() {

@@ -11,6 +11,9 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p>© {new Date().getFullYear()} Prasad Kavuri</p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end sm:gap-6">
+          <Link href="/for-recruiters" className="hover:text-foreground">
+            For Recruiters
+          </Link>
           <Link href={profile.personal.github} target="_blank" className="hover:text-foreground">
             GitHub
           </Link>

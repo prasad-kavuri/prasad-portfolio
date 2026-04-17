@@ -1,6 +1,7 @@
 'use client';
 
 import Image from "next/image";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedCounter } from "@/components/ui/counter";
 import { GovernancePillars } from "@/components/ui/governance-pillars";
@@ -161,6 +162,13 @@ export function Hero() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2.5">
+              <Link
+                href="/for-recruiters"
+                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
+                style={{ background: 'var(--accent-brand)' }}
+              >
+                Recruiter Fast-Track →
+              </Link>
               <a
                 href="/api/resume-download"
                 target="_blank"

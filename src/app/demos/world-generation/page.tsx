@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ChangeEvent } from 'react';
+import { useMemo, useReducer, useState, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
@@ -51,9 +51,12 @@ import {
   getWorldExportEligibility,
   getWorldSceneComplexity,
 } from '@/lib/world-3d';
+import {
+  INITIAL_WORLD_WORKFLOW_STATE,
+  validateRenderableArtifact,
+  worldWorkflowReducer,
+} from '@/lib/world-workflow-state';
 
-
-type RunState = 'idle' | 'running' | 'pending_review' | 'done' | 'error';
 
 type WorldApiResponse = WorldGenerationOutput & {
   evaluation: WorldEvalResult;
@@ -100,8 +103,6 @@ export default function WorldGenerationPage() {
   const [provider, setProvider] = useState<'mock' | 'hyworld'>('hyworld');
   const [simulationReady, setSimulationReady] = useState(true);
   const [constraints, setConstraints] = useState<WorldConstraintProfile>(DEFAULT_WORLD_CONSTRAINTS);
-  const [runState, setRunState] = useState<RunState>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
   const [revisionNote, setRevisionNote] = useState('');
   const [result, setResult] = useState<WorldApiResponse | null>(null);
   const [uploadMetadata, setUploadMetadata] = useState<WorldUploadPayload | undefined>(undefined);
@@ -110,14 +111,17 @@ export default function WorldGenerationPage() {
   const [resetToken, setResetToken] = useState(0);
   const [exportState, setExportState] = useState<'ready' | 'exporting' | 'failed'>('ready');
   const [exportMessage, setExportMessage] = useState('');
+  const [workflowState, dispatchWorkflow] = useReducer(worldWorkflowReducer, INITIAL_WORLD_WORKFLOW_STATE);
 
   const desktopSignal = useMemo(() => {
     return 'Desktop-friendly: world preview rendering is optimized for larger displays; mobile uses a lighter fallback view.';
   }, []);
 
   const runGeneration = async (approvalState: 'pending' | 'approved') => {
-    setRunState('running');
-    setErrorMessage('');
+    dispatchWorkflow({ type: 'VALIDATING' });
+    dispatchWorkflow({ type: 'GENERATING' });
+    setExportState('ready');
+    setExportMessage('');
 
     try {
       const response = await fetch('/api/demos/world-generation', {
@@ -142,19 +146,33 @@ export default function WorldGenerationPage() {
       };
 
       if (!response.ok) {
-        setRunState('error');
         const details = payload.details?.length ? ` (${payload.details.join(', ')})` : '';
-        setErrorMessage(`${payload.error ?? 'Unable to generate world'}${details}`);
+        dispatchWorkflow({ type: 'SET_ERROR', message: `${payload.error ?? 'Unable to generate world'}${details}` });
+        setResult(null);
+        return;
+      }
+
+      dispatchWorkflow({ type: 'RENDERING' });
+      const artifactCheck = validateRenderableArtifact(payload);
+      if (!artifactCheck.valid) {
+        dispatchWorkflow({
+          type: 'SET_ERROR',
+          message: `World artifact failed readiness checks: ${artifactCheck.reasons.join(', ')}`,
+        });
+        setResult(null);
         return;
       }
 
       setResult(payload);
-      setExportState('ready');
-      setExportMessage('');
-      setRunState(payload.status === 'pending_review' ? 'pending_review' : 'done');
+      dispatchWorkflow({ type: 'ARTIFACT_READY' });
+      if (payload.status === 'pending_review') {
+        dispatchWorkflow({ type: 'ENTER_APPROVAL' });
+      } else {
+        dispatchWorkflow({ type: 'ENTER_COMPLETED' });
+      }
     } catch {
-      setRunState('error');
-      setErrorMessage('World generation request failed. Please retry in a moment.');
+      setResult(null);
+      dispatchWorkflow({ type: 'SET_ERROR', message: 'World generation request failed. Please retry in a moment.' });
     }
   };
 
@@ -192,19 +210,23 @@ export default function WorldGenerationPage() {
   };
 
   const handleApprove = async () => {
+    if (workflowState.lifecycle !== 'approval') {
+      dispatchWorkflow({ type: 'SET_ERROR', message: 'Approval blocked until a valid world artifact is visible.' });
+      return;
+    }
     await runGeneration('approved');
   };
 
   const handleRevise = () => {
     setResult(null);
-    setRunState('idle');
-    setErrorMessage('Revision requested. Update prompt, style, or constraints before rerunning.');
+    dispatchWorkflow({ type: 'RESET' });
+    dispatchWorkflow({ type: 'SET_ERROR', message: 'Revision requested. Update prompt, style, or constraints before rerunning.' });
   };
 
   const handleCancel = () => {
     setResult(null);
-    setRunState('idle');
-    setErrorMessage('Approval canceled. World artifact not finalized.');
+    dispatchWorkflow({ type: 'RESET' });
+    dispatchWorkflow({ type: 'SET_ERROR', message: 'Approval canceled. World artifact not finalized.' });
   };
 
   const workflow = result?.workflow ?? [];
@@ -219,11 +241,12 @@ export default function WorldGenerationPage() {
   ];
 
   const sceneSpec = result?.worldArtifact.sceneSpec;
+  const artifactReadiness = useMemo(() => validateRenderableArtifact(result), [result]);
   const sceneComplexity = sceneSpec ? getWorldSceneComplexity(sceneSpec) : null;
-  const exportEligibility = sceneSpec ? getWorldExportEligibility(sceneSpec) : null;
+  const exportEligibility = sceneSpec && artifactReadiness.valid ? getWorldExportEligibility(sceneSpec) : null;
 
   const handleExportGlb = async () => {
-    if (!sceneSpec) return;
+    if (!sceneSpec || !artifactReadiness.valid) return;
     setExportState('exporting');
     setExportMessage('');
     try {
@@ -435,14 +458,21 @@ export default function WorldGenerationPage() {
                   {uploadError && <p className="mt-2 text-xs text-red-400">{uploadError}</p>}
                 </div>
 
-                <Button onClick={() => runGeneration('pending')} disabled={runState === 'running'}>
-                  {runState === 'running' ? (
+                <Button
+                  onClick={() => runGeneration('pending')}
+                  disabled={
+                    workflowState.lifecycle === 'validating' ||
+                    workflowState.lifecycle === 'generating' ||
+                    workflowState.lifecycle === 'rendering'
+                  }
+                >
+                  {workflowState.lifecycle === 'validating' || workflowState.lifecycle === 'generating' || workflowState.lifecycle === 'rendering' ? (
                     <><Loader2 className="mr-2 size-4 animate-spin" />Generating world...</>
                   ) : (
                     <><WandSparkles className="mr-2 size-4" />Generate governed world</>
                   )}
                 </Button>
-                {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
+                {workflowState.errorMessage && <p className="text-sm text-red-400">{workflowState.errorMessage}</p>}
               </CardContent>
             </Card>
 
@@ -498,11 +528,26 @@ export default function WorldGenerationPage() {
                 <CardTitle>Generated World Preview</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {!result && (
+                {!result && workflowState.lifecycle === 'idle' && (
                   <p className="text-sm text-muted-foreground">Generate a world to render the procedural 3D scene preview and export-readiness summary.</p>
                 )}
+                {!result && (workflowState.lifecycle === 'validating' || workflowState.lifecycle === 'generating' || workflowState.lifecycle === 'rendering') && (
+                  <div className="rounded-xl border border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+                    Preparing world artifact preview...
+                  </div>
+                )}
+                {!result && workflowState.lifecycle === 'error' && (
+                  <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-100">
+                    World generation failed before a renderable artifact was available. Revise inputs and retry.
+                  </div>
+                )}
+                {result && !artifactReadiness.valid && (
+                  <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-100">
+                    Generated output is incomplete for preview/approval: {artifactReadiness.reasons.join(', ')}
+                  </div>
+                )}
 
-                {result && sceneSpec && (
+                {result && sceneSpec && artifactReadiness.valid && (
                   <>
                     <div className="rounded-xl border border-border bg-muted/20 p-3">
                       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -642,7 +687,7 @@ export default function WorldGenerationPage() {
               </CardContent>
             </Card>
 
-            {runState === 'pending_review' && result && (
+            {workflowState.lifecycle === 'approval' && result && artifactReadiness.valid && (
               <Card className="border-amber-500/40 bg-amber-500/10">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-amber-200">
@@ -707,7 +752,7 @@ export default function WorldGenerationPage() {
               </CardContent>
             </Card>
 
-            {(runState === 'error' || uploadError) && (
+            {(workflowState.lifecycle === 'error' || uploadError) && (
               <Card className="border-red-500/40 bg-red-500/10">
                 <CardContent className="p-4 text-sm text-red-200">
                   <p className="flex items-center gap-2 font-medium"><AlertTriangle className="size-4" /> Safe failure mode active</p>

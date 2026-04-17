@@ -38,6 +38,91 @@ test.describe('World Generation demo', () => {
     await expect(page.getByText(/Scene exported:|Export unavailable:/i)).toBeVisible();
   });
 
+  test('does not show approval when generation payload is missing artifact content', async ({ page }) => {
+    await page.route('**/api/demos/world-generation', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'pending_review',
+          workflow: [],
+          traces: [],
+          governance: {
+            guardrailsEnforced: true,
+            policyValidation: 'pass',
+            humanApprovalRequired: true,
+            auditTraceId: 'trace-e2e-invalid',
+            evaluationStatus: 'review',
+          },
+          businessValue: ['value'],
+          worldArtifact: {
+            worldTitle: 'Broken world',
+            provider: 'hyworld-adapter',
+            providerMode: 'hyworld-adapter',
+            availability: 'fallback',
+            preview: { width: 2, height: 2, cells: [], legend: [{ type: 'road', label: 'Route corridor' }] },
+            assets: {
+              meshConcept: 'mesh',
+              representation: 'mesh-concept',
+              sceneZones: [],
+              routeCorridors: [],
+              loadingAreas: [],
+              pedestrianAreas: [],
+              simulationReadiness: 'review',
+            },
+            sceneSpec: {
+              worldId: 'world-broken',
+              title: 'scene',
+              region: 'Downtown Core',
+              objective: 'speed',
+              style: 'logistics-grid',
+              providerMode: 'hyworld-adapter',
+              availability: 'fallback',
+              exportReadiness: 'review',
+              simulationReadiness: 'review',
+              warnings: [],
+              primitiveBudget: 42,
+              primitives: [],
+            },
+            notes: ['fallback note'],
+          },
+          proposedRecommendation: {
+            headline: 'headline',
+            rationale: 'rationale',
+            tradeoffs: ['tradeoff'],
+            constraintsApplied: ['constraint'],
+            businessImpact: 'impact',
+            policyNotes: ['note'],
+            alternativesConsidered: ['alt'],
+            nextAction: 'approve',
+          },
+          evaluation: { passed: true, score: 1, checks: [] },
+          traceId: 'trace-e2e-invalid',
+          scenario: {
+            prompt: 'prompt',
+            region: 'Downtown Core',
+            objective: 'speed',
+            style: 'logistics-grid',
+            simulationReady: true,
+            constraints: {
+              budgetLevel: 'medium',
+              congestionSensitivity: 'high',
+              accessibilityPriority: true,
+              policyProfile: 'balanced',
+            },
+          },
+        }),
+      });
+    });
+
+    await page.goto('/demos/world-generation');
+    await page.getByRole('button', { name: /Generate governed world/i }).click();
+
+    await expect(page.getByText(/failed readiness checks/i)).toBeVisible();
+    await expect(page.getByText(/failed before a renderable artifact was available/i)).toBeVisible();
+    await expect(page.getByText(/Human Approval Required/i)).toHaveCount(0);
+  });
+
   test('rejects unsupported upload safely', async ({ page }) => {
     await page.goto('/demos/world-generation');
 

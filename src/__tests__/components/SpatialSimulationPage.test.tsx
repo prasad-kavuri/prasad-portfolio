@@ -50,6 +50,131 @@ describe('WorldGenerationPage', () => {
     expect(screen.getByText(/Desktop-friendly:/i)).toBeInTheDocument();
   });
 
+  it('shows loading artifact state during generation sequencing', async () => {
+    let resolveFetch: ((value: unknown) => void) | undefined;
+    mockFetch.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      })
+    );
+
+    render(<WorldGenerationPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Generate governed world/i }));
+
+    expect(screen.getByText(/Preparing world artifact preview/i)).toBeInTheDocument();
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        status: 'pending_review',
+        workflow: [
+          { id: 'prompt-intake', label: 'Prompt Intake', description: 'd', state: 'completed' },
+          { id: 'scene-intent', label: 'Scene Intent Parsing', description: 'd', state: 'completed' },
+          { id: 'world-generation', label: 'World Generation', description: 'd', state: 'completed' },
+          { id: 'asset-structuring', label: 'Asset Structuring', description: 'd', state: 'completed' },
+          { id: 'policy-review', label: 'Policy & Safety Review', description: 'd', state: 'completed' },
+          { id: 'human-approval', label: 'Human Approval', description: 'd', state: 'paused' },
+          { id: 'final-world-output', label: 'Final World Output', description: 'd', state: 'idle' },
+        ],
+        traces: [
+          { sequence: 1, actor: 'Prompt Intake', action: 'validate', summary: 'ok', status: 'completed' },
+          { sequence: 2, actor: 'Scene Intent Parser', action: 'intent', summary: 'ok', status: 'completed' },
+          { sequence: 3, actor: 'World Generator', action: 'generate', summary: 'ok', status: 'completed' },
+          { sequence: 4, actor: 'Asset Structuring', action: 'assets', summary: 'ok', status: 'completed' },
+          { sequence: 5, actor: 'Policy & Safety Review', action: 'policy', summary: 'ok', status: 'completed' },
+          { sequence: 6, actor: 'Human Approval', action: 'approve', summary: 'Approval checkpoint', status: 'paused' },
+        ],
+        governance: {
+          guardrailsEnforced: true,
+          policyValidation: 'pass',
+          humanApprovalRequired: true,
+          auditTraceId: 'trace-loading',
+          evaluationStatus: 'review',
+        },
+        businessValue: ['value'],
+        worldArtifact: {
+          worldTitle: 'Loading concept',
+          provider: 'hyworld-adapter',
+          providerMode: 'hyworld-adapter',
+          availability: 'fallback',
+          preview: {
+            width: 2,
+            height: 2,
+            cells: ['road', 'pickup', 'logistics', 'pedestrian'],
+            legend: [{ type: 'road', label: 'Route corridor' }],
+          },
+          assets: {
+            meshConcept: 'mesh',
+            representation: 'mesh-concept',
+            sceneZones: ['z1'],
+            routeCorridors: ['c1'],
+            loadingAreas: ['l1'],
+            pedestrianAreas: ['p1'],
+            simulationReadiness: 'ready',
+          },
+          sceneSpec: {
+            worldId: 'world-loading',
+            title: 'scene',
+            region: 'Downtown Core',
+            objective: 'speed',
+            style: 'logistics-grid',
+            providerMode: 'hyworld-adapter',
+            availability: 'fallback',
+            exportReadiness: 'ready',
+            simulationReadiness: 'ready',
+            warnings: [],
+            primitiveBudget: 42,
+            primitives: [
+              {
+                id: 'ops-core',
+                label: 'Operations Core',
+                kind: 'zone-block',
+                position: { x: 0, z: 0 },
+                size: { width: 4, depth: 4 },
+                height: 2,
+                colorHex: '#2563eb',
+              },
+            ],
+          },
+          notes: ['fallback note'],
+        },
+        proposedRecommendation: {
+          headline: 'headline',
+          rationale: 'rationale',
+          tradeoffs: ['tradeoff'],
+          constraintsApplied: ['constraint'],
+          businessImpact: 'impact',
+          policyNotes: ['note'],
+          alternativesConsidered: ['alt'],
+          nextAction: 'Approve or revise world concept before simulation/export handoff.',
+        },
+        evaluation: {
+          passed: true,
+          score: 1,
+          checks: [],
+        },
+        traceId: 'trace-loading',
+        scenario: {
+          prompt: 'prompt',
+          region: 'Downtown Core',
+          objective: 'speed',
+          style: 'logistics-grid',
+          simulationReady: true,
+          constraints: {
+            budgetLevel: 'medium',
+            congestionSensitivity: 'medium',
+            accessibilityPriority: true,
+            policyProfile: 'balanced',
+          },
+        },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Human Approval Required/i)).toBeInTheDocument();
+    });
+  });
+
   it('shows approval panel when API returns pending_review and finalizes after approval', async () => {
     mockFetch
       .mockResolvedValueOnce({
@@ -410,5 +535,98 @@ describe('WorldGenerationPage', () => {
     await waitFor(() => {
       expect(screen.getByText(/Export unavailable:/i)).toBeInTheDocument();
     });
+  });
+
+  it('does not enter approval when artifact readiness validation fails', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        status: 'pending_review',
+        workflow: [],
+        traces: [],
+        governance: {
+          guardrailsEnforced: true,
+          policyValidation: 'pass',
+          humanApprovalRequired: true,
+          auditTraceId: 'trace-invalid',
+          evaluationStatus: 'review',
+        },
+        businessValue: ['value'],
+        worldArtifact: {
+          worldTitle: 'Broken world',
+          provider: 'hyworld-adapter',
+          providerMode: 'hyworld-adapter',
+          availability: 'fallback',
+          preview: {
+            width: 2,
+            height: 2,
+            cells: [],
+            legend: [{ type: 'road', label: 'Route corridor' }],
+          },
+          assets: {
+            meshConcept: 'mesh',
+            representation: 'mesh-concept',
+            sceneZones: [],
+            routeCorridors: [],
+            loadingAreas: [],
+            pedestrianAreas: [],
+            simulationReadiness: 'review',
+          },
+          sceneSpec: {
+            worldId: 'world-broken',
+            title: 'scene',
+            region: 'Downtown Core',
+            objective: 'speed',
+            style: 'logistics-grid',
+            providerMode: 'hyworld-adapter',
+            availability: 'fallback',
+            exportReadiness: 'review',
+            simulationReadiness: 'review',
+            warnings: [],
+            primitiveBudget: 42,
+            primitives: [],
+          },
+          notes: ['fallback note'],
+        },
+        proposedRecommendation: {
+          headline: 'headline',
+          rationale: 'rationale',
+          tradeoffs: ['tradeoff'],
+          constraintsApplied: ['constraint'],
+          businessImpact: 'impact',
+          policyNotes: ['note'],
+          alternativesConsidered: ['alt'],
+          nextAction: 'Approve or revise world concept before simulation/export handoff.',
+        },
+        evaluation: {
+          passed: true,
+          score: 1,
+          checks: [],
+        },
+        traceId: 'trace-invalid',
+        scenario: {
+          prompt: 'prompt',
+          region: 'Downtown Core',
+          objective: 'speed',
+          style: 'logistics-grid',
+          simulationReady: true,
+          constraints: {
+            budgetLevel: 'medium',
+            congestionSensitivity: 'medium',
+            accessibilityPriority: true,
+            policyProfile: 'balanced',
+          },
+        },
+      }),
+    });
+
+    render(<WorldGenerationPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Generate governed world/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed readiness checks/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/Human Approval Required/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/failed before a renderable artifact was available/i)).toBeInTheDocument();
   });
 });

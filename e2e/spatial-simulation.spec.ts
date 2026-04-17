@@ -17,6 +17,8 @@ test.describe('World Generation demo', () => {
 
     await expect(page.getByText('Human Approval Required', { exact: true })).toBeVisible();
     await expect(page.getByText('Approval checkpoint', { exact: true })).toBeVisible();
+    await expect(page.getByTestId('approval-status-label')).toContainText('Awaiting human approval');
+    await expect(page.getByTestId('preview-generation-label')).toContainText('Procedural 3D (Fallback Active)');
     await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
     await expect(page.getByRole('button', { name: 'Export GLB' })).toBeVisible();
     await page.getByRole('button', { name: 'Approve' }).evaluate((element) => {
@@ -24,6 +26,8 @@ test.describe('World Generation demo', () => {
     });
     await expect(page.getByText(/Human Approval Required/i)).toHaveCount(0);
     await expect(page.getByText(/Evaluation: pass/i)).toBeVisible();
+    await expect(page.getByTestId('approval-status-label')).toContainText('Approved by reviewer');
+    await expect(page.locator('[data-testid=\"world-3d-canvas\"], [data-testid=\"world-3d-fallback\"]')).toHaveCount(1);
   });
 
   test('shows export readiness controls for valid generated scenes', async ({ page }) => {
@@ -35,7 +39,7 @@ test.describe('World Generation demo', () => {
     await page.getByRole('button', { name: 'Export GLB' }).evaluate((element) => {
       (element as HTMLButtonElement).click();
     });
-    await expect(page.getByText(/Scene exported:|Export unavailable:/i)).toBeVisible();
+    await expect(page.getByTestId('export-feedback')).toContainText(/Scene exported:|Export failed — please retry/i);
   });
 
   test('does not show approval when generation payload is missing artifact content', async ({ page }) => {

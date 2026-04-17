@@ -31,6 +31,8 @@ describe('world 3D rendering helpers', () => {
     const renderables = mapSceneSpecToRenderablePrimitives(sceneSpec);
     const structures = renderables.filter((item) => item.kind === 'structure');
     const corridors = renderables.filter((item) => item.kind === 'corridor');
+    const operationsCore = renderables.find((item) => item.id === 'ops-core');
+    const pickupZone = renderables.find((item) => item.id === 'pickup');
 
     expect(structures.length).toBeGreaterThan(0);
     expect(corridors.length).toBeGreaterThan(0);
@@ -38,6 +40,9 @@ describe('world 3D rendering helpers', () => {
       Math.max(...corridors.map((item) => item.size.height))
     );
     expect(new Set(structures.map((item) => item.size.height)).size).toBeGreaterThan(1);
+    expect(operationsCore).toBeDefined();
+    expect(pickupZone).toBeDefined();
+    expect((operationsCore?.size.height ?? 0)).toBeGreaterThan(pickupZone?.size.height ?? 0);
   });
 
   it('reports complexity against primitive budget', () => {

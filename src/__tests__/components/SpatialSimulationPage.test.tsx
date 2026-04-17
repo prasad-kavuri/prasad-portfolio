@@ -172,6 +172,8 @@ describe('WorldGenerationPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Human Approval Required/i)).toBeInTheDocument();
+      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Awaiting human approval/i);
+      expect(screen.getByTestId('preview-generation-label')).toHaveTextContent(/Procedural 3D \(Fallback Active\)/i);
     });
   });
 
@@ -295,6 +297,7 @@ describe('WorldGenerationPage', () => {
     await waitFor(() => {
       expect(mockExportWorldSceneAsGlb).toHaveBeenCalledTimes(1);
       expect(screen.getByText(/Scene exported: world-demo\.glb/i)).toBeInTheDocument();
+      expect(screen.getByTestId('export-feedback')).toBeInTheDocument();
       expect(screen.getByText(/Procedural 3D World Artifact/i)).toBeInTheDocument();
     });
 
@@ -311,6 +314,7 @@ describe('WorldGenerationPage', () => {
       expect(screen.getByText(/Evaluation: pass/i)).toBeInTheDocument();
       expect(screen.queryByText(/Human Approval Required/i)).not.toBeInTheDocument();
       expect(screen.getByText(/Procedural 3D World Artifact/i)).toBeInTheDocument();
+      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Approved by reviewer/i);
     });
   });
 
@@ -432,7 +436,117 @@ describe('WorldGenerationPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Export GLB' }));
     await waitFor(() => {
-      expect(screen.getByText(/Export unavailable:/i)).toBeInTheDocument();
+      expect(screen.getByText(/Export failed — please retry/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows auto-approved label when governance does not require human approval', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        status: 'completed',
+        workflow: [
+          { id: 'prompt-intake', label: 'Prompt Intake', description: 'd', state: 'completed' },
+          { id: 'scene-intent', label: 'Scene Intent Parsing', description: 'd', state: 'completed' },
+          { id: 'world-generation', label: 'World Generation', description: 'd', state: 'completed' },
+          { id: 'asset-structuring', label: 'Asset Structuring', description: 'd', state: 'completed' },
+          { id: 'policy-review', label: 'Policy & Safety Review', description: 'd', state: 'completed' },
+          { id: 'human-approval', label: 'Human Approval', description: 'd', state: 'completed' },
+          { id: 'final-world-output', label: 'Final World Output', description: 'd', state: 'completed' },
+        ],
+        traces: [],
+        governance: {
+          guardrailsEnforced: true,
+          policyValidation: 'pass',
+          humanApprovalRequired: false,
+          auditTraceId: 'trace-auto',
+          evaluationStatus: 'pass',
+        },
+        businessValue: ['value'],
+        worldArtifact: {
+          worldTitle: 'Auto world',
+          provider: 'mock-world-provider',
+          providerMode: 'mock',
+          availability: 'available',
+          preview: {
+            width: 2,
+            height: 2,
+            cells: ['road', 'pickup', 'logistics', 'pedestrian'],
+            legend: [{ type: 'road', label: 'Route corridor' }],
+          },
+          assets: {
+            meshConcept: 'mesh',
+            representation: 'mesh-concept',
+            sceneZones: ['z1'],
+            routeCorridors: ['c1'],
+            loadingAreas: ['l1'],
+            pedestrianAreas: ['p1'],
+            simulationReadiness: 'ready',
+          },
+          sceneSpec: {
+            worldId: 'world-auto',
+            title: 'scene',
+            region: 'Downtown Core',
+            objective: 'speed',
+            style: 'logistics-grid',
+            providerMode: 'mock',
+            availability: 'available',
+            exportReadiness: 'ready',
+            simulationReadiness: 'ready',
+            warnings: [],
+            primitiveBudget: 42,
+            primitives: [
+              {
+                id: 'ops-core',
+                label: 'Operations Core',
+                kind: 'zone-block',
+                position: { x: 0, z: 0 },
+                size: { width: 4, depth: 4 },
+                height: 2,
+                colorHex: '#2563eb',
+              },
+            ],
+          },
+          notes: ['mock note'],
+        },
+        proposedRecommendation: {
+          headline: 'headline',
+          rationale: 'rationale',
+          tradeoffs: ['tradeoff'],
+          constraintsApplied: ['constraint'],
+          businessImpact: 'impact',
+          policyNotes: ['note'],
+          alternativesConsidered: ['alt'],
+          nextAction: 'Proceed',
+        },
+        evaluation: {
+          passed: true,
+          score: 1,
+          checks: [],
+        },
+        traceId: 'trace-auto',
+        scenario: {
+          prompt: 'prompt',
+          region: 'Downtown Core',
+          objective: 'speed',
+          style: 'logistics-grid',
+          simulationReady: true,
+          constraints: {
+            budgetLevel: 'medium',
+            congestionSensitivity: 'medium',
+            accessibilityPriority: true,
+            policyProfile: 'balanced',
+          },
+        },
+      }),
+    });
+
+    render(<WorldGenerationPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Generate governed world/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('approval-status-label')).toHaveTextContent(/Auto-approved \(low risk scenario\)/i);
+      expect(screen.getByTestId('preview-generation-label')).toHaveTextContent(/Procedural 3D \(Deterministic Mock\)/i);
     });
   });
 

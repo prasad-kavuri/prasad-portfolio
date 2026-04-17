@@ -82,8 +82,8 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
 
       setFallbackMessage('');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color('#020617');
-      scene.fog = new THREE.Fog('#020617', 60, 140);
+      scene.background = new THREE.Color('#010812');
+      scene.fog = new THREE.Fog('#010812', 55, 130);
 
       const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 250);
       camera.position.set(28, 24, 32);
@@ -110,7 +110,7 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
 
       const baseGround = new THREE.Mesh(
         new THREE.PlaneGeometry(86, 86),
-        new THREE.MeshStandardMaterial({ color: '#070b14', roughness: 1, metalness: 0 })
+        new THREE.MeshStandardMaterial({ color: '#050914', roughness: 1, metalness: 0 })
       );
       baseGround.rotation.x = -Math.PI / 2;
       baseGround.receiveShadow = true;
@@ -118,17 +118,17 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
 
       const sceneGround = new THREE.Mesh(
         new THREE.PlaneGeometry(76, 76),
-        new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: 0.96, metalness: 0.02 })
+        new THREE.MeshStandardMaterial({ color: '#111c31', roughness: 0.94, metalness: 0.03 })
       );
       sceneGround.rotation.x = -Math.PI / 2;
       sceneGround.position.y = 0.01;
       sceneGround.receiveShadow = true;
       scene.add(sceneGround);
 
-      const grid = new THREE.GridHelper(76, 38, '#1f2937', '#111827');
+      const grid = new THREE.GridHelper(76, 38, '#243244', '#0d1626');
       const gridMaterial = grid.material as { transparent: boolean; opacity: number };
       gridMaterial.transparent = true;
-      gridMaterial.opacity = 0.18;
+      gridMaterial.opacity = 0.14;
       grid.position.y = 0.02;
       scene.add(grid);
 
@@ -138,13 +138,20 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
           color: primitive.colorHex,
           roughness:
             primitive.kind === 'corridor'
-              ? 0.92
+              ? 0.95
               : primitive.kind === 'structure'
-                ? 0.72
+                ? 0.66
                 : primitive.kind === 'zone-block'
-                  ? 0.8
-                  : 0.88,
-          metalness: primitive.kind === 'structure' ? 0.1 : 0.03,
+                  ? 0.77
+                  : 0.9,
+          metalness: primitive.kind === 'structure' ? 0.12 : primitive.kind === 'corridor' ? 0.02 : 0.04,
+          emissive:
+            primitive.kind === 'transit-link'
+              ? new THREE.Color('#12354f')
+              : primitive.kind === 'corridor'
+                ? new THREE.Color('#0f172a')
+                : new THREE.Color('#000000'),
+          emissiveIntensity: primitive.kind === 'corridor' || primitive.kind === 'transit-link' ? 0.08 : 0,
           opacity: primitive.opacity,
           transparent: primitive.opacity < 1,
         });
@@ -174,9 +181,10 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
         });
       }
 
-      scene.add(new THREE.HemisphereLight('#dbeafe', '#020617', 0.8));
-      const keyLight = new THREE.DirectionalLight('#f8fafc', 1.05);
-      keyLight.position.set(24, 36, 20);
+      scene.add(new THREE.AmbientLight('#bfdbfe', 0.2));
+      scene.add(new THREE.HemisphereLight('#dbeafe', '#020617', 0.9));
+      const keyLight = new THREE.DirectionalLight('#f8fafc', 1.2);
+      keyLight.position.set(22, 34, 22);
       keyLight.castShadow = true;
       keyLight.shadow.mapSize.set(1024, 1024);
       keyLight.shadow.camera.near = 1;
@@ -187,9 +195,13 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       keyLight.shadow.camera.bottom = -45;
       scene.add(keyLight);
 
-      const fillLight = new THREE.DirectionalLight('#93c5fd', 0.34);
-      fillLight.position.set(-14, 18, -10);
+      const fillLight = new THREE.DirectionalLight('#93c5fd', 0.28);
+      fillLight.position.set(-16, 16, -12);
       scene.add(fillLight);
+
+      const rimLight = new THREE.DirectionalLight('#60a5fa', 0.18);
+      rimLight.position.set(-10, 12, 24);
+      scene.add(rimLight);
 
       const bounds = new THREE.Box3();
       renderables.forEach((primitive) => {

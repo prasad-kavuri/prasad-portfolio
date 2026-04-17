@@ -35,12 +35,23 @@ function heightScaleForKind(kind: WorldScenePrimitive['kind']): number {
   return 1;
 }
 
+function importanceScaleForPrimitive(primitive: WorldScenePrimitive): number {
+  const signal = `${primitive.id} ${primitive.label}`.toLowerCase();
+  if (signal.includes('ops-core') || signal.includes('operations core')) return 1.2;
+  if (signal.includes('logistics')) return 1.12;
+  if (signal.includes('pickup') || signal.includes('curbside')) return 0.96;
+  if (signal.includes('pedestrian')) return 0.9;
+  if (primitive.kind === 'structure') return 1.08;
+  if (primitive.kind === 'zone-block') return 1.03;
+  return 1;
+}
+
 export function mapSceneSpecToRenderablePrimitives(sceneSpec: WorldSceneSpec): WorldRenderablePrimitive[] {
   return sceneSpec.primitives.map((primitive) => {
     const seed = hashPrimitiveSeed(`${sceneSpec.worldId}:${primitive.id}:${primitive.kind}`);
     const variation = 0.9 + (seed % 13) / 100;
     const isFlat = primitive.kind === 'corridor' || primitive.kind === 'transit-link' || primitive.kind === 'safety-buffer';
-    const scaledHeight = primitive.height * heightScaleForKind(primitive.kind) * variation;
+    const scaledHeight = primitive.height * heightScaleForKind(primitive.kind) * importanceScaleForPrimitive(primitive) * variation;
     const safeHeight = Math.max(0.06, Number(scaledHeight.toFixed(2)));
     const renderHeight = isFlat ? Math.min(0.12, safeHeight) : safeHeight;
     const opacity =

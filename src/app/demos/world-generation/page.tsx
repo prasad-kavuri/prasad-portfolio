@@ -22,6 +22,7 @@ import {
   Download,
   RotateCcw,
   Layers3,
+  Info,
 } from 'lucide-react';
 import { ProceduralWorldCanvas } from '@/components/demos/world/ProceduralWorldCanvas';
 import { WorldPreviewErrorBoundary } from '@/components/demos/world/WorldPreviewErrorBoundary';
@@ -53,6 +54,8 @@ import {
   getWorldSceneComplexity,
 } from '@/lib/world-3d';
 import {
+  type WorldWorkflowStatus,
+  type WorldCanonicalArtifact,
   buildArtifactSession,
   INITIAL_WORLD_WORKFLOW_STATE,
   validateRenderableArtifact,
@@ -70,6 +73,20 @@ function logWorldDebug(event: string, details: Record<string, unknown>) {
   if (!WORLD_DEBUG) return;
   // eslint-disable-next-line no-console
   console.info(`[world-generation-debug] ${event}`, details);
+}
+
+function getPreviewGenerationLabel(artifact: WorldCanonicalArtifact): string {
+  if (artifact.availability === 'fallback') return 'Procedural 3D (Fallback Active)';
+  if (artifact.providerMode === 'hyworld-adapter') return 'Model-assisted preview active';
+  return 'Procedural 3D (Deterministic Mock)';
+}
+
+function getApprovalStatusLabel(result: WorldApiResponse | null, status: WorldWorkflowStatus): string | null {
+  if (!result) return null;
+  if (!result.governance.humanApprovalRequired) return 'Auto-approved (low risk scenario)';
+  if (status === 'approval') return 'Awaiting human approval';
+  if (status === 'completed') return 'Approved by reviewer';
+  return null;
 }
 
 const STAGE_ICONS: Record<WorldWorkflowStage['id'], typeof Orbit> = {
@@ -285,6 +302,8 @@ export default function WorldGenerationPage() {
   const sceneSpec = canonicalArtifact?.sceneSpec;
   const sceneComplexity = sceneSpec ? getWorldSceneComplexity(sceneSpec) : null;
   const exportEligibility = sceneSpec && artifactReadiness.valid ? getWorldExportEligibility(sceneSpec) : null;
+  const previewGenerationLabel = canonicalArtifact ? getPreviewGenerationLabel(canonicalArtifact) : null;
+  const approvalStatusLabel = getApprovalStatusLabel(result, workflowState.status);
 
   const handleExportGlb = async () => {
     if (!sceneSpec || !artifactReadiness.valid) return;
@@ -296,8 +315,8 @@ export default function WorldGenerationPage() {
       setExportMessage(`Scene exported: ${exportResult.fileName}`);
     } catch (error) {
       setExportState('failed');
-      const message = error instanceof Error ? error.message : 'Export failed — please retry with a smaller scene.';
-      setExportMessage(message.startsWith('Export unavailable:') ? message : `Export failed — ${message}`);
+      const message = error instanceof Error ? error.message : '';
+      setExportMessage(message ? `Export failed — please retry (${message})` : 'Export failed — please retry');
     }
   };
 
@@ -607,6 +626,18 @@ export default function WorldGenerationPage() {
                           <Badge variant="outline">{sceneSpec.exportReadiness === 'ready' ? 'Export Ready' : 'Export Review'}</Badge>
                         </div>
                       </div>
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        {previewGenerationLabel && (
+                          <Badge variant="secondary" data-testid="preview-generation-label">
+                            {previewGenerationLabel}
+                          </Badge>
+                        )}
+                        {approvalStatusLabel && (
+                          <Badge variant="outline" data-testid="approval-status-label">
+                            <Info className="mr-1 size-3" /> {approvalStatusLabel}
+                          </Badge>
+                        )}
+                      </div>
                       <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Procedural 3D World Artifact
                       </p>
@@ -692,7 +723,19 @@ export default function WorldGenerationPage() {
                       {exportEligibility?.eligible ? 'ready' : `review (${exportEligibility?.reasons.join(', ')})`}
                     </p>
                     {exportMessage && (
-                      <p className={`text-sm ${exportState === 'failed' ? 'text-red-400' : 'text-emerald-400'}`}>{exportMessage}</p>
+                      <p
+                        className={`text-sm ${exportState === 'failed' ? 'text-red-400' : 'text-emerald-400'}`}
+                        data-testid="export-feedback"
+                      >
+                        {exportState === 'failed' ? (
+                          exportMessage
+                        ) : (
+                          <>
+                            <CheckCircle2 className="mr-1 inline size-4" />
+                            {exportMessage}
+                          </>
+                        )}
+                      </p>
                     )}
 
                     <div>

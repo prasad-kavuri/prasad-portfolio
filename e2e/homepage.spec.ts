@@ -88,7 +88,7 @@ test.describe('Homepage', () => {
   });
 
   test('recruiter strip is visible with all 3 buttons', async ({ page }) => {
-    await expect(page.getByText(/For Recruiters/i)).toBeVisible();
+    await expect(page.getByText('For Recruiters and Hiring Managers', { exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: /Download Resume/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Start a Conversation/i })).toBeVisible();
   });

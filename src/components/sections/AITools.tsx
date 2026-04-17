@@ -67,10 +67,17 @@ export function AITools() {
         <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>
           AI-Powered Tools
         </h2>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-muted-foreground mb-2">
           13 production demos — all running on shared governance
           infrastructure: guardrails, observability, evaluation, and
           drift monitoring at the platform layer.
+        </p>
+        <p className="text-sm text-muted-foreground mb-4">
+          New to the platform?{' '}
+          <Link href="/demos/evaluation-showcase" className="inline-flex items-center gap-1 font-medium hover:underline" style={{ color: 'var(--accent-brand)' }}>
+            → AI Evaluation Showcase
+          </Link>
+          {' '}to see the full governance pipeline.
         </p>
 
         <div className="mb-8 rounded-xl border border-border bg-muted/40 p-4">
@@ -113,9 +120,12 @@ export function AITools() {
                     return SignatureIcon ? <SignatureIcon className="size-6 text-muted-foreground" aria-hidden="true" /> : null;
                   })()}
                   <div>
-                    <div className="flex items-center gap-2 mb-0.5">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                       <span className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400">
                         Signature Quality System
+                      </span>
+                      <span className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
+                        Flagship Demo
                       </span>
                     </div>
                     <h3 className="text-lg font-semibold">{signatureDemo.title}</h3>

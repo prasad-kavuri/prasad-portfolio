@@ -9,6 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { scheduleIdleTask } from "@/lib/client-scheduler";
 import { runBrowserAuditChecks, type BrowserAuditCheckResult } from "@/lib/browser-ai-audit";
 
+const ACCESSIBILITY_AUDITOR_PROMPT = `You are an expert accessibility auditor. Analyze the current webpage and provide:
+1. WCAG 2.2 violations (list each with severity: Critical/Major/Minor)
+2. Color contrast failures with specific element selectors
+3. Missing ARIA labels and roles
+4. Keyboard navigation blockers
+5. Screen reader compatibility issues
+
+Format your response as a structured audit report with an Executive Summary first, then detailed findings grouped by severity. End with a prioritized remediation checklist.`;
+
 const SAMPLE_HTML = `<main>
   <h1>Checkout</h1>
   <img src="/hero.png">
@@ -28,6 +37,7 @@ export default function BrowserNativeAISkillPage() {
   const [isAuditing, setIsAuditing] = useState(false);
   const [auditResults, setAuditResults] = useState<BrowserAuditCheckResult[] | null>(null);
   const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">("idle");
+  const [copied, setCopied] = useState(false);
 
   const checks = useMemo(() => auditResults ?? [], [auditResults]);
   const passed = checks.filter((c) => c.ok).length;
@@ -42,6 +52,23 @@ export default function BrowserNativeAISkillPage() {
       setIsAuditing(false);
     }, 1500);
     return cancel;
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(ACCESSIBILITY_AUDITOR_PROMPT);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const el = document.createElement('textarea');
+      el.value = ACCESSIBILITY_AUDITOR_PROMPT;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleCopyManifest = async () => {
@@ -108,6 +135,43 @@ export default function BrowserNativeAISkillPage() {
             </button>
           </div>
         </Card>
+
+        {/* Copy Prompt CTA — lets recruiter try the prompt in their own Chrome */}
+        <div className="mt-6 mb-6 rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+          <p className="text-sm text-slate-400 mb-1 font-medium">
+            Try it yourself in Chrome
+          </p>
+          <p className="text-xs text-slate-500 mb-3">
+            Copy this prompt and paste it into your Chrome Gemini sidebar to run
+            an accessibility audit on any webpage — no API key, no cloud, fully private.
+          </p>
+          <button
+            onClick={handleCopy}
+            className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 ${
+              copied
+                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                : 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30'
+            }`}
+            aria-label="Copy accessibility auditor prompt to clipboard"
+          >
+            {copied ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Copied to clipboard!
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                  <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
+                </svg>
+                Copy Prompt for Chrome
+              </>
+            )}
+          </button>
+        </div>
 
         <Card className="mb-6 border-border bg-card p-5">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">

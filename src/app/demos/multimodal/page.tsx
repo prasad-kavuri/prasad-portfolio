@@ -28,17 +28,31 @@ export default function MultimodalPage() {
   const [activeTask, setActiveTask] = useState<TaskType>('classify');
   const [zeroShotLabels, setZeroShotLabels] = useState('cat, dog, car, person, building');
 
+  const [deviceWarning, setDeviceWarning] = useState<'low-memory' | 'mobile' | null>(null);
+
   const classifyPipelineRef = useRef<any>(null);
   const clipPipelineRef = useRef<any>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const dragOverRef = useRef(false);
 
   useEffect(() => {
-    const cancelPreload = preloadTransformersOnIdle();
-    return () => cancelPreload();
+    const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      setDeviceWarning('mobile');
+    } else if (memory !== undefined && memory < 8) {
+      setDeviceWarning('low-memory');
+    }
   }, []);
 
+  useEffect(() => {
+    if (deviceWarning) return;
+    const cancelPreload = preloadTransformersOnIdle();
+    return () => cancelPreload();
+  }, [deviceWarning]);
+
   const loadModels = async () => {
+    if (deviceWarning) return;
     setStatus('loading-model');
     setProgress(0);
     setError('');
@@ -216,6 +230,40 @@ export default function MultimodalPage() {
             </Link>
           </div>
         </div>
+
+        {/* WASM capability warning for mobile / low-memory devices */}
+        {deviceWarning && (
+          <div
+            role="alert"
+            className="mb-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <div>
+              <p className="text-sm font-medium text-amber-300">
+                {deviceWarning === 'mobile'
+                  ? 'Mobile Device Detected — Lightweight Mode'
+                  : 'Limited Memory Detected — Lightweight Mode'}
+              </p>
+              <p className="mt-1 text-xs text-amber-400/80">
+                {deviceWarning === 'mobile'
+                  ? "This demo uses a WebAssembly model optimised for desktop (8GB+ RAM recommended). On mobile, you'll see a simulated output to ensure a smooth experience. For full model inference, visit on a desktop browser."
+                  : `Your device has less than 8GB RAM available. The WASM model may run slowly. A lightweight simulation is shown instead. For full inference, try on a higher-memory machine.`}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Idle State */}
         {status === 'idle' && (

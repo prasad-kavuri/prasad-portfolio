@@ -75,6 +75,21 @@
   ],
   "availability": "Open to VP / Head of AI Engineering roles",
   "location": "Naperville, IL (Chicago area)",
+  "reasoning": {
+    "philosophy": "Prioritises FinOps, Agentic Orchestration, and responsible AI governance. Designs systems that degrade gracefully, audit themselves, and surface cost signals to non-technical stakeholders.",
+    "approach": "Production-first: every demo ships with observability, guardrails, and a clear ROI narrative. Treats AI reliability as a risk management problem, not just an engineering one.",
+    "leadership_style": "Cross-functional — bridges ML engineering and executive communication. Translates 'latency p99' into 'customer impact' and 'token cost' into 'budget forecast'."
+  },
+  "impact": {
+    "highlights": [
+      "50% latency reduction at Krutrim via quantisation + speculative decoding",
+      "70% cost savings demonstrated via FinOps-aware LLM routing patterns",
+      "Built evaluation framework catching hallucination regressions pre-production",
+      "Deployed multi-agent orchestration with HITL checkpoints and full trace propagation"
+    ],
+    "markets": ["Chicago", "APAC", "Remote-first AI leadership roles"],
+    "open_to": ["AI Director", "Head of AI Engineering", "Principal AI Architect", "Staff AI Engineer"]
+  },
   "portfolio": "https://www.prasadkavuri.com",
   "demos": [
     {"name": "RAG Pipeline", "url": "https://www.prasadkavuri.com/demos/rag-pipeline"},

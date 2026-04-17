@@ -184,6 +184,22 @@ This architecture turns evals into an operational feedback loop: scoring, drift 
 
 ---
 
+## Platform Coherence
+
+All demos share the following infrastructure contracts:
+
+| Concern | Implementation | File |
+|---|---|---|
+| Request tracing | X-Trace-Id header, end-to-end | src/lib/observability.ts |
+| Safety guardrails | Input/output validation, competitor detection | src/lib/guardrails.ts |
+| Evaluation gating | LLM-as-Judge, regression CI block | src/lib/eval-engine.ts |
+| Drift detection | Model performance monitoring, alerting | src/lib/drift-monitor.ts |
+| Rate limiting | Upstash Redis sliding window | src/lib/rate-limit.ts |
+
+This means the governance story is not per-demo — it is enforced at the platform layer for every interaction.
+
+---
+
 ## AI ROI & Governance Model
 
 Without governance controls, hallucinations become a business problem: customer-facing errors erode trust, teams spend cycles on incident response and rollback, and leadership loses confidence in deploying AI to revenue-critical workflows. The risk is not just model quality drift; it is the compounding cost of bad decisions reaching production before anyone can intervene.

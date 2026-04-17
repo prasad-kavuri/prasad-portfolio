@@ -153,7 +153,7 @@ describe('AITools', () => {
 
   it('renders the section description', () => {
     render(React.createElement(AITools));
-    expect(screen.getByText(/production-ready implementations/i)).toBeInTheDocument();
+    expect(screen.getByText(/shared governance\s+infrastructure/i)).toBeInTheDocument();
   });
 
   it('renders all three demo group labels', () => {

@@ -68,9 +68,9 @@ export function AITools() {
           AI-Powered Tools
         </h2>
         <p className="text-muted-foreground mb-4">
-          These systems represent core architectural patterns used in
-          enterprise AI deployments — not just demos, but production-ready
-          implementations.
+          13 production demos — all running on shared governance
+          infrastructure: guardrails, observability, evaluation, and
+          drift monitoring at the platform layer.
         </p>
 
         <div className="mb-8 rounded-xl border border-border bg-muted/40 p-4">

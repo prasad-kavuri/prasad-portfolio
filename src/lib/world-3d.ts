@@ -46,6 +46,15 @@ function importanceScaleForPrimitive(primitive: WorldScenePrimitive): number {
   return 1;
 }
 
+function layerOffsetForKind(kind: WorldScenePrimitive['kind']): number {
+  if (kind === 'corridor') return 0.06;
+  if (kind === 'transit-link') return 0.08;
+  if (kind === 'safety-buffer') return 0.11;
+  if (kind === 'zone-block') return 0.12;
+  if (kind === 'structure') return 0.14;
+  return 0.1;
+}
+
 export function mapSceneSpecToRenderablePrimitives(sceneSpec: WorldSceneSpec): WorldRenderablePrimitive[] {
   return sceneSpec.primitives.map((primitive) => {
     const seed = hashPrimitiveSeed(`${sceneSpec.worldId}:${primitive.id}:${primitive.kind}`);
@@ -54,6 +63,7 @@ export function mapSceneSpecToRenderablePrimitives(sceneSpec: WorldSceneSpec): W
     const scaledHeight = primitive.height * heightScaleForKind(primitive.kind) * importanceScaleForPrimitive(primitive) * variation;
     const safeHeight = Math.max(0.06, Number(scaledHeight.toFixed(2)));
     const renderHeight = isFlat ? Math.min(0.12, safeHeight) : safeHeight;
+    const layerOffset = layerOffsetForKind(primitive.kind);
     const opacity =
       primitive.kind === 'safety-buffer'
         ? 0.32
@@ -76,7 +86,7 @@ export function mapSceneSpecToRenderablePrimitives(sceneSpec: WorldSceneSpec): W
       },
       position: {
         x: Number(primitive.position.x.toFixed(2)),
-        y: isFlat ? renderHeight / 2 : safeHeight / 2,
+        y: Number(((isFlat ? renderHeight / 2 : safeHeight / 2) + layerOffset).toFixed(3)),
         z: Number(primitive.position.z.toFixed(2)),
       },
       colorHex: primitive.colorHex,

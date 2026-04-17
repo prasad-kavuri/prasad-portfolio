@@ -13,6 +13,8 @@ type Props = {
 export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mountCountRef = useRef(0);
+  const overlayRingsRef = useRef<Array<{ visible: boolean }>>([]);
+  const resetViewRef = useRef<(() => void) | null>(null);
   const [fallbackMessage, setFallbackMessage] = useState<string>('');
   const WORLD_DEBUG = process.env.NODE_ENV !== 'production';
 
@@ -39,7 +41,7 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
         });
       }
     };
-  }, [WORLD_DEBUG, renderables.length, resetToken, sceneSpec.primitives.length, sceneSpec.worldId]);
+  }, [WORLD_DEBUG, renderables.length, sceneSpec.primitives.length, sceneSpec.worldId]);
 
   useEffect(() => {
     const host = containerRef.current;
@@ -91,8 +93,7 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.shadowMap.enabled = false;
       host.innerHTML = '';
       host.appendChild(renderer.domElement);
 
@@ -103,8 +104,7 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       controls.minDistance = 10;
       controls.maxDistance = 75;
       controls.maxPolarAngle = Math.PI / 2.05;
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.25;
+      controls.autoRotate = false;
       controls.target.set(0, 0, 0);
       controls.update();
 
@@ -132,8 +132,10 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       grid.position.y = 0.02;
       scene.add(grid);
 
+      const overlayRings: Array<{ visible: boolean }> = [];
       for (const primitive of renderables.slice(0, sceneSpec.primitiveBudget)) {
         const geometry = new THREE.BoxGeometry(primitive.size.width, primitive.size.height, primitive.size.depth);
+        const isTransparent = primitive.opacity < 1;
         const material = new THREE.MeshStandardMaterial({
           color: primitive.colorHex,
           roughness:
@@ -153,46 +155,52 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
                 : new THREE.Color('#000000'),
           emissiveIntensity: primitive.kind === 'corridor' || primitive.kind === 'transit-link' ? 0.08 : 0,
           opacity: primitive.opacity,
-          transparent: primitive.opacity < 1,
+          transparent: isTransparent,
+          depthWrite: !isTransparent,
+          depthTest: true,
+          polygonOffset: primitive.kind === 'corridor' || primitive.kind === 'transit-link' || primitive.kind === 'safety-buffer',
+          polygonOffsetFactor: primitive.kind === 'corridor' ? -2 : primitive.kind === 'transit-link' ? -2.5 : -3,
+          polygonOffsetUnits: 1,
         });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(primitive.position.x, primitive.position.y, primitive.position.z);
         mesh.name = primitive.label;
-        mesh.castShadow = primitive.kind !== 'safety-buffer' && primitive.kind !== 'transit-link';
+        mesh.castShadow = false;
         mesh.receiveShadow = true;
+        mesh.renderOrder =
+          primitive.kind === 'structure' ? 3 : primitive.kind === 'zone-block' ? 2 : primitive.kind === 'corridor' ? 1 : 0;
         scene.add(mesh);
 
-        if (showOverlays && primitive.kind === 'safety-buffer') {
+        if (primitive.kind === 'safety-buffer') {
           const ring = new THREE.Mesh(
             new THREE.CylinderGeometry((primitive.size.width + primitive.size.depth) / 4, (primitive.size.width + primitive.size.depth) / 4, 0.02, 24),
-            new THREE.MeshBasicMaterial({ color: '#a78bfa', transparent: true, opacity: 0.35 })
+            new THREE.MeshBasicMaterial({ color: '#a78bfa', transparent: true, opacity: 0.35, depthWrite: false, depthTest: true })
           );
-          ring.position.set(primitive.position.x, 0.03, primitive.position.z);
+          ring.position.set(primitive.position.x, Number((primitive.position.y + primitive.size.height / 2 + 0.012).toFixed(3)), primitive.position.z);
+          ring.renderOrder = 10;
           scene.add(ring);
+          overlayRings.push(ring);
         }
       }
+      overlayRingsRef.current = overlayRings;
+      overlayRingsRef.current.forEach((ring) => {
+        ring.visible = true;
+      });
       if (WORLD_DEBUG) {
         // eslint-disable-next-line no-console
         console.info('[world-generation-debug] preview.scene_built', {
           worldId: sceneSpec.worldId,
           renderableCount: renderables.length,
           primitiveBudget: sceneSpec.primitiveBudget,
-          overlayEnabled: showOverlays,
+          overlayRingCount: overlayRingsRef.current.length,
         });
       }
 
       scene.add(new THREE.AmbientLight('#bfdbfe', 0.2));
       scene.add(new THREE.HemisphereLight('#dbeafe', '#020617', 0.9));
-      const keyLight = new THREE.DirectionalLight('#f8fafc', 1.2);
+      const keyLight = new THREE.DirectionalLight('#f8fafc', 1.1);
       keyLight.position.set(22, 34, 22);
-      keyLight.castShadow = true;
-      keyLight.shadow.mapSize.set(1024, 1024);
-      keyLight.shadow.camera.near = 1;
-      keyLight.shadow.camera.far = 120;
-      keyLight.shadow.camera.left = -45;
-      keyLight.shadow.camera.right = 45;
-      keyLight.shadow.camera.top = 45;
-      keyLight.shadow.camera.bottom = -45;
+      keyLight.castShadow = false;
       scene.add(keyLight);
 
       const fillLight = new THREE.DirectionalLight('#93c5fd', 0.28);
@@ -221,10 +229,14 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       const center = bounds.getCenter(new THREE.Vector3());
       const size = bounds.getSize(new THREE.Vector3());
       const radius = Math.max(size.x, size.z, 14);
-      controls.target.copy(center);
-      camera.position.set(center.x + radius * 1.05, Math.max(14, size.y * 2.1), center.z + radius * 0.95);
-      camera.lookAt(center);
-      controls.update();
+      const resetView = () => {
+        controls.target.copy(center);
+        camera.position.set(center.x + radius * 1.05, Math.max(14, size.y * 2.1), center.z + radius * 0.95);
+        camera.lookAt(center);
+        controls.update();
+      };
+      resetView();
+      resetViewRef.current = resetView;
 
       const resize = () => {
         if (!host) return;
@@ -253,6 +265,8 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
         controls.dispose();
         renderer.dispose();
         renderer.forceContextLoss();
+        overlayRingsRef.current = [];
+        resetViewRef.current = null;
         host.innerHTML = '';
       };
     };
@@ -263,7 +277,18 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
       mounted = false;
       cleanup?.();
     };
-  }, [WORLD_DEBUG, renderables, resetToken, sceneSpec.primitiveBudget, sceneSpec.worldId, showOverlays]);
+  }, [WORLD_DEBUG, renderables, sceneSpec.primitiveBudget, sceneSpec.worldId]);
+
+  useEffect(() => {
+    overlayRingsRef.current.forEach((ring) => {
+      ring.visible = showOverlays;
+    });
+  }, [showOverlays]);
+
+  useEffect(() => {
+    if (resetToken === 0) return;
+    resetViewRef.current?.();
+  }, [resetToken]);
 
   if (fallbackMessage) {
     return (

@@ -89,4 +89,36 @@ describe('BrowserNativeAISkillPage', () => {
     expect(await screen.findByText('Add focus or ARIA metadata for resilient automation.')).toBeInTheDocument();
     expect(await screen.findByText('Readiness Score: 75%')).toBeInTheDocument();
   });
+
+  it('shows Copy Prompt for Chrome button and copies accessibility auditor prompt', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+
+    render(<BrowserNativeAISkillPage />);
+    const copyBtn = screen.getByRole('button', { name: /Copy accessibility auditor prompt/i });
+    expect(copyBtn).toBeInTheDocument();
+    expect(screen.getByText('Copy Prompt for Chrome')).toBeInTheDocument();
+
+    fireEvent.click(copyBtn);
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('WCAG 2.2 violations'));
+    expect(await screen.findByText('Copied to clipboard!')).toBeInTheDocument();
+  });
+
+  it('falls back to execCommand when clipboard API throws', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
+      configurable: true,
+    });
+    const execCommand = vi.fn().mockReturnValue(true);
+    Object.defineProperty(document, 'execCommand', { value: execCommand, configurable: true });
+
+    render(<BrowserNativeAISkillPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Copy accessibility auditor prompt/i }));
+
+    expect(await screen.findByText('Copied to clipboard!')).toBeInTheDocument();
+    expect(execCommand).toHaveBeenCalledWith('copy');
+  });
 });

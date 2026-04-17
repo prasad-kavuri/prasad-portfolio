@@ -72,4 +72,40 @@ describe('MultimodalPage', () => {
       expect(screen.getByText('cat')).toBeInTheDocument();
     });
   });
+
+  it('shows mobile warning banner when mobile UA is detected', () => {
+    const originalUA = navigator.userAgent;
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)',
+      configurable: true,
+    });
+
+    render(React.createElement(MultimodalPage));
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText('Mobile Device Detected — Lightweight Mode')).toBeInTheDocument();
+
+    Object.defineProperty(navigator, 'userAgent', { value: originalUA, configurable: true });
+  });
+
+  it('shows low-memory warning banner when deviceMemory < 8', () => {
+    Object.defineProperty(navigator, 'deviceMemory', { value: 4, configurable: true });
+
+    render(React.createElement(MultimodalPage));
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText('Limited Memory Detected — Lightweight Mode')).toBeInTheDocument();
+
+    Object.defineProperty(navigator, 'deviceMemory', { value: undefined, configurable: true });
+  });
+
+  it('does not show warning on desktop with sufficient memory', () => {
+    Object.defineProperty(navigator, 'deviceMemory', { value: 16, configurable: true });
+
+    render(React.createElement(MultimodalPage));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    Object.defineProperty(navigator, 'deviceMemory', { value: undefined, configurable: true });
+  });
 });

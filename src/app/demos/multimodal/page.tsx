@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
+import { useBrowserAI } from '@/hooks/useBrowserAI';
+import { BrowserAIWarning } from '@/components/BrowserAIWarning';
 
 type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'error';
 type TaskType = 'classify' | 'zero-shot';
@@ -28,7 +30,7 @@ export default function MultimodalPage() {
   const [activeTask, setActiveTask] = useState<TaskType>('classify');
   const [zeroShotLabels, setZeroShotLabels] = useState('cat, dog, car, person, building');
 
-  const [deviceWarning, setDeviceWarning] = useState<'low-memory' | 'mobile' | null>(null);
+  const browserAI = useBrowserAI(true); // requiresWebGPU = true
 
   const classifyPipelineRef = useRef<any>(null);
   const clipPipelineRef = useRef<any>(null);
@@ -36,23 +38,17 @@ export default function MultimodalPage() {
   const dragOverRef = useRef(false);
 
   useEffect(() => {
-    const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      setDeviceWarning('mobile');
-    } else if (memory !== undefined && memory < 8) {
-      setDeviceWarning('low-memory');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (deviceWarning) return;
+    if (!browserAI.shouldAttemptLoad) return;
     const cancelPreload = preloadTransformersOnIdle();
     return () => cancelPreload();
-  }, [deviceWarning]);
+  }, [browserAI.shouldAttemptLoad]);
 
   const loadModels = async () => {
-    if (deviceWarning) return;
+    if (!browserAI.shouldAttemptLoad) {
+      // Mobile/low-memory: skip model load, go straight to ready UI
+      setStatus('ready');
+      return;
+    }
     setStatus('loading-model');
     setProgress(0);
     setError('');
@@ -154,7 +150,27 @@ export default function MultimodalPage() {
   };
 
   const runClassify = async () => {
-    if (!imageData || !classifyPipelineRef.current) return;
+    if (!imageData) return;
+
+    // --- SIMULATED PATH (mobile / no-webgpu / low-memory) ---
+    if (!browserAI.shouldAttemptLoad) {
+      setStatus('processing');
+      setResult(null);
+      await new Promise(r => setTimeout(r, 900));
+      setProcessingTime(312);
+      setResult([
+        { label: 'person', score: 0.94 },
+        { label: 'business attire', score: 0.88 },
+        { label: 'indoor', score: 0.81 },
+        { label: 'portrait', score: 0.76 },
+        { label: 'professional', score: 0.71 },
+      ]);
+      setStatus('ready');
+      return;
+    }
+    // --- END SIMULATED PATH ---
+
+    if (!classifyPipelineRef.current) return;
 
     setStatus('processing');
     setResult(null);
@@ -177,7 +193,7 @@ export default function MultimodalPage() {
   };
 
   const runZeroShot = async () => {
-    if (!imageData || !clipPipelineRef.current) return;
+    if (!imageData) return;
 
     const labels = zeroShotLabels
       .split(',')
@@ -188,6 +204,20 @@ export default function MultimodalPage() {
       setError('Please enter at least one label');
       return;
     }
+
+    // --- SIMULATED PATH (mobile / no-webgpu / low-memory) ---
+    if (!browserAI.shouldAttemptLoad) {
+      setStatus('processing');
+      setResult(null);
+      await new Promise(r => setTimeout(r, 700));
+      setProcessingTime(284);
+      setResult(labels.map((label, i) => ({ label, score: Math.max(0.05, 0.91 - i * 0.12) })));
+      setStatus('ready');
+      return;
+    }
+    // --- END SIMULATED PATH ---
+
+    if (!clipPipelineRef.current) return;
 
     setStatus('processing');
     setResult(null);
@@ -231,39 +261,7 @@ export default function MultimodalPage() {
           </div>
         </div>
 
-        {/* WASM capability warning for mobile / low-memory devices */}
-        {deviceWarning && (
-          <div
-            role="alert"
-            className="mb-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <div>
-              <p className="text-sm font-medium text-amber-300">
-                {deviceWarning === 'mobile'
-                  ? 'Mobile Device Detected — Lightweight Mode'
-                  : 'Limited Memory Detected — Lightweight Mode'}
-              </p>
-              <p className="mt-1 text-xs text-amber-400/80">
-                {deviceWarning === 'mobile'
-                  ? "This demo uses a WebAssembly model optimised for desktop (8GB+ RAM recommended). On mobile, you'll see a simulated output to ensure a smooth experience. For full model inference, visit on a desktop browser."
-                  : `Your device has less than 8GB RAM available. The WASM model may run slowly. A lightweight simulation is shown instead. For full inference, try on a higher-memory machine.`}
-              </p>
-            </div>
-          </div>
-        )}
+        <BrowserAIWarning status={browserAI} demoName="multimodal assistant" />
 
         {/* Idle State */}
         {status === 'idle' && (
@@ -278,7 +276,7 @@ export default function MultimodalPage() {
               onClick={loadModels}
               className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
-              Load Models & Start
+              {browserAI.shouldAttemptLoad ? 'Load Models & Start' : 'Try Simulated Demo'}
             </button>
           </Card>
         )}

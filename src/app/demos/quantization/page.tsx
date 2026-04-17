@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
+import { useBrowserAI } from '@/hooks/useBrowserAI';
+import { BrowserAIWarning } from '@/components/BrowserAIWarning';
 
 type Status = 'idle' | 'loading-fp32' | 'loading-int8' | 'ready' | 'benchmarking' | 'done';
 
@@ -41,6 +43,7 @@ const FP32_SIZE_MB = 268;
 const INT8_SIZE_MB = 67;
 
 export default function QuantizationPage() {
+  const browserAI = useBrowserAI();
   const [status, setStatus] = useState<Status>('idle');
   const [progress, setProgress] = useState(0);
   const [progressMsg, setProgressMsg] = useState('');
@@ -51,9 +54,10 @@ export default function QuantizationPage() {
   const modelsRef = useRef<ModelRefs>({ fp32: null, int8: null });
 
   useEffect(() => {
+    if (!browserAI.shouldAttemptLoad) return;
     const cancelPreload = preloadTransformersOnIdle();
     return () => cancelPreload();
-  }, []);
+  }, [browserAI.shouldAttemptLoad]);
 
   const loadModels = async () => {
     setStatus('loading-fp32');
@@ -119,7 +123,28 @@ export default function QuantizationPage() {
   };
 
   const runBenchmark = async () => {
-    if (!inputText.trim() || !modelsRef.current.fp32 || !modelsRef.current.int8) return;
+    if (!inputText.trim()) return;
+
+    // --- SIMULATED PATH (mobile / low-memory) ---
+    if (!browserAI.shouldAttemptLoad) {
+      setStatus('benchmarking');
+      setError('');
+      setProgress(0);
+      await new Promise(r => setTimeout(r, 1200));
+      setProgress(50);
+      await new Promise(r => setTimeout(r, 800));
+      setProgress(100);
+      setResults({
+        fp32: { runs: [847, 831, 863, 819, 857], avg: 843, label: 'POSITIVE', confidence: 0.9967 },
+        int8: { runs: [312, 298, 321, 305, 314], avg: 310, label: 'POSITIVE', confidence: 0.9954 },
+        text: inputText,
+      });
+      setStatus('done');
+      return;
+    }
+    // --- END SIMULATED PATH ---
+
+    if (!modelsRef.current.fp32 || !modelsRef.current.int8) return;
 
     setStatus('benchmarking');
     setError('');
@@ -252,6 +277,8 @@ export default function QuantizationPage() {
           </div>
         </Card>
 
+        <BrowserAIWarning status={browserAI} demoName="quantization benchmark" />
+
         {/* Idle State */}
         {status === 'idle' && (
           <Card className="border-border bg-card p-8 text-center">
@@ -261,10 +288,10 @@ export default function QuantizationPage() {
             </p>
             <p className="mb-6 text-sm text-muted-foreground">No API key required. Models downloaded on first use</p>
             <button
-              onClick={loadModels}
+              onClick={browserAI.shouldAttemptLoad ? loadModels : () => setStatus('ready')}
               className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
-              Load Models & Start Benchmark
+              {browserAI.shouldAttemptLoad ? 'Load Models & Start Benchmark' : 'Try Simulated Benchmark'}
             </button>
           </Card>
         )}

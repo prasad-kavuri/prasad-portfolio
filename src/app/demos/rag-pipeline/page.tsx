@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
+import { useBrowserAI } from '@/hooks/useBrowserAI';
+import { BrowserAIWarning } from '@/components/BrowserAIWarning';
 
 const KNOWLEDGE_BASE = [
   { id: 1, title: 'Kruti.ai — Agentic AI Platform', content: 'Led end-to-end architecture and delivery of India\'s first Agentic AI platform at Krutrim across multi-model orchestration, RAG pipelines, vector search, and real-time personalization. Drove 50% latency reduction and 40% cost savings through intelligent model routing.' },
@@ -25,6 +27,7 @@ type RetrievedDoc = { doc: typeof KNOWLEDGE_BASE[0]; similarity: number };
 type Status = 'idle' | 'loading-model' | 'ready' | 'searching' | 'error';
 
 export default function RAGPipelinePage() {
+  const browserAI = useBrowserAI();
   const [status, setStatus] = useState<Status>('idle');
   const [progress, setProgress] = useState(0);
   const [progressMsg, setProgressMsg] = useState('');
@@ -37,9 +40,10 @@ export default function RAGPipelinePage() {
   const embeddingsRef = useRef<Map<number, number[]>>(new Map());
 
   useEffect(() => {
+    if (!browserAI.shouldAttemptLoad) return;
     const cancelPreload = preloadTransformersOnIdle();
     return () => cancelPreload();
-  }, []);
+  }, [browserAI.shouldAttemptLoad]);
 
   const cosineSimilarity = (a: number[], b: number[]) => {
     let dot = 0, magA = 0, magB = 0;
@@ -103,7 +107,24 @@ export default function RAGPipelinePage() {
   };
 
   const handleSearch = async () => {
-    if (!query.trim() || !pipelineRef.current) return;
+    if (!query.trim()) return;
+
+    // --- SIMULATED PATH (mobile / low-memory) ---
+    if (!browserAI.shouldAttemptLoad) {
+      setStatus('searching');
+      await new Promise(r => setTimeout(r, 700));
+      setResults([
+        { doc: KNOWLEDGE_BASE[0], similarity: 0.94 },
+        { doc: KNOWLEDGE_BASE[6], similarity: 0.91 },
+        { doc: KNOWLEDGE_BASE[1], similarity: 0.87 },
+      ]);
+      setQueryTime(43);
+      setStatus('ready');
+      return;
+    }
+    // --- END SIMULATED PATH ---
+
+    if (!pipelineRef.current) return;
     setStatus('searching');
     const t0 = performance.now();
     try {
@@ -142,12 +163,17 @@ export default function RAGPipelinePage() {
           </div>
         </div>
 
+        <BrowserAIWarning status={browserAI} demoName="RAG pipeline" />
+
         {/* Start button */}
         {status === 'idle' && (
           <Card className="border-border bg-card p-8 text-center">
             <p className="mb-4 text-muted-foreground">Click to load the embedding model in your browser. No API key required.</p>
-            <button onClick={loadModel} className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700">
-              Load Model & Start
+            <button
+              onClick={browserAI.shouldAttemptLoad ? loadModel : () => setStatus('ready')}
+              className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
+            >
+              {browserAI.shouldAttemptLoad ? 'Load Model & Start' : 'Try Simulated Demo'}
             </button>
           </Card>
         )}

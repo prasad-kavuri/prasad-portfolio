@@ -37,10 +37,13 @@ describe('MultimodalPage', () => {
       blob: async () => new Blob(['img']),
     });
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-image');
+    // Stub WebGPU so useBrowserAI(requiresWebGPU=true) doesn't block on no-webgpu in JSDOM
+    Object.defineProperty(navigator, 'gpu', { value: {}, configurable: true });
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    Object.defineProperty(navigator, 'gpu', { value: undefined, configurable: true });
   });
 
   it('renders local inference privacy badges', () => {
@@ -73,7 +76,7 @@ describe('MultimodalPage', () => {
     });
   });
 
-  it('shows mobile warning banner when mobile UA is detected', () => {
+  it('shows iOS warning banner when iOS UA is detected', () => {
     const originalUA = navigator.userAgent;
     Object.defineProperty(navigator, 'userAgent', {
       value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)',
@@ -83,18 +86,29 @@ describe('MultimodalPage', () => {
     render(React.createElement(MultimodalPage));
 
     expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText('Mobile Device Detected — Lightweight Mode')).toBeInTheDocument();
+    expect(screen.getByText('iOS Device — Showing Simulated Demo')).toBeInTheDocument();
 
     Object.defineProperty(navigator, 'userAgent', { value: originalUA, configurable: true });
   });
 
-  it('shows low-memory warning banner when deviceMemory < 8', () => {
+  it('shows hard block warning when deviceMemory < 4', () => {
+    Object.defineProperty(navigator, 'deviceMemory', { value: 2, configurable: true });
+
+    render(React.createElement(MultimodalPage));
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText(/Low Memory \(2GB\)/i)).toBeInTheDocument();
+
+    Object.defineProperty(navigator, 'deviceMemory', { value: undefined, configurable: true });
+  });
+
+  it('shows soft warning when deviceMemory is 4-7GB', () => {
     Object.defineProperty(navigator, 'deviceMemory', { value: 4, configurable: true });
 
     render(React.createElement(MultimodalPage));
 
     expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText('Limited Memory Detected — Lightweight Mode')).toBeInTheDocument();
+    expect(screen.getByText(/Limited Memory \(4GB\)/i)).toBeInTheDocument();
 
     Object.defineProperty(navigator, 'deviceMemory', { value: undefined, configurable: true });
   });

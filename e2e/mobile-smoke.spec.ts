@@ -40,8 +40,8 @@ test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // The page heading is visible
-    await expect(page.getByText('Prasad Kavuri')).toBeVisible({ timeout: 10_000 });
+    // The page heading is visible (use role to avoid strict-mode violation from nav/footer duplicates)
+    await expect(page.getByRole('heading', { name: 'Prasad Kavuri' })).toBeVisible({ timeout: 10_000 });
 
     // No horizontal scroll (body width should not exceed viewport)
     const scrollWidth = await page.evaluate(() => document.body.scrollWidth);

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface Props {
   show: boolean;
@@ -8,17 +8,14 @@ interface Props {
 }
 
 export function ExecutionModeToast({ show, message, onDismiss }: Props) {
-  const [visible, setVisible] = useState(false);
-
+  // Timer calls onDismiss so the parent drives visibility — no internal state sync needed.
   useEffect(() => {
-    if (show) {
-      setVisible(true);
-      const t = setTimeout(() => { setVisible(false); onDismiss?.(); }, 4_000);
-      return () => clearTimeout(t);
-    }
+    if (!show) return;
+    const t = setTimeout(() => onDismiss?.(), 4_000);
+    return () => clearTimeout(t);
   }, [show, onDismiss]);
 
-  if (!visible) return null;
+  if (!show) return null;
 
   return (
     <div
@@ -35,7 +32,7 @@ export function ExecutionModeToast({ show, message, onDismiss }: Props) {
       </svg>
       <span>{message}</span>
       <button
-        onClick={() => { setVisible(false); onDismiss?.(); }}
+        onClick={() => onDismiss?.()}
         className="ml-auto text-slate-500 hover:text-slate-300 transition-colors"
         aria-label="Dismiss"
       >×</button>

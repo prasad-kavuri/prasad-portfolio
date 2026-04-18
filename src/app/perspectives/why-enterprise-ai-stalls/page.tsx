@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export const metadata = {
   title: 'Why Most Enterprise AI Initiatives Stall — Prasad Kavuri',
   description: 'The pilots work. The demos impress. Then nothing ships to production. The problem is platform thinking, not technology.',
@@ -7,7 +9,7 @@ export const metadata = {
 export default function Page() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <a href="/" className="text-sm text-slate-400 hover:text-slate-200 mb-8 inline-block">← Back to portfolio</a>
+      <Link href="/" className="text-sm text-slate-400 hover:text-slate-200 mb-8 inline-block">← Back to portfolio</Link>
       <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider font-medium">Enterprise AI</p>
       <h1 className="text-3xl font-semibold text-slate-100 mb-3 leading-tight">
         Why Most Enterprise AI Initiatives Stall Before They Matter
@@ -21,7 +23,7 @@ export default function Page() {
         <p>This is the pattern I&apos;ve applied at Krutrim and Ola: build the evaluation and governance layer early, treat cost as a first-class engineering constraint, and design for the operational team that will run this in 18 months — not just for the demo that wins the project.</p>
       </div>
       <div className="mt-12 pt-8 border-t border-slate-800">
-        <a href="/" className="text-sm text-blue-400 hover:text-blue-300">← Back to portfolio</a>
+        <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">← Back to portfolio</Link>
       </div>
     </main>
   );

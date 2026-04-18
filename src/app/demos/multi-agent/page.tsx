@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { GovernancePillars } from "@/components/ui/governance-pillars";
 import { resolveReviewCheckpoint } from "@/lib/hitl";
-import { createTracedFetch, generateClientTraceId } from "@/lib/observability";
+import { createTracedFetch } from "@/lib/observability";
 
 interface AgentResult {
   name: string;

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export const metadata = {
   title: 'Agentic AI Changes More Than Your Tech Stack — Prasad Kavuri',
   description: 'Most of the conversation around agentic AI is still focused on the model layer. The more important shift is operational.',
@@ -7,7 +9,7 @@ export const metadata = {
 export default function Page() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <a href="/" className="text-sm text-slate-400 hover:text-slate-200 mb-8 inline-block">← Back to portfolio</a>
+      <Link href="/" className="text-sm text-slate-400 hover:text-slate-200 mb-8 inline-block">← Back to portfolio</Link>
       <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider font-medium">Agentic AI</p>
       <h1 className="text-3xl font-semibold text-slate-100 mb-3 leading-tight">
         Agentic AI Changes More Than Your Tech Stack — It Changes How Work Gets Done
@@ -21,7 +23,7 @@ export default function Page() {
         <p>Building agentic systems that actually ship to production requires rethinking not just the tech stack but the operating model around it. That&apos;s the work I find most interesting — and the problem that most AI deployments are still underestimating.</p>
       </div>
       <div className="mt-12 pt-8 border-t border-slate-800">
-        <a href="/" className="text-sm text-blue-400 hover:text-blue-300">← Back to portfolio</a>
+        <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">← Back to portfolio</Link>
       </div>
     </main>
   );

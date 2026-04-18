@@ -59,10 +59,6 @@ function formatUSD(n: number): string {
   return `$${n.toFixed(2)}`;
 }
 
-function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse bg-muted rounded ${className}`} />;
-}
-
 interface LoadState<T> {
   data: T | null;
   loading: boolean;

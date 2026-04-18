@@ -71,7 +71,7 @@ describe('Card components', () => {
   });
 
   it('applies custom className to CardHeader', () => {
-    const { container } = render(
+    render(
       <Card><CardHeader className="custom-header">header</CardHeader></Card>
     );
     expect(screen.getByText('header')).toBeDefined();

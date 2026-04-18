@@ -19,7 +19,7 @@ const mockCreate = vi.hoisted(() => vi.fn());
 vi.mock('groq-sdk', () => {
   class MockGroq {
     chat = { completions: { create: mockCreate } };
-    constructor(_options?: unknown) {}
+    constructor() {}
   }
   return { Groq: MockGroq };
 });

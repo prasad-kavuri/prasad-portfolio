@@ -7,11 +7,10 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
-import { useExecutionStrategy, INFERENCE_TIMEOUT_MS } from '@/hooks/useExecutionStrategy';
+import { useExecutionStrategy } from '@/hooks/useExecutionStrategy';
 import { AdaptiveExecutionBadge } from '@/components/AdaptiveExecutionBadge';
 import { CapabilityNotice } from '@/components/CapabilityNotice';
 import { ExecutionModeToast } from '@/components/ExecutionModeToast';
-import { withStabilityMonitor } from '@/lib/stability-monitor';
 
 type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'error';
 type TaskType = 'classify' | 'zero-shot';
@@ -405,6 +404,7 @@ export default function MultimodalPage() {
               {/* Image Preview */}
               {imageData && (
                 <Card className="border-border bg-card overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={imageData} alt="Preview" className="w-full" />
                 </Card>
               )}

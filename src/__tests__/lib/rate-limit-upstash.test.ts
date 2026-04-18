@@ -13,14 +13,14 @@ vi.mock('@upstash/ratelimit', () => {
   class Ratelimit {
     static slidingWindow = mockSlidingWindow;
     limit = mockLimit;
-    constructor(_options: unknown) {}
+    constructor() {}
   }
   return { Ratelimit };
 });
 
 vi.mock('@upstash/redis', () => {
   class Redis {
-    constructor(_options: unknown) {}
+    constructor() {}
   }
   return { Redis };
 });

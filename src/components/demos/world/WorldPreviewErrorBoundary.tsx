@@ -23,7 +23,6 @@ export class WorldPreviewErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     if (!WORLD_DEBUG) return;
-    // eslint-disable-next-line no-console
     console.error('[world-generation-debug] preview.render_error', {
       worldId: this.props.worldId,
       message: error.message,

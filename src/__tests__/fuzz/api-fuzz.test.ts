@@ -41,7 +41,7 @@ vi.mock('groq-sdk', () => {
         create: () => Promise.reject(new Error('Groq API not available in tests')),
       },
     };
-    constructor(_options?: unknown) {}
+    constructor() {}
   }
   return { Groq: MockGroq };
 });

@@ -23,18 +23,15 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
   useEffect(() => {
     mountCountRef.current += 1;
     if (WORLD_DEBUG) {
-      // eslint-disable-next-line no-console
       console.info('[world-generation-debug] preview.mount', {
         worldId: sceneSpec.worldId,
         mountCount: mountCountRef.current,
         primitiveCount: sceneSpec.primitives.length,
         renderableCount: renderables.length,
-        resetToken,
       });
     }
     return () => {
       if (WORLD_DEBUG) {
-        // eslint-disable-next-line no-console
         console.info('[world-generation-debug] preview.unmount', {
           worldId: sceneSpec.worldId,
           mountCount: mountCountRef.current,
@@ -51,7 +48,6 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
     if (prefersFallback) {
       setFallbackMessage('Desktop interaction recommended. Mobile fallback is active to preserve stability.');
       if (WORLD_DEBUG) {
-        // eslint-disable-next-line no-console
         console.info('[world-generation-debug] preview.fallback.mobile', {
           worldId: sceneSpec.worldId,
           renderableCount: renderables.length,
@@ -65,7 +61,6 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
     if (!context) {
       setFallbackMessage('WebGL unavailable on this device. Showing structured scene metadata fallback.');
       if (WORLD_DEBUG) {
-        // eslint-disable-next-line no-console
         console.info('[world-generation-debug] preview.fallback.webgl_unavailable', {
           worldId: sceneSpec.worldId,
           renderableCount: renderables.length,
@@ -187,7 +182,6 @@ export function ProceduralWorldCanvas({ sceneSpec, resetToken, showOverlays }: P
         ring.visible = true;
       });
       if (WORLD_DEBUG) {
-        // eslint-disable-next-line no-console
         console.info('[world-generation-debug] preview.scene_built', {
           worldId: sceneSpec.worldId,
           renderableCount: renderables.length,

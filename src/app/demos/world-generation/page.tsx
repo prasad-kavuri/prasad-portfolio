@@ -83,7 +83,6 @@ const WORLD_DEBUG = process.env.NODE_ENV !== 'production';
 
 function logWorldDebug(event: string, details: Record<string, unknown>) {
   if (!WORLD_DEBUG) return;
-  // eslint-disable-next-line no-console
   console.info(`[world-generation-debug] ${event}`, details);
 }
 

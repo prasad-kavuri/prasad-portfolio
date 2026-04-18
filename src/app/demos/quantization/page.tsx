@@ -7,11 +7,10 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
-import { useExecutionStrategy, INFERENCE_TIMEOUT_MS } from '@/hooks/useExecutionStrategy';
+import { useExecutionStrategy } from '@/hooks/useExecutionStrategy';
 import { AdaptiveExecutionBadge } from '@/components/AdaptiveExecutionBadge';
 import { CapabilityNotice } from '@/components/CapabilityNotice';
 import { ExecutionModeToast } from '@/components/ExecutionModeToast';
-import { withStabilityMonitor } from '@/lib/stability-monitor';
 
 type Status = 'idle' | 'loading-fp32' | 'loading-int8' | 'ready' | 'benchmarking' | 'done';
 

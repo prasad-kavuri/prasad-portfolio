@@ -226,7 +226,8 @@ test.describe('Accessibility', () => {
   test('page has a <nav> landmark', async ({ page }) => {
     await page.goto('/');
     const nav = page.locator('nav').first();
-    if (test.info().project.name === 'mobile') {
+    const isMobile = test.info().project.name.toLowerCase().includes('mobile');
+    if (isMobile) {
       await expect(nav).toBeAttached();
       return;
     }

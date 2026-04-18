@@ -33,10 +33,11 @@ import { RBACPanel } from "@/components/enterprise/RBACPanel";
 import { SpendAnalyticsPanel } from "@/components/enterprise/SpendAnalyticsPanel";
 import { ObservabilityFeed } from "@/components/enterprise/ObservabilityFeed";
 import { TokenUsageChart } from "@/components/enterprise/TokenUsageChart";
+import { ToolRegistryPanel } from "@/components/enterprise/ToolRegistryPanel";
 import { STATUS_SNAPSHOT } from "@/data/telemetry-snapshots";
 import type { TeamPermissions, TeamSpendConfig, UsageMetrics, DailyTokenUsage, OtelEvent, OrgSummary } from "@/components/enterprise/types";
 
-type TabId = 'rbac' | 'spend' | 'observability';
+type TabId = 'registry' | 'rbac' | 'spend' | 'observability';
 
 // Seed constants — render immediately, no loading state needed
 const SEED = {
@@ -100,7 +101,7 @@ function ErrorCard({ message, onRetry }: { message: string; onRetry: () => void 
 }
 
 export default function EnterpriseControlPlanePage() {
-  const [activeTab, setActiveTab] = useState<TabId>('rbac');
+  const [activeTab, setActiveTab] = useState<TabId>('registry');
   const [archOpen, setArchOpen] = useState(false);
 
   // Data fetches
@@ -112,6 +113,7 @@ export default function EnterpriseControlPlanePage() {
   const summary     = useFetch<OrgSummary>('/api/enterprise-sim?resource=summary&period=30d');
 
   const TABS: { id: TabId; label: string }[] = [
+    { id: 'registry',      label: 'Tool Registry' },
     { id: 'rbac',          label: 'Access Control' },
     { id: 'spend',         label: 'Spend & Tokens' },
     { id: 'observability', label: 'Observability' },
@@ -254,6 +256,13 @@ export default function EnterpriseControlPlanePage() {
             ))}
           </div>
         </div>
+
+        {/* Tab: Tool Registry */}
+        {activeTab === 'registry' && (
+          <div role="tabpanel">
+            <ToolRegistryPanel />
+          </div>
+        )}
 
         {/* Tab: Access Control */}
         {activeTab === 'rbac' && (

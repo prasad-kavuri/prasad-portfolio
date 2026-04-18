@@ -9,11 +9,23 @@ This document describes the real system architecture implemented in this reposit
 | Layer | Repo implementation | Purpose |
 |---|---|---|
 | UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 13 production demos |
+| Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
 | Agentic Orchestration Layer | `/api/multi-agent`, `/api/mcp-demo`, `src/app/demos/multi-agent`, `src/app/demos/mcp-demo` | Demonstrates agent coordination, tool discovery, specialist roles, and guarded execution patterns |
 | AI Services Layer | LLM Router, RAG, AI Portfolio Assistant, Resume Generator, Multimodal, Quantization | Hosts the live AI capabilities shown on the site |
 | Data Layer | `src/data/profile.json`, `src/data/demos.ts`, browser embeddings, retrieved context, static public assets | Supplies profile data, demo metadata, embeddings, and knowledge context |
 | External Services | Groq, Hugging Face models/Spaces, Upstash Redis, Vercel Analytics and Speed Insights | Provides hosted inference, agent backends, distributed rate limiting, and telemetry |
+
+## Gateway Layer
+
+The platform implements the **Tool Gateway** pattern via `src/lib/registry.ts`. This layer acts as the unified control plane for:
+
+- **Discovery**: A centralized registry of all available AI tools, their types, and metadata.
+- **Policy Enforcement**: Security levels and cost tiers are mapped at the registry level, allowing for consistent governance across diverse modular capabilities.
+- **Unified Execution**: Standardized metadata ensures that any consumer (UI, agent, or external API) interacts with tools through a consistent interface.
+- **FinOps & Observability**: By routing all tool interactions through a central gateway, the platform achieves consolidated tracking of tool availability and efficiency.
+
+This architecture shifts the focus from "standalone features" to a "composable AI platform," where the gateway is the primary entry point for orchestrating complex workflows.
 
 ## API Routes
 

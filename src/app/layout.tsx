@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.prasadkavuri.com"),
   title: "Prasad Kavuri — VP / Head of AI Engineering",
   description:
-    "AI engineering executive leading 13 production AI systems across agentic workflows, LLM orchestration, and enterprise transformation. 20+ years experience, 200+ engineers led, India's first Agentic AI platform.",
+    "Enterprise AI, Built for Day 2. Prasad Kavuri — AI Engineering Executive with 20+ years building production AI platforms, agentic systems, and global engineering teams. Open to VP / Head of AI Engineering roles.",
   keywords: [
     "AI Engineering",
     "Agentic AI",

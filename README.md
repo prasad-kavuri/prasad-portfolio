@@ -1,5 +1,7 @@
 # Prasad Kavuri — AI Engineering Portfolio Platform
 
+> **Enterprise AI, Built for Day 2** — production-grade AI platform engineering, not demos.
+
 **Live site:** [prasadkavuri.com](https://www.prasadkavuri.com) · **Role target:** VP / Head of AI Engineering
 
 > A production-grade AI platform built to demonstrate enterprise AI engineering depth — not just demos, but a governed, observable, evaluated system operating on shared infrastructure.

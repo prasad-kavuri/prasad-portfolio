@@ -33,6 +33,9 @@ export function Hero() {
               <p className="mt-1 max-w-3xl text-lg text-muted-foreground">
                 {profile.personal.subtitle}
               </p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">
+                Enterprise AI, Built for Day&nbsp;2
+              </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {profile.personal.pills.map((pill) => (
                   <Badge key={pill} variant="secondary">
@@ -151,11 +154,26 @@ export function Hero() {
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 For Recruiters and Hiring Managers
               </p>
-              <p className="mt-1 text-sm font-medium text-foreground">
-                Available for VP / Head of AI Engineering roles
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                I build and scale production AI platforms with evaluation loops, governance controls, and measurable business outcomes.
+              {/* Role clarity — reduces recruiter ambiguity, increases inbound relevance */}
+              <p className="mt-1 text-sm text-muted-foreground">
+                Currently exploring{' '}
+                <span className="font-medium text-foreground">
+                  VP / Head of AI Engineering
+                </span>
+                {' '}and{' '}
+                <span className="font-medium text-foreground">
+                  AI Platform Leadership
+                </span>
+                {' '}roles — Chicago area &amp; remote.{' '}
+                <a
+                  href="https://calendly.com/vbkpkavuri"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:no-underline"
+                  style={{ color: 'var(--accent-brand)' }}
+                >
+                  Let&apos;s talk →
+                </a>
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 Signature review artifact: AI Evaluation Showcase (offline + online quality loop).

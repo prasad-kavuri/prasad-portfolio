@@ -13,12 +13,11 @@ export function Contact() {
     <section id="contact" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
         <div className="text-center">
-          <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Let&apos;s Connect</h2>
+          <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Let&apos;s Talk AI Strategy →</h2>
           <p className="mb-10 text-muted-foreground">
-            Open to VP / Head of AI Engineering roles. I focus on organizations
-            building or scaling enterprise AI — where platform architecture, agentic
-            systems, and transformation execution matter. I respond to every serious
-            inquiry within 24 hours.
+            If you&apos;re building an AI platform, scaling GenAI in the enterprise, or
+            evaluating governance models — I&apos;d welcome the conversation.
+            Open to VP / Head of AI Engineering and AI Platform Leadership roles.
           </p>
         </div>
 
@@ -29,7 +28,7 @@ export function Contact() {
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">
                 <ExternalLink className="size-5" style={{ color: 'var(--accent-brand)' }} />
-                <span>View LinkedIn Profile</span>
+                <span>Connect on LinkedIn →</span>
               </CardContent>
             </Card>
           </Link>

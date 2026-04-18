@@ -35,7 +35,7 @@ export default defineConfig({
     },
     {
       name: 'Mobile-Android',
-      use: { ...devices['Pixel 8'] },
+      use: { ...devices['Pixel 7'] },
     },
     {
       name: 'Mobile-Android-LowEnd',

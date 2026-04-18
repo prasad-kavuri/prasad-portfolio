@@ -59,10 +59,18 @@ test.describe('Enterprise Control Plane demo', () => {
     }
   });
 
-  test('all three tabs are present and clickable', async () => {
+  test('all four tabs are present and clickable', async () => {
+    await expect(sharedPage.getByRole('tab', { name: 'Tool Registry' })).toBeVisible();
     await expect(sharedPage.getByRole('tab', { name: 'Access Control' })).toBeVisible();
     await expect(sharedPage.getByRole('tab', { name: 'Spend & Tokens' })).toBeVisible();
     await expect(sharedPage.getByRole('tab', { name: 'Observability' })).toBeVisible();
+  });
+
+  test('Tool Registry tab: renders all registered tools', async () => {
+    await sharedPage.getByRole('tab', { name: 'Tool Registry' }).click();
+    await expect(sharedPage.getByText('Live Tool Registry')).toBeVisible();
+    await expect(sharedPage.getByText('LLM Router').first()).toBeVisible();
+    await expect(sharedPage.getByText('Multi-Agent System').first()).toBeVisible();
   });
 
   test('RBAC tab: 5 teams render in team list', async () => {
@@ -183,9 +191,9 @@ test.describe('Enterprise Control Plane demo', () => {
   });
 
   test('all interactive elements are keyboard accessible', async () => {
-    await sharedPage.getByRole('tab', { name: 'Access Control' }).focus();
+    await sharedPage.getByRole('tab', { name: 'Tool Registry' }).focus();
     await sharedPage.keyboard.press('ArrowRight');
-    await expect(sharedPage.getByRole('tab', { name: 'Spend & Tokens' })).toBeFocused();
+    await expect(sharedPage.getByRole('tab', { name: 'Access Control' })).toBeFocused();
   });
 
   test('no hardcoded 2024 copyright text', async () => {

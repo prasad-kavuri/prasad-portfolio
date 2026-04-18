@@ -470,7 +470,7 @@ export default function MultiAgentPage() {
               <Button
                 onClick={handleAnalyze}
                 disabled={status === "running" || !url.trim()}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="min-h-[44px] bg-blue-600 hover:bg-blue-700"
               >
                 {status === "running" ? (
                   <>

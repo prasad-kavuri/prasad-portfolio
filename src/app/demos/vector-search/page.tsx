@@ -384,7 +384,7 @@ export default function VectorSearchPage() {
             <p className="mb-4 text-muted-foreground">Click to load the embedding model in your browser. No API key required.</p>
             <button
               onClick={exec.canAttemptLocal ? () => withStabilityMonitor(loadModel, { timeoutMs: INFERENCE_TIMEOUT_MS, onFallback: exec.triggerFallback }) : () => setStatus('ready')}
-              className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
+              className="min-h-[44px] rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
               {exec.canAttemptLocal ? 'Load Model & Start' : 'Try Simulated Demo'}
             </button>

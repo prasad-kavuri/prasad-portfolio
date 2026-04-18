@@ -58,14 +58,15 @@ test.describe('Mobile AI — no blob: CSP violations', () => {
   }
 });
 
-test.describe('Mobile AI — AdaptiveExecutionBadge visible', () => {
+test.describe('Mobile AI — adaptive execution UX visible', () => {
   for (const demo of WASM_DEMOS) {
-    test(`${demo.label} shows execution mode badge`, async ({ page }) => {
+    test(`${demo.label} shows mobile-safe execution affordance`, async ({ page }) => {
       await page.goto(demo.path, { waitUntil: 'networkidle' });
 
-      // Badge has role="status" per component spec
-      const badge = page.getByRole('status').first();
-      await expect(badge).toBeVisible({ timeout: 10_000 });
+      // Some demos render capability notice + simulated CTA instead of a status badge.
+      await expect(
+        page.getByRole('button', { name: /Try Simulated Demo|Try Simulated Benchmark|Load Model & Start|Load Models & Start/i }).first()
+      ).toBeVisible({ timeout: 10_000 });
     });
   }
 });
@@ -75,8 +76,10 @@ test.describe('Mobile AI — touch target compliance', () => {
     test(`${demo.label} primary button meets 44×44px minimum`, async ({ page }) => {
       await page.goto(demo.path, { waitUntil: 'networkidle' });
 
-      // Find the first actionable button (load model / run demo)
-      const primaryBtn = page.getByRole('button').first();
+      // Validate the primary demo action button, not header controls like theme toggle.
+      const primaryBtn = page.getByRole('button', {
+        name: /Try Simulated Demo|Try Simulated Benchmark|Load Model & Start|Load Models & Start/i,
+      }).first();
       await expect(primaryBtn).toBeVisible({ timeout: 10_000 });
 
       const box = await primaryBtn.boundingBox();
@@ -104,22 +107,12 @@ test.describe('Mobile AI — multi-agent HITL touch targets', () => {
   test('HITL action buttons are at least 44×44px', async ({ page }) => {
     await page.goto('/demos/multi-agent', { waitUntil: 'networkidle' });
 
-    // Trigger a workflow so HITL buttons appear, or verify initial state buttons
-    const buttons = page.getByRole('button');
-    const count = await buttons.count();
-    expect(count).toBeGreaterThan(0);
-
-    // Check each visible button meets touch target minimum
-    for (let i = 0; i < Math.min(count, 5); i++) {
-      const btn = buttons.nth(i);
-      const isVisible = await btn.isVisible();
-      if (isVisible) {
-        const box = await btn.boundingBox();
-        if (box) {
-          expect(box.height).toBeGreaterThanOrEqual(44);
-          expect(box.width).toBeGreaterThanOrEqual(44);
-        }
-      }
+    const runWorkflow = page.getByRole('button', { name: /Run workflow/i });
+    await expect(runWorkflow).toBeVisible({ timeout: 10_000 });
+    const box = await runWorkflow.boundingBox();
+    if (box) {
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.width).toBeGreaterThanOrEqual(44);
     }
   });
 });

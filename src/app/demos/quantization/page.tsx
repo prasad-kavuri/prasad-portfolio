@@ -305,7 +305,7 @@ export default function QuantizationPage() {
             <p className="mb-6 text-sm text-muted-foreground">No API key required. Models downloaded on first use</p>
             <button
               onClick={exec.canAttemptLocal ? loadModels : () => setStatus('ready')}
-              className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
+              className="min-h-[44px] rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
               {exec.canAttemptLocal ? 'Load Models & Start Benchmark' : 'Try Simulated Benchmark'}
             </button>

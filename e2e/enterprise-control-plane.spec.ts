@@ -12,12 +12,28 @@ let sharedPage: Page;
 let sharedContext: BrowserContext;
 const consoleErrors: string[] = [];
 
+async function waitForRbacData(page: Page) {
+  const loading = page.getByText('Loading permissions...');
+  if (await loading.isVisible().catch(() => false)) {
+    await expect(loading).not.toBeVisible({ timeout: 15000 });
+  }
+  await expect(page.getByText('Engineering').first()).toBeVisible({ timeout: 15000 });
+}
+
 test.describe('Enterprise Control Plane demo', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeAll(async ({ browser }: { browser: Browser }) => {
     sharedContext = await browser.newContext();
     sharedPage = await sharedContext.newPage();
+    await sharedPage.route('**/api/enterprise-sim**', async (route) => {
+      await route.continue({
+        headers: {
+          ...route.request().headers(),
+          'x-forwarded-for': '203.0.113.10',
+        },
+      });
+    });
     // Capture console errors from the initial page load before navigation
     sharedPage.on('console', msg => {
       if (msg.type() === 'error') consoleErrors.push(msg.text());
@@ -51,7 +67,7 @@ test.describe('Enterprise Control Plane demo', () => {
 
   test('RBAC tab: 5 teams render in team list', async () => {
     await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
-    await expect(sharedPage.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
+    await waitForRbacData(sharedPage);
     await expect(sharedPage.getByText('Marketing').first()).toBeVisible();
     await expect(sharedPage.getByText('Legal').first()).toBeVisible();
     await expect(sharedPage.getByText('Finance').first()).toBeVisible();
@@ -60,7 +76,7 @@ test.describe('Enterprise Control Plane demo', () => {
 
   test('RBAC tab: clicking Engineering shows its capability toggles', async () => {
     await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
-    await expect(sharedPage.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
+    await waitForRbacData(sharedPage);
     await sharedPage.getByText('Engineering').first().click();
     await expect(sharedPage.getByText('Capabilities')).toBeVisible();
     await expect(sharedPage.getByText('Code Generation')).toBeVisible();
@@ -68,7 +84,7 @@ test.describe('Enterprise Control Plane demo', () => {
 
   test('RBAC tab: toggling a capability shows toast confirmation', async () => {
     await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
-    await expect(sharedPage.getByText('Engineering').first()).toBeVisible({ timeout: 10000 });
+    await waitForRbacData(sharedPage);
     const toggle = sharedPage.getByRole('switch').first();
     await toggle.click();
     await expect(sharedPage.getByText('Change saved (simulated)')).toBeVisible({ timeout: 3000 });
@@ -76,7 +92,7 @@ test.describe('Enterprise Control Plane demo', () => {
 
   test('RBAC tab: Legal team connectors are all read-only', async () => {
     await sharedPage.getByRole('tab', { name: 'Access Control' }).click();
-    await expect(sharedPage.getByText('Legal').first()).toBeVisible({ timeout: 10000 });
+    await waitForRbacData(sharedPage);
     await sharedPage.getByText('Legal').first().click();
     await expect(sharedPage.getByText('Connector Permissions')).toBeVisible();
     const connectorTable = sharedPage.locator('table').last();

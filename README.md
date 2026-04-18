@@ -1,5 +1,10 @@
 # Prasad Kavuri — AI Engineering Portfolio Platform
 
+![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen?style=flat-square&logo=vitest)
+![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen?style=flat-square&logo=vitest)
+![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)
+![CI](https://img.shields.io/github/actions/workflow/status/prasad-kavuri/prasad-portfolio/ci.yml?branch=main&style=flat-square&label=CI&logo=github)
+
 > **Enterprise AI, Built for Day 2** — production-grade AI platform engineering, not demos.
 
 **Live site:** [prasadkavuri.com](https://www.prasadkavuri.com) · **Role target:** VP / Head of AI Engineering
@@ -134,3 +139,13 @@ Coverage gates: API routes ≥90% statements / ≥85% branches; lib ≥95% funct
 ## About
 
 Built by Prasad Kavuri — AI Engineering Leader with 20+ years scaling production AI platforms at Krutrim, Ola, and HERE Technologies. Open to VP / Head of AI Engineering roles in the Chicago area and beyond.
+
+---
+
+## GitHub Topics
+
+Suggested repository topics for discoverability:
+
+`agentic-ai` · `mcp` · `finops` · `llm-ops` · `react-19` · `nextjs-16` · `rag-pipeline` · `multi-agent` · `llm-routing` · `ai-governance` · `evaluation-framework` · `webgpu`
+
+> To apply: **Repository → ⚙️ Settings → Topics** (or use the gear icon on the repo homepage).

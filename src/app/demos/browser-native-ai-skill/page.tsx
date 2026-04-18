@@ -33,6 +33,14 @@ const SKILL_MANIFEST = {
   icon: "shield-check",
   trigger: "on-demand",
   privacy: "on-device — no data leaves the browser",
+  manifest_snippet: JSON.stringify({
+    "@context": "https://ai.google.dev/gemini-api/docs/chrome-extensions",
+    "name": "Gemini Nano Accessibility Auditor",
+    "version": "1.0",
+    "model": "gemini-nano",
+    "trigger": "on-demand",
+    "privacy": "on-device"
+  }, null, 2),
 };
 
 export default function BrowserNativeAISkillPage() {

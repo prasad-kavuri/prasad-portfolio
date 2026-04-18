@@ -129,9 +129,10 @@ describe('SEO metadata integrity', () => {
     expect(manifest).toHaveProperty('target_roles');
     expect(manifest).toHaveProperty('certifications');
 
-    expect(manifest.credentials.companies).toEqual(
-      expect.arrayContaining(['Krutrim', 'Ola', 'HERE Technologies'])
-    );
+    // companies may be verbose strings (e.g. "Ex-Krutrim (...)") — check containment
+    expect(manifest.credentials.companies.some((c: string) => c.includes('Krutrim'))).toBe(true);
+    expect(manifest.credentials.companies.some((c: string) => c.includes('Ola'))).toBe(true);
+    expect(manifest.credentials.companies.some((c: string) => c.includes('HERE'))).toBe(true);
     expect(manifest.credentials.focus_areas).toEqual(
       expect.arrayContaining(['Enterprise AI Platforms', 'Agentic AI Systems', 'AI governance'])
     );

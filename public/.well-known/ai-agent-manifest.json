@@ -28,7 +28,11 @@
     ]
   },
   "credentials": {
-    "companies": ["Krutrim", "Ola", "HERE Technologies"],
+    "companies": [
+      "Ex-Krutrim (Agentic AI Leader) — Architected India's first Agentic AI platform (Kruti.ai); Head of AI Engineering",
+      "Ex-Ola (13K B2B Customers) — Led Ola Maps platform serving 13,000+ enterprise customers across logistics, automotive, and mobility verticals",
+      "Ex-HERE Technologies (18-year tenure) — Director of Engineering for Highly Automated Driving; HD maps for global OEM autonomous platforms"
+    ],
     "focus_areas": [
       "Enterprise AI Platforms",
       "Agentic AI Systems",
@@ -38,6 +42,14 @@
       "Real-time personalization",
       "Mobility, maps, and platform leadership"
     ]
+  },
+  "impact_metrics": {
+    "cost_reduction": "70% infrastructure cost reduction delivered at Ola via FinOps-aware LLM routing and inference optimisation",
+    "latency_improvement": "50% p99 latency reduction at Krutrim through quantisation, speculative decoding, and multi-model routing",
+    "enterprise_scale": "13,000+ B2B customers enabled at Ola Maps through platform API strategy and developer tooling",
+    "team_scale": "200+ engineers led across Krutrim, Ola, and HERE Technologies spanning US, Europe, and India",
+    "ai_systems_in_production": 13,
+    "years_experience": 20
   },
   "agent_capabilities": [
     "Design and scale governed multi-model AI platforms",

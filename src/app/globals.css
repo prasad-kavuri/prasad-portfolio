@@ -131,9 +131,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
   html {
     @apply font-sans;
+    overflow-x: hidden;
   }
   a:focus-visible {
     outline: 2px solid var(--accent-brand);

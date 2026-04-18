@@ -12,6 +12,11 @@ import { test, expect, devices } from '@playwright/test';
 test.use({ ...devices['iPhone 15 Pro Max'] });
 
 test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
+  test.beforeEach(({}, testInfo) => {
+    // This file specifically targets iPhone 15 Pro Max (webkit)
+    test.skip(testInfo.project.name !== 'webkit', 'Mobile smoke test specifically targets webkit');
+  });
+
   test('AI Evaluation Showcase loads and shows key headings', async ({ page }) => {
     await page.goto('/demos/evaluation-showcase');
 

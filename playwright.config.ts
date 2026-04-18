@@ -29,6 +29,23 @@ export default defineConfig({
       name: 'mobile',
       use: { ...devices['iPhone 13'] },
     },
+    {
+      name: 'Mobile-iOS',
+      use: { ...devices['iPhone 15 Pro'] },
+    },
+    {
+      name: 'Mobile-Android',
+      use: { ...devices['Pixel 8'] },
+    },
+    {
+      name: 'Mobile-Android-LowEnd',
+      use: {
+        ...devices['Pixel 5'],
+        launchOptions: {
+          args: ['--js-flags=--max-old-space-size=256'],
+        },
+      },
+    },
   ],
   // In CI the server is started explicitly in the workflow (npm run start & wait-on).
   // webServer is only used for local dev where no server is running yet.

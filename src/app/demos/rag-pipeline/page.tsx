@@ -7,8 +7,11 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
-import { useBrowserAI } from '@/hooks/useBrowserAI';
-import { BrowserAIWarning } from '@/components/BrowserAIWarning';
+import { useExecutionStrategy, INFERENCE_TIMEOUT_MS } from '@/hooks/useExecutionStrategy';
+import { AdaptiveExecutionBadge } from '@/components/AdaptiveExecutionBadge';
+import { CapabilityNotice } from '@/components/CapabilityNotice';
+import { ExecutionModeToast } from '@/components/ExecutionModeToast';
+import { withStabilityMonitor } from '@/lib/stability-monitor';
 
 const KNOWLEDGE_BASE = [
   { id: 1, title: 'Kruti.ai — Agentic AI Platform', content: 'Led end-to-end architecture and delivery of India\'s first Agentic AI platform at Krutrim across multi-model orchestration, RAG pipelines, vector search, and real-time personalization. Drove 50% latency reduction and 40% cost savings through intelligent model routing.' },
@@ -27,7 +30,11 @@ type RetrievedDoc = { doc: typeof KNOWLEDGE_BASE[0]; similarity: number };
 type Status = 'idle' | 'loading-model' | 'ready' | 'searching' | 'error';
 
 export default function RAGPipelinePage() {
-  const browserAI = useBrowserAI();
+  const exec = useExecutionStrategy({
+    demoId: 'rag-pipeline',
+    executionProfile: 'heavy-local',
+    hasCloudFallback: true,
+  });
   const [status, setStatus] = useState<Status>('idle');
   const [progress, setProgress] = useState(0);
   const [progressMsg, setProgressMsg] = useState('');
@@ -40,10 +47,10 @@ export default function RAGPipelinePage() {
   const embeddingsRef = useRef<Map<number, number[]>>(new Map());
 
   useEffect(() => {
-    if (!browserAI.shouldAttemptLoad) return;
+    if (!exec.canAttemptLocal) return;
     const cancelPreload = preloadTransformersOnIdle();
     return () => cancelPreload();
-  }, [browserAI.shouldAttemptLoad]);
+  }, [exec.canAttemptLocal]);
 
   const cosineSimilarity = (a: number[], b: number[]) => {
     let dot = 0, magA = 0, magB = 0;
@@ -110,7 +117,7 @@ export default function RAGPipelinePage() {
     if (!query.trim()) return;
 
     // --- SIMULATED PATH (mobile / low-memory) ---
-    if (!browserAI.shouldAttemptLoad) {
+    if (!exec.canAttemptLocal) {
       setStatus('searching');
       await new Promise(r => setTimeout(r, 700));
       setResults([
@@ -144,7 +151,7 @@ export default function RAGPipelinePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 text-foreground">
+    <div className="min-h-[100svh] bg-background p-6 text-foreground">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -163,17 +170,29 @@ export default function RAGPipelinePage() {
           </div>
         </div>
 
-        <BrowserAIWarning status={browserAI} demoName="RAG pipeline" />
+        <AdaptiveExecutionBadge strategy={exec.strategy} className="mb-3" />
+        <CapabilityNotice
+          state={exec}
+          demoName="RAG Pipeline"
+          fallbackMessage="Routing to cloud AI for a reliable experience on your device."
+        />
+        <ExecutionModeToast
+          show={exec.fallbackTriggered && exec.isRecovering}
+          message={exec.strategy?.mode === 'cloud'
+            ? 'Switched to cloud inference for stability on this device.'
+            : 'Switched to simulated mode.'}
+          onDismiss={exec.resetFallback}
+        />
 
         {/* Start button */}
         {status === 'idle' && (
           <Card className="border-border bg-card p-8 text-center">
             <p className="mb-4 text-muted-foreground">Click to load the embedding model in your browser. No API key required.</p>
             <button
-              onClick={browserAI.shouldAttemptLoad ? loadModel : () => setStatus('ready')}
-              className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
+              onClick={exec.canAttemptLocal ? () => withStabilityMonitor(loadModel, { timeoutMs: INFERENCE_TIMEOUT_MS, onFallback: exec.triggerFallback }) : () => setStatus('ready')}
+              className="min-h-[44px] rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
-              {browserAI.shouldAttemptLoad ? 'Load Model & Start' : 'Try Simulated Demo'}
+              {exec.canAttemptLocal ? 'Load Model & Start' : 'Try Simulated Demo'}
             </button>
           </Card>
         )}

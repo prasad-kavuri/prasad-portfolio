@@ -1,3 +1,5 @@
+import type { DemoExecutionProfile } from '@/lib/device-intelligence';
+
 export type Demo = {
   id: string;
   emoji: string;
@@ -8,6 +10,14 @@ export type Demo = {
   tags: string[];
   status: "live" | "upgrading" | "coming-soon";
   desktopOnly?: boolean;
+  mobileConfig: {
+    executionProfile: DemoExecutionProfile;
+    supportsOffline: boolean;          // true = WASM works offline once loaded
+    fallbackMode: 'cloud' | 'simulated' | 'disabled';
+    cloudFallbackRoute: string | null; // e.g. '/api/portfolio-assistant'
+    fallbackMessage?: string;          // shown in the UI when routing to fallback
+    capabilityNotes?: string;          // shown in the badge tooltip
+  };
 };
 
 export const demos: Demo[] = [
@@ -20,6 +30,14 @@ export const demos: Demo[] = [
     href: "/demos/rag-pipeline",
     tags: ["Transformers.js", "ChromaDB", "nomic-embed-text"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'heavy-local',
+      supportsOffline: true,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: '/api/portfolio-assistant',
+      fallbackMessage: 'Routing to cloud AI for a reliable experience on your device.',
+      capabilityNotes: 'Runs Transformers.js all-MiniLM-L6-v2 (WASM, ~80MB heap)',
+    },
   },
   {
     id: "llm-router",
@@ -30,6 +48,12 @@ export const demos: Demo[] = [
     href: "/demos/llm-router",
     tags: ["Groq", "Multi-model", "Live latency"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "vector-search",
@@ -41,6 +65,14 @@ export const demos: Demo[] = [
     tags: ["all-MiniLM-L6-v2", "UMAP", "Cosine similarity"],
     desktopOnly: true,
     status: "live",
+    mobileConfig: {
+      executionProfile: 'heavy-local',
+      supportsOffline: true,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: '/api/llm-router',
+      fallbackMessage: 'Using cloud semantic search on this device.',
+      capabilityNotes: 'Runs sentence-BERT embeddings via WASM',
+    },
   },
   {
     id: "evaluation-showcase",
@@ -51,6 +83,12 @@ export const demos: Demo[] = [
     href: "/demos/evaluation-showcase",
     tags: ["LLM-as-Judge", "Semantic Fidelity", "Guardrails", "CI Gating"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "multi-agent",
@@ -61,6 +99,12 @@ export const demos: Demo[] = [
     href: "/demos/multi-agent",
     tags: ["CrewAI", "Groq", "Llama 3.3"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "mcp-demo",
@@ -71,6 +115,12 @@ export const demos: Demo[] = [
     href: "/demos/mcp-demo",
     tags: ["MCP", "Tool Use", "Groq API"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "portfolio-assistant",
@@ -81,6 +131,12 @@ export const demos: Demo[] = [
     href: "/demos/portfolio-assistant",
     tags: ["Vercel AI SDK", "Streaming", "Retrieval Grounding"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "resume-generator",
@@ -91,6 +147,12 @@ export const demos: Demo[] = [
     href: "/demos/resume-generator",
     tags: ["JD parsing", "Skill matching", "PDF export"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "multimodal",
@@ -102,6 +164,14 @@ export const demos: Demo[] = [
     tags: ["Florence-2", "WebGPU", "In-browser"],
     desktopOnly: true,
     status: "live",
+    mobileConfig: {
+      executionProfile: 'heavy-local',
+      supportsOffline: false,
+      fallbackMode: 'simulated',  // No server-side vision model available
+      cloudFallbackRoute: null,
+      fallbackMessage: 'Showing simulated walkthrough — WebGPU required for live inference.',
+      capabilityNotes: 'Requires WebGPU for Florence-2 vision model',
+    },
   },
   {
     id: "quantization",
@@ -111,8 +181,16 @@ export const demos: Demo[] = [
     businessImpact: "Reduces infrastructure overhead through smaller, faster production models",
     href: "/demos/quantization",
     tags: ["ONNX", "INT8 vs FP32", "Transformers.js"],
-    desktopOnly:true,
+    desktopOnly: true,
     status: "live",
+    mobileConfig: {
+      executionProfile: 'heavy-local',
+      supportsOffline: false,
+      fallbackMode: 'simulated',  // Benchmarks are inherently local
+      cloudFallbackRoute: null,
+      fallbackMessage: 'Showing pre-computed benchmark results on this device.',
+      capabilityNotes: 'ONNX FP32 vs INT8 benchmarks — CPU-intensive',
+    },
   },
   {
     id: "enterprise-control-plane",
@@ -123,6 +201,12 @@ export const demos: Demo[] = [
     href: "/demos/enterprise-control-plane",
     tags: ["Enterprise", "RBAC", "OpenTelemetry", "Token Analytics"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "browser-native-ai-skill",
@@ -133,6 +217,12 @@ export const demos: Demo[] = [
     href: "/demos/browser-native-ai-skill",
     tags: ["Chrome Prompt API", "Gemini Nano", "WASM"],
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
   {
     id: "world-generation",
@@ -154,5 +244,14 @@ export const demos: Demo[] = [
     ],
     desktopOnly: true,
     status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
   },
 ];
+
+// Named export alias for components that import as DEMOS
+export const DEMOS = demos;

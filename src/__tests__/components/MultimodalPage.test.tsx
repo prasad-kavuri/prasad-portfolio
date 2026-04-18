@@ -20,11 +20,41 @@ vi.mock('@huggingface/transformers', () => ({
   pipeline: mockPipeline,
 }));
 
+// Default execution state — capable desktop, local mode
+const makeExecState = (overrides: Record<string, unknown> = {}) => ({
+  strategy: null, capability: null, mode: 'local',
+  fallbackTriggered: false, fallbackReason: null,
+  isRecovering: false, retryCount: 0, isReady: true,
+  canAttemptLocal: true,
+  triggerFallback: vi.fn(),
+  resetFallback: vi.fn(),
+  ...overrides,
+});
+
+let mockExecReturn = makeExecState();
+
+vi.mock('@/hooks/useExecutionStrategy', () => ({
+  useExecutionStrategy: () => mockExecReturn,
+  INFERENCE_TIMEOUT_MS: 10_000,
+}));
+
+vi.mock('@/lib/stability-monitor', () => ({
+  withStabilityMonitor: async (fn: () => Promise<unknown>) => {
+    try {
+      const value = await fn();
+      return { ok: true, value, durationMs: 0 };
+    } catch (error) {
+      return { ok: false, reason: 'unknown', error };
+    }
+  },
+}));
+
 import MultimodalPage from '@/app/demos/multimodal/page';
 
 describe('MultimodalPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockExecReturn = makeExecState();
     mockPipeline.mockImplementation(async (task: string) => {
       if (task === 'image-classification') {
         return async () => [{ label: 'cat', score: 0.92 }];
@@ -37,13 +67,10 @@ describe('MultimodalPage', () => {
       blob: async () => new Blob(['img']),
     });
     vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-image');
-    // Stub WebGPU so useBrowserAI(requiresWebGPU=true) doesn't block on no-webgpu in JSDOM
-    Object.defineProperty(navigator, 'gpu', { value: {}, configurable: true });
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    Object.defineProperty(navigator, 'gpu', { value: undefined, configurable: true });
   });
 
   it('renders local inference privacy badges', () => {
@@ -76,50 +103,39 @@ describe('MultimodalPage', () => {
     });
   });
 
-  it('shows iOS warning banner when iOS UA is detected', () => {
-    const originalUA = navigator.userAgent;
-    Object.defineProperty(navigator, 'userAgent', {
-      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)',
-      configurable: true,
-    });
+  it('shows simulated-mode notice when routed to simulated (e.g. iOS)', () => {
+    mockExecReturn = makeExecState({ canAttemptLocal: false, mode: 'simulated' });
 
     render(React.createElement(MultimodalPage));
 
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText('iOS Device — Showing Simulated Demo')).toBeInTheDocument();
-
-    Object.defineProperty(navigator, 'userAgent', { value: originalUA, configurable: true });
+    // CapabilityNotice renders role="status" with the simulated walkthrough message
+    expect(screen.getByText('Multimodal Assistant: Simulated walkthrough')).toBeInTheDocument();
   });
 
-  it('shows hard block warning when deviceMemory < 4', () => {
-    Object.defineProperty(navigator, 'deviceMemory', { value: 2, configurable: true });
+  it('shows simulated-mode notice when device capability is too low', () => {
+    mockExecReturn = makeExecState({ canAttemptLocal: false, mode: 'simulated' });
 
     render(React.createElement(MultimodalPage));
 
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText(/Low Memory \(2GB\)/i)).toBeInTheDocument();
-
-    Object.defineProperty(navigator, 'deviceMemory', { value: undefined, configurable: true });
+    expect(screen.getByText('Multimodal Assistant: Simulated walkthrough')).toBeInTheDocument();
+    // Simulated path exposes the "Try Simulated Demo" button
+    expect(screen.getByRole('button', { name: /Try Simulated Demo/i })).toBeInTheDocument();
   });
 
-  it('shows soft warning when deviceMemory is 4-7GB', () => {
-    Object.defineProperty(navigator, 'deviceMemory', { value: 4, configurable: true });
-
+  it('does not show capability notice for capable devices in local mode', () => {
+    // Default mockExecReturn has mode='local' — CapabilityNotice is silent
     render(React.createElement(MultimodalPage));
 
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText(/Limited Memory \(4GB\)/i)).toBeInTheDocument();
-
-    Object.defineProperty(navigator, 'deviceMemory', { value: undefined, configurable: true });
+    expect(screen.queryByText(/Simulated walkthrough/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Cloud AI active/i)).not.toBeInTheDocument();
   });
 
-  it('does not show warning on desktop with sufficient memory', () => {
-    Object.defineProperty(navigator, 'deviceMemory', { value: 16, configurable: true });
+  it('does not show simulated notice when device is capable', () => {
+    // Explicitly high-capability mock
+    mockExecReturn = makeExecState({ canAttemptLocal: true, mode: 'local' });
 
     render(React.createElement(MultimodalPage));
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-
-    Object.defineProperty(navigator, 'deviceMemory', { value: undefined, configurable: true });
+    expect(screen.queryByText(/Simulated walkthrough/i)).not.toBeInTheDocument();
   });
 });

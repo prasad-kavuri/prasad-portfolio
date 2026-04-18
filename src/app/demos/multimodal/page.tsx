@@ -7,8 +7,11 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
-import { useBrowserAI } from '@/hooks/useBrowserAI';
-import { BrowserAIWarning } from '@/components/BrowserAIWarning';
+import { useExecutionStrategy, INFERENCE_TIMEOUT_MS } from '@/hooks/useExecutionStrategy';
+import { AdaptiveExecutionBadge } from '@/components/AdaptiveExecutionBadge';
+import { CapabilityNotice } from '@/components/CapabilityNotice';
+import { ExecutionModeToast } from '@/components/ExecutionModeToast';
+import { withStabilityMonitor } from '@/lib/stability-monitor';
 
 type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'error';
 type TaskType = 'classify' | 'zero-shot';
@@ -30,7 +33,12 @@ export default function MultimodalPage() {
   const [activeTask, setActiveTask] = useState<TaskType>('classify');
   const [zeroShotLabels, setZeroShotLabels] = useState('cat, dog, car, person, building');
 
-  const browserAI = useBrowserAI(true); // requiresWebGPU = true
+  const exec = useExecutionStrategy({
+    demoId: 'multimodal',
+    executionProfile: 'heavy-local',
+    hasCloudFallback: false,
+    requiresWebGPU: true,
+  });
 
   const classifyPipelineRef = useRef<any>(null);
   const clipPipelineRef = useRef<any>(null);
@@ -38,13 +46,13 @@ export default function MultimodalPage() {
   const dragOverRef = useRef(false);
 
   useEffect(() => {
-    if (!browserAI.shouldAttemptLoad) return;
+    if (!exec.canAttemptLocal) return;
     const cancelPreload = preloadTransformersOnIdle();
     return () => cancelPreload();
-  }, [browserAI.shouldAttemptLoad]);
+  }, [exec.canAttemptLocal]);
 
   const loadModels = async () => {
-    if (!browserAI.shouldAttemptLoad) {
+    if (!exec.canAttemptLocal) {
       // Mobile/low-memory: skip model load, go straight to ready UI
       setStatus('ready');
       return;
@@ -153,7 +161,7 @@ export default function MultimodalPage() {
     if (!imageData) return;
 
     // --- SIMULATED PATH (mobile / no-webgpu / low-memory) ---
-    if (!browserAI.shouldAttemptLoad) {
+    if (!exec.canAttemptLocal) {
       setStatus('processing');
       setResult(null);
       await new Promise(r => setTimeout(r, 900));
@@ -206,7 +214,7 @@ export default function MultimodalPage() {
     }
 
     // --- SIMULATED PATH (mobile / no-webgpu / low-memory) ---
-    if (!browserAI.shouldAttemptLoad) {
+    if (!exec.canAttemptLocal) {
       setStatus('processing');
       setResult(null);
       await new Promise(r => setTimeout(r, 700));
@@ -238,7 +246,7 @@ export default function MultimodalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 text-foreground">
+    <div className="min-h-[100svh] bg-background p-6 text-foreground">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -261,7 +269,17 @@ export default function MultimodalPage() {
           </div>
         </div>
 
-        <BrowserAIWarning status={browserAI} demoName="multimodal assistant" />
+        <AdaptiveExecutionBadge strategy={exec.strategy} className="mb-3" />
+        <CapabilityNotice
+          state={exec}
+          demoName="Multimodal Assistant"
+          fallbackMessage="Showing simulated walkthrough — WebGPU required for live inference."
+        />
+        <ExecutionModeToast
+          show={exec.fallbackTriggered && exec.isRecovering}
+          message="Switched to simulated mode."
+          onDismiss={exec.resetFallback}
+        />
 
         {/* Idle State */}
         {status === 'idle' && (
@@ -276,7 +294,7 @@ export default function MultimodalPage() {
               onClick={loadModels}
               className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
-              {browserAI.shouldAttemptLoad ? 'Load Models & Start' : 'Try Simulated Demo'}
+              {exec.canAttemptLocal ? 'Load Models & Start' : 'Try Simulated Demo'}
             </button>
           </Card>
         )}

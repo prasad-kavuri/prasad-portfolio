@@ -17,6 +17,29 @@ vi.mock('@huggingface/transformers', () => ({
   pipeline: mockPipeline,
 }));
 
+vi.mock('@/hooks/useExecutionStrategy', () => ({
+  useExecutionStrategy: () => ({
+    strategy: null, capability: null, mode: 'local',
+    fallbackTriggered: false, fallbackReason: null,
+    isRecovering: false, retryCount: 0, isReady: true,
+    canAttemptLocal: true,
+    triggerFallback: vi.fn(),
+    resetFallback: vi.fn(),
+  }),
+  INFERENCE_TIMEOUT_MS: 10_000,
+}));
+
+vi.mock('@/lib/stability-monitor', () => ({
+  withStabilityMonitor: async (fn: () => Promise<unknown>) => {
+    try {
+      const value = await fn();
+      return { ok: true, value, durationMs: 0 };
+    } catch (error) {
+      return { ok: false, reason: 'unknown', error };
+    }
+  },
+}));
+
 import QuantizationPage from '@/app/demos/quantization/page';
 
 describe('QuantizationPage', () => {

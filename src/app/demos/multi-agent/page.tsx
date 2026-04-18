@@ -613,13 +613,13 @@ export default function MultiAgentPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    <Button onClick={handleApprovePending} className="bg-green-600 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-400">
+                    <Button onClick={handleApprovePending} className="min-h-[44px] min-w-[44px] px-6 py-3 bg-green-600 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-400">
                       Approve
                     </Button>
-                    <Button onClick={handleRegeneratePending} variant="outline" className="focus-visible:ring-2 focus-visible:ring-blue-400">
+                    <Button onClick={handleRegeneratePending} variant="outline" className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-2 focus-visible:ring-blue-400">
                       Revise
                     </Button>
-                    <Button onClick={handleCancelPending} variant="outline" className="focus-visible:ring-2 focus-visible:ring-amber-400">
+                    <Button onClick={handleCancelPending} variant="outline" className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-2 focus-visible:ring-amber-400">
                       Cancel
                     </Button>
                   </div>

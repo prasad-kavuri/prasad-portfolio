@@ -7,8 +7,11 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loadTransformersModule, preloadTransformersOnIdle } from '@/lib/transformers-loader';
-import { useBrowserAI } from '@/hooks/useBrowserAI';
-import { BrowserAIWarning } from '@/components/BrowserAIWarning';
+import { useExecutionStrategy, INFERENCE_TIMEOUT_MS } from '@/hooks/useExecutionStrategy';
+import { AdaptiveExecutionBadge } from '@/components/AdaptiveExecutionBadge';
+import { CapabilityNotice } from '@/components/CapabilityNotice';
+import { ExecutionModeToast } from '@/components/ExecutionModeToast';
+import { withStabilityMonitor } from '@/lib/stability-monitor';
 
 type Status = 'idle' | 'loading-fp32' | 'loading-int8' | 'ready' | 'benchmarking' | 'done';
 
@@ -43,7 +46,11 @@ const FP32_SIZE_MB = 268;
 const INT8_SIZE_MB = 67;
 
 export default function QuantizationPage() {
-  const browserAI = useBrowserAI();
+  const exec = useExecutionStrategy({
+    demoId: 'quantization',
+    executionProfile: 'heavy-local',
+    hasCloudFallback: false,
+  });
   const [status, setStatus] = useState<Status>('idle');
   const [progress, setProgress] = useState(0);
   const [progressMsg, setProgressMsg] = useState('');
@@ -54,10 +61,10 @@ export default function QuantizationPage() {
   const modelsRef = useRef<ModelRefs>({ fp32: null, int8: null });
 
   useEffect(() => {
-    if (!browserAI.shouldAttemptLoad) return;
+    if (!exec.canAttemptLocal) return;
     const cancelPreload = preloadTransformersOnIdle();
     return () => cancelPreload();
-  }, [browserAI.shouldAttemptLoad]);
+  }, [exec.canAttemptLocal]);
 
   const loadModels = async () => {
     setStatus('loading-fp32');
@@ -126,7 +133,7 @@ export default function QuantizationPage() {
     if (!inputText.trim()) return;
 
     // --- SIMULATED PATH (mobile / low-memory) ---
-    if (!browserAI.shouldAttemptLoad) {
+    if (!exec.canAttemptLocal) {
       setStatus('benchmarking');
       setError('');
       setProgress(0);
@@ -241,7 +248,7 @@ export default function QuantizationPage() {
     : 100;
 
   return (
-    <div className="min-h-screen bg-background p-6 text-foreground">
+    <div className="min-h-[100svh] bg-background p-6 text-foreground">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -277,7 +284,17 @@ export default function QuantizationPage() {
           </div>
         </Card>
 
-        <BrowserAIWarning status={browserAI} demoName="quantization benchmark" />
+        <AdaptiveExecutionBadge strategy={exec.strategy} className="mb-3" />
+        <CapabilityNotice
+          state={exec}
+          demoName="Model Quantization"
+          fallbackMessage="Showing pre-computed benchmark results on this device."
+        />
+        <ExecutionModeToast
+          show={exec.fallbackTriggered && exec.isRecovering}
+          message="Switched to simulated mode."
+          onDismiss={exec.resetFallback}
+        />
 
         {/* Idle State */}
         {status === 'idle' && (
@@ -288,10 +305,10 @@ export default function QuantizationPage() {
             </p>
             <p className="mb-6 text-sm text-muted-foreground">No API key required. Models downloaded on first use</p>
             <button
-              onClick={browserAI.shouldAttemptLoad ? loadModels : () => setStatus('ready')}
+              onClick={exec.canAttemptLocal ? loadModels : () => setStatus('ready')}
               className="rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
-              {browserAI.shouldAttemptLoad ? 'Load Models & Start Benchmark' : 'Try Simulated Benchmark'}
+              {exec.canAttemptLocal ? 'Load Models & Start Benchmark' : 'Try Simulated Benchmark'}
             </button>
           </Card>
         )}

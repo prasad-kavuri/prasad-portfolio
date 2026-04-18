@@ -27,8 +27,12 @@ const SAMPLE_HTML = `<main>
 
 const SKILL_MANIFEST = {
   name: "Gemini Nano Accessibility Auditor",
-  prompt: "Audit this page for WCAG accessibility issues and return actionable fixes with severity.",
+  version: "1.0",
+  description: "WCAG 2.2 accessibility audit using on-device Gemini Nano — no server, no API key",
+  prompt: `You are an expert accessibility auditor. Analyze the current webpage and provide:\n1. WCAG 2.2 violations (list each with severity: Critical/Major/Minor)\n2. Color contrast failures with specific element selectors\n3. Missing ARIA labels and roles\n4. Keyboard navigation blockers\n5. Screen reader compatibility issues\n\nFormat your response as a structured audit report with an Executive Summary first, then detailed findings grouped by severity. End with a prioritized remediation checklist.`,
   icon: "shield-check",
+  trigger: "on-demand",
+  privacy: "on-device — no data leaves the browser",
 };
 
 export default function BrowserNativeAISkillPage() {

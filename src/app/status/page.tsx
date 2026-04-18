@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
 import { SnapshotTimestamp } from '@/components/SnapshotTimestamp';
+import { STACK_LABELS } from '@/lib/stackVersions';
 
 export const metadata = {
   title: 'System Status — Prasad Kavuri',
@@ -72,8 +73,8 @@ export default function StatusPage() {
       <section>
         <h2 className="text-xl font-semibold mb-4">⚙️ Stack</h2>
         <div className="text-sm text-muted-foreground grid grid-cols-2 gap-2">
-          {STATUS_SNAPSHOT.stack.map(item => (
-            <span key={item} className="font-mono">▸ {item}</span>
+          {STACK_LABELS.map(([name, version]) => (
+            <span key={name} className="font-mono">▸ {name} {version}</span>
           ))}
         </div>
       </section>

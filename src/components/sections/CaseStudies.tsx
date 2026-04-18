@@ -72,7 +72,7 @@ const caseStudies: CaseStudy[] = [
   {
     badge: "HERE Technologies",
     role: "Director of Engineering — Highly Automated Driving",
-    period: "2005 – 2023 (18 years)",
+    period: "July 2021 – June 2023 · 18-year tenure at HERE (Sr Engineer → Director)",
     title: "Delivering AI/ML Infrastructure for Autonomous Driving at Global Scale",
     challenge:
       "Building production-grade AI/ML infrastructure for safety-critical autonomous driving systems, supporting major OEM partners across North America, Europe, and APAC.",
@@ -80,7 +80,7 @@ const caseStudies: CaseStudy[] = [
       "HD mapping and lane-level automation systems",
       "Global team of 85+ engineers (NA, Europe, APAC) — part of 200+ total org",
       "AI/ML infrastructure for ADAS platforms",
-      "Progression: Sr Engineer → Director over 18 years",
+      "18-year progression from Sr Engineer to Director at HERE Technologies",
     ],
     keyDecisions: [
       "Safety-first architecture for regulated environments",

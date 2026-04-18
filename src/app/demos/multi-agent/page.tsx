@@ -137,8 +137,8 @@ function getStateText(state: StageState) {
 }
 
 export default function MultiAgentPage() {
-  const [traceId] = useState(() => generateClientTraceId());
-  const tracedFetch = useRef(createTracedFetch(traceId));
+  const [traceId, setTraceId] = useState<string>('');
+  const tracedFetch = useRef(createTracedFetch(''));
   const [url, setUrl] = useState<string>("https://www.prasadkavuri.com");
   const [status, setStatus] = useState<RunStatus>("idle");
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -290,6 +290,11 @@ export default function MultiAgentPage() {
 
   const handleAnalyze = async () => {
     if (!url.trim()) return;
+
+    // Regenerate trace ID on each workflow run — real trace IDs are unique per invocation
+    const newTraceId = crypto.randomUUID();
+    setTraceId(newTraceId);
+    tracedFetch.current = createTracedFetch(newTraceId);
 
     setStatus("running");
     setError("");
@@ -479,7 +484,7 @@ export default function MultiAgentPage() {
                   </>
                 )}
               </Button>
-              <p className="text-xs text-muted-foreground">Trace ID: <span className="font-mono">{traceId}</span></p>
+              <p className="text-xs text-muted-foreground">Trace ID: <span className={traceId ? 'font-mono text-blue-400' : 'text-slate-500'}>{traceId || '— run workflow to generate —'}</span></p>
             </div>
           </div>
         </Card>
@@ -656,7 +661,7 @@ export default function MultiAgentPage() {
                   <div className="flex flex-wrap gap-3 rounded-lg border border-border bg-background/70 p-3 text-xs text-muted-foreground">
                     <span>Total duration: {(result.total_duration_ms / 1000).toFixed(1)}s</span>
                     <span>Total tokens: {result.total_tokens.toLocaleString()}</span>
-                    <span>Trace ID: <span className="font-mono text-foreground">{traceId}</span></span>
+                    <span>Trace ID: <span className="font-mono text-blue-400">{traceId}</span></span>
                   </div>
                 </CardContent>
               </Card>

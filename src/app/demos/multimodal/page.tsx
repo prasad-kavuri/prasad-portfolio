@@ -245,7 +245,7 @@ export default function MultimodalPage() {
   };
 
   return (
-    <div className="min-h-[100svh] bg-background p-6 text-foreground">
+    <div className="min-h-[100svh] bg-background p-6 text-foreground max-w-full overflow-x-hidden">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">

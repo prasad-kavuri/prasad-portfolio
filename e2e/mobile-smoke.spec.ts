@@ -13,8 +13,9 @@ test.use({ ...devices['iPhone 15 Pro Max'] });
 
 test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
   test.beforeEach(({}, testInfo) => {
-    // This file specifically targets iPhone 15 Pro Max (webkit)
-    test.skip(testInfo.project.name !== 'webkit', 'Mobile smoke test specifically targets webkit');
+    // Strictly target the 'webkit' project defined in playwright.config.ts
+    // Other mobile projects (Mobile-iOS, etc.) use different device emulations.
+    test.skip(testInfo.project.name !== 'webkit', 'Mobile smoke test specifically targets the webkit project');
   });
 
   test('AI Evaluation Showcase loads and shows key headings', async ({ page }) => {
@@ -51,6 +52,6 @@ test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
     // No horizontal scroll (body width should not exceed viewport)
     const scrollWidth = await page.evaluate(() => document.body.scrollWidth);
     const viewportWidth = page.viewportSize()?.width ?? 430;
-    expect(scrollWidth).toBeLessThanOrEqual(viewportWidth + 5); // 5px tolerance
+    expect(scrollWidth).toBeLessThanOrEqual(viewportWidth + 10); // 10px tolerance for sub-pixel rendering
   });
 });

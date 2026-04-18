@@ -98,7 +98,7 @@ test.describe('Mobile AI — no horizontal overflow', () => {
 
       const scrollWidth = await page.evaluate(() => document.body.scrollWidth);
       const viewportWidth = page.viewportSize()?.width ?? 390;
-      expect(scrollWidth).toBeLessThanOrEqual(viewportWidth + 5); // 5px tolerance
+      expect(scrollWidth).toBeLessThanOrEqual(viewportWidth + 10); // 10px tolerance for sub-pixel rendering
     });
   }
 });

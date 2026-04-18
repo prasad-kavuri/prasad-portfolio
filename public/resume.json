@@ -1,0 +1,116 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Prasad Kavuri",
+    "label": "VP / Head of AI Engineering",
+    "email": "",
+    "url": "https://www.prasadkavuri.com",
+    "summary": "Applied AI engineering executive with 20+ years building production-grade AI platforms at enterprise scale. Core differentiator: bridges the gap between AI research and enterprise reliability — ships AI systems that are observable, governed, and cost-efficient. Led AI platforms serving 13,000+ B2B customers with 70% infrastructure cost reduction.",
+    "location": {
+      "city": "Naperville",
+      "region": "IL",
+      "countryCode": "US"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "url": "https://linkedin.com/in/pkavuri"
+      },
+      {
+        "network": "GitHub",
+        "username": "prasad-kavuri",
+        "url": "https://github.com/prasad-kavuri"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Krutrim (Ola)",
+      "position": "Head of AI Engineering",
+      "url": "https://www.krutrim.com",
+      "summary": "Architected India's first Agentic AI platform (Kruti.ai) from zero to production. Designed and shipped platform serving 13,000+ B2B customers across logistics, automotive, and mobility.",
+      "highlights": [
+        "70% infrastructure cost reduction via intelligent LLM routing (FinOps)",
+        "Agentic platform serving 13,000+ B2B customers",
+        "Closed-loop evaluation engine with automated hallucination regression detection",
+        "Production governance: HITL checkpoints, drift monitoring, audit trails",
+        "Scaled engineering organization to 200+ engineers across US, Europe, and India"
+      ]
+    },
+    {
+      "name": "HERE Technologies",
+      "position": "Director of Engineering",
+      "url": "https://www.here.com",
+      "summary": "Scaled AI platform globally across APAC, EMEA, and Americas during 18-year tenure. Led global engineering for Highly Automated Driving maps for OEM autonomous platforms.",
+      "highlights": [
+        "50% latency reduction through quantization, speculative decoding, and multi-model routing",
+        "Built multi-agent orchestration layer for real-time HD mapping and autonomous driving data pipelines",
+        "Established LLMOps observability stack: trace-ID propagation, cost dashboards, anomaly detection",
+        "Led global engineering organization with 200+ engineers"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "AI Platform",
+      "keywords": [
+        "Multi-Agent Orchestration",
+        "MCP Protocol",
+        "Langgraph",
+        "CrewAI",
+        "HITL Checkpoints",
+        "RAG Pipelines",
+        "LLM Routing",
+        "Evaluation Frameworks",
+        "Closed-Loop Evals"
+      ]
+    },
+    {
+      "name": "Infrastructure & Operations",
+      "keywords": [
+        "LLMOps",
+        "FinOps",
+        "OpenTelemetry",
+        "Distributed Tracing",
+        "Drift Monitoring",
+        "Cost Optimization",
+        "Guardrails",
+        "WASM",
+        "WebGPU"
+      ]
+    },
+    {
+      "name": "Governance",
+      "keywords": [
+        "Human-in-the-Loop (HITL)",
+        "AI Compliance",
+        "Audit Trails",
+        "Model Governance",
+        "Production AI Governance",
+        "PII Detection",
+        "Prompt Injection Detection"
+      ]
+    },
+    {
+      "name": "Engineering Leadership",
+      "keywords": [
+        "Global Team Scaling",
+        "Cross-Functional Leadership",
+        "Executive Communication",
+        "AI Strategy",
+        "AI ROI Frameworks"
+      ]
+    }
+  ],
+  "interests": [
+    {
+      "name": "Applied AI",
+      "keywords": ["Production AI", "Agentic Systems", "Responsible AI", "AI Governance"]
+    }
+  ],
+  "meta": {
+    "canonical": "https://www.prasadkavuri.com/resume.json",
+    "version": "v1.0.0",
+    "lastModified": "2026-04-18"
+  }
+}

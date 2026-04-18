@@ -7,6 +7,7 @@ import { AnimatedCounter } from "@/components/ui/counter";
 import { GovernancePillars } from "@/components/ui/governance-pillars";
 import profile from "@/data/profile.json";
 import { trackEvent } from "@/lib/analytics";
+import { CopyForAI } from "@/components/CopyForAI";
 
 const brandStyle = {
   background: "var(--accent-brand)",
@@ -114,6 +115,7 @@ export function Hero() {
             >
                 View LinkedIn
               </a>
+            <CopyForAI />
           </div>
 
           <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -223,6 +225,7 @@ export function Hero() {
               >
                 Book a Call
               </a>
+              <CopyForAI />
             </div>
           </div>
 

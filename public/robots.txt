@@ -4,4 +4,31 @@ Disallow: /api/
 Disallow: /_next/
 Disallow: /*.html$
 
+# Explicitly allow major AI crawlers (override /api/ disallow above)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
 Sitemap: https://www.prasadkavuri.com/sitemap.xml
+
+# LLM-friendly machine-readable resources
+# llms.txt: https://www.prasadkavuri.com/llms.txt
+# agent-manifest: https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
+# resume: https://www.prasadkavuri.com/resume.md

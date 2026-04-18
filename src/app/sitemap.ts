@@ -22,6 +22,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/for-recruiters`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${base}/governance`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${base}/status`, lastModified: now, changeFrequency: 'daily', priority: 0.7 },
+    // Machine-readable resources for AI agents and LLM crawlers
+    { url: `${base}/resume.md`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${base}/llms.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${base}/.well-known/ai-agent-manifest.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     ...demos.map(slug => ({
       url: `${base}/demos/${slug}`,
       lastModified: now,

@@ -1,7 +1,71 @@
 {
   "schema_version": "1.0",
-  "name": "Prasad Kavuri — VP / Head of AI Engineering",
+  "name": "Prasad Kavuri",
+  "current_role": "VP / Head of AI Engineering",
+  "target_roles": [
+    "VP of AI Engineering",
+    "Head of AI Engineering",
+    "CTO - AI Transformation",
+    "Chief AI Officer"
+  ],
+  "location": "Naperville, IL (Greater Chicago Area)",
+  "open_to_remote": true,
   "description": "Executive AI Engineering leader with 20+ years experience operating 13 production AI systems. Available for VP/Head of AI Engineering roles.",
+  "experience_summary": "Applied AI engineering executive with 20+ years building production-grade AI platforms at enterprise scale. Specialises in agentic orchestration, LLM FinOps, and responsible AI governance. Led AI infrastructure serving 13,000+ B2B customers at Krutrim/Ola; scaled global AI platforms at HERE Technologies across APAC, EMEA, Americas. Primary differentiator: bridges AI research and enterprise reliability.",
+  "core_capabilities": [
+    "Agentic Orchestration",
+    "LLM FinOps",
+    "Production AI Governance",
+    "Global Engineering Leadership",
+    "LLMOps & Observability",
+    "Multi-Agent Systems",
+    "Evaluation Frameworks",
+    "MCP Protocol",
+    "RAG Pipelines",
+    "Drift Monitoring",
+    "HITL Checkpoints"
+  ],
+  "leadership_scope": {
+    "team_size": "200+ engineers",
+    "organizational_impact": "Cross-functional AI platform ownership across product, infra, and data spanning US, Europe, and India"
+  },
+  "verified_impact_metrics": {
+    "latency_reduction": "50%",
+    "infrastructure_cost_reduction": "70%",
+    "b2b_customers": "13000+",
+    "engineers_led": "200+",
+    "production_ai_systems": 13,
+    "years_experience": 20
+  },
+  "technical_domains": {
+    "ai_platform": ["Multi-Agent Orchestration", "RAG Pipelines", "LLM Routing", "Eval Frameworks", "Browser WASM Inference", "WebGPU"],
+    "infrastructure": ["LLMOps", "FinOps", "Observability", "Drift Monitoring", "OpenTelemetry"],
+    "governance": ["HITL Checkpoints", "Guardrails", "Audit Trails", "Compliance Dashboards", "Prompt Injection Detection"]
+  },
+  "key_differentiators": [
+    "Production-first mindset: every system ships with observability and guardrails",
+    "FinOps discipline: 70% cost reduction through intelligent LLM routing",
+    "Governance expertise: HITL, drift monitoring, and accountability frameworks",
+    "Scale experience: enterprise AI across APAC, EMEA, Americas",
+    "13 live production AI demos demonstrating real engineering, not slides"
+  ],
+  "portfolio_demo_urls": {
+    "llm_router": "https://www.prasadkavuri.com/demos/llm-router",
+    "multi_agent": "https://www.prasadkavuri.com/demos/multi-agent",
+    "rag_pipeline": "https://www.prasadkavuri.com/demos/rag-pipeline",
+    "evaluation_showcase": "https://www.prasadkavuri.com/demos/evaluation-showcase",
+    "enterprise_control_plane": "https://www.prasadkavuri.com/demos/enterprise-control-plane",
+    "mcp_demo": "https://www.prasadkavuri.com/demos/mcp-demo",
+    "governance": "https://www.prasadkavuri.com/governance"
+  },
+  "links": {
+    "website": "https://www.prasadkavuri.com",
+    "linkedin": "https://linkedin.com/in/pkavuri",
+    "github": "https://github.com/prasad-kavuri",
+    "resume_md": "https://www.prasadkavuri.com/resume.md",
+    "llms_txt": "https://www.prasadkavuri.com/llms.txt",
+    "calendar": "https://calendly.com/vbkpkavuri"
+  },
   "contact": {
     "email": "vbkpkavuri@gmail.com",
     "linkedin": "https://linkedin.com/in/pkavuri",

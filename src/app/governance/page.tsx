@@ -9,6 +9,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { GOVERNANCE_SNAPSHOT, getGovernanceMetricsView, type EvalSnapshotData, type GovernanceMetricsView } from '@/data/telemetry-snapshots';
 import { LatencyCostChart } from '@/components/observability/LatencyCostChart';
+import { SnapshotTimestamp } from '@/components/SnapshotTimestamp';
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -90,7 +91,7 @@ export default function GovernancePage() {
             <p className="text-muted-foreground mt-1">
               Platform safety, cost controls, and eval quality
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Snapshot generated at: {GOVERNANCE_SNAPSHOT.generatedAtIso}</p>
+            <SnapshotTimestamp />
           </div>
           <div className="flex items-center gap-3">
             {metricsView && (

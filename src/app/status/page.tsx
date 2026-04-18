@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
+import { SnapshotTimestamp } from '@/components/SnapshotTimestamp';
 
 export const metadata = {
   title: 'System Status — Prasad Kavuri',
@@ -12,7 +13,7 @@ export default function StatusPage() {
     <main className="min-h-screen bg-background p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">System Status</h1>
       <p className="text-muted-foreground">prasadkavuri.com</p>
-      <p className="text-sm text-muted-foreground mb-8">Snapshot generated at: {STATUS_SNAPSHOT.generatedAtIso}</p>
+      <div className="mb-8"><SnapshotTimestamp /></div>
 
       <TelemetryDisclosure
         label="Mixed telemetry"

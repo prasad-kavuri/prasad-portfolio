@@ -24,15 +24,6 @@ export function Contact() {
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <LinkedInCta href={profile.personal.linkedin} />
 
-          <Link href={profile.personal.linkedin} target="_blank" rel="noopener noreferrer">
-            <Card className="h-full transition-shadow hover:shadow-md">
-              <CardContent className="flex items-center gap-2 p-4">
-                <ExternalLink className="size-5" style={{ color: 'var(--accent-brand)' }} />
-                <span>Connect on LinkedIn →</span>
-              </CardContent>
-            </Card>
-          </Link>
-
           <Link href={`mailto:${profile.personal.email}`} onClick={() => trackEvent('contact_email_clicked')}>
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">

@@ -78,7 +78,7 @@ const caseStudies: CaseStudy[] = [
       "Building production-grade AI/ML infrastructure for safety-critical autonomous driving systems, supporting major OEM partners across North America, Europe, and APAC.",
     whatILed: [
       "HD mapping and lane-level automation systems",
-      "Global team of 85+ engineers (NA, Europe, APAC)",
+      "Global team of 85+ engineers (NA, Europe, APAC) — part of 200+ total org",
       "AI/ML infrastructure for ADAS platforms",
       "Progression: Sr Engineer → Director over 18 years",
     ],

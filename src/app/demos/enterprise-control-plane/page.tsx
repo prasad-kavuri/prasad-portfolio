@@ -38,6 +38,17 @@ import type { TeamPermissions, TeamSpendConfig, UsageMetrics, DailyTokenUsage, O
 
 type TabId = 'rbac' | 'spend' | 'observability';
 
+// Seed constants — render immediately, no loading state needed
+const SEED = {
+  totalTeams: 12,
+  activeUsers: 847,
+  coworkSessions: 3241,
+  totalTokens: '14.2M',
+  estimatedCost: '$312',
+  rbacGroups: 8,
+  budgetUtilization: 73,
+};
+
 function formatNumber(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
@@ -183,25 +194,24 @@ export default function EnterpriseControlPlanePage() {
 
         {/* Org Summary Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
-          {summary.loading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <Card key={i} className="bg-card border-border p-4">
-                <p className="text-xs text-muted-foreground mb-2">Loading metric</p>
-                <Skeleton className="h-8 w-20" />
-              </Card>
-            ))
-          ) : summary.error ? (
+          {summary.error ? (
             <div className="col-span-5">
               <ErrorCard message={`Summary: ${summary.error}`} onRetry={summary.reload} />
             </div>
-          ) : summary.data ? (() => {
+          ) : (() => {
             const s = summary.data;
-            const cards = [
+            const cards = s ? [
               { label: 'Total Teams',      value: String(s.totalTeams) },
               { label: 'Active Users',     value: String(s.totalActiveUsers) },
               { label: 'Cowork Sessions',  value: formatNumber(s.totalCoworkSessions) },
               { label: 'Tokens (30d)',     value: formatNumber(s.totalTokens) },
               { label: 'Est. Cost (30d)',  value: formatUSD(s.totalEstimatedCostUSD) },
+            ] : [
+              { label: 'Total Teams',      value: String(SEED.totalTeams) },
+              { label: 'Active Users',     value: String(SEED.activeUsers) },
+              { label: 'Cowork Sessions',  value: formatNumber(SEED.coworkSessions) },
+              { label: 'Tokens (30d)',     value: SEED.totalTokens },
+              { label: 'Est. Cost (30d)',  value: SEED.estimatedCost },
             ];
             return cards.map(c => (
               <Card key={c.label} className="bg-card border-border p-4">
@@ -209,7 +219,7 @@ export default function EnterpriseControlPlanePage() {
                 <p className="text-2xl font-bold">{c.value}</p>
               </Card>
             ));
-          })() : null}
+          })()}
         </div>
 
         {/* Tabs */}

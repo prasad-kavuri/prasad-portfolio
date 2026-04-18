@@ -16,7 +16,8 @@ describe('StatusPage', () => {
 
     expect(screen.getByText('Mixed telemetry')).toBeInTheDocument();
     expect(screen.getByText(/snapshot and illustrative metrics/i)).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(`Snapshot generated at: ${STATUS_SNAPSHOT.generatedAtIso}`))).toBeInTheDocument();
+    // Timestamp is now dynamic via SnapshotTimestamp — verify it renders something
+    expect(screen.getByText(/Snapshot refreshed at/i)).toBeInTheDocument();
   });
 
   it('does not use live status phrasing in service badges', () => {

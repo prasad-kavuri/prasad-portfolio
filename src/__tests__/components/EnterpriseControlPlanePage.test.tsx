@@ -29,9 +29,12 @@ describe('EnterpriseControlPlanePage first meaningful paint', () => {
     expect(screen.getByText(/RBAC \+ SCIM-aligned team boundaries/i)).toBeInTheDocument();
   });
 
-  it('shows meaningful loading cards for summary metrics', () => {
+  it('shows seeded metric values immediately without waiting for API', () => {
     render(<EnterpriseControlPlanePage />);
-    expect(screen.getAllByText(/Loading metric/i).length).toBe(5);
+    // SEED constants render immediately — no "Loading metric" placeholder
+    expect(screen.queryByText(/Loading metric/i)).not.toBeInTheDocument();
+    expect(screen.getByText('12')).toBeInTheDocument();   // totalTeams
+    expect(screen.getByText('847')).toBeInTheDocument();  // activeUsers
   });
 });
 

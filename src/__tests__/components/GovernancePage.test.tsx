@@ -28,7 +28,8 @@ describe('GovernancePage', () => {
     render(React.createElement(GovernancePage));
 
     expect(screen.getByText('Mixed telemetry')).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(`Snapshot generated at: ${GOVERNANCE_SNAPSHOT.generatedAtIso}`))).toBeInTheDocument();
+    // Timestamp is now dynamic via SnapshotTimestamp — verify it renders something
+    expect(screen.getByText(/Snapshot refreshed at/i)).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText('Rate Limit Remaining')).toBeInTheDocument();
     });

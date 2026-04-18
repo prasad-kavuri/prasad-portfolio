@@ -149,7 +149,8 @@ jobs:
         run: |
           npx next start &
           SERVER_PID=$!
-          npx wait-on http://localhost:3000 --timeout 30000
+          # 60 s timeout: chromium/firefox install faster and start earlier on cold runners
+          npx wait-on http://localhost:3000 --timeout 60000 || { echo "Server did not start in time"; kill $SERVER_PID 2>/dev/null; exit 1; }
           npx playwright test --project=${{ matrix.project }}
           kill $SERVER_PID 2>/dev/null || true
         env:

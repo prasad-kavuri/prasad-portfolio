@@ -229,6 +229,43 @@ export function getRecentSkillInvocations(limit = 10): SkillInvocationEvent[] {
   return skillInvocationBuffer.slice(0, limit);
 }
 
+// ---------------------------------------------------------------------------
+// Spatial Trace Context
+// ---------------------------------------------------------------------------
+
+export interface SpatialSpan {
+  spanId: string;
+  name: string;
+  startedAt: string;
+  durationMs?: number;
+}
+
+export interface SpatialTraceContext {
+  traceId: string;
+  startedAt: string;
+  spans: SpatialSpan[];
+  addSpan(name: string, durationMs?: number): string;
+  toHeader(): string;
+}
+
+export function createSpatialTrace(): SpatialTraceContext {
+  const traceId = crypto.randomUUID();
+  const spans: SpatialSpan[] = [];
+  return {
+    traceId,
+    startedAt: new Date().toISOString(),
+    spans,
+    addSpan(name: string, durationMs?: number): string {
+      const spanId = createSpanId();
+      spans.push({ spanId, name, startedAt: new Date().toISOString(), durationMs });
+      return spanId;
+    },
+    toHeader(): string {
+      return `00-${traceId.replace(/-/g, '')}-${createSpanId().slice(5)}-01`;
+    },
+  };
+}
+
 /** Reset in-memory observability counters — for tests only. */
 export function _resetObservability(): void {
   counters.requests = {};

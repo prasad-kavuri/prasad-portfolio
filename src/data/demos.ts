@@ -240,9 +240,9 @@ export const demos: Demo[] = [
   {
     id: "world-generation",
     emoji: "Cuboid",
-    title: "AI Spatial Intelligence & World Generation",
+    title: "Real-Time Spatial AI + World Modeling Engine",
     description:
-      "Governed text-to-3D world generation with real browser-rendered procedural scene preview, GLB export, and approval-gated release.",
+      "Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer.",
     businessImpact:
       "Accelerates logistics and spatial planning with policy-aware world artifacts that are explainable, reviewable, and simulation-ready",
     href: "/demos/world-generation",
@@ -254,6 +254,8 @@ export const demos: Demo[] = [
       "Governance",
       "Simulation-Ready",
       "Desktop-Friendly",
+      "World Model",
+      "Perception",
     ],
     skills: [],
     desktopOnly: true,

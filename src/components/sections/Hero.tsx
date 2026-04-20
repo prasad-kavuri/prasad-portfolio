@@ -9,6 +9,7 @@ import profile from "@/data/profile.json";
 import { trackEvent } from "@/lib/analytics";
 import { CopyForAI } from "@/components/CopyForAI";
 import { PORTFOLIO_FACTS } from "@/data/site-config";
+import { EXECUTIVE_METRICS_DISPLAY } from "@/lib/executive-metrics";
 
 const brandStyle = {
   background: "var(--accent-brand)",
@@ -138,13 +139,13 @@ export function Hero() {
             <CopyForAI />
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {profile.stats.map((s) => (
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {EXECUTIVE_METRICS_DISPLAY.map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-muted/60 px-4 py-3.5">
                 <AnimatedCounter value={s.value} className="text-2xl font-semibold tracking-tight" />
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</p>
-                {s.label === 'Engineers Led' && (
-                  <p className="mt-0.5 text-[10px] text-muted-foreground/70">across Krutrim, Ola &amp; HERE</p>
+                {s.context && (
+                  <p className="mt-0.5 text-[10px] text-muted-foreground/70">{s.context}</p>
                 )}
               </div>
             ))}

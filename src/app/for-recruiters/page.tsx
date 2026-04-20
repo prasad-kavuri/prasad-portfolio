@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, ArrowRight, Download, ExternalLink, Calendar } from 'lucide-react';
-import { PORTFOLIO_FACTS } from '@/data/site-config';
+import { EXECUTIVE_METRICS } from '@/lib/executive-metrics';
 
 export const metadata: Metadata = {
   title: 'For Recruiters',
@@ -172,19 +172,29 @@ export default function ForRecruitersPage() {
           </p>
           <div className="grid gap-4 sm:grid-cols-3">
             <StatCard
-              number={PORTFOLIO_FACTS.engineersLed}
+              number={EXECUTIVE_METRICS.yearsExperience}
+              label="Years Experience"
+              supporting="Building and scaling AI platforms"
+            />
+            <StatCard
+              number={EXECUTIVE_METRICS.engineersLed}
               label="Engineers Led"
               supporting="Global teams across India, US, Europe"
             />
             <StatCard
-              number={PORTFOLIO_FACTS.revenueLaunched}
-              label="Revenue Launched"
-              supporting="Krutrim AI platform, 0 → production"
+              number={EXECUTIVE_METRICS.b2bCustomersEnabled}
+              label="B2B Customers Enabled"
+              supporting="Enterprise API platform at Ola Maps"
             />
             <StatCard
-              number={PORTFOLIO_FACTS.costReductionDelivered.replace('Up to ', '')}
+              number={EXECUTIVE_METRICS.costReductionDelivered.replace('Up to ', '')}
               label="Cost Reduction"
               supporting="AI inference optimization at scale"
+            />
+            <StatCard
+              number={EXECUTIVE_METRICS.revenueLaunched}
+              label="Revenue Launched"
+              supporting="Krutrim AI platform, 0 → production"
             />
           </div>
         </div>
@@ -206,10 +216,6 @@ export default function ForRecruitersPage() {
             <SignalCell
               title="Cost &amp; Scale Discipline"
               detail="70% inference cost reduction"
-            />
-            <SignalCell
-              title="Real-Time ML Serving"
-              detail="100M+ users at production scale"
             />
             <SignalCell
               title="Global Org Leadership"

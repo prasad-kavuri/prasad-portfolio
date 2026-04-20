@@ -109,7 +109,7 @@ export default function GovernancePage() {
 
         <TelemetryDisclosure
           label="Mixed telemetry"
-          message="Includes live signals where available plus illustrative and snapshot values for portfolio demonstration of observability, guardrails, and evaluation patterns."
+          message="Telemetry model: real-time signals where instrumented; representative baselines elsewhere. All controls — eval gates, HITL checkpoints, guardrails — are implemented in code."
           className="mb-8"
         />
 
@@ -235,9 +235,14 @@ export default function GovernancePage() {
 
         {/* Token Latency vs Cost chart */}
         <section className="mb-8" aria-labelledby="latency-cost-heading">
-          <h2 id="latency-cost-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-            Token Latency vs. Cost (24h)
-          </h2>
+          <div className="flex items-center gap-3 mb-4">
+            <h2 id="latency-cost-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Token Latency vs. Cost (24h)
+            </h2>
+            <span className="text-xs font-medium text-muted-foreground/70 border border-border rounded px-2 py-0.5">
+              Illustrative
+            </span>
+          </div>
           <Card className="bg-card border-border p-5">
             <LatencyCostChart />
           </Card>

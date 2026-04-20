@@ -111,12 +111,13 @@ describe('Hero', () => {
     expect(link.getAttribute('href')).toContain('resume');
   });
 
-  it('renders all 4 KPI stat labels', () => {
+  it('renders all 5 KPI stat labels', () => {
     render(<Hero />);
     expect(screen.getByText('Years Experience')).toBeDefined();
     expect(screen.getByText('Engineers Led')).toBeDefined();
     expect(screen.getByText('B2B Customers Enabled')).toBeDefined();
     expect(screen.getByText('Cost Reduction Delivered')).toBeDefined();
+    expect(screen.getByText('Revenue Launched')).toBeDefined();
   });
 
   it('renders Currently Exploring section', () => {

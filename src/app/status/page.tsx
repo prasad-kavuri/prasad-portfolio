@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
-import { SnapshotTimestamp } from '@/components/SnapshotTimestamp';
 import { STACK_LABELS } from '@/lib/stackVersions';
 import { PORTFOLIO_FACTS, SITE_URL } from '@/data/site-config';
 
@@ -15,7 +14,7 @@ export default function StatusPage() {
     <main className="min-h-screen bg-background p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">System Status</h1>
       <p className="text-muted-foreground">www.prasadkavuri.com</p>
-      <div className="mb-8"><SnapshotTimestamp /></div>
+      <p className="text-xs text-slate-500 mt-1 mb-8">Snapshot — April 2026</p>
 
       <TelemetryDisclosure
         label="Mixed telemetry"

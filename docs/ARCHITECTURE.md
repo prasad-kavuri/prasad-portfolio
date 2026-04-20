@@ -9,12 +9,28 @@ This document describes the real system architecture implemented in this reposit
 | Layer | Repo implementation | Purpose |
 |---|---|---|
 | UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 13 production demos |
+| Skills Layer | `src/data/skills.ts`, `src/app/skills/` | Reusable capability modules (guardrails, observability, eval, drift, HITL, planning) wired to demos |
 | Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
 | Agentic Orchestration Layer | `/api/multi-agent`, `/api/mcp-demo`, `src/app/demos/multi-agent`, `src/app/demos/mcp-demo` | Demonstrates agent coordination, tool discovery, specialist roles, and guarded execution patterns |
 | AI Services Layer | LLM Router, RAG, AI Portfolio Assistant, Resume Generator, Multimodal, Quantization | Hosts the live AI capabilities shown on the site |
 | Data Layer | `src/data/profile.json`, `src/data/demos.ts`, browser embeddings, retrieved context, static public assets | Supplies profile data, demo metadata, embeddings, and knowledge context |
 | External Services | Groq, Hugging Face models/Spaces, Upstash Redis, Vercel Analytics and Speed Insights | Provides hosted inference, agent backends, distributed rate limiting, and telemetry |
+
+## Skills Layer (`src/data/skills.ts`)
+
+Reusable capability modules that provide consistent behavior across demos:
+
+| Skill | Category | Source |
+|-------|----------|--------|
+| Guardrails | Safety | `src/lib/guardrails.ts` |
+| Observability & Tracing | Observability | `src/lib/observability.ts` |
+| Evaluation Engine | Evaluation | `src/lib/eval-engine.ts` |
+| Drift Monitor | Evaluation | `src/lib/drift-monitor.ts` |
+| Human-in-the-Loop | Governance | Multi-agent demo |
+| Agent Planning | Orchestration | Multi-agent demo |
+
+Skills are model-agnostic. Swapping the underlying model does not change skill behavior or contracts.
 
 ## Gateway Layer
 

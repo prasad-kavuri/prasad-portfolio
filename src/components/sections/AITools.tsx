@@ -221,6 +221,18 @@ export function AITools() {
                             </Badge>
                           ))}
                         </div>
+                        {demo.skills && demo.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {demo.skills.map((skillId) => (
+                              <span
+                                key={skillId}
+                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20"
+                              >
+                                {skillId.replace(/-/g, ' ')}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <div
                           className="mt-3 flex items-center gap-1 text-xs opacity-0 transition-opacity group-hover:opacity-100"
                           style={{ color: 'var(--accent-brand)' }}

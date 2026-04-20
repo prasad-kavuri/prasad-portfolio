@@ -9,6 +9,7 @@ export type Demo = {
   href: string;
   tags: string[];
   status: "live" | "upgrading" | "coming-soon";
+  skills?: string[];
   desktopOnly?: boolean;
   mobileConfig: {
     executionProfile: DemoExecutionProfile;
@@ -29,6 +30,7 @@ export const demos: Demo[] = [
     businessImpact: "Enables faster decisions across enterprise knowledge systems at lower support cost",
     href: "/demos/rag-pipeline",
     tags: ["Transformers.js", "ChromaDB", "nomic-embed-text"],
+    skills: ['observability'],
     status: "live",
     mobileConfig: {
       executionProfile: 'heavy-local',
@@ -47,6 +49,7 @@ export const demos: Demo[] = [
     businessImpact: "Optimizes cost and latency in large-scale AI inference pipelines",
     href: "/demos/llm-router",
     tags: ["Groq", "Multi-model", "Live latency"],
+    skills: ['guardrails', 'eval-engine', 'drift-monitor'],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -63,6 +66,7 @@ export const demos: Demo[] = [
     businessImpact: "Accelerates knowledge discovery across large enterprise content repositories",
     href: "/demos/vector-search",
     tags: ["all-MiniLM-L6-v2", "UMAP", "Cosine similarity"],
+    skills: [],
     desktopOnly: true,
     status: "live",
     mobileConfig: {
@@ -82,6 +86,7 @@ export const demos: Demo[] = [
     businessImpact: "Ensures AI quality degradations never reach production",
     href: "/demos/evaluation-showcase",
     tags: ["LLM-as-Judge", "Semantic Fidelity", "Guardrails", "CI Gating"],
+    skills: [],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -98,6 +103,7 @@ export const demos: Demo[] = [
     businessImpact: "Improves decision speed by coordinating specialized workflows across business functions",
     href: "/demos/multi-agent",
     tags: ["CrewAI", "Groq", "Llama 3.3"],
+    skills: ['planning', 'hitl', 'guardrails', 'observability', 'eval-engine', 'drift-monitor'],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -114,6 +120,7 @@ export const demos: Demo[] = [
     businessImpact: "Improves reliability by standardizing tool access across agent workflows",
     href: "/demos/mcp-demo",
     tags: ["MCP", "Tool Use", "Groq API"],
+    skills: ['observability', 'guardrails'],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -130,6 +137,7 @@ export const demos: Demo[] = [
     businessImpact: "Cuts expert lookup time by making organizational knowledge instantly accessible",
     href: "/demos/portfolio-assistant",
     tags: ["Vercel AI SDK", "Streaming", "Retrieval Grounding"],
+    skills: ['guardrails', 'observability', 'eval-engine'],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -146,6 +154,7 @@ export const demos: Demo[] = [
     businessImpact: "Reduces recruiting cycle time through faster candidate-role alignment",
     href: "/demos/resume-generator",
     tags: ["JD parsing", "Skill matching", "PDF export"],
+    skills: ['planning'],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -162,6 +171,7 @@ export const demos: Demo[] = [
     businessImpact: "Lowers processing costs by running vision workflows closer to users",
     href: "/demos/multimodal",
     tags: ["Florence-2", "WebGPU", "In-browser"],
+    skills: [],
     desktopOnly: true,
     status: "live",
     mobileConfig: {
@@ -181,6 +191,7 @@ export const demos: Demo[] = [
     businessImpact: "Reduces infrastructure overhead through smaller, faster production models",
     href: "/demos/quantization",
     tags: ["ONNX", "INT8 vs FP32", "Transformers.js"],
+    skills: [],
     desktopOnly: true,
     status: "live",
     mobileConfig: {
@@ -200,6 +211,7 @@ export const demos: Demo[] = [
     businessImpact: "Enables enterprise AI teams to govern access, control costs, and audit AI activity at scale",
     href: "/demos/enterprise-control-plane",
     tags: ["Enterprise", "RBAC", "OpenTelemetry", "Token Analytics"],
+    skills: [],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -216,6 +228,7 @@ export const demos: Demo[] = [
     businessImpact: "0ms Latency and 100% Privacy (Edge-inference) for accessibility auditing workflows",
     href: "/demos/browser-native-ai-skill",
     tags: ["Chrome Prompt API", "Gemini Nano", "WASM"],
+    skills: [],
     status: "live",
     mobileConfig: {
       executionProfile: 'cloud-preferred',
@@ -242,6 +255,7 @@ export const demos: Demo[] = [
       "Simulation-Ready",
       "Desktop-Friendly",
     ],
+    skills: [],
     desktopOnly: true,
     status: "live",
     mobileConfig: {

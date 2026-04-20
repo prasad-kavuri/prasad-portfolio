@@ -14,7 +14,7 @@
     "test:evals": "vitest run src/__tests__/evals"
   },
   "dependencies": {
-    "@huggingface/transformers": "^4.0.1",
+    "@huggingface/transformers": "^4.1.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
     "@vercel/analytics": "^2.0.1",

@@ -1,5 +1,6 @@
 # Prasad Kavuri — AI Engineering Portfolio Platform
 
+![Version](https://img.shields.io/badge/release-v1.0.0-blue?style=flat-square)
 ![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen?style=flat-square&logo=vitest)
 ![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen?style=flat-square&logo=vitest)
 ![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)
@@ -8,7 +9,8 @@
 Enterprise AI, built for Day 2: a production-style portfolio platform that demonstrates governed, observable, evaluated AI systems instead of isolated demo pages.
 
 Live site: [www.prasadkavuri.com](https://www.prasadkavuri.com)  
-Role target: VP / Head of AI Engineering
+Role target: VP / Head of AI Engineering  
+Current release: [v1.0.0](CHANGELOG.md)
 
 ## What This Repo Is
 
@@ -50,15 +52,42 @@ Live architecture section: [www.prasadkavuri.com/#architecture](https://www.pras
 
 ## Demo Catalog
 
-Canonical source of demos: `src/data/demos.ts`.
+Canonical source: `src/data/demos.ts` — 13 live demos as of v1.0.0.
 
-Categories:
-- Control plane and evaluation
-- Agent orchestration
-- Retrieval and multimodal systems
-- Infrastructure and tooling experiences
+| Demo | Route | Engine / Stack | Mode |
+|------|-------|----------------|------|
+| RAG Pipeline | `/demos/rag-pipeline` | Transformers.js · all-MiniLM-L6-v2 · ChromaDB | Browser WASM |
+| LLM Router | `/demos/llm-router` | Groq · Llama 3.1 8B / 70B · Mixtral | Server |
+| Vector Search | `/demos/vector-search` | sentence-BERT · UMAP · Cosine similarity | Browser WASM |
+| AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge · Guardrails · CI gating | Server |
+| Multi-Agent System | `/demos/multi-agent` | CrewAI · Groq · Llama 3.3 70B | Server |
+| MCP Tool Demo | `/demos/mcp-demo` | MCP protocol · Groq tool calling | Server |
+| AI Portfolio Assistant | `/demos/portfolio-assistant` | Vercel AI SDK · Streaming · RAG grounding | Server |
+| Resume Generator | `/demos/resume-generator` | Groq · JD parsing · Skill matching | Server |
+| Multimodal Assistant | `/demos/multimodal` | Florence-2 · WebGPU · Transformers.js | Browser WebGPU |
+| Model Quantization | `/demos/quantization` | ONNX · INT8 vs FP32 · Transformers.js | Browser WASM |
+| Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC · OpenTelemetry · Token analytics | Server |
+| Native Browser AI Skill | `/demos/browser-native-ai-skill` | Chrome Prompt API · Gemini Nano | Browser |
+| AI Spatial Intelligence | `/demos/world-generation` | Three.js · GLB export · Governance gates | Server + Browser |
 
-Current count is derived from `src/data/demos.ts` and surfaced in UI/metadata.
+```
+src/app/demos/
+├── browser-native-ai-skill/
+├── enterprise-control-plane/
+├── evaluation-showcase/
+├── llm-router/
+├── mcp-demo/
+├── multi-agent/
+├── multimodal/
+├── page.tsx                  ← /demos index
+├── portfolio-assistant/
+├── quantization/
+├── rag-pipeline/
+├── resume-generator/
+├── spatial-simulation/       ← permanent redirect → /demos/world-generation
+├── vector-search/
+└── world-generation/
+```
 
 ## Governance, Testing, and Security Posture
 
@@ -95,11 +124,12 @@ App: http://localhost:3000
 - Canonical demo index is `/demos`
 - Sitemap/robots/metadata are aligned to canonical paths
 
-## Release Prep
+## Release
 
-- Recommended first public tag: `v1.0.0`
-- Changelog: `CHANGELOG.md`
-- First public release note template: `docs/releases/first-public-release.md`
+**Current release: v1.0.0** — [Changelog](CHANGELOG.md) · [Release notes](docs/releases/first-public-release.md)
+
+Tag and publish via GitHub Releases pointing to the `main` branch.  
+See `docs/releases/RELEASE_CHECKLIST.md` for the release checklist.
 
 ## About
 

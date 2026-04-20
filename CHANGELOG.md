@@ -2,28 +2,43 @@
 
 All notable changes to this project are documented in this file.
 
-The format is based on Keep a Changelog and this project follows Semantic Versioning.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 2026-04-19
 
-## [1.0.0] - 2026-04-20
+First public release of the AI Engineering Portfolio Platform.
 
-### Added
-- Canonical `/demos` index route with collection metadata and structured data.
-- Centralized site facts/config module for canonical URL and portfolio-wide metrics.
-- Explicit legacy routing policy module for `.html` route canonicalization.
-- Metadata layouts for governance, evaluation showcase, and enterprise control plane pages.
-- Integration tests for legacy redirect behavior and canonical metadata coverage.
-- Release prep docs for first public release.
+### Platform
 
-### Changed
-- Unified canonical URLs to `https://www.prasadkavuri.com` across metadata and tracked links.
-- Updated homepage CTA hierarchy to emphasize recruiter path, signature system, and demos index.
-- Normalized surfaced demo count and key metrics via shared configuration.
-- Updated sitemap generation to derive demo entries from `src/data/demos.ts`.
-- Refreshed README with durable quality/security posture guidance (removed brittle test-file counts).
+- **13 live AI demos** across browser WASM, WebGPU, and server-side inference — RAG Pipeline, LLM Router, Vector Search, AI Evaluation Showcase, Multi-Agent System, MCP Tool Demo, AI Portfolio Assistant, Resume Generator, Multimodal Assistant, Model Quantization, Enterprise Control Plane, Native Browser AI Skill, AI Spatial Intelligence & World Generation
+- **Shared governance layer** — guardrails, eval gating, HITL checkpoints, drift monitoring, and observability shared across all demos via `src/lib/`
+- **Enterprise Control Plane** with RBAC, group spend limits, token-cost tracking, and OpenTelemetry observability feed
+- **AI Evaluation Showcase** as the signature system — closed-loop LLM eval pipeline with semantic fidelity scoring, hallucination detection, and CI regression gating
 
-### Fixed
-- Redirected unknown legacy `.html` routes to canonical `/demos` instead of homepage fallback.
-- Corrected non-`www` metadata URLs in demo metadata files.
-- Converted `/demos/spatial-simulation` redirect to permanent redirect semantics.
+### Infrastructure
+
+- Next.js 16.2.3 App Router + Turbopack, React 19, TypeScript strict mode, Tailwind CSS v4
+- Groq API (server LLM) + `@huggingface/transformers` v4 (browser WASM/WebGPU)
+- Upstash Redis rate limiting, Vercel deployment (static + edge functions)
+- Comprehensive test suite — unit, integration, fuzz, eval, E2E (Playwright: chromium, firefox, webkit, mobile)
+
+### Governance and Security
+
+- Centralized guardrails with prompt injection detection, competitor redaction, hallucination heuristics
+- XSS sanitization (DOMPurify) on all LLM output before render
+- SHA-256 IP hashing — never raw IPs in storage
+- CSP, COEP/COOP headers enforced in `next.config.ts` and edge middleware
+- CI-enforced `npm audit --audit-level=high` gate
+
+### SEO and Discoverability
+
+- Canonical URLs unified to `https://www.prasadkavuri.com` (with www) across all metadata
+- Legacy `.html` demo routes permanently 301-redirected to canonical paths
+- Sitemap generation derives entries directly from `src/data/demos.ts`
+- AI agent manifest at `/.well-known/ai-agent-manifest.json`
+
+### Executive metrics module
+
+- `src/lib/executive-metrics.ts` as single source of truth for 5 canonical proof points
+- Homepage hero stats grid and `/for-recruiters` summary cards both consume the same module
+- `costReductionDisplay` field keeps numeric `70%` for stat card animation while `costReductionDelivered` preserves the `Up to 70%` qualifier for prose

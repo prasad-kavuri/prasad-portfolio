@@ -1,47 +1,68 @@
-# First Public Release — v1.0.0
+# v1.0.0 — AI Engineering Portfolio Platform
 
-Release tag: `v1.0.0`
-Release date: April 2026
+**Release date:** April 2026  
+**Live site:** https://www.prasadkavuri.com
 
-## Summary
+---
 
 Production-grade AI engineering portfolio platform demonstrating governed, observable, evaluated AI systems across 13 live demos.
 
-## Highlights
+## What's Included
 
-- **13 live AI demos** spanning browser WASM (Transformers.js, Florence-2, ONNX), server-side LLM inference (Groq), agentic workflows (multi-agent, MCP, world generation), and enterprise governance
-- **Unified governance layer** — guardrails, eval gating, HITL checkpoints, drift monitoring, and observability shared across all demos via `src/lib/`
-- **Enterprise Control Plane** — RBAC, group spend limits, token-cost tracking, and OpenTelemetry observability feed
-- **AI Evaluation Showcase** — closed-loop LLM eval pipeline with semantic fidelity scoring, hallucination detection, and CI regression gating
-- **Comprehensive test suite** — unit, integration, fuzz, eval, E2E (Playwright: chromium, firefox, webkit, mobile), and accessibility tests with CI coverage gates
-- **SEO and discoverability** — canonical URLs, sitemap, JSON-LD, legacy `.html` redirect layer, and AI agent manifest
+### 13 Live Demos
 
-## Platform Architecture
+| Demo | Engine | Mode |
+|------|--------|------|
+| RAG Pipeline | Transformers.js · all-MiniLM-L6-v2 · ChromaDB | Browser WASM |
+| LLM Router | Groq · Llama 3.1 8B / 70B · Mixtral | Server |
+| Vector Search | sentence-BERT · UMAP · Cosine similarity | Browser WASM |
+| AI Evaluation Showcase ⭐ | LLM-as-Judge · Guardrails · CI gating | Server |
+| Multi-Agent System | CrewAI · Groq · Llama 3.3 70B | Server |
+| MCP Tool Demo | MCP protocol · Groq tool calling | Server |
+| AI Portfolio Assistant | Vercel AI SDK · Streaming · RAG grounding | Server |
+| Resume Generator | Groq · JD parsing · Skill matching | Server |
+| Multimodal Assistant | Florence-2 · WebGPU · Transformers.js | Browser WebGPU |
+| Model Quantization | ONNX · INT8 vs FP32 · Transformers.js | Browser WASM |
+| Enterprise Control Plane | RBAC · OpenTelemetry · Token analytics | Server |
+| Native Browser AI Skill | Chrome Prompt API · Gemini Nano | Browser |
+| AI Spatial Intelligence | Three.js · GLB export · Governance gates | Server + Browser |
 
-- Next.js 16.2.3 App Router + Turbopack, React 19, TypeScript strict mode, Tailwind CSS v4
-- Groq API (server-side LLM) + `@huggingface/transformers` v4 (browser WASM/WebGPU)
-- Upstash Redis rate limiting, Vercel deployment (static + edge functions)
+⭐ Signature system — recommended first stop for technical reviewers.
+
+### Governance Layer
+
+Every demo runs through shared platform controls in `src/lib/`:
+
+- **Guardrails** — prompt injection detection, competitor redaction, hallucination heuristics, XSS sanitization (DOMPurify)
+- **Eval gating** — offline eval suites, CI regression thresholds, LLM-as-Judge scoring
+- **HITL checkpoints** — human approval required before high-stakes multi-agent transitions
+- **Observability** — trace IDs, structured logs, drift monitoring, cost-per-interaction tracking
+- **Rate limiting** — Upstash Redis, SHA-256 IP hashing, per-route spend gates
+
+### Tech Stack
+
+- Next.js 16.2.3 App Router + Turbopack · React 19 · TypeScript strict · Tailwind CSS v4
+- Groq API (server LLM) · `@huggingface/transformers` v4 (browser WASM/WebGPU)
+- Upstash Redis · Vercel (static + edge functions)
 - Canonical host: `https://www.prasadkavuri.com`
 
-## Security Posture
+### Testing
 
-CSP headers, prompt injection detection, competitor redaction, hallucination heuristics, XSS sanitization (DOMPurify), input validation at all API boundaries, SHA-256 IP hashing, audit-friendly structured logging, and `npm audit --audit-level=high` clean in CI.
+Comprehensive test suite covering unit, integration, fuzz, eval, and E2E tests (Playwright: chromium, firefox, webkit, mobile). 661+ tests passing at release.
 
-## Verification Checklist
+CI quality gates: API routes ≥ 90% statements / ≥ 85% branches; lib ≥ 95% functions; `npm audit --audit-level=high` clean.
 
-- [x] `npm run lint` — passes
-- [x] `npm run test` — passes (647+ tests)
-- [x] `npm run build` — passes
-- [x] `npm audit --audit-level=high` — 0 high/critical vulnerabilities
+## Verification
 
-## Migration / Compatibility Notes
+```bash
+npm run lint          # 0 errors
+npm run test          # all tests passing
+npm run build         # clean production build
+npm audit --audit-level=high  # 0 high/critical CVEs
+```
 
-- Legacy `.html` demo links are permanently 301-redirected to canonical routes.
-- Canonical demo discovery path is `/demos`.
-- All URLs use `https://www.prasadkavuri.com` (with www).
+## Compatibility Notes
 
-## Manual Steps After Tag
-
-- Create GitHub release `v1.0.0` pointing to this tag
-- Submit updated sitemap to Google Search Console
-- Verify Vercel production deployment reflects all redirect rules
+- Legacy `.html` demo URLs are permanently 301-redirected to canonical routes
+- Canonical demo discovery path is `/demos`
+- All URLs use `https://www.prasadkavuri.com` (with www)

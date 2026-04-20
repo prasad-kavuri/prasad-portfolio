@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
 import { STACK_LABELS } from '@/lib/stackVersions';
 import { PORTFOLIO_FACTS, SITE_URL } from '@/data/site-config';
@@ -16,11 +15,31 @@ export default function StatusPage() {
       <p className="text-muted-foreground">www.prasadkavuri.com</p>
       <p className="text-xs text-slate-500 mt-1 mb-8">Snapshot — April 2026</p>
 
-      <TelemetryDisclosure
-        label="Mixed telemetry"
-        message="Includes live service health where available plus snapshot and illustrative metrics for portfolio demonstration."
-        className="mb-8"
-      />
+      <div
+        role="note"
+        aria-label="Portfolio telemetry model"
+        className="border border-border bg-muted/20 rounded-xl px-5 py-4 mb-8"
+      >
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
+          Portfolio Telemetry
+        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Live service health where instrumented; representative baselines elsewhere.
+            All controls are implemented in code and verified in CI.
+          </p>
+          <div className="flex items-center gap-5 text-xs text-muted-foreground shrink-0">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
+              Live signal
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-muted-foreground/30 ring-1 ring-muted-foreground/20" aria-hidden="true" />
+              Representative baseline
+            </span>
+          </div>
+        </div>
+      </div>
 
       <section className="mb-8" aria-labelledby="trust-controls-heading">
         <h2 id="trust-controls-heading" className="text-xl font-semibold mb-4">Trust Controls</h2>

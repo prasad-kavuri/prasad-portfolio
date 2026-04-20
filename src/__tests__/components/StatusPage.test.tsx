@@ -11,11 +11,13 @@ import StatusPage from '@/app/status/page';
 import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
 
 describe('StatusPage', () => {
-  it('shows telemetry disclosure copy', () => {
+  it('shows portfolio telemetry section with legend', () => {
     render(React.createElement(StatusPage));
 
-    expect(screen.getByText('Mixed telemetry')).toBeInTheDocument();
-    expect(screen.getByText(/snapshot and illustrative metrics/i)).toBeInTheDocument();
+    expect(screen.getByText('Portfolio Telemetry')).toBeInTheDocument();
+    expect(screen.getByText(/Live service health where instrumented/i)).toBeInTheDocument();
+    expect(screen.getByText('Live signal')).toBeInTheDocument();
+    expect(screen.getByText('Representative baseline')).toBeInTheDocument();
     expect(screen.getByText(/Snapshot — April 2026/i)).toBeInTheDocument();
   });
 

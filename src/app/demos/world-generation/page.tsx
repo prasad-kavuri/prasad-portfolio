@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useReducer, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
@@ -73,7 +73,7 @@ import {
   deriveApprovalStatus,
   transitionApprovalStatus,
 } from '@/lib/world-product-upgrades';
-import { createSpatialTrace } from '@/lib/observability';
+import { createSpatialTrace, type SpatialTraceContext } from '@/lib/observability';
 
 
 type WorldApiResponse = WorldGenerationOutput & {
@@ -82,7 +82,14 @@ type WorldApiResponse = WorldGenerationOutput & {
 
 const WORLD_DEBUG = process.env.NODE_ENV !== 'production';
 
-const LINGBOT_SEEDED_RUN: WorldWorkflowStage[] = [
+type SpatialPipelineStage = {
+  id: WorldWorkflowStage['id'] | 'hitl-checkpoint';
+  label: string;
+  description: string;
+  state: WorldWorkflowStage['state'];
+};
+
+const LINGBOT_SEEDED_RUN: SpatialPipelineStage[] = [
   {
     id: 'prompt-intake',
     label: 'Perception Layer Input',
@@ -105,6 +112,12 @@ const LINGBOT_SEEDED_RUN: WorldWorkflowStage[] = [
     id: 'policy-review',
     label: 'Agent Spatial Reasoning',
     description: '4 spatial agents active. LLM spatial query resolved in 623ms: "Identify congestion pinch points in zone B-3."',
+    state: 'completed',
+  },
+  {
+    id: 'hitl-checkpoint',
+    label: 'Human-in-the-Loop Review',
+    description: 'Spatial agent recommendation reviewed. Path Corridor C approved by human operator. Confidence: 94%. Override available.',
     state: 'completed',
   },
   {
@@ -186,7 +199,9 @@ export default function WorldGenerationPage() {
   const [exportState, setExportState] = useState<'ready' | 'exporting' | 'failed'>('ready');
   const [exportMessage, setExportMessage] = useState('');
   const [workflowState, dispatchWorkflow] = useReducer(worldWorkflowReducer, INITIAL_WORLD_WORKFLOW_STATE);
+  const spatialTraceRef = useRef<SpatialTraceContext | null>(null);
   const [spatialTraceId, setSpatialTraceId] = useState<string | null>(null);
+  const [hitlDecision, setHitlDecision] = useState<'awaiting_approval' | 'approved' | 'rejected'>('awaiting_approval');
   const artifactSession = workflowState.artifactSession;
   const result = (artifactSession?.response as WorldApiResponse | undefined) ?? null;
   const canonicalArtifact = artifactSession?.artifact ?? null;
@@ -224,7 +239,9 @@ export default function WorldGenerationPage() {
   const runGeneration = async () => {
     const trace = createSpatialTrace();
     trace.addSpan('generation-start');
+    spatialTraceRef.current = trace;
     setSpatialTraceId(trace.traceId);
+    setHitlDecision('awaiting_approval');
     dispatchWorkflow({ type: 'BEGIN_VALIDATING' });
     dispatchWorkflow({ type: 'BEGIN_GENERATING' });
     setExportState('ready');
@@ -396,6 +413,31 @@ export default function WorldGenerationPage() {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isPreviewExpanded]);
+
+  const handleHITLDecision = (decision: 'approved' | 'rejected') => {
+    spatialTraceRef.current?.addSpan('hitl_checkpoint');
+    setHitlDecision(decision);
+  };
+
+  const displayedStages = useMemo<SpatialPipelineStage[]>(() => {
+    if (workflow.length) return workflow as SpatialPipelineStage[];
+    const hitlIdx = LINGBOT_SEEDED_RUN.findIndex((s) => s.id === 'hitl-checkpoint');
+    const hitlPending = hitlDecision === 'awaiting_approval';
+    return LINGBOT_SEEDED_RUN.map((stage, idx) => {
+      if (stage.id === 'hitl-checkpoint') {
+        return {
+          ...stage,
+          state: hitlDecision === 'approved' ? 'completed' as const
+               : hitlDecision === 'rejected' ? 'failed' as const
+               : 'paused' as const,
+        };
+      }
+      if ((hitlPending || hitlDecision === 'rejected') && idx > hitlIdx) {
+        return { ...stage, state: 'idle' as const };
+      }
+      return stage;
+    });
+  }, [workflow, hitlDecision]);
 
   const handleExportGlb = async () => {
     if (!sceneSpec || !artifactReadiness.valid) return;
@@ -637,7 +679,54 @@ export default function WorldGenerationPage() {
                 <CardTitle>Generation Pipeline</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {(workflow.length ? workflow : LINGBOT_SEEDED_RUN).map((stage) => {
+                {displayedStages.map((stage) => {
+                  // HITL checkpoint — interactive approval card when awaiting
+                  if (stage.id === 'hitl-checkpoint') {
+                    if (hitlDecision === 'awaiting_approval') {
+                      return (
+                        <div key="hitl-checkpoint" className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-4 my-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <UserCheck className="size-4 text-amber-400" />
+                            <p className="text-sm font-semibold text-amber-400">⏸ Human Review Required</p>
+                            {spatialTraceId && (
+                              <code className="ml-auto text-[10px] font-mono text-muted-foreground">
+                                {spatialTraceId.slice(0, 8)}
+                              </code>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Agent recommends <strong className="text-foreground">Path Corridor C</strong> for last-mile routing.
+                            Review the spatial reasoning before authorizing export.
+                          </p>
+                          <div className="text-xs text-muted-foreground mb-3 font-mono bg-muted/30 px-3 py-2 rounded">
+                            Agent confidence: 94% · Obstacles cleared: 7 · Drift score: 0.12
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => handleHITLDecision('approved')}>
+                              ✓ Approve &amp; Continue
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => handleHITLDecision('rejected')}>
+                              ✗ Reject &amp; Re-route
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    }
+                    // Approved or rejected — render as standard stage row
+                    return (
+                      <div key="hitl-checkpoint" className={`rounded-lg border p-3 ${STAGE_STYLE[stage.state]}`}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <UserCheck className="size-4" />
+                            <p className="text-sm font-medium">{stage.label}</p>
+                          </div>
+                          <Badge variant="outline">{stage.state}</Badge>
+                        </div>
+                        <p className="mt-1 text-xs">{stage.description}</p>
+                      </div>
+                    );
+                  }
+                  // Standard stages — stage.id is narrowed to WorldWorkflowStage['id'] here
                   const Icon = STAGE_ICONS[stage.id];
                   return (
                     <div key={stage.id} className={`rounded-lg border p-3 ${STAGE_STYLE[stage.state]}`}>

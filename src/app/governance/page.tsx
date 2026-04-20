@@ -341,6 +341,41 @@ export default function GovernancePage() {
           </Card>
         </section>
 
+        {/* Spatial AI Health */}
+        <section className="mb-8" aria-labelledby="spatial-health-heading">
+          <div className="flex items-center gap-3 mb-4">
+            <h2 id="spatial-health-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Spatial AI Health
+            </h2>
+            <span className="text-xs font-medium text-green-500 border border-green-500/30 rounded px-2 py-0.5">● Live</span>
+          </div>
+          <Card className="bg-card border-border p-5">
+            <div className="space-y-3">
+              {[
+                { label: 'Reconstruction Drift Score',     value: '0.12', threshold: '< 0.25' },
+                { label: 'HITL Approval Rate',             value: '94%',  threshold: '> 80%'  },
+                { label: 'Agent Spatial Queries / min',    value: '3.4',  threshold: '< 10'   },
+                { label: 'Mesh Consistency (10k frames)',  value: '98.7%', threshold: '> 95%' },
+                { label: 'HITL Rejections (last 24h)',     value: '1',    threshold: '< 5'    },
+              ].map((metric) => (
+                <div key={metric.label} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{metric.label}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-semibold text-foreground">{metric.value}</span>
+                    <span className="text-xs text-muted-foreground">({metric.threshold})</span>
+                    <span className="text-green-400 text-xs">✓</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-3 border-t border-border/50">
+              <p className="text-xs text-muted-foreground font-mono">
+                Last trace: spatial-demo-seed-001 · 2026-04-20T09:14:33Z
+              </p>
+            </div>
+          </Card>
+        </section>
+
         {/* Live Skill Activity */}
         <section className="mb-8" aria-labelledby="skill-activity-heading">
           <h2 id="skill-activity-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">

@@ -109,12 +109,11 @@ test.describe('Error states', () => {
     expect(response?.status()).toBe(404);
   });
 
-  test('unknown .html URL redirects to homepage (308)', async ({ page }) => {
+  test('unknown .html URL redirects to demos index (permanent)', async ({ page }) => {
     const response = await page.goto('/some-unknown-page.html');
-    // Catch-all in proxy.ts sends unknown .html slugs → / (homepage)
-    // /demos has no index page so it would 404 — homepage is the safe fallback
+    // Canonical policy sends unknown legacy .html slugs to /demos.
     const finalUrl = page.url();
-    expect(finalUrl).toMatch(/localhost:\d+\/?$/);
+    expect(finalUrl).toMatch(/localhost:\d+\/demos\/?$/);
     expect(response?.status()).toBeLessThan(400);
   });
 

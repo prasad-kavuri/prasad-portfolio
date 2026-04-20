@@ -19,9 +19,10 @@ test.describe('Homepage', () => {
     await expect(page.getByText(/cost, latency, and scalability/i)).toBeVisible();
   });
 
-  test('Explore All Demos button scrolls to tools section', async ({ page }) => {
-    await page.getByRole('link', { name: /Explore All Demos/i }).first().click();
-    await expect(page.locator('#tools')).toBeInViewport({ timeout: 10000 });
+  test('Browse All Demos CTA navigates to canonical demos index', async ({ page }) => {
+    await page.getByRole('link', { name: /Browse All 13 Demos/i }).first().click();
+    await expect(page).toHaveURL(/\/demos\/?$/);
+    await expect(page.getByRole('heading', { name: /All Production Demos/i })).toBeVisible();
   });
 
   test('all 3 demo group headers are visible', async ({ page }) => {
@@ -49,9 +50,9 @@ test.describe('Homepage', () => {
     await expect(page.getByText('AI Spatial Intelligence & World Generation').first()).toBeVisible();
   });
 
-  test('Desktop badge appears on exactly 5 cards', async ({ page }) => {
-    const desktopBadges = page.getByText('Desktop');
-    await expect(desktopBadges).toHaveCount(5);
+  test('Desktop badge appears on exactly 4 cards', async ({ page }) => {
+    const desktopBadges = page.getByText(/^Desktop$/);
+    await expect(desktopBadges).toHaveCount(4);
   });
 
   test('transformation framework section is visible', async ({ page }) => {

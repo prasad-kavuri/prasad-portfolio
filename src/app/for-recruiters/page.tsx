@@ -187,9 +187,9 @@ export default function ForRecruitersPage() {
               supporting="Enterprise API platform at Ola Maps"
             />
             <StatCard
-              number={EXECUTIVE_METRICS.costReductionDelivered.replace('Up to ', '')}
-              label="Cost Reduction"
-              supporting="AI inference optimization at scale"
+              number={EXECUTIVE_METRICS.costReductionDisplay}
+              label="Cost Reduction Delivered"
+              supporting="Up to 70% — AI inference at scale"
             />
             <StatCard
               number={EXECUTIVE_METRICS.revenueLaunched}

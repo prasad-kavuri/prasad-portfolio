@@ -255,4 +255,66 @@ describe('POST /api/portfolio-assistant', () => {
     const body = await res.json();
     expect(body.error).toMatch(/timeout/i);
   });
+
+  it('executes strategic compaction when conversation history has 8+ user turns', async () => {
+    // First fetch call: non-streaming compaction summary from Groq
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: 'Prior conversation summary.' } }] }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    );
+    // Second fetch call: main streaming response
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode('data: {"choices":[{"delta":{"content":"ok"}}]}\n')
+        );
+        controller.enqueue(new TextEncoder().encode('data: [DONE]\n'));
+        controller.close();
+      },
+    });
+    mockFetch.mockResolvedValueOnce(new Response(stream, { status: 200 }));
+
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+
+    // 8 user turns + 8 assistant turns = 16 messages (within the 20 message cap)
+    const messages = Array.from({ length: 8 }, (_, i) => [
+      { role: 'user', content: `question ${i}` },
+      { role: 'assistant', content: `answer ${i}` },
+    ]).flat();
+
+    const req = makeRequest({ messages, useRAG: false });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    // Compaction fires → 2 fetch calls: compaction + main LLM call
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('continues gracefully when compaction fetch fails', async () => {
+    // Compaction fetch returns non-OK → compactFn returns '' → falls through
+    mockFetch.mockResolvedValueOnce(new Response('error', { status: 500 }));
+    // Main streaming response
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode('data: {"choices":[{"delta":{"content":"ok"}}]}\n')
+        );
+        controller.enqueue(new TextEncoder().encode('data: [DONE]\n'));
+        controller.close();
+      },
+    });
+    mockFetch.mockResolvedValueOnce(new Response(stream, { status: 200 }));
+
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+
+    const messages = Array.from({ length: 8 }, (_, i) => [
+      { role: 'user', content: `question ${i}` },
+      { role: 'assistant', content: `answer ${i}` },
+    ]).flat();
+
+    const req = makeRequest({ messages, useRAG: false });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
 });

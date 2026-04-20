@@ -7,6 +7,7 @@ import {
   _resetObservability,
   captureAPIError,
   createTraceId,
+  createSpanId,
   detectAnomaly,
   generateClientTraceId,
   createTracedFetch,
@@ -15,6 +16,9 @@ import {
   startTimer,
   trackAPIRequest,
   trackRateLimit,
+  recordSkillInvocation,
+  getRecentSkillInvocations,
+  type SkillInvocationEvent,
 } from '@/lib/observability';
 
 afterEach(() => {
@@ -228,5 +232,77 @@ describe('createTracedFetch', () => {
       }),
     }));
     vi.unstubAllGlobals();
+  });
+});
+
+describe('createSpanId', () => {
+  it('returns a string starting with span-', () => {
+    expect(createSpanId()).toMatch(/^span-[a-z0-9]+$/);
+  });
+
+  it('returns unique IDs on each call', () => {
+    expect(createSpanId()).not.toBe(createSpanId());
+  });
+});
+
+describe('skill invocation buffer', () => {
+  const makeEvent = (overrides: Partial<SkillInvocationEvent> = {}): SkillInvocationEvent => ({
+    traceId: 'trace-test',
+    spanId: createSpanId(),
+    skillId: 'guardrails',
+    skillName: 'Guardrails',
+    demoId: 'test-demo',
+    triggeredAt: new Date().toISOString(),
+    outcome: 'pass',
+    ...overrides,
+  });
+
+  it('starts empty after reset', () => {
+    expect(getRecentSkillInvocations()).toHaveLength(0);
+  });
+
+  it('records a skill invocation event', () => {
+    recordSkillInvocation(makeEvent());
+    expect(getRecentSkillInvocations()).toHaveLength(1);
+  });
+
+  it('returns events newest-first', () => {
+    recordSkillInvocation(makeEvent({ skillId: 'first' }));
+    recordSkillInvocation(makeEvent({ skillId: 'second' }));
+    const events = getRecentSkillInvocations();
+    expect(events[0].skillId).toBe('second');
+    expect(events[1].skillId).toBe('first');
+  });
+
+  it('respects the limit parameter', () => {
+    for (let i = 0; i < 5; i++) {
+      recordSkillInvocation(makeEvent({ skillId: `skill-${i}` }));
+    }
+    expect(getRecentSkillInvocations(3)).toHaveLength(3);
+  });
+
+  it('caps buffer at 50 entries (ring buffer)', () => {
+    for (let i = 0; i < 55; i++) {
+      recordSkillInvocation(makeEvent({ skillId: `skill-${i}` }));
+    }
+    expect(getRecentSkillInvocations(50)).toHaveLength(50);
+  });
+
+  it('records filtered outcome', () => {
+    recordSkillInvocation(makeEvent({ outcome: 'filtered', meta: { issues: ['competitor_mention'] } }));
+    const events = getRecentSkillInvocations(1);
+    expect(events[0].outcome).toBe('filtered');
+    expect(events[0].meta).toEqual({ issues: ['competitor_mention'] });
+  });
+
+  it('records error outcome', () => {
+    recordSkillInvocation(makeEvent({ outcome: 'error' }));
+    expect(getRecentSkillInvocations(1)[0].outcome).toBe('error');
+  });
+
+  it('_resetObservability clears the skill buffer', () => {
+    recordSkillInvocation(makeEvent());
+    _resetObservability();
+    expect(getRecentSkillInvocations()).toHaveLength(0);
   });
 });

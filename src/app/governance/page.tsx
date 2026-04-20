@@ -2,14 +2,100 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft, RefreshCw, ShieldCheck, BarChart3, DollarSign, UserCheck, FileText } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { GOVERNANCE_SNAPSHOT, getGovernanceMetricsView, type EvalSnapshotData, type GovernanceMetricsView } from '@/data/telemetry-snapshots';
 import { LatencyCostChart } from '@/components/observability/LatencyCostChart';
 import { SnapshotTimestamp } from '@/components/SnapshotTimestamp';
+
+// ---------------------------------------------------------------------------
+// Governance summary band — 5 dimensions, always-active static cards
+// ---------------------------------------------------------------------------
+
+const GOVERNANCE_DIMENSIONS = [
+  {
+    label: 'Safety',
+    detail: 'Guardrails, prompt injection detection, XSS sanitization',
+    icon: ShieldCheck,
+  },
+  {
+    label: 'Eval Quality',
+    detail: 'CI-gated eval suites, hallucination heuristics, drift monitoring',
+    icon: BarChart3,
+  },
+  {
+    label: 'Cost Control',
+    detail: 'Rate limiting, token-cost tracking, per-route spend gates',
+    icon: DollarSign,
+  },
+  {
+    label: 'Human Oversight',
+    detail: 'HITL checkpoints on high-stakes multi-agent transitions',
+    icon: UserCheck,
+  },
+  {
+    label: 'Auditability',
+    detail: 'Trace IDs, structured logs, immutable audit trail',
+    icon: FileText,
+  },
+] as const;
+
+function GovernanceSummaryBand() {
+  return (
+    <section className="mb-8" aria-label="Governance dimensions overview">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {GOVERNANCE_DIMENSIONS.map(({ label, detail, icon: Icon }) => (
+          <div key={label} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon className="w-4 h-4 text-green-500 shrink-0" aria-hidden="true" />
+              <p className="text-sm font-semibold text-foreground">{label}</p>
+              <span className="ml-auto text-[10px] font-semibold text-green-500 uppercase tracking-wider">Active</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">{detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Telemetry legend — replaces amber "Mixed telemetry" banner
+// ---------------------------------------------------------------------------
+
+function TelemetryLegend() {
+  return (
+    <div
+      role="note"
+      aria-label="Portfolio telemetry model"
+      className="rounded-xl border border-border bg-muted/20 px-5 py-4 mb-8"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
+            Portfolio Telemetry
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Real-time signals where instrumented; representative baselines elsewhere.
+            All controls are implemented in code and verified in CI.
+          </p>
+        </div>
+        <div className="flex items-center gap-5 text-xs text-muted-foreground shrink-0 pt-0.5">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
+            Live signal
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-muted-foreground/30 ring-1 ring-muted-foreground/20" aria-hidden="true" />
+            Representative baseline
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -107,11 +193,9 @@ export default function GovernancePage() {
           </div>
         </div>
 
-        <TelemetryDisclosure
-          label="Mixed telemetry"
-          message="Telemetry model: real-time signals where instrumented; representative baselines elsewhere. All controls — eval gates, HITL checkpoints, guardrails — are implemented in code."
-          className="mb-8"
-        />
+        <GovernanceSummaryBand />
+
+        <TelemetryLegend />
 
         <section className="mb-8" aria-labelledby="governance-model-heading">
           <h2 id="governance-model-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">

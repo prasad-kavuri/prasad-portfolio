@@ -23,16 +23,31 @@ describe('GovernancePage', () => {
     vi.unstubAllGlobals();
   });
 
-  it('shows mixed telemetry disclosure and precise snapshot timestamp', async () => {
+  it('shows portfolio telemetry legend and snapshot timestamp', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')));
     render(React.createElement(GovernancePage));
 
-    expect(screen.getByText('Mixed telemetry')).toBeInTheDocument();
+    expect(screen.getByText('Portfolio Telemetry')).toBeInTheDocument();
+    expect(screen.getByText(/Real-time signals where instrumented/i)).toBeInTheDocument();
     // Timestamp is now dynamic via SnapshotTimestamp — verify it renders something
     expect(screen.getByText(/Snapshot refreshed at/i)).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText('Rate Limit Remaining')).toBeInTheDocument();
     });
+  });
+
+  it('renders governance summary band with all 5 dimensions', () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')));
+    render(React.createElement(GovernancePage));
+
+    expect(screen.getByText('Safety')).toBeInTheDocument();
+    expect(screen.getByText('Eval Quality')).toBeInTheDocument();
+    expect(screen.getByText('Cost Control')).toBeInTheDocument();
+    expect(screen.getByText('Human Oversight')).toBeInTheDocument();
+    expect(screen.getByText('Auditability')).toBeInTheDocument();
+    // All dimensions should show Active status
+    const activeBadges = screen.getAllByText('Active');
+    expect(activeBadges.length).toBe(5);
   });
 
   it('renders policy and audit data from centralized governance snapshot', async () => {

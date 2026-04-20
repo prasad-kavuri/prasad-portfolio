@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 export function SnapshotTimestamp() {
-  const [label, setLabel] = useState('Loading...');
+  const [label, setLabel] = useState<string | null>(null);
 
   useEffect(() => {
     const update = () => {
@@ -15,6 +15,15 @@ export function SnapshotTimestamp() {
     const id = setInterval(update, 60_000);
     return () => clearInterval(id);
   }, []);
+
+  if (label === null) {
+    return (
+      <span
+        className="mt-1 inline-block h-3 w-44 rounded-full bg-muted animate-pulse"
+        aria-label="Loading timestamp"
+      />
+    );
+  }
 
   return <p className="text-xs text-slate-500">{label}</p>;
 }

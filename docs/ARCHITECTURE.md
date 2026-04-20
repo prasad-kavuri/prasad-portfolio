@@ -85,7 +85,7 @@ The AI services layer contains both server-side and browser-side demos:
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
 | Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, OTEL observability |
 | Native Browser AI Skill | `/demos/browser-native-ai-skill` | On-device accessibility and agent-readiness analysis |
-| AI Spatial Intelligence & World Generation | `/demos/world-generation` | Governed text-to-3D world generation with browser-rendered procedural 3D preview, GLB export, adapter-backed provider fallback, and approval gating |
+| Real-Time Spatial AI + World Modeling Engine | `/demos/world-generation` | Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. |
 
 The LLM Router demonstrates the cost/latency tradeoff pattern directly. RAG and vector search demonstrate retrieval before generation. Browser demos show local inference patterns that reduce server load and external API cost.
 

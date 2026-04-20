@@ -45,7 +45,7 @@ describe('WorldGenerationPage', () => {
   it('renders title and desktop-friendly signal', () => {
     render(<WorldGenerationPage />);
 
-    expect(screen.getByRole('heading', { name: 'AI Spatial Intelligence & World Generation' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Real-Time Spatial AI + World Modeling Engine' })).toBeInTheDocument();
     expect(screen.getByText('Desktop-Friendly')).toBeInTheDocument();
     expect(screen.getByText(/Desktop-friendly:/i)).toBeInTheDocument();
   });

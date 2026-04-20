@@ -19,7 +19,7 @@ describe('Legacy routing policy', () => {
       expect(redirects).toContainEqual({
         source: mapping.source,
         destination: mapping.destination,
-        statusCode: 301,
+        permanent: true,
       });
     }
   });

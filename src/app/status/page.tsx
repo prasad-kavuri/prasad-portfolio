@@ -3,17 +3,18 @@ import { TelemetryDisclosure } from '@/components/ui/telemetry-disclosure';
 import { STATUS_SNAPSHOT } from '@/data/telemetry-snapshots';
 import { SnapshotTimestamp } from '@/components/SnapshotTimestamp';
 import { STACK_LABELS } from '@/lib/stackVersions';
+import { PORTFOLIO_FACTS, SITE_URL } from '@/data/site-config';
 
 export const metadata = {
   title: 'System Status — Prasad Kavuri',
-  description: 'System status and mixed telemetry snapshot for 13 production AI systems on prasadkavuri.com',
+  description: `System status and mixed telemetry snapshot for ${PORTFOLIO_FACTS.productionDemoCount} production AI systems on ${SITE_URL}.`,
 };
 
 export default function StatusPage() {
   return (
     <main className="min-h-screen bg-background p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">System Status</h1>
-      <p className="text-muted-foreground">prasadkavuri.com</p>
+      <p className="text-muted-foreground">www.prasadkavuri.com</p>
       <div className="mb-8"><SnapshotTimestamp /></div>
 
       <TelemetryDisclosure

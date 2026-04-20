@@ -1,15 +1,9 @@
 import { MetadataRoute } from 'next';
+import { demos } from '@/data/demos';
+import { SITE_URL } from '@/data/site-config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://www.prasadkavuri.com';
   const now = new Date();
-
-  const demos = [
-    'evaluation-showcase', 'rag-pipeline', 'llm-router', 'vector-search',
-    'browser-native-ai-skill', 'multi-agent', 'mcp-demo',
-    'enterprise-control-plane', 'world-generation', 'portfolio-assistant',
-    'resume-generator', 'multimodal', 'quantization',
-  ];
 
   const perspectives = [
     'why-enterprise-ai-stalls',
@@ -18,22 +12,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   return [
-    { url: base, lastModified: now, changeFrequency: 'weekly', priority: 1 },
-    { url: `${base}/for-recruiters`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${base}/governance`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${base}/status`, lastModified: now, changeFrequency: 'daily', priority: 0.7 },
+    { url: SITE_URL, lastModified: now, changeFrequency: 'weekly', priority: 1 },
+    { url: `${SITE_URL}/for-recruiters`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${SITE_URL}/demos`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${SITE_URL}/governance`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${SITE_URL}/status`, lastModified: now, changeFrequency: 'daily', priority: 0.7 },
     // Machine-readable resources for AI agents and LLM crawlers
-    { url: `${base}/resume.md`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${base}/llms.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${base}/.well-known/ai-agent-manifest.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    ...demos.map(slug => ({
-      url: `${base}/demos/${slug}`,
+    { url: `${SITE_URL}/resume.md`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${SITE_URL}/llms.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/.well-known/ai-agent-manifest.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    ...demos.map((demo) => ({
+      url: `${SITE_URL}${demo.href}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     })),
-    ...perspectives.map(slug => ({
-      url: `${base}/perspectives/${slug}`,
+    ...perspectives.map((slug) => ({
+      url: `${SITE_URL}/perspectives/${slug}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.6,

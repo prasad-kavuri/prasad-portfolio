@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "RAG Pipeline Demo — Prasad Kavuri",
     description: "Browser-based RAG with real embeddings, cosine similarity, and document retrieval.",
-    url: "https://prasadkavuri.com/demos/rag-pipeline",
+    url: "https://www.prasadkavuri.com/demos/rag-pipeline",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/rag-pipeline",
+    canonical: "https://www.prasadkavuri.com/demos/rag-pipeline",
   },
 };

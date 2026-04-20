@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AI Portfolio Assistant — Prasad Kavuri",
     description: "Streaming assistant powered by Groq Llama 3.1 with full knowledge injection plus retrieval-assisted grounding.",
-    url: "https://prasadkavuri.com/demos/portfolio-assistant",
+    url: "https://www.prasadkavuri.com/demos/portfolio-assistant",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/portfolio-assistant",
+    canonical: "https://www.prasadkavuri.com/demos/portfolio-assistant",
   },
 };

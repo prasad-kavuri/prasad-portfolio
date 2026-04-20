@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Model Quantization Demo — Prasad Kavuri",
     description: "Live FP32 vs INT8 benchmark with real ONNX inference timing.",
-    url: "https://prasadkavuri.com/demos/quantization",
+    url: "https://www.prasadkavuri.com/demos/quantization",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/quantization",
+    canonical: "https://www.prasadkavuri.com/demos/quantization",
   },
 };

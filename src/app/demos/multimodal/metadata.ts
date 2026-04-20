@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Multimodal AI Assistant — Prasad Kavuri",
     description: "In-browser ViT image classification and CLIP zero-shot with no API key.",
-    url: "https://prasadkavuri.com/demos/multimodal",
+    url: "https://www.prasadkavuri.com/demos/multimodal",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/multimodal",
+    canonical: "https://www.prasadkavuri.com/demos/multimodal",
   },
 };

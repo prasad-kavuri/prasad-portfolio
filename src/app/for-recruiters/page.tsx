@@ -1,13 +1,28 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, ArrowRight, Download, ExternalLink, Calendar } from 'lucide-react';
+import { PORTFOLIO_FACTS } from '@/data/site-config';
 
-export const metadata = {
-  title: 'For Recruiters — Prasad Kavuri VP/Head of AI Engineering',
+export const metadata: Metadata = {
+  title: 'For Recruiters',
   description:
-    'Executive summary for recruiting teams: 200+ engineers led, $10M+ revenue launched, 70% cost reduction. VP/Head of AI Engineering candidate.',
+    'Executive summary for recruiting teams: enterprise AI leadership outcomes, governance-first platform depth, and a guided review path.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/for-recruiters',
+  },
+  openGraph: {
+    title: 'For Recruiters — Prasad Kavuri',
+    description:
+      'Executive summary and guided review path for VP / Head of AI Engineering conversations.',
+    url: 'https://www.prasadkavuri.com/for-recruiters',
+    images: [{ url: 'https://www.prasadkavuri.com/og-image.jpg', width: 1200, height: 630, alt: 'Prasad Kavuri recruiter page' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'For Recruiters — Prasad Kavuri',
+    description: 'Executive summary, key outcomes, and a guided evaluation path for recruiting teams.',
+    images: ['https://www.prasadkavuri.com/og-image.jpg'],
   },
 };
 
@@ -157,17 +172,17 @@ export default function ForRecruitersPage() {
           </p>
           <div className="grid gap-4 sm:grid-cols-3">
             <StatCard
-              number="200+"
+              number={PORTFOLIO_FACTS.engineersLed}
               label="Engineers Led"
               supporting="Global teams across India, US, Europe"
             />
             <StatCard
-              number="$10M+"
+              number={PORTFOLIO_FACTS.revenueLaunched}
               label="Revenue Launched"
               supporting="Krutrim AI platform, 0 → production"
             />
             <StatCard
-              number="70%"
+              number={PORTFOLIO_FACTS.costReductionDelivered.replace('Up to ', '')}
               label="Cost Reduction"
               supporting="AI inference optimization at scale"
             />

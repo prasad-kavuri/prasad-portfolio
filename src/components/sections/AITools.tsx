@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demos } from "@/data/demos";
+import { PORTFOLIO_FACTS } from "@/data/site-config";
 import type { LucideIcon } from "lucide-react";
 import { ArrowRight, Bot, Building2, Cuboid, Database, Eye, FileText, GitBranch, MonitorCheck, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
@@ -68,7 +69,7 @@ export function AITools() {
           AI-Powered Tools
         </h2>
         <p className="text-muted-foreground mb-2">
-          13 production demos — all running on shared governance
+          {PORTFOLIO_FACTS.productionDemoCount} production demos — all running on shared governance
           infrastructure: guardrails, observability, evaluation, and
           drift monitoring at the platform layer.
         </p>
@@ -77,7 +78,10 @@ export function AITools() {
           <Link href="/demos/evaluation-showcase" className="inline-flex items-center gap-1 font-medium hover:underline" style={{ color: 'var(--accent-brand)' }}>
             → AI Evaluation Showcase
           </Link>
-          {' '}to see the full governance pipeline.
+          {' '}to see the full governance pipeline, or browse the{' '}
+          <Link href="/demos" className="font-medium hover:underline" style={{ color: 'var(--accent-brand)' }}>
+            canonical demos index
+          </Link>.
         </p>
 
         <div className="mb-8 rounded-xl border border-border bg-muted/40 p-4">

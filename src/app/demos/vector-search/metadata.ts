@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Vector Search Demo — Prasad Kavuri",
     description: "Browser-based semantic search with UMAP-style 2D embedding visualisation.",
-    url: "https://prasadkavuri.com/demos/vector-search",
+    url: "https://www.prasadkavuri.com/demos/vector-search",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/vector-search",
+    canonical: "https://www.prasadkavuri.com/demos/vector-search",
   },
 };

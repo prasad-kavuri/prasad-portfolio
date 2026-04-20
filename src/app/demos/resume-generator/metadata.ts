@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AI Resume Generator — Prasad Kavuri",
     description: "ATS-optimized resume generation with JD parsing and skill matching.",
-    url: "https://prasadkavuri.com/demos/resume-generator",
+    url: "https://www.prasadkavuri.com/demos/resume-generator",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/resume-generator",
+    canonical: "https://www.prasadkavuri.com/demos/resume-generator",
   },
 };

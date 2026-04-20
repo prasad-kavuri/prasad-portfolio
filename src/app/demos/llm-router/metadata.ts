@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "LLM Router Demo — Prasad Kavuri",
     description: "Intelligent model routing achieving cost and latency savings across 4 Groq models.",
-    url: "https://prasadkavuri.com/demos/llm-router",
+    url: "https://www.prasadkavuri.com/demos/llm-router",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/llm-router",
+    canonical: "https://www.prasadkavuri.com/demos/llm-router",
   },
 };

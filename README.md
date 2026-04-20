@@ -5,147 +5,102 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)
 ![CI](https://img.shields.io/github/actions/workflow/status/prasad-kavuri/prasad-portfolio/ci.yml?branch=main&style=flat-square&label=CI&logo=github)
 
-> **Enterprise AI, Built for Day 2** — production-grade AI platform engineering, not demos.
+Enterprise AI, built for Day 2: a production-style portfolio platform that demonstrates governed, observable, evaluated AI systems instead of isolated demo pages.
 
-**Live site:** [prasadkavuri.com](https://www.prasadkavuri.com) · **Role target:** VP / Head of AI Engineering
+Live site: [www.prasadkavuri.com](https://www.prasadkavuri.com)  
+Role target: VP / Head of AI Engineering
 
-> A production-grade AI platform built to demonstrate enterprise AI engineering depth — not just demos, but a governed, observable, evaluated system operating on shared infrastructure.
+## What This Repo Is
 
----
+This repository is a unified AI platform simulation for executive and technical review.
+
+Core differentiator: every demo shares platform-level controls in `src/lib/`.
+
+- Guardrails and safety enforcement (`guardrails.ts`)
+- Observability and trace propagation (`observability.ts`)
+- Evaluation and regression gates (`eval-engine.ts`)
+- Drift and runtime quality posture (`drift-monitor.ts`)
+- Rate limiting and runtime controls (`rate-limit.ts`, `cost-control.ts`)
 
 ## Platform Architecture
 
-The key insight: every demo on this site shares the same governance foundation. This is not a collection of standalone pages — it is a unified platform where guardrails, observability, evaluation, and drift monitoring are infrastructure-layer concerns.
-
 ```mermaid
 graph TD
-  User["👤 User / Recruiter"] --> Site["prasadkavuri.com"]
+  User["User / Recruiter"] --> Site["www.prasadkavuri.com"]
+  Site --> Demos["/demos"]
+  Site --> Governance["/governance"]
 
-  Site --> Gov["/governance — Ops Dashboard"]
-  Site --> Demos["/demos — 13 Live Demos"]
-
-  subgraph "Demo Categories"
-    Demos --> Cat1["Control Plane & Evaluation"]
-    Demos --> Cat2["Agent Orchestration"]
-    Demos --> Cat3["Multimodal & Retrieval"]
-    Demos --> Cat4["Infrastructure & Tooling"]
+  subgraph "Shared Platform Layer"
+    Guardrails["guardrails.ts"]
+    Observability["observability.ts"]
+    Evals["eval-engine.ts"]
+    Drift["drift-monitor.ts"]
+    RateLimit["rate-limit.ts"]
   end
 
-  subgraph "Shared Platform Layer — src/lib/"
-    direction LR
-    G["guardrails.ts\nInput/output safety"]
-    O["observability.ts\nTrace-ID propagation"]
-    E["eval-engine.ts\nLLM-as-Judge + CI gating"]
-    D["drift-monitor.ts\nModel degradation alerts"]
-    R["rate-limit.ts\nUpstash Redis"]
-  end
-
-  Demos --> G
-  Demos --> O
-  Demos --> E
-  Demos --> D
-  Demos --> R
+  Demos --> Guardrails
+  Demos --> Observability
+  Demos --> Evals
+  Demos --> Drift
+  Demos --> RateLimit
 ```
 
-Canonical diagram asset: `public/architecture-diagram.svg` · Live: https://www.prasadkavuri.com/#architecture
-
----
+Canonical diagram asset: `public/architecture-diagram.svg`  
+Live architecture section: [www.prasadkavuri.com/#architecture](https://www.prasadkavuri.com/#architecture)
 
 ## Demo Catalog
 
-| Demo | Category | Key AI Pattern | Business Signal |
-|---|---|---|---|
-| AI Evaluation Showcase | Control Plane & Evaluation | LLM-as-Judge, semantic fidelity scoring, CI eval gating | Prevents regression leakage before production |
-| LLM Router | Control Plane & Evaluation | Multi-model routing by latency/cost/quality | 40–70% cost reduction through route-to-fit inference |
-| Enterprise Control Plane | Control Plane & Evaluation | RBAC, token-spend analytics, OpenTelemetry event feed | Org-wide AI governance: access, spend, audit |
-| Multi-Agent System | Agent Orchestration | CrewAI, HITL approval checkpoint, specialist roles | Faster cross-functional decisions with controlled autonomy |
-| MCP Tool Demo | Agent Orchestration | Model Context Protocol, dynamic tool discovery | Reliable, auditable tool-use contracts at scale |
-| RAG Pipeline | Multimodal & Retrieval | Transformers.js embeddings, ChromaDB, browser execution | Higher answer precision with lower support escalation |
-| Vector Search | Multimodal & Retrieval | sentence-BERT, UMAP visualization, cosine retrieval | Accelerates knowledge discovery across large content repositories |
-| Multimodal Assistant | Multimodal & Retrieval | Florence-2, WebGPU, in-browser OCR/captioning | Lower vision pipeline cost with local-first execution |
-| Model Quantization | Infrastructure & Tooling | ONNX benchmarking, INT8 vs FP32, Transformers.js | Quantifiable inference efficiency and deployment economics |
-| AI Portfolio Assistant | Infrastructure & Tooling | Vercel AI SDK streaming, retrieval-grounded context | Shortens stakeholder time-to-context for key decisions |
-| Resume Generator | Infrastructure & Tooling | Structured generation, skill matching, schema.org JSON-LD | Reduces recruiting cycle time through candidate-role alignment |
-| Native Browser AI Skill | Infrastructure & Tooling | Chrome Prompt API, Gemini Nano, WASM | Zero-latency, 100% private on-device inference |
-| AI Spatial Intelligence & World Generation | Infrastructure & Tooling | Three.js, GLB export, provider adapter, approval gating | Governed spatial planning artifacts, simulation-ready |
+Canonical source of demos: `src/data/demos.ts`.
 
----
+Categories:
+- Control plane and evaluation
+- Agent orchestration
+- Retrieval and multimodal systems
+- Infrastructure and tooling experiences
 
-## 2026 Production AI Patterns Implemented
+Current count is derived from `src/data/demos.ts` and surfaced in UI/metadata.
 
-- **End-to-end Trace-ID propagation** — every LLM call tagged from frontend request through completion (`src/lib/observability.ts`)
-- **Human-in-the-Loop checkpoint** — explicit approval gate between Researcher and Strategist agents in the multi-agent demo
-- **Closed-loop evaluation** — LLM-as-Judge scoring with CI gating; regressions blocked before deployment (`src/lib/eval-engine.ts`)
-- **Model drift monitoring** — automated alerting on performance degradation across model versions (`src/lib/drift-monitor.ts`)
-- **Infrastructure-layer guardrails** — competitor detection, hallucination heuristics, agent handoff validation — applied platform-wide, not per-demo (`src/lib/guardrails.ts`)
-- **Semantic rate limiting** — token budget admission before upstream API call (`src/lib/cost-control.ts`)
-- **SSRF prevention** — URL allowlist + redirect-hop validation (`src/lib/url-security.ts`)
-- **WCAG 2.2 AA accessibility** — verified via axe-core in Playwright CI
+## Governance, Testing, and Security Posture
 
----
+- Centralized guardrails and output safety checks
+- HITL checkpoint patterns for high-impact transitions
+- Trace-ID propagation and audit-friendly observability
+- CI-enforced quality gates and coverage thresholds
+- Security headers, SSRF protections, and rate limiting
 
-## Why This Architecture Matters
+Run quality checks:
 
-Most AI portfolios show demos. This one shows a **governed AI operating model**: evaluation before deployment, human oversight on critical agent transitions, full observability from request to response, and drift detection before failures reach users.
-
-That is the difference between a proof-of-concept and a production platform.
-
----
-
-## Visual Proof
-
-Flagship workflow proof artifact (Multi-Agent execution rail + human approval checkpoint):
-
-![Multi-Agent workflow proof artifact](./public/readme-multi-agent-workflow-proof.svg)
-
----
+```bash
+npm run lint
+npm run test
+npm run test:coverage
+npm run build
+npm audit --audit-level=high
+```
 
 ## Local Development
 
 ```bash
 # Prerequisites: Node 18+
 npm install
-npm run dev          # http://localhost:3000
-npm run test         # unit + integration (Vitest)
-npm run test:e2e     # end-to-end (Playwright)
-npm run build        # production build check
-npm audit --audit-level=high  # security gate
+npm run dev
 ```
 
----
+App: http://localhost:3000
 
-## Stack
+## SEO and Discoverability Notes
 
-Next.js 16.2.3 · React 19 · TypeScript · Tailwind CSS v4 ·
-Vercel · Upstash Redis · Groq · Transformers.js ·
-Playwright · Vitest
+- Canonical host is `https://www.prasadkavuri.com`
+- Legacy `.html` demo URLs are permanently redirected to canonical routes
+- Canonical demo index is `/demos`
+- Sitemap/robots/metadata are aligned to canonical paths
 
----
+## Release Prep
 
-## Testing and Quality Gates
-
-```bash
-npm run test              # unit + integration (567 tests, 66 files)
-npm run test:coverage     # coverage gates: API ≥90% stmts, lib ≥95% functions
-npm run test:fuzz         # adversarial input tests
-npm run test:evals        # LLM-as-Judge eval suite
-npm run test:e2e          # Playwright: chromium, firefox, webkit, mobile
-```
-
-Coverage gates: API routes ≥90% statements / ≥85% branches; lib ≥95% functions.
-
----
+- Recommended first public tag: `v1.0.0`
+- Changelog: `CHANGELOG.md`
+- First public release note template: `docs/releases/first-public-release.md`
 
 ## About
 
-Built by Prasad Kavuri — AI Engineering Leader with 20+ years scaling production AI platforms at Krutrim, Ola, and HERE Technologies. Open to VP / Head of AI Engineering roles in the Chicago area and beyond.
-
----
-
-## GitHub Topics
-
-Suggested repository topics for discoverability:
-
-`agentic-ai` · `mcp` · `finops` · `llm-ops` · `react-19` · `nextjs-16` · `rag-pipeline` · `multi-agent` · `llm-routing` · `ai-governance` · `evaluation-framework` · `webgpu`
-
-> To apply: **Repository → ⚙️ Settings → Topics** (or use the gear icon on the repo homepage).
+Built by Prasad Kavuri — AI engineering leader with 20+ years across Krutrim, Ola, and HERE Technologies, focused on production AI systems with governance, cost discipline, and measurable business outcomes.

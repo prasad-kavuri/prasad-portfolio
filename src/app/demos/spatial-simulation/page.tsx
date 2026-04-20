@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 export default function SpatialSimulationRedirectPage() {
-  redirect('/demos/world-generation');
+  permanentRedirect('/demos/world-generation');
 }

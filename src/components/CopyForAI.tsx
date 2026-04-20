@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { trackEvent } from "@/lib/analytics";
+import { PORTFOLIO_FACTS } from "@/data/site-config";
 
-const AI_PROFILE_MARKDOWN = `# Prasad Kavuri — VP / Head of AI Engineering
+function getProfileMarkdown() {
+  return `# Prasad Kavuri — VP / Head of AI Engineering
 
 **Location**: Naperville, IL (Greater Chicago Area)
 **Website**: https://www.prasadkavuri.com
@@ -15,8 +17,8 @@ const AI_PROFILE_MARKDOWN = `# Prasad Kavuri — VP / Head of AI Engineering
 Applied AI engineering executive with 20+ years building production-grade AI platforms
 at enterprise scale. Specializes in agentic orchestration, LLM FinOps, and production AI governance.
 
-**Key metrics**: 70% infrastructure cost reduction | 50% latency reduction |
-13,000+ B2B customers | 200+ engineers led | 13 production AI systems
+**Key metrics**: ${PORTFOLIO_FACTS.costReductionDelivered.replace('Up to ', '')} infrastructure cost reduction | ${PORTFOLIO_FACTS.latencyReduction} latency reduction |
+13,000+ B2B customers | ${PORTFOLIO_FACTS.engineersLed} engineers led | ${PORTFOLIO_FACTS.productionDemoCount} production AI systems
 
 ## Core Capabilities
 
@@ -46,20 +48,23 @@ VP AI, Head of AI Engineering, CTO - AI Transformation, Chief AI Officer
 
 https://www.prasadkavuri.com/demos
 `;
+}
 
 export function CopyForAI() {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
+    const profileMarkdown = getProfileMarkdown();
+
     try {
-      await navigator.clipboard.writeText(AI_PROFILE_MARKDOWN);
+      await navigator.clipboard.writeText(profileMarkdown);
       setCopied(true);
       trackEvent('copy_for_ai_clicked');
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback for older browsers
       const textarea = document.createElement("textarea");
-      textarea.value = AI_PROFILE_MARKDOWN;
+      textarea.value = profileMarkdown;
       textarea.style.position = "fixed";
       textarea.style.opacity = "0";
       document.body.appendChild(textarea);

@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "MCP Tool Demo — Prasad Kavuri",
     description: "Live Model Context Protocol demo with tool discovery, selection, and execution trace.",
-    url: "https://prasadkavuri.com/demos/mcp-demo",
+    url: "https://www.prasadkavuri.com/demos/mcp-demo",
   },
   alternates: {
-    canonical: "https://prasadkavuri.com/demos/mcp-demo",
+    canonical: "https://www.prasadkavuri.com/demos/mcp-demo",
   },
 };

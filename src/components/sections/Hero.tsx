@@ -8,6 +8,7 @@ import { GovernancePillars } from "@/components/ui/governance-pillars";
 import profile from "@/data/profile.json";
 import { trackEvent } from "@/lib/analytics";
 import { CopyForAI } from "@/components/CopyForAI";
+import { PORTFOLIO_FACTS } from "@/data/site-config";
 
 const brandStyle = {
   background: "var(--accent-brand)",
@@ -89,23 +90,33 @@ export function Hero() {
           </div>
 
           <div className="mt-5 flex flex-wrap gap-2.5 sm:gap-3">
+            <Link
+              href="/for-recruiters"
+              className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
+              style={{ background: 'var(--accent-brand)' }}
+            >
+              Recruiter Fast-Track
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </Link>
             <a
-              href="/demos/multi-agent"
+              href="/demos/evaluation-showcase"
               style={brandStyle}
-              onClick={() => trackEvent('signature_demo_clicked')}
+              onClick={() => trackEvent('signature_system_clicked')}
               className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium"
             >
-              View Signature Demo
+              Explore Signature System
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </a>
-            <a
-              href="#tools"
-              className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
-            >
-              Explore All Demos
-            </a>
+            <Link href="/demos" className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium">
+              Browse All {PORTFOLIO_FACTS.productionDemoCount} Demos
+            </Link>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2.5 sm:gap-3">
             <a
               href={profile.personal.linkedin}
               target="_blank"
@@ -115,6 +126,15 @@ export function Hero() {
             >
                 View LinkedIn
               </a>
+            <a
+              href="/api/resume-download"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('resume_downloaded')}
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
+            >
+              Download Resume
+            </a>
             <CopyForAI />
           </div>
 
@@ -185,22 +205,6 @@ export function Hero() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2.5">
-              <Link
-                href="/for-recruiters"
-                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-                style={{ background: 'var(--accent-brand)' }}
-              >
-                Recruiter Fast-Track →
-              </Link>
-              <a
-                href="/api/resume-download"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent('resume_downloaded')}
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
-              >
-                Download Resume
-              </a>
               <a
                 href="https://linkedin.com/in/pkavuri"
                 target="_blank"

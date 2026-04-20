@@ -19,7 +19,7 @@ describe('SEO metadata integrity', () => {
 
   it('layout.tsx JSON-LD includes Knowledge Panel identity signals', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
-    expect(layout).toMatch(/personId = `\$\{siteUrl\}\/#person`/);
+    expect(layout).toMatch(/personId = `\$\{SITE_URL\}\/#person`/);
     expect(layout).toMatch(/profile-photo\.jpg/);
     expect(layout).toMatch(/sameAs/);
     expect(layout).toMatch(/alumniOf/);
@@ -59,16 +59,14 @@ describe('SEO metadata integrity', () => {
     expect(layout).toMatch(/profile-photo\.jpg/);
   });
 
-  it('layout.tsx twitter card is "summary" (not summary_large_image)', () => {
+  it('layout.tsx twitter card is summary_large_image', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
-    expect(layout).toMatch(/card.*summary[^_]/);
+    expect(layout).toMatch(/card.*summary_large_image/);
   });
 
   it('all prasadkavuri.com URLs in layout.tsx use www', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
-    // Should not contain bare prasadkavuri.com (without www)
-    const bareMatches = layout.match(/https:\/\/prasadkavuri\.com(?!\/[^\/]|")/g);
-    expect(bareMatches).toBeNull();
+    expect(layout).not.toMatch(/https:\/\/prasadkavuri\.com/);
   });
 
   it('robots.txt exists and disallows /api/', () => {
@@ -92,6 +90,19 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/Enterprise Control Plane/);
     expect(llmsTxt).toMatch(/Native Browser AI Skill/);
     expect(llmsTxt).toMatch(/AI Spatial Intelligence & World Generation/);
+  });
+
+  it('demos index page exists with CollectionPage structured data and canonical route', () => {
+    const demosPage = readFileSync('src/app/demos/page.tsx', 'utf8');
+    expect(demosPage).toMatch(/CollectionPage/);
+    expect(demosPage).toMatch(/SoftwareApplication/);
+    expect(demosPage).toContain("canonical: '/demos'");
+  });
+
+  it('governance route has dedicated metadata layout with canonical URL', () => {
+    const governanceLayout = readFileSync('src/app/governance/layout.tsx', 'utf8');
+    expect(governanceLayout).toMatch(/title:\s*'Governance Dashboard'/);
+    expect(governanceLayout).toContain("canonical: 'https://www.prasadkavuri.com/governance'");
   });
 
   it('security.txt disclosure contact matches profile email', () => {

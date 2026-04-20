@@ -73,20 +73,28 @@ describe('Hero', () => {
     render(<Hero />);
     expect(screen.getByText(/Signature System: AI Evaluation Showcase/i)).toBeDefined();
     expect(screen.getByText(/Why this matters: quality regressions are surfaced before release/i)).toBeDefined();
-    const link = screen.getByRole('link', { name: /Explore Signature System/i });
-    expect(link.getAttribute('href')).toBe('/demos/evaluation-showcase');
+    const links = screen.getAllByRole('link', { name: /Explore Signature System/i });
+    expect(links.length).toBeGreaterThan(0);
+    expect(links[0].getAttribute('href')).toBe('/demos/evaluation-showcase');
   });
 
-  it('renders Explore All Demos CTA linking to #tools', () => {
+  it('renders Browse All Demos CTA linking to /demos', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /Explore All Demos/i });
-    expect(link.getAttribute('href')).toBe('#tools');
+    const link = screen.getByRole('link', { name: /Browse All 13 Demos/i });
+    expect(link.getAttribute('href')).toBe('/demos');
   });
 
-  it('renders View Signature Demo CTA linking to multi-agent demo', () => {
+  it('renders Explore Signature System CTA linking to evaluation showcase', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /View Signature Demo/i });
-    expect(link.getAttribute('href')).toBe('/demos/multi-agent');
+    const links = screen.getAllByRole('link', { name: /Explore Signature System/i });
+    expect(links.length).toBeGreaterThan(0);
+    expect(links[0].getAttribute('href')).toBe('/demos/evaluation-showcase');
+  });
+
+  it('renders Recruiter Fast-Track CTA linking to recruiter page', () => {
+    render(<Hero />);
+    const link = screen.getByRole('link', { name: /Recruiter Fast-Track/i });
+    expect(link.getAttribute('href')).toBe('/for-recruiters');
   });
 
   it('renders View LinkedIn CTA', () => {

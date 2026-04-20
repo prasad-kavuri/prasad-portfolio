@@ -12,7 +12,9 @@ import { Contact } from "@/components/sections/Contact";
 import { SectionBridge } from "@/components/sections/SectionBridge";
 import { AgentContext } from "@/components/AgentContext";
 
-const siteUrl = "https://www.prasadkavuri.com";
+import { SITE_URL } from '@/data/site-config';
+
+const siteUrl = SITE_URL;
 
 const homePageStructuredData = {
   "@context": "https://schema.org",

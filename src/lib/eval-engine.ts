@@ -5,6 +5,8 @@
  * Used by evals test suite to catch regression in prompt quality.
  */
 
+import { recordSkillInvocation, createTraceId, createSpanId } from './observability';
+
 export interface EvalCase {
   id: string;
   query: string;
@@ -35,6 +37,7 @@ export interface EvalResult {
  *  - Each forbidden topic match deducts 0.25 (floor 0)
  */
 export function scoreResponse(response: string, evalCase: EvalCase): EvalResult {
+  const startTime = Date.now();
   const lower = response.toLowerCase();
   const threshold = evalCase.passingThreshold ?? 0.7;
 
@@ -69,7 +72,7 @@ export function scoreResponse(response: string, evalCase: EvalCase): EvalResult 
   if (missedTerms.length) parts.push(`missed=[${missedTerms.join(', ')}]`);
   if (forbiddenMatches.length) parts.push(`forbidden=[${forbiddenMatches.join(', ')}]`);
 
-  return {
+  const result: EvalResult = {
     caseId: evalCase.id,
     query: evalCase.query,
     score,
@@ -79,6 +82,20 @@ export function scoreResponse(response: string, evalCase: EvalCase): EvalResult 
     forbiddenMatches,
     details: parts.join(' | '),
   };
+
+  recordSkillInvocation({
+    traceId: createTraceId(),
+    spanId: createSpanId(),
+    skillId: 'eval-engine',
+    skillName: 'Evaluation Engine',
+    demoId: 'unknown',
+    triggeredAt: new Date().toISOString(),
+    durationMs: Date.now() - startTime,
+    outcome: passed ? 'pass' : 'error',
+    meta: { score, caseId: evalCase.id },
+  });
+
+  return result;
 }
 
 /** Run a batch of eval cases and return all results. */

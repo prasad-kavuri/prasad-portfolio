@@ -195,6 +195,40 @@ export function getObservabilitySnapshot(): ObservabilitySnapshot {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Skill Invocation Tracing
+// ---------------------------------------------------------------------------
+
+export interface SkillInvocationEvent {
+  traceId: string;
+  spanId: string;
+  skillId: string;
+  skillName: string;
+  demoId: string;
+  triggeredAt: string;
+  durationMs?: number;
+  outcome: 'pass' | 'filtered' | 'error';
+  meta?: Record<string, unknown>;
+}
+
+export function createSpanId(): string {
+  return `span-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+const SKILL_INVOCATION_BUFFER_SIZE = 50;
+const skillInvocationBuffer: SkillInvocationEvent[] = [];
+
+export function recordSkillInvocation(event: SkillInvocationEvent): void {
+  skillInvocationBuffer.unshift(event);
+  if (skillInvocationBuffer.length > SKILL_INVOCATION_BUFFER_SIZE) {
+    skillInvocationBuffer.pop();
+  }
+}
+
+export function getRecentSkillInvocations(limit = 10): SkillInvocationEvent[] {
+  return skillInvocationBuffer.slice(0, limit);
+}
+
 /** Reset in-memory observability counters — for tests only. */
 export function _resetObservability(): void {
   counters.requests = {};
@@ -204,6 +238,7 @@ export function _resetObservability(): void {
   counters.highFrequency = {};
   failureWindows.clear();
   requestWindows.clear();
+  skillInvocationBuffer.length = 0;
 }
 
 /**

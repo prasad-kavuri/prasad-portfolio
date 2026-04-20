@@ -1,6 +1,8 @@
 // src/lib/guardrails.ts
 // 2026 AI Governance Layer — Centralized, observable, testable
 
+import { recordSkillInvocation, createTraceId, createSpanId } from './observability';
+
 export interface GuardrailResult {
   isSafe: boolean;
   score: number;        // 0-1, where 1 = fully safe
@@ -79,6 +81,7 @@ export function checkOutput(
   output: string,
   traceId?: string
 ): GuardrailResult {
+  const startTime = Date.now();
   const issues: string[] = [];
   let sanitized = output;
   const lower = output.toLowerCase();
@@ -122,13 +125,27 @@ export function checkOutput(
 
   const score = Math.max(0, 1 - issues.length * 0.2);
 
-  return {
+  const result: GuardrailResult = {
     isSafe: score >= 0.6,
     score,
     issues,
     sanitizedOutput: sanitized,
     traceId,
   };
+
+  recordSkillInvocation({
+    traceId: createTraceId(traceId),
+    spanId: createSpanId(),
+    skillId: 'guardrails',
+    skillName: 'Guardrails',
+    demoId: 'unknown',
+    triggeredAt: new Date().toISOString(),
+    durationMs: Date.now() - startTime,
+    outcome: issues.length > 0 ? 'filtered' : 'pass',
+    meta: issues.length > 0 ? { issues } : undefined,
+  });
+
+  return result;
 }
 
 export function validateAgentHandoff(

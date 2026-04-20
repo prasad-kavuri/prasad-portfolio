@@ -9,6 +9,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { GOVERNANCE_SNAPSHOT, getGovernanceMetricsView, type EvalSnapshotData, type GovernanceMetricsView } from '@/data/telemetry-snapshots';
 import { LatencyCostChart } from '@/components/observability/LatencyCostChart';
 import { SnapshotTimestamp } from '@/components/SnapshotTimestamp';
+import { SkillActivityFeed } from '@/components/governance/SkillActivityFeed';
 
 // ---------------------------------------------------------------------------
 // Governance summary band — 5 dimensions, always-active static cards
@@ -338,6 +339,18 @@ export default function GovernancePage() {
           <Card className="bg-card border-border p-5">
             <LatencyCostChart />
           </Card>
+        </section>
+
+        {/* Live Skill Activity */}
+        <section className="mb-8" aria-labelledby="skill-activity-heading">
+          <h2 id="skill-activity-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            Live Skill Activity
+          </h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Real-time log of skill invocations across all demos.
+            Resets on server restart (in-memory buffer, last 50 events).
+          </p>
+          <SkillActivityFeed />
         </section>
 
         {/* How it works */}

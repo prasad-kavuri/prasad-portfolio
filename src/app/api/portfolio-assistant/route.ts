@@ -11,7 +11,8 @@ import {
   logApiWarning,
   readJsonObject,
 } from '@/lib/api';
-import { detectAnomaly, logAPIEvent, startTimer } from '@/lib/observability';
+import { detectAnomaly, logAPIEvent, startTimer, recordSkillInvocation, createSpanId } from '@/lib/observability';
+import { maybeCompact, type Message as CompactionMessage } from '@/lib/compaction';
 import { enforceCostControls } from '@/lib/cost-control';
 import { trackModelOutput } from '@/lib/drift-monitor';
 import { checkOutput, detectPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
@@ -151,13 +152,62 @@ ${fullContext}`;
       retrievedDocs = retrieveRelevantDocuments(lastUserMessage.content);
     }
 
-    // Limit conversation history to last 6 messages to prevent context overflow.
-    // System prompt + full knowledgeBase already consumes most of the context window.
-    const recentMessages = messages.slice(-6);
+    // Strategic compaction: summarise old turns after COMPACTION_TURN_THRESHOLD
+    // to keep the context window lean and prevent hallucination drift.
+    const compactionResult = await maybeCompact(
+      messages as CompactionMessage[],
+      async (prompt: string) => {
+        const compResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }],
+            stream: false,
+            max_tokens: 256,
+          }),
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!compResp.ok) return '';
+        const d = await compResp.json() as { choices?: Array<{ message?: { content?: string } }> };
+        return d.choices?.[0]?.message?.content ?? '';
+      }
+    );
+
+    if (compactionResult.wasCompacted) {
+      recordSkillInvocation({
+        traceId: context.traceId,
+        spanId: createSpanId(),
+        skillId: 'strategic-compaction',
+        skillName: 'Strategic Compaction',
+        demoId: 'portfolio-assistant',
+        triggeredAt: new Date().toISOString(),
+        outcome: 'pass',
+        meta: { turnCount: compactionResult.turnCount },
+      });
+    }
+
+    // Conversation messages after compaction (exclude any system memory messages —
+    // those are folded into the system prompt below)
+    const compactionMemory = compactionResult.wasCompacted
+      ? compactionResult.messages.find(
+          (m) => m.role === 'system' && m.content.startsWith('[CONVERSATION MEMORY')
+        )
+      : undefined;
+
+    const postCompactionConversation = compactionResult.messages
+      .filter((m) => m.role !== 'system') as Message[];
+
+    // Limit to last 6 messages as a final safety cap on context size.
+    const recentMessages = postCompactionConversation.slice(-6);
 
     // Prepare messages for Groq API
+    const effectiveSystemPrompt = compactionMemory
+      ? `${systemPrompt}\n\n${compactionMemory.content}`
+      : systemPrompt;
+
     const groqMessages = [
-      { role: 'system' as const, content: systemPrompt },
+      { role: 'system' as const, content: effectiveSystemPrompt },
       ...recentMessages,
     ];
 

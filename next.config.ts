@@ -4,11 +4,15 @@ import { LEGACY_HTML_REDIRECTS } from "./src/data/legacy-routes";
 const nextConfig: NextConfig = {
   turbopack: {},
   async redirects() {
-    return LEGACY_HTML_REDIRECTS.map(({ source, destination }) => ({
-      source,
-      destination,
-      statusCode: 301,
-    }));
+    return [
+      ...LEGACY_HTML_REDIRECTS.map(({ source, destination }) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
+      // Catch-all: any /demos/*.html not covered above → /demos
+      { source: '/demos/:path*.html', destination: '/demos', permanent: true },
+    ];
   },
   async headers() {
     return [

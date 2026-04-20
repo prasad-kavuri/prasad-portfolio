@@ -164,6 +164,14 @@ export default function GovernancePage() {
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-6xl mx-auto">
 
+        {/* Demo environment notice */}
+        <div
+          role="note"
+          className="mb-6 border-l-[3px] border-blue-400/50 bg-blue-500/5 px-[14px] py-[10px] text-[13px] text-muted-foreground"
+        >
+          Demo environment — metrics shown are simulated to illustrate production monitoring patterns.
+        </div>
+
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <div className="flex items-center gap-2">

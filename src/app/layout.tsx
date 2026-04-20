@@ -184,6 +184,17 @@ export default function RootLayout({
             }}
           />
           {children}
+          <footer className="border-t border-border py-3 px-6">
+            <a
+              href="/governance"
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span
+                style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#22c55e', display: 'inline-block', flexShrink: 0 }}
+              />
+              AI Platform Status: Operational
+            </a>
+          </footer>
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>

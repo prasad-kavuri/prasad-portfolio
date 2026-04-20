@@ -107,7 +107,7 @@ test.describe('Mobile AI — multi-agent HITL touch targets', () => {
   test('HITL action buttons are at least 44×44px', async ({ page }) => {
     await page.goto('/demos/multi-agent', { waitUntil: 'networkidle' });
 
-    const runWorkflow = page.getByRole('button', { name: /Run workflow/i });
+    const runWorkflow = page.getByLabel('Start multi-agent analysis workflow');
     await expect(runWorkflow).toBeVisible({ timeout: 10_000 });
     const box = await runWorkflow.boundingBox();
     if (box) {

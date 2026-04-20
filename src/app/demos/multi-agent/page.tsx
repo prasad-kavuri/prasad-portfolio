@@ -470,7 +470,8 @@ export default function MultiAgentPage() {
               <Button
                 onClick={handleAnalyze}
                 disabled={status === "running" || !url.trim()}
-                className="min-h-[44px] bg-blue-600 hover:bg-blue-700"
+                aria-label="Start multi-agent analysis workflow"
+                className="min-h-[44px] bg-blue-600 hover:bg-blue-700 focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
               >
                 {status === "running" ? (
                   <>
@@ -613,13 +614,27 @@ export default function MultiAgentPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    <Button onClick={handleApprovePending} className="min-h-[44px] min-w-[44px] px-6 py-3 bg-green-600 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-green-400">
+                    <Button 
+                      onClick={handleApprovePending} 
+                      aria-label="Approve strategist recommendation and finalize workflow"
+                      className="min-h-[44px] min-w-[44px] px-6 py-3 bg-green-600 hover:bg-green-700 focus-visible:ring-4 focus-visible:ring-green-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
+                    >
                       Approve
                     </Button>
-                    <Button onClick={handleRegeneratePending} variant="outline" className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-2 focus-visible:ring-blue-400">
+                    <Button 
+                      onClick={handleRegeneratePending} 
+                      variant="outline" 
+                      aria-label="Apply revision guidance to strategist recommendation"
+                      className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
+                    >
                       Revise
                     </Button>
-                    <Button onClick={handleCancelPending} variant="outline" className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-2 focus-visible:ring-amber-400">
+                    <Button 
+                      onClick={handleCancelPending} 
+                      variant="outline" 
+                      aria-label="Cancel pending review and return to start"
+                      className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-4 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
+                    >
                       Cancel
                     </Button>
                   </div>

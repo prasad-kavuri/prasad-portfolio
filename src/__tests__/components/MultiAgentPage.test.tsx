@@ -46,7 +46,7 @@ describe('MultiAgentPage HITL flow', () => {
   it('pauses at strategist approval gate with approve/revise/cancel controls', async () => {
     render(React.createElement(MultiAgentPage));
 
-    fireEvent.click(screen.getByRole('button', { name: /Run workflow/i }));
+    fireEvent.click(screen.getByLabelText(/Start multi-agent analysis workflow/i));
 
     await waitFor(() => {
       expect(screen.getByText(/Strategist requires approval to proceed/i)).toBeInTheDocument();
@@ -57,12 +57,13 @@ describe('MultiAgentPage HITL flow', () => {
     const reviewInput = screen.getByLabelText(/Strategist revision guidance/i);
     fireEvent.change(reviewInput, { target: { value: 'Revised strategist action for safer rollout.' } });
 
-    fireEvent.click(screen.getByRole('button', { name: /Revise/i }));
+    fireEvent.click(screen.getByLabelText(/Apply revision guidance/i));
     await waitFor(() => {
       expect(screen.getByText(/Revision applied/i)).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /^Approve$/i }));
+    fireEvent.click(screen.getByLabelText(/Approve strategist recommendation/i));
+
 
     await waitFor(() => {
       expect(screen.getByText('Revised strategist action for safer rollout.')).toBeInTheDocument();

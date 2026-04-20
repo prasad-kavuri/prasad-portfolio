@@ -45,13 +45,13 @@ test.describe('Multi-Agent Workflow', () => {
 
     await page.goto('/demos/multi-agent');
     const responsePromise = page.waitForResponse((response) => response.url().includes('/api/multi-agent'));
-    await page.getByRole('button', { name: /Run workflow/i }).click();
+    await page.getByLabel('Start multi-agent analysis workflow').click();
     await responsePromise;
 
     await expect(page.getByText(/Human Approval Required/i)).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/Strategist requires approval to proceed/i)).toBeVisible({ timeout: 15000 });
 
-    await page.getByRole('button', { name: /^Approve$/i }).click();
+    await page.getByLabel('Approve strategist recommendation and finalize workflow').click();
 
     await expect(page.getByText(/Final Recommendation/i)).toBeVisible();
     await expect(page.getByText(/Ship approval-first workflow with explicit trace panel/i)).toBeVisible();

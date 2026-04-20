@@ -47,7 +47,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Model Quantization').first()).toBeVisible();
     await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
     await expect(page.getByText('Native Browser AI Skill').first()).toBeVisible();
-    await expect(page.getByText('AI Spatial Intelligence & World Generation').first()).toBeVisible();
+    await expect(page.getByText('Real-Time Spatial AI + World Modeling Engine').first()).toBeVisible();
   });
 
   test('Desktop badge appears on exactly 4 cards', async ({ page }) => {

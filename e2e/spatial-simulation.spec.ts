@@ -115,7 +115,7 @@ test.describe('World Generation demo', () => {
     test.skip(test.info().project.name.toLowerCase().includes('mobile') || test.info().project.name.toLowerCase() === 'webkit', '3D interaction is unstable on mobile and webkit viewports');
     await page.goto('/demos/world-generation');
 
-    await expect(page.getByRole('heading', { name: 'AI Spatial Intelligence & World Generation' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Real-Time Spatial AI + World Modeling Engine' })).toBeVisible();
     await expect(page.getByText('Desktop-Friendly', { exact: true })).toBeVisible();
     await expect(page.getByText(/Desktop-friendly:/i)).toBeVisible();
     await expect(page.getByText('World Prompt Input')).toBeVisible();
@@ -282,7 +282,7 @@ test.describe('World Generation demo', () => {
     const page = await context.newPage();
 
     await page.goto('/demos/world-generation');
-    await expect(page.getByRole('heading', { name: 'AI Spatial Intelligence & World Generation' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Real-Time Spatial AI + World Modeling Engine' })).toBeVisible();
     await expect(page.getByText(/Desktop-friendly:/i)).toBeVisible();
 
     await context.close();

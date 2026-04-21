@@ -12,7 +12,10 @@ import { AdaptiveExecutionBadge } from '@/components/AdaptiveExecutionBadge';
 import { CapabilityNotice } from '@/components/CapabilityNotice';
 import { ExecutionModeToast } from '@/components/ExecutionModeToast';
 
-type Status = 'idle' | 'loading-fp32' | 'loading-int8' | 'ready' | 'benchmarking' | 'done';
+type Status = 'idle' | 'loading-fp32' | 'loading-int8' | 'ready' | 'benchmarking' | 'done' | 'degraded';
+type DemoMode = 'local' | 'simulated';
+type BrowserBackend = 'webgpu' | 'webnn' | 'wasm';
+type InitErrorCode = 'backend_unavailable' | 'asset_fetch_failed' | 'initialization_failed';
 
 interface BenchmarkResult {
   runs: number[];
@@ -32,6 +35,18 @@ interface ModelRefs {
   int8: any;
 }
 
+interface BrowserInitError {
+  code: InitErrorCode;
+  message: string;
+  backend?: BrowserBackend;
+}
+
+interface InitFailure {
+  code: InitErrorCode;
+  title: string;
+  message: string;
+}
+
 const EXAMPLE_TEXTS = [
   'This product is absolutely amazing and exceeded all expectations',
   'The service was terrible and I\'m very disappointed',
@@ -43,6 +58,81 @@ const EXAMPLE_TEXTS = [
 const MODEL_NAME = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
 const FP32_SIZE_MB = 268;
 const INT8_SIZE_MB = 67;
+const WASM_PATH_CANDIDATES = [
+  'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/',
+  'https://unpkg.com/onnxruntime-web/dist/',
+] as const;
+
+function logInit(event: string, details?: Record<string, unknown>) {
+  if (process.env.NODE_ENV === 'test') return;
+  if (details) {
+    console.info('[quantization:init]', event, details);
+    return;
+  }
+  console.info('[quantization:init]', event);
+}
+
+function isBrowserInitError(error: unknown): error is BrowserInitError {
+  return Boolean(error && typeof error === 'object' && 'code' in error && 'message' in error);
+}
+
+function parseInitError(error: unknown, backend?: BrowserBackend): BrowserInitError {
+  if (isBrowserInitError(error)) return error;
+  const message = error instanceof Error ? error.message : String(error);
+  const lower = message.toLowerCase();
+
+  if (
+    lower.includes('failed to fetch') ||
+    lower.includes('no available backend') ||
+    lower.includes('err: [wasm]') ||
+    lower.includes('networkerror')
+  ) {
+    return { code: 'asset_fetch_failed', message, backend };
+  }
+
+  if (
+    lower.includes('backend') ||
+    lower.includes('webgpu') ||
+    lower.includes('webnn') ||
+    lower.includes('wasm')
+  ) {
+    return { code: 'backend_unavailable', message, backend };
+  }
+
+  return { code: 'initialization_failed', message, backend };
+}
+
+function toInitFailure(error: BrowserInitError): InitFailure {
+  if (error.code === 'asset_fetch_failed') {
+    return {
+      code: error.code,
+      title: 'Local Benchmark Models Unavailable',
+      message: 'This browser session could not fetch local model/backend assets for quantization benchmarking. Retry initialization or continue with simulated benchmark mode.',
+    };
+  }
+
+  if (error.code === 'backend_unavailable') {
+    return {
+      code: error.code,
+      title: 'Local Benchmark Models Unavailable',
+      message: 'A compatible browser inference backend was not available for local quantization benchmarking. Retry initialization or continue with simulated benchmark mode.',
+    };
+  }
+
+  return {
+    code: 'initialization_failed',
+    title: 'Local Benchmark Models Unavailable',
+    message: 'The local quantization benchmark runtime failed to initialize in this browser session. Retry initialization or continue with simulated benchmark mode.',
+  };
+}
+
+function getSimulatedResults(text: string): BenchmarkResults {
+  return {
+    fp32: { runs: [847, 831, 863, 819, 857], avg: 843, label: 'POSITIVE', confidence: 0.9967 },
+    int8: { runs: [312, 298, 321, 305, 314], avg: 310, label: 'POSITIVE', confidence: 0.9954 },
+    text,
+  };
+}
 
 export default function QuantizationPage() {
   const exec = useExecutionStrategy({
@@ -57,7 +147,24 @@ export default function QuantizationPage() {
 
   const [inputText, setInputText] = useState('');
   const [results, setResults] = useState<BenchmarkResults | null>(null);
+  const [demoMode, setDemoMode] = useState<DemoMode>('local');
+  const [initFailure, setInitFailure] = useState<InitFailure | null>(null);
+  const [selectedBackend, setSelectedBackend] = useState<BrowserBackend | null>(null);
+
   const modelsRef = useRef<ModelRefs>({ fp32: null, int8: null });
+  const isMountedRef = useRef(false);
+  const isInitInFlightRef = useRef(false);
+  const initAttemptRef = useRef(0);
+  const activeWasmPathRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      initAttemptRef.current += 1;
+      isInitInFlightRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!exec.canAttemptLocal) return;
@@ -65,92 +172,233 @@ export default function QuantizationPage() {
     return () => cancelPreload();
   }, [exec.canAttemptLocal]);
 
-  const loadModels = async () => {
-    setStatus('loading-fp32');
-    setProgress(0);
+  const resetModels = () => {
+    modelsRef.current = { fp32: null, int8: null };
+    setSelectedBackend(null);
+  };
+
+  const getBackendCandidates = (): BrowserBackend[] => {
+    const nav = (globalThis as any).navigator;
+    const candidates: BrowserBackend[] = [];
+    if (nav?.gpu) candidates.push('webgpu');
+    if (nav?.ml) candidates.push('webnn');
+    candidates.push('wasm');
+    return [...new Set(candidates)];
+  };
+
+  const resolveWasmPath = async (): Promise<string | null> => {
+    for (const base of WASM_PATH_CANDIDATES) {
+      const probeUrl = `${base}ort-wasm-simd-threaded.wasm`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      try {
+        const response = await fetch(probeUrl, { method: 'HEAD', signal: controller.signal });
+        if (response.ok) return base;
+      } catch {
+        // Try next candidate.
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    return null;
+  };
+
+  const activateSimulatedMode = (reason: string | null) => {
+    initAttemptRef.current += 1;
+    isInitInFlightRef.current = false;
+    resetModels();
+    setDemoMode('simulated');
     setError('');
     setResults(null);
+    setProgress(0);
+    setProgressMsg('');
+    if (reason) {
+      setInitFailure({
+        code: 'initialization_failed',
+        title: 'Local Benchmark Models Unavailable',
+        message: reason,
+      });
+    }
+    setStatus('ready');
+    logInit('fallback_activated', {
+      reason: reason ?? 'manual_simulated_mode',
+      previousBackend: selectedBackend,
+      wasmPath: activeWasmPathRef.current,
+    });
+  };
+
+  const initializeWithBackend = async (
+    pipeline: (...args: any[]) => Promise<any>,
+    backend: BrowserBackend,
+    attemptId: number,
+  ) => {
+    setStatus('loading-fp32');
+    setProgressMsg(`Loading FP32 model via ${backend} (1/2)...`);
+    setProgress(10);
+
+    const fp32Model = await pipeline(
+      'sentiment-analysis',
+      MODEL_NAME,
+      {
+        device: backend,
+        dtype: 'fp32' as any,
+        progress_callback: (p: any) => {
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+          if (p.progress) {
+            const pct = Math.round(10 + p.progress * 40);
+            setProgress(pct);
+          }
+        },
+      },
+    );
+
+    if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+    modelsRef.current.fp32 = fp32Model;
+    setProgress(50);
+
+    setStatus('loading-int8');
+    setProgressMsg(`Loading INT8 model via ${backend} (2/2)...`);
+    setProgress(50);
+
+    const int8Model = await pipeline(
+      'sentiment-analysis',
+      MODEL_NAME,
+      {
+        device: backend,
+        dtype: 'q8' as any,
+        progress_callback: (p: any) => {
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+          if (p.progress) {
+            const pct = Math.round(50 + p.progress * 50);
+            setProgress(pct);
+          }
+        },
+      },
+    );
+
+    if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+    modelsRef.current.int8 = int8Model;
+    setSelectedBackend(backend);
+  };
+
+  // Root-cause note: production hard-fail occurred because WASM/backend/model fetch failures were not
+  // handled as recoverable init states. We now try browser backends safely and degrade to simulated mode.
+  const loadModels = async () => {
+    if (isInitInFlightRef.current) return;
+
+    const attemptId = initAttemptRef.current + 1;
+    initAttemptRef.current = attemptId;
+
+    resetModels();
+    setError('');
+    setResults(null);
+    setInitFailure(null);
+
+    if (!exec.canAttemptLocal) {
+      activateSimulatedMode('Local model benchmarking is unavailable on this device. Using simulated benchmark mode.');
+      return;
+    }
+
+    isInitInFlightRef.current = true;
+    setDemoMode('local');
+    setStatus('loading-fp32');
+    setProgress(0);
+    setProgressMsg('Importing Transformers.js...');
+
+    logInit('init_start', {
+      canAttemptLocal: exec.canAttemptLocal,
+      crossOriginIsolated: globalThis.crossOriginIsolated === true,
+    });
 
     try {
       const { pipeline, env } = await loadTransformersModule();
       env.allowLocalModels = false;
       env.allowRemoteModels = true;
 
-      // Load FP32 model
-      setProgressMsg('Loading FP32 model (1/2)...');
-      setProgress(10);
+      const wasmPath = await resolveWasmPath();
+      activeWasmPathRef.current = wasmPath;
+      if (env.backends?.onnx?.wasm && wasmPath) {
+        env.backends.onnx.wasm.wasmPaths = wasmPath;
+      }
 
-      const fp32Model = await pipeline(
-        'sentiment-analysis',
-        MODEL_NAME,
-        {
-          dtype: 'fp32' as any,
-          progress_callback: (p: any) => {
-            if (p.progress) {
-              const pct = Math.round(10 + p.progress * 40);
-              setProgress(pct);
-            }
-          },
+      logInit('asset_resolution', {
+        modelName: MODEL_NAME,
+        wasmPath: wasmPath ?? 'default',
+      });
+
+      const backends = getBackendCandidates();
+      logInit('backend_candidates', { backends });
+
+      let lastError: BrowserInitError | null = null;
+      for (const backend of backends) {
+        if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+        try {
+          logInit('backend_init_start', { backend });
+          await initializeWithBackend(pipeline, backend, attemptId);
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+
+          setProgress(100);
+          setProgressMsg('Ready!');
+          setStatus('ready');
+          logInit('backend_init_success', { backend });
+          return;
+        } catch (error) {
+          resetModels();
+          lastError = parseInitError(error, backend);
+          logInit('backend_init_failed', {
+            backend,
+            code: lastError.code,
+            message: lastError.message,
+          });
+        }
+      }
+
+      throw (
+        lastError ?? {
+          code: 'backend_unavailable',
+          message: 'No browser backend could be initialized.',
         }
       );
-
-
-      modelsRef.current.fp32 = fp32Model;
-      setProgress(50);
-
-      // Load INT8 model
-      setStatus('loading-int8');
-      setProgressMsg('Loading INT8 model (2/2)...');
-      setProgress(50);
-
-     const int8Model = await pipeline(
-        'sentiment-analysis',
-        MODEL_NAME,
-        {
-          dtype: 'q8' as any,
-          progress_callback: (p: any) => {
-            if (p.progress) {
-              const pct = Math.round(50 + p.progress * 50);
-              setProgress(pct);
-            }
-          },
-        }
-      );
-
-      modelsRef.current.int8 = int8Model;
-      setProgress(100);
-      setProgressMsg('Ready!');
-      setStatus('ready');
-    } catch (e: any) {
-      console.error('Model load error:', e);
-      setError(e?.message || 'Failed to load models. Check console for details.');
-      setStatus('ready'); // Allow retry
+    } catch (error) {
+      if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+      const parsed = parseInitError(error);
+      setError(parsed.message);
+      setInitFailure(toInitFailure(parsed));
+      setStatus('degraded');
+      logInit('fallback_activated', {
+        code: parsed.code,
+        message: parsed.message,
+      });
+    } finally {
+      if (initAttemptRef.current === attemptId) {
+        isInitInFlightRef.current = false;
+      }
     }
   };
 
   const runBenchmark = async () => {
     if (!inputText.trim()) return;
 
-    // --- SIMULATED PATH (mobile / low-memory) ---
-    if (!exec.canAttemptLocal) {
+    if (!exec.canAttemptLocal || demoMode === 'simulated') {
       setStatus('benchmarking');
       setError('');
       setProgress(0);
-      await new Promise(r => setTimeout(r, 1200));
+      await new Promise((r) => setTimeout(r, 700));
+      if (!isMountedRef.current) return;
       setProgress(50);
-      await new Promise(r => setTimeout(r, 800));
+      await new Promise((r) => setTimeout(r, 450));
+      if (!isMountedRef.current) return;
       setProgress(100);
-      setResults({
-        fp32: { runs: [847, 831, 863, 819, 857], avg: 843, label: 'POSITIVE', confidence: 0.9967 },
-        int8: { runs: [312, 298, 321, 305, 314], avg: 310, label: 'POSITIVE', confidence: 0.9954 },
-        text: inputText,
-      });
+      setResults(getSimulatedResults(inputText));
       setStatus('done');
       return;
     }
-    // --- END SIMULATED PATH ---
 
-    if (!modelsRef.current.fp32 || !modelsRef.current.int8) return;
+    if (!modelsRef.current.fp32 || !modelsRef.current.int8) {
+      setError('Local benchmark models are not initialized. Retry initialization or use simulated benchmark mode.');
+      return;
+    }
 
     setStatus('benchmarking');
     setError('');
@@ -162,7 +410,6 @@ export default function QuantizationPage() {
     };
 
     try {
-      // Run FP32 benchmark (5 runs)
       const fp32Runs: number[] = [];
       let fp32Label = '';
       let fp32Confidence = 0;
@@ -172,6 +419,7 @@ export default function QuantizationPage() {
 
         const t0 = performance.now();
         const result = await modelsRef.current.fp32(inputText);
+        if (!isMountedRef.current) return;
         const elapsed = performance.now() - t0;
 
         fp32Runs.push(Math.round(elapsed));
@@ -186,7 +434,6 @@ export default function QuantizationPage() {
         confidence: fp32Confidence,
       };
 
-      // Run INT8 benchmark (5 runs)
       const int8Runs: number[] = [];
       let int8Label = '';
       let int8Confidence = 0;
@@ -196,6 +443,7 @@ export default function QuantizationPage() {
 
         const t0 = performance.now();
         const result = await modelsRef.current.int8(inputText);
+        if (!isMountedRef.current) return;
         const elapsed = performance.now() - t0;
 
         int8Runs.push(Math.round(elapsed));
@@ -223,7 +471,7 @@ export default function QuantizationPage() {
   const calculateSpeedup = () => {
     if (!results?.fp32 || !results?.int8) return null;
     const speedupPercent = Math.round(
-      ((results.fp32.avg - results.int8.avg) / results.fp32.avg) * 100
+      ((results.fp32.avg - results.int8.avg) / results.fp32.avg) * 100,
     );
     const speedupMs = results.fp32.avg - results.int8.avg;
     return { ms: speedupMs, percent: speedupPercent };
@@ -242,7 +490,7 @@ export default function QuantizationPage() {
   const maxTime = results
     ? Math.max(
         ...(results.fp32?.runs || []),
-        ...(results.int8?.runs || [])
+        ...(results.int8?.runs || []),
       )
     : 100;
 
@@ -304,7 +552,7 @@ export default function QuantizationPage() {
             </p>
             <p className="mb-6 text-sm text-muted-foreground">No API key required. Models downloaded on first use</p>
             <button
-              onClick={exec.canAttemptLocal ? loadModels : () => setStatus('ready')}
+              onClick={exec.canAttemptLocal ? loadModels : () => activateSimulatedMode('Local model benchmarking is unavailable on this device. Using simulated benchmark mode.')}
               className="min-h-[44px] rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
               {exec.canAttemptLocal ? 'Load Models & Start Benchmark' : 'Try Simulated Benchmark'}
@@ -344,23 +592,53 @@ export default function QuantizationPage() {
           </Card>
         )}
 
-        {/* Error State */}
-        {error && (
-          <Card className="border-red-800 mb-6 bg-red-900/20 p-6">
-            <p className="mb-2 font-medium text-red-400">Error</p>
-            <p className="mb-4 text-sm text-red-300">{error}</p>
-            <button
-              onClick={loadModels}
-              className="rounded bg-red-700 px-4 py-2 text-sm text-white hover:bg-red-600"
-            >
-              Retry
-            </button>
+        {/* Degraded Recovery State */}
+        {status === 'degraded' && initFailure && (
+          <Card className="mb-6 border-border bg-card p-6">
+            <p className="mb-2 font-medium text-foreground">{initFailure.title}</p>
+            <p className="mb-4 text-sm text-muted-foreground">{initFailure.message}</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={loadModels}
+                className="min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Retry Initialization
+              </button>
+              <button
+                onClick={() => activateSimulatedMode('Simulated benchmark mode is active for this session.')}
+                className="min-h-[44px] rounded-lg border border-border bg-muted px-4 py-2 text-sm text-muted-foreground hover:bg-muted"
+              >
+                Use Simulated Benchmark Mode
+              </button>
+            </div>
           </Card>
         )}
 
         {/* Main UI */}
         {(status === 'ready' || status === 'benchmarking' || status === 'done') && (
           <div className="space-y-6">
+            {demoMode === 'simulated' && (
+              <Card className="border-border bg-card p-4">
+                <p className="text-sm text-muted-foreground">
+                  Simulated benchmark mode is active. FP32/INT8 results are representative sample values for this browser session.
+                </p>
+                {exec.canAttemptLocal && (
+                  <button
+                    onClick={loadModels}
+                    className="mt-3 min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  >
+                    Retry Initialization
+                  </button>
+                )}
+              </Card>
+            )}
+
+            {!!error && (
+              <Card className="border-red-800 bg-red-900/20 p-4">
+                <p className="text-sm text-red-300">{error}</p>
+              </Card>
+            )}
+
             {/* Step 1: Text Input & Examples */}
             <Card className="border-border bg-card p-6">
               <label className="mb-3 block text-sm font-medium text-muted-foreground">
@@ -483,7 +761,7 @@ export default function QuantizationPage() {
                         ))}
                       </div>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {results.fp32?.runs.map(r => r.toString()).join(', ')}
+                        {results.fp32?.runs.map((r) => r.toString()).join(', ')}
                       </p>
                     </div>
                   </Card>
@@ -543,7 +821,7 @@ export default function QuantizationPage() {
                         ))}
                       </div>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {results.int8?.runs.map(r => r.toString()).join(', ')}
+                        {results.int8?.runs.map((r) => r.toString()).join(', ')}
                       </p>
                     </div>
                   </Card>

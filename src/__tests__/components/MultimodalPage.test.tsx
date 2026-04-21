@@ -239,4 +239,129 @@ describe('MultimodalPage', () => {
 
     expect(screen.queryByText(/Simulated walkthrough/i)).not.toBeInTheDocument();
   });
+
+  it('handles invalid zero-shot labels with inline validation error', async () => {
+    render(React.createElement(MultimodalPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Drag & drop an image/i)).toBeInTheDocument();
+    });
+
+    const urlInput = screen.getByPlaceholderText(/https:\/\/example.com\/image.jpg/i);
+    fireEvent.change(urlInput, { target: { value: 'https://example.com/test.jpg' } });
+    fireEvent.click(screen.getByRole('button', { name: /^Load$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Classify Image')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Zero-Shot/i }));
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\. cat, dog/i), {
+      target: { value: ',,,   ,' },
+    });
+    fireEvent.click(screen.getAllByRole('button', { name: /Classify Image/i })[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Please enter at least one label/i)).toBeInTheDocument();
+    });
+  });
+
+  it('handles image URL fetch failure with user-friendly error', async () => {
+    mockFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes('broken.jpg')) {
+        return {
+          ok: false,
+          blob: async () => new Blob(['bad']),
+        } as any;
+      }
+      return {
+        ok: true,
+        blob: async () => new Blob(['img']),
+      } as any;
+    });
+    render(React.createElement(MultimodalPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Drag & drop an image/i)).toBeInTheDocument();
+    });
+
+    const urlInput = screen.getByPlaceholderText(/https:\/\/example.com\/image.jpg/i);
+    fireEvent.change(urlInput, { target: { value: 'https://example.com/broken.jpg' } });
+    fireEvent.click(screen.getByRole('button', { name: /^Load$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Could not load URL/i)).toBeInTheDocument();
+    });
+  });
+
+  it('runs class/zero-shot flow in simulated mode when local inference is unavailable', async () => {
+    mockExecReturn = makeExecState({ canAttemptLocal: false, mode: 'simulated' });
+    render(React.createElement(MultimodalPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Try Simulated Demo/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/Drag & drop an image/i)).toBeInTheDocument();
+    });
+
+    const urlInput = screen.getByPlaceholderText(/https:\/\/example.com\/image.jpg/i);
+    fireEvent.change(urlInput, { target: { value: 'https://example.com/test.jpg' } });
+    fireEvent.click(screen.getByRole('button', { name: /^Load$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Classify Image')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getAllByRole('button', { name: /Classify Image/i })[0]);
+    await waitFor(() => {
+      expect(screen.getByText('Results')).toBeInTheDocument();
+      expect(screen.getByText('person')).toBeInTheDocument();
+    });
+  });
+
+  it('attempts non-wasm browser backends when capability hints are available', async () => {
+    Object.defineProperty(navigator, 'gpu', { configurable: true, value: {} });
+    Object.defineProperty(navigator, 'ml', { configurable: true, value: {} });
+
+    render(React.createElement(MultimodalPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Drag & drop an image/i)).toBeInTheDocument();
+    });
+  });
+
+  it('keeps degraded recovery options available when retry also fails', async () => {
+    mockPipeline.mockRejectedValue(new Error('backend failed'));
+    render(React.createElement(MultimodalPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Retry Initialization/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Retry Initialization/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/Local Inference/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Switch to Simulated Demo/i })).toBeInTheDocument();
+    });
+  });
+
+  it('continues initialization when a backend attempt fails but a later one succeeds', async () => {
+    mockPipeline.mockRejectedValueOnce(new Error('unexpected runtime crash'));
+    render(React.createElement(MultimodalPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/Drag & drop an image/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Local Inference Startup Failed')).not.toBeInTheDocument();
+  });
+
+  it('renders execution mode toast when recovery state is active', () => {
+    mockExecReturn = makeExecState({ fallbackTriggered: true, isRecovering: true });
+    render(React.createElement(MultimodalPage));
+    expect(screen.getByText(/Switched to simulated mode/i)).toBeInTheDocument();
+  });
 });

@@ -192,4 +192,84 @@ describe('VectorSearchPage', () => {
     );
     expect(warningCalls).toHaveLength(0);
   });
+
+  it('local mode search flow returns ranked results', async () => {
+    render(React.createElement(VectorSearchPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Model & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText(/What is Prasad's AI experience/i), {
+      target: { value: 'AI platform leadership' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Search$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Top 5 Retrieved Documents/i)).toBeInTheDocument();
+    });
+  });
+
+  it('mobile/low-capability path can start directly in fallback sample mode', async () => {
+    mockExecReturn = makeExecState({ canAttemptLocal: false, mode: 'simulated' });
+    render(React.createElement(VectorSearchPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Try Simulated Demo/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/Fallback sample mode is active/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+
+    expect(screen.queryByRole('button', { name: /Retry Initialization/i })).not.toBeInTheDocument();
+  });
+
+  it('keeps query action disabled when input is empty', async () => {
+    render(React.createElement(VectorSearchPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Model & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /^Search$/i })).toBeDisabled();
+  });
+
+  it('tries non-wasm browser backends when capability hints are available', async () => {
+    Object.defineProperty(navigator, 'gpu', { configurable: true, value: {} });
+    Object.defineProperty(navigator, 'ml', { configurable: true, value: {} });
+
+    render(React.createElement(VectorSearchPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Model & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+  });
+
+  it('stays recoverable when retry also fails initialization', async () => {
+    mockPipeline.mockRejectedValue(new Error('backend failed'));
+    render(React.createElement(VectorSearchPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Load Model & Start/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Retry Initialization/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Retry Initialization/i }));
+    await waitFor(() => {
+      expect(screen.getByText('Local Semantic Model Unavailable')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Use Fallback Sample Mode/i })).toBeInTheDocument();
+    });
+  });
+
+  it('continues initialization when a backend attempt fails but a later one succeeds', async () => {
+    mockPipeline.mockRejectedValueOnce(new Error('unexpected runtime crash'));
+    render(React.createElement(VectorSearchPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Load Model & Start/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/failed to initialize in this browser session/i)).not.toBeInTheDocument();
+  });
 });

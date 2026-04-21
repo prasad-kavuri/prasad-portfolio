@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               // huggingface.co for model weights; blob: for local object-URL fetches
-              "connect-src 'self' https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co blob: https://api.groq.com https://*.hf.space https://va.vercel-scripts.com",
+              "connect-src 'self' https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co blob: https:",
               "font-src 'self' data:",
               "frame-ancestors 'none'",
             ].join("; "),

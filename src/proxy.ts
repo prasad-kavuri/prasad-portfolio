@@ -21,7 +21,7 @@ export function proxy(request: NextRequest) {
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://va.vercel-scripts.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.groq.com https://*.hf.space https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co blob: https://va.vercel-scripts.com; frame-ancestors 'none';"
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://va.vercel-scripts.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co blob: https:; frame-ancestors 'none';"
   );
   // Required for SharedArrayBuffer used by WASM multi-threading
   response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');

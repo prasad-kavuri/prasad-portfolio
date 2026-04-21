@@ -268,6 +268,13 @@ export default function MultimodalPage() {
     setResult(null);
 
     if (!exec.canAttemptLocal) {
+      console.warn('[multimodal] simulation mode activated', {
+        reason: 'canAttemptLocal=false',
+        crossOriginIsolated: globalThis.crossOriginIsolated,
+        hint: !globalThis.crossOriginIsolated
+          ? 'COEP/COOP headers missing — check CSP config'
+          : 'Browser/device incompatibility (headers OK)',
+      });
       setDemoMode('simulated');
       setStatus('ready');
       return;
@@ -352,6 +359,13 @@ export default function MultimodalPage() {
   };
 
   const switchToSimulatedMode = () => {
+    console.warn('[multimodal] simulation mode activated', {
+      reason: 'manual switch',
+      crossOriginIsolated: globalThis.crossOriginIsolated,
+      hint: !globalThis.crossOriginIsolated
+        ? 'COEP/COOP headers missing — check CSP config'
+        : 'Browser/device incompatibility (headers OK)',
+    });
     initAttemptRef.current += 1;
     isInitInFlightRef.current = false;
     resetPipelines();

@@ -205,6 +205,13 @@ export default function QuantizationPage() {
   };
 
   const activateSimulatedMode = (reason: string | null) => {
+    console.warn('[quantization] simulation mode activated', {
+      reason,
+      crossOriginIsolated: globalThis.crossOriginIsolated,
+      hint: !globalThis.crossOriginIsolated
+        ? 'COEP/COOP headers missing — check CSP config'
+        : 'Browser/device incompatibility (headers OK)',
+    });
     initAttemptRef.current += 1;
     isInitInFlightRef.current = false;
     resetModels();

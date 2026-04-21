@@ -89,4 +89,26 @@ describe('world generation helpers', () => {
     expect(mock.availability).toBe('available');
     expect(mock.sceneSpec.exportReadiness).toBe('ready');
   });
+
+  it('falls back to mock provider for unknown provider ids and includes image context note', async () => {
+    const unknownProvider = await generateWorldWithProvider({
+      provider: 'unknown' as any,
+      prompt: 'Generate world from uploaded corridor snapshot.',
+      region: 'Transit District',
+      objective: 'safety',
+      style: 'mobility-corridor',
+      simulationReady: false,
+      seed: 11,
+      imageRef: {
+        name: 'corridor.png',
+        mimeType: 'image/png',
+        width: 1280,
+        height: 720,
+      },
+    });
+
+    expect(unknownProvider.provider).toBe('mock-world-provider');
+    expect(unknownProvider.mode).toBe('mock');
+    expect(unknownProvider.notes.join(' ')).toContain('Image context incorporated (1280x720).');
+  });
 });

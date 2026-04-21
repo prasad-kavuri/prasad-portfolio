@@ -203,6 +203,88 @@ describe('RAGPipelinePage', () => {
     expect(searchButton).not.toBeDisabled();
   });
 
+  it('mobile/low-capability path starts fallback demo mode from idle and remains searchable', async () => {
+    mockExecReturn = makeExecState({ canAttemptLocal: false, mode: 'simulated' });
+    render(React.createElement(RAGPipelinePage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Try Simulated Demo/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Fallback demo mode is active/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText(/What is Prasad's AI experience/i), {
+      target: { value: 'AI platform leadership' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Search$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Top 3 Retrieved Documents/i)).toBeInTheDocument();
+    });
+  });
+
+  it('surfaces recoverable local search errors instead of dead-ending controls', async () => {
+    mockPipeline.mockImplementation(async () => {
+      return async (input: string) => {
+        if (input.includes('fail')) {
+          throw new Error('query embedding failed');
+        }
+        return { data: new Float32Array([Math.max(0.1, input.length / 100), 0.55, 0.21]) };
+      };
+    });
+
+    render(React.createElement(RAGPipelinePage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Model & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText(/What is Prasad's AI experience/i), {
+      target: { value: 'fail this query' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Search$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Search failed in this browser session/i)).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /^Search$/i })).not.toBeDisabled();
+  });
+
+  it('pressing Enter in query input triggers retrieval', async () => {
+    mockExecReturn = makeExecState({ canAttemptLocal: false, mode: 'simulated' });
+    render(React.createElement(RAGPipelinePage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Try Simulated Demo/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+
+    const input = screen.getByPlaceholderText(/What is Prasad's AI experience/i);
+    fireEvent.change(input, { target: { value: 'cloud infrastructure leadership' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Top 3 Retrieved Documents/i)).toBeInTheDocument();
+    });
+  });
+
+  it('ignores empty query submit without breaking ready state', async () => {
+    render(React.createElement(RAGPipelinePage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Model & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument();
+    });
+
+    const input = screen.getByPlaceholderText(/What is Prasad's AI experience/i);
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(screen.getByText(/Enter a query above and click Search/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Top 3 Retrieved Documents/i)).not.toBeInTheDocument();
+  });
+
   it('does not emit setState-on-unmounted warnings for in-flight init', async () => {
     let resolvePipeline: ((value: any) => void) | null = null;
     const deferred = new Promise((resolve) => {

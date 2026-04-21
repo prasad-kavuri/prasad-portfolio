@@ -230,13 +230,7 @@ export default function RAGPipelinePage() {
   };
 
   const activateSampleMode = (reason: string | null) => {
-    console.warn('[rag-pipeline] simulation mode activated', {
-      reason,
-      crossOriginIsolated: globalThis.crossOriginIsolated,
-      hint: !globalThis.crossOriginIsolated
-        ? 'COEP/COOP headers missing — check CSP config'
-        : 'Browser/device incompatibility (headers OK)',
-    });
+    console.warn('[rag-pipeline] simulation mode activated', { reason, crossOriginIsolated: globalThis.crossOriginIsolated });
     initAttemptRef.current += 1;
     isInitInFlightRef.current = false;
     resetPipeline();

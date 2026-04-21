@@ -355,13 +355,7 @@ export default function VectorSearchPage() {
   };
 
   const activateSampleMode = (reason: string | null) => {
-    console.warn('[vector-search] simulation mode activated', {
-      reason,
-      crossOriginIsolated: globalThis.crossOriginIsolated,
-      hint: !globalThis.crossOriginIsolated
-        ? 'COEP/COOP headers missing — check CSP config'
-        : 'Browser/device incompatibility (headers OK)',
-    });
+    console.warn('[vector-search] simulation mode activated', { reason, crossOriginIsolated: globalThis.crossOriginIsolated });
     initAttemptRef.current += 1;
     isInitInFlightRef.current = false;
     resetPipelines();

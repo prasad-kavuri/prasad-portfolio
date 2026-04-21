@@ -27,7 +27,108 @@ const KNOWLEDGE_BASE = [
 ];
 
 type RetrievedDoc = { doc: typeof KNOWLEDGE_BASE[0]; similarity: number };
-type Status = 'idle' | 'loading-model' | 'ready' | 'searching' | 'error';
+type Status = 'idle' | 'loading-model' | 'ready' | 'searching' | 'degraded';
+type DemoMode = 'local' | 'sample';
+type BrowserBackend = 'webgpu' | 'webnn' | 'wasm';
+type InitErrorCode = 'backend_unavailable' | 'asset_fetch_failed' | 'initialization_failed';
+
+interface BrowserInitError {
+  code: InitErrorCode;
+  message: string;
+  backend?: BrowserBackend;
+}
+
+interface InitFailure {
+  code: InitErrorCode;
+  title: string;
+  message: string;
+}
+
+const MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
+const WASM_PATH_CANDIDATES = [
+  'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/',
+  'https://unpkg.com/onnxruntime-web/dist/',
+] as const;
+
+function logInit(event: string, details?: Record<string, unknown>) {
+  if (process.env.NODE_ENV === 'test') return;
+  if (details) {
+    console.info('[rag-pipeline:init]', event, details);
+    return;
+  }
+  console.info('[rag-pipeline:init]', event);
+}
+
+function isBrowserInitError(error: unknown): error is BrowserInitError {
+  return Boolean(error && typeof error === 'object' && 'code' in error && 'message' in error);
+}
+
+function parseInitError(error: unknown, backend?: BrowserBackend): BrowserInitError {
+  if (isBrowserInitError(error)) return error;
+  const message = error instanceof Error ? error.message : String(error);
+  const lower = message.toLowerCase();
+
+  if (
+    lower.includes('failed to fetch') ||
+    lower.includes('no available backend') ||
+    lower.includes('err: [webgpu]') ||
+    lower.includes('err: [wasm]') ||
+    lower.includes('networkerror')
+  ) {
+    return { code: 'asset_fetch_failed', message, backend };
+  }
+
+  if (
+    lower.includes('backend') ||
+    lower.includes('webgpu') ||
+    lower.includes('webnn') ||
+    lower.includes('wasm')
+  ) {
+    return { code: 'backend_unavailable', message, backend };
+  }
+
+  return { code: 'initialization_failed', message, backend };
+}
+
+function toInitFailure(error: BrowserInitError): InitFailure {
+  if (error.code === 'asset_fetch_failed') {
+    return {
+      code: error.code,
+      title: 'Local Retrieval Model Unavailable',
+      message: 'Local retrieval embeddings could not be downloaded in this browser session. Retry initialization or continue with fallback demo mode.',
+    };
+  }
+
+  if (error.code === 'backend_unavailable') {
+    return {
+      code: error.code,
+      title: 'Local Retrieval Model Unavailable',
+      message: 'A compatible browser backend was not available for local retrieval embeddings. Retry initialization or continue with fallback demo mode.',
+    };
+  }
+
+  return {
+    code: 'initialization_failed',
+    title: 'Local Retrieval Model Unavailable',
+    message: 'Local retrieval embeddings failed to initialize in this browser session. Retry initialization or continue with fallback demo mode.',
+  };
+}
+
+function createSampleVector(text: string): number[] {
+  const lower = text.toLowerCase();
+  const keywords = [
+    'ai', 'agent', 'platform', 'leadership', 'cloud', 'search', 'vector',
+    'autonomous', 'maps', 'infrastructure', 'cost', 'optimization', 'model', 'team', 'rag',
+  ];
+
+  const vec = keywords.map((keyword) => {
+    const matches = lower.split(keyword).length - 1;
+    return Math.min(3, matches);
+  });
+
+  vec.push(Math.min(8, lower.length / 80));
+  return vec;
+}
 
 export default function RAGPipelinePage() {
   const exec = useExecutionStrategy({
@@ -42,9 +143,25 @@ export default function RAGPipelinePage() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<RetrievedDoc[]>([]);
   const [queryTime, setQueryTime] = useState(0);
+  const [demoMode, setDemoMode] = useState<DemoMode>('local');
+  const [initFailure, setInitFailure] = useState<InitFailure | null>(null);
+  const [selectedBackend, setSelectedBackend] = useState<BrowserBackend | null>(null);
 
   const pipelineRef = useRef<any>(null);
   const embeddingsRef = useRef<Map<number, number[]>>(new Map());
+  const isMountedRef = useRef(false);
+  const initAttemptRef = useRef(0);
+  const isInitInFlightRef = useRef(false);
+  const activeWasmPathRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      initAttemptRef.current += 1;
+      isInitInFlightRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!exec.canAttemptLocal) return;
@@ -53,7 +170,9 @@ export default function RAGPipelinePage() {
   }, [exec.canAttemptLocal]);
 
   const cosineSimilarity = (a: number[], b: number[]) => {
-    let dot = 0, magA = 0, magB = 0;
+    let dot = 0;
+    let magA = 0;
+    let magB = 0;
     for (let i = 0; i < a.length; i++) {
       dot += a[i] * b[i];
       magA += a[i] * a[i];
@@ -62,92 +181,281 @@ export default function RAGPipelinePage() {
     return dot / (Math.sqrt(magA) * Math.sqrt(magB));
   };
 
-  const loadModel = async () => {
+  const resetPipeline = () => {
+    pipelineRef.current = null;
+    embeddingsRef.current = new Map();
+    setSelectedBackend(null);
+  };
+
+  const getBackendCandidates = (): BrowserBackend[] => {
+    const nav = (globalThis as any).navigator;
+    const candidates: BrowserBackend[] = [];
+
+    if (nav?.gpu && globalThis.isSecureContext !== false) {
+      candidates.push('webgpu');
+    }
+
+    if (nav?.ml) {
+      candidates.push('webnn');
+    }
+
+    candidates.push('wasm');
+    return [...new Set(candidates)];
+  };
+
+  const resolveWasmPath = async (): Promise<string | null> => {
+    for (const base of WASM_PATH_CANDIDATES) {
+      const probeUrl = `${base}ort-wasm-simd-threaded.wasm`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      try {
+        const response = await fetch(probeUrl, { method: 'HEAD', signal: controller.signal });
+        if (response.ok) return base;
+      } catch {
+        // Try next candidate.
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    return null;
+  };
+
+  const initializeSampleEmbeddings = () => {
+    const sampleMap = new Map<number, number[]>();
+    for (const doc of KNOWLEDGE_BASE) {
+      sampleMap.set(doc.id, createSampleVector(`${doc.title} ${doc.content}`));
+    }
+    embeddingsRef.current = sampleMap;
+  };
+
+  const activateSampleMode = (reason: string | null) => {
+    initAttemptRef.current += 1;
+    isInitInFlightRef.current = false;
+    resetPipeline();
+    setDemoMode('sample');
+    setError('');
+    setResults([]);
+    setProgress(0);
+    setProgressMsg('');
+
+    if (reason) {
+      setInitFailure({
+        code: 'initialization_failed',
+        title: 'Local Retrieval Model Unavailable',
+        message: reason,
+      });
+    }
+
+    initializeSampleEmbeddings();
+    setStatus('ready');
+    logInit('fallback_activated', {
+      reason: reason ?? 'manual_fallback_mode',
+      previousBackend: selectedBackend,
+      wasmPath: activeWasmPathRef.current,
+    });
+  };
+
+  const initializeWithBackend = async (
+    pipeline: (...args: any[]) => Promise<any>,
+    backend: BrowserBackend,
+    attemptId: number,
+  ) => {
+    setProgressMsg(`Downloading ${MODEL_ID} via ${backend}...`);
+    setProgress(10);
+
+    const extractor = await pipeline(
+      'feature-extraction',
+      MODEL_ID,
+      {
+        device: backend,
+        progress_callback: (p: any) => {
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+          if (p.progress) {
+            const pct = Math.round(10 + p.progress * 70);
+            setProgress(pct);
+            setProgressMsg(`Downloading model: ${Math.round(p.progress * 100)}%`);
+          }
+        },
+      },
+    );
+
+    if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+    pipelineRef.current = extractor;
+    setSelectedBackend(backend);
+
+    setProgress(82);
+    setProgressMsg('Pre-computing knowledge base embeddings...');
+
+    const nextEmbeddings = new Map<number, number[]>();
+    for (let i = 0; i < KNOWLEDGE_BASE.length; i++) {
+      if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+      const doc = KNOWLEDGE_BASE[i];
+      const out = await extractor(doc.content, { pooling: 'mean', normalize: true });
+      nextEmbeddings.set(doc.id, Array.from(out.data as Float32Array));
+      setProgress(82 + Math.round(((i + 1) / KNOWLEDGE_BASE.length) * 16));
+      setProgressMsg(`Embedding document ${i + 1} of ${KNOWLEDGE_BASE.length}...`);
+    }
+
+    if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+    embeddingsRef.current = nextEmbeddings;
+  };
+
+  // Root-cause note: production hard-fail happened because WebGPU/WASM/model fetch failures
+  // bubbled into a terminal error state. We now try backends safely and degrade to fallback mode.
+  const startInitialization = async () => {
+    if (isInitInFlightRef.current) return;
+
+    const attemptId = initAttemptRef.current + 1;
+    initAttemptRef.current = attemptId;
+
+    resetPipeline();
+    setError('');
+    setResults([]);
+    setInitFailure(null);
+
+    if (!exec.canAttemptLocal) {
+      activateSampleMode('Local retrieval inference is unavailable on this device. Using fallback demo mode.');
+      return;
+    }
+
+    isInitInFlightRef.current = true;
+    setDemoMode('local');
     setStatus('loading-model');
     setProgress(0);
-    setError('');
-    try {
-      setProgressMsg('Importing Transformers.js...');
-      setProgress(5);
+    setProgressMsg('Importing Transformers.js...');
 
+    logInit('init_start', {
+      canAttemptLocal: exec.canAttemptLocal,
+      crossOriginIsolated: globalThis.crossOriginIsolated === true,
+      secureContext: globalThis.isSecureContext === true,
+    });
+
+    try {
       const { pipeline, env } = await loadTransformersModule();
       env.allowLocalModels = false;
       env.allowRemoteModels = true;
 
-      setProgressMsg('Downloading all-MiniLM-L6-v2 (32MB)...');
-      setProgress(10);
-
-      const extractor = await pipeline(
-        'feature-extraction',
-        'Xenova/all-MiniLM-L6-v2',
-        {
-          progress_callback: (p: any) => {
-            if (p.progress) {
-              const pct = Math.round(10 + p.progress * 70);
-              setProgress(pct);
-              setProgressMsg(`Downloading model: ${Math.round(p.progress * 100)}%`);
-            }
-          },
-        }
-      );
-
-      pipelineRef.current = extractor;
-      setProgress(82);
-      setProgressMsg('Pre-computing knowledge base embeddings...');
-
-      for (let i = 0; i < KNOWLEDGE_BASE.length; i++) {
-        const doc = KNOWLEDGE_BASE[i];
-        const out = await extractor(doc.content, { pooling: 'mean', normalize: true });
-        embeddingsRef.current.set(doc.id, Array.from(out.data as Float32Array));
-        setProgress(82 + Math.round((i / KNOWLEDGE_BASE.length) * 16));
-        setProgressMsg(`Embedding document ${i + 1} of ${KNOWLEDGE_BASE.length}...`);
+      const wasmPath = await resolveWasmPath();
+      activeWasmPathRef.current = wasmPath;
+      if (env.backends?.onnx?.wasm && wasmPath) {
+        env.backends.onnx.wasm.wasmPaths = wasmPath;
       }
 
-      setProgress(100);
-      setProgressMsg('Ready!');
-      setStatus('ready');
-    } catch (e: any) {
-      console.error('Model load error:', e);
-      setError(e?.message || 'Failed to load model');
-      setStatus('error');
+      logInit('asset_resolution', {
+        modelId: MODEL_ID,
+        wasmPath: wasmPath ?? 'default',
+      });
+
+      const backends = getBackendCandidates();
+      logInit('backend_candidates', { backends });
+
+      let lastError: BrowserInitError | null = null;
+      for (const backend of backends) {
+        if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+        try {
+          logInit('backend_init_start', { backend });
+          await initializeWithBackend(pipeline, backend, attemptId);
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+
+          setProgress(100);
+          setProgressMsg('Ready!');
+          setStatus('ready');
+          logInit('backend_init_success', { backend });
+          return;
+        } catch (err) {
+          resetPipeline();
+          lastError = parseInitError(err, backend);
+          logInit('backend_init_failed', {
+            backend,
+            code: lastError.code,
+            message: lastError.message,
+          });
+        }
+      }
+
+      throw (
+        lastError ?? {
+          code: 'backend_unavailable',
+          message: 'No browser backend could be initialized.',
+        }
+      );
+    } catch (err) {
+      if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+      const parsed = parseInitError(err);
+      setError(parsed.message);
+      setInitFailure(toInitFailure(parsed));
+      setStatus('degraded');
+      logInit('fallback_activated', {
+        code: parsed.code,
+        message: parsed.message,
+      });
+    } finally {
+      if (initAttemptRef.current === attemptId) {
+        isInitInFlightRef.current = false;
+      }
     }
   };
 
   const handleSearch = async () => {
     if (!query.trim()) return;
 
-    // --- SIMULATED PATH (mobile / low-memory) ---
-    if (!exec.canAttemptLocal) {
+    if (!exec.canAttemptLocal || demoMode === 'sample') {
       setStatus('searching');
-      await new Promise(r => setTimeout(r, 700));
-      setResults([
-        { doc: KNOWLEDGE_BASE[0], similarity: 0.94 },
-        { doc: KNOWLEDGE_BASE[6], similarity: 0.91 },
-        { doc: KNOWLEDGE_BASE[1], similarity: 0.87 },
-      ]);
+      await new Promise((r) => setTimeout(r, 450));
+      if (!isMountedRef.current) return;
+
+      if (embeddingsRef.current.size === 0) {
+        initializeSampleEmbeddings();
+      }
+
+      const qVec = createSampleVector(query);
+      const scored = KNOWLEDGE_BASE.map((doc) => ({
+        doc,
+        similarity: cosineSimilarity(qVec, embeddingsRef.current.get(doc.id) ?? createSampleVector(doc.content)),
+      }))
+        .sort((a, b) => b.similarity - a.similarity)
+        .slice(0, 3);
+
+      setResults(scored);
       setQueryTime(43);
       setStatus('ready');
       return;
     }
-    // --- END SIMULATED PATH ---
 
-    if (!pipelineRef.current) return;
+    if (!pipelineRef.current || embeddingsRef.current.size === 0) {
+      setError('Local retrieval model is not initialized. Retry initialization or use fallback demo mode.');
+      return;
+    }
+
     setStatus('searching');
     const t0 = performance.now();
+    setError('');
+
     try {
       const out = await pipelineRef.current(query, { pooling: 'mean', normalize: true });
       const qVec = Array.from(out.data as Float32Array);
-      const scored = KNOWLEDGE_BASE.map(doc => ({
+      const scored = KNOWLEDGE_BASE.map((doc) => ({
         doc,
-        similarity: cosineSimilarity(qVec, embeddingsRef.current.get(doc.id)!),
-      })).sort((a, b) => b.similarity - a.similarity).slice(0, 3);
+        similarity: cosineSimilarity(qVec, embeddingsRef.current.get(doc.id) ?? qVec),
+      }))
+        .sort((a, b) => b.similarity - a.similarity)
+        .slice(0, 3);
+
       setResults(scored);
       setQueryTime(Math.round(performance.now() - t0));
-    } catch (e: any) {
-      setError(e?.message || 'Search failed');
+    } catch {
+      setError('Search failed in this browser session. Retry initialization or use fallback demo mode.');
     } finally {
       setStatus('ready');
     }
+  };
+
+  const handleStartClick = () => {
+    void withStabilityMonitor(startInitialization, {
+      timeoutMs: INFERENCE_TIMEOUT_MS,
+      onFallback: exec.triggerFallback,
+    });
   };
 
   return (
@@ -184,12 +492,11 @@ export default function RAGPipelinePage() {
           onDismiss={exec.resetFallback}
         />
 
-        {/* Start button */}
         {status === 'idle' && (
           <Card className="border-border bg-card p-8 text-center">
             <p className="mb-4 text-muted-foreground">Click to load the embedding model in your browser. No API key required.</p>
             <button
-              onClick={exec.canAttemptLocal ? () => withStabilityMonitor(loadModel, { timeoutMs: INFERENCE_TIMEOUT_MS, onFallback: exec.triggerFallback }) : () => setStatus('ready')}
+              onClick={handleStartClick}
               className="min-h-[44px] rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
             >
               {exec.canAttemptLocal ? 'Load Model & Start' : 'Try Simulated Demo'}
@@ -197,7 +504,6 @@ export default function RAGPipelinePage() {
           </Card>
         )}
 
-        {/* Loading */}
         {status === 'loading-model' && (
           <Card className="border-border bg-card p-6">
             <p className="mb-3 font-medium text-foreground">Loading model...</p>
@@ -208,20 +514,51 @@ export default function RAGPipelinePage() {
           </Card>
         )}
 
-        {/* Error */}
-        {status === 'error' && (
-          <Card className="border-red-800 bg-red-900/20 p-6">
-            <p className="mb-2 font-medium text-red-400">Error loading model</p>
-            <p className="mb-4 text-sm text-red-300">{error}</p>
-            <button onClick={loadModel} className="rounded bg-red-700 px-4 py-2 text-sm text-white hover:bg-red-600">
-              Retry
-            </button>
+        {status === 'degraded' && initFailure && (
+          <Card className="border-border bg-card p-6">
+            <p className="mb-2 font-medium text-foreground">{initFailure.title}</p>
+            <p className="mb-4 text-sm text-muted-foreground">{initFailure.message}</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={handleStartClick}
+                className="min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Retry Initialization
+              </button>
+              <button
+                onClick={() => activateSampleMode('Fallback retrieval demo mode is active for this session.')}
+                className="min-h-[44px] rounded-lg border border-border bg-muted px-4 py-2 text-sm text-muted-foreground hover:bg-muted"
+              >
+                Use Fallback Demo Mode
+              </button>
+            </div>
           </Card>
         )}
 
-        {/* Search UI */}
         {(status === 'ready' || status === 'searching') && (
           <>
+            {demoMode === 'sample' && (
+              <Card className="mb-4 border-border bg-card p-4">
+                <p className="text-sm text-muted-foreground">
+                  Fallback demo mode is active. Retrieval uses deterministic precomputed embeddings in this browser session.
+                </p>
+                {exec.canAttemptLocal && (
+                  <button
+                    onClick={handleStartClick}
+                    className="mt-3 min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  >
+                    Retry Initialization
+                  </button>
+                )}
+              </Card>
+            )}
+
+            {error && (
+              <Card className="mb-4 border-border bg-card p-4">
+                <p className="text-sm text-muted-foreground">{error}</p>
+              </Card>
+            )}
+
             <Card className="mb-6 border-border bg-card p-6">
               <label className="mb-2 block text-sm font-medium text-foreground">Query</label>
               <div className="flex gap-2">
@@ -287,7 +624,7 @@ export default function RAGPipelinePage() {
         <Card className="mt-8 border-border bg-card p-5">
           <p className="mb-2 font-medium text-foreground">How it works</p>
           <ul className="space-y-1 text-sm text-muted-foreground">
-            <li>• Model runs entirely in your browser via WebAssembly — no server</li>
+            <li>• Prefers WebGPU when available, then falls back to other browser backends</li>
             <li>• Uses all-MiniLM-L6-v2 (32MB) for semantic embeddings</li>
             <li>• Cosine similarity ranks documents by semantic relevance</li>
             <li>• No API keys or server-side processing required</li>

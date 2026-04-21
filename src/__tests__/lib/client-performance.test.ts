@@ -8,6 +8,29 @@ describe('client performance utilities', () => {
     vi.useRealTimers();
   });
 
+  it('returns a noop canceller when window is unavailable (SSR branch)', () => {
+    const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'window');
+    Object.defineProperty(globalThis, 'window', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    });
+
+    try {
+      const task = vi.fn();
+      const cancel = scheduleIdleTask(task);
+      cancel();
+      expect(task).not.toHaveBeenCalled();
+    } finally {
+      if (originalDescriptor) {
+        Object.defineProperty(globalThis, 'window', originalDescriptor);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (globalThis as any).window;
+      }
+    }
+  });
+
   it('falls back to setTimeout when requestIdleCallback is unavailable', () => {
     vi.useFakeTimers();
     const original = (window as Window & { requestIdleCallback?: unknown }).requestIdleCallback;
@@ -38,6 +61,20 @@ describe('client performance utilities', () => {
     expect(idleSpy).toHaveBeenCalled();
     expect(task).toHaveBeenCalledTimes(1);
     expect(cancelSpy).toHaveBeenCalledWith(1);
+  });
+
+  it('does not require cancelIdleCallback to cancel an idle task', () => {
+    const idleSpy = vi.fn((callback: () => void) => {
+      callback();
+      return 7;
+    });
+    (window as Window & { requestIdleCallback?: unknown; cancelIdleCallback?: unknown }).requestIdleCallback = idleSpy;
+    delete (window as Window & { requestIdleCallback?: unknown; cancelIdleCallback?: unknown }).cancelIdleCallback;
+
+    const task = vi.fn();
+    const cancel = scheduleIdleTask(task);
+    expect(() => cancel()).not.toThrow();
+    expect(task).toHaveBeenCalledTimes(1);
   });
 
   it('caches transformers dynamic import as singleton promise', async () => {

@@ -42,6 +42,15 @@ describe('withStabilityMonitor', () => {
     }
   });
 
+  it('classifies non-matching failures as unknown', async () => {
+    const unknownFn = () => Promise.reject(new Error('something unexpected happened'));
+    const result = await withStabilityMonitor(unknownFn);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.reason).toBe('unknown');
+    }
+  });
+
   it('calls onFallback callback on failure', async () => {
     const onFallback = vi.fn();
     const failFn = () => Promise.reject(new Error('allocation failed'));

@@ -12,12 +12,117 @@ import { AdaptiveExecutionBadge } from '@/components/AdaptiveExecutionBadge';
 import { CapabilityNotice } from '@/components/CapabilityNotice';
 import { ExecutionModeToast } from '@/components/ExecutionModeToast';
 
-type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'error';
+type Status = 'idle' | 'loading-model' | 'ready' | 'processing' | 'degraded';
 type TaskType = 'classify' | 'zero-shot';
+type BrowserBackend = 'webgpu' | 'webnn' | 'wasm';
+type InitErrorCode = 'backend_unavailable' | 'asset_fetch_failed' | 'initialization_failed';
 
 interface ClassificationResult {
   label: string;
   score: number;
+}
+
+interface InitFailure {
+  code: InitErrorCode;
+  title: string;
+  message: string;
+}
+
+interface BrowserInitError {
+  code: InitErrorCode;
+  message: string;
+  backend?: BrowserBackend;
+}
+
+const WASM_PATH_CANDIDATES = [
+  'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/',
+  'https://unpkg.com/onnxruntime-web/dist/',
+] as const;
+
+const CLASSIFY_MODEL_ID = 'Xenova/vit-base-patch16-224';
+const CLIP_MODEL_ID = 'Xenova/clip-vit-base-patch32';
+
+function isBrowserInitError(error: unknown): error is BrowserInitError {
+  return Boolean(
+    error &&
+    typeof error === 'object' &&
+    'code' in error &&
+    'message' in error
+  );
+}
+
+function parseInitError(error: unknown, backend?: BrowserBackend): BrowserInitError {
+  if (isBrowserInitError(error)) return error;
+  const message = error instanceof Error ? error.message : String(error);
+  const lower = message.toLowerCase();
+
+  if (
+    lower.includes('failed to fetch') ||
+    lower.includes('no available backend') ||
+    lower.includes('err: [wasm]') ||
+    lower.includes('networkerror')
+  ) {
+    return {
+      code: 'asset_fetch_failed',
+      message,
+      backend,
+    };
+  }
+
+  if (
+    lower.includes('backend') ||
+    lower.includes('webgpu') ||
+    lower.includes('webnn') ||
+    lower.includes('wasm')
+  ) {
+    return {
+      code: 'backend_unavailable',
+      message,
+      backend,
+    };
+  }
+
+  return {
+    code: 'initialization_failed',
+    message,
+    backend,
+  };
+}
+
+function toInitFailure(error: BrowserInitError): InitFailure {
+  if (error.code === 'asset_fetch_failed') {
+    return {
+      code: error.code,
+      title: 'Local Inference Assets Unavailable',
+      message: 'This browser session could not fetch model/backend assets for local inference. You can retry initialization or continue in simulated demo mode.',
+    };
+  }
+
+  if (error.code === 'backend_unavailable') {
+    return {
+      code: error.code,
+      title: 'No Compatible Browser Backend',
+      message: 'A compatible local inference backend is not available in this browser/session. You can retry initialization or continue in simulated demo mode.',
+    };
+  }
+
+  return {
+    code: 'initialization_failed',
+    title: 'Local Inference Startup Failed',
+    message: 'The local model runtime did not initialize successfully. You can retry initialization or continue in simulated demo mode.',
+  };
+}
+
+function logInit(
+  event: string,
+  details?: Record<string, unknown>,
+) {
+  if (process.env.NODE_ENV === 'test') return;
+  if (details) {
+    console.info('[multimodal:init]', event, details);
+    return;
+  }
+  console.info('[multimodal:init]', event);
 }
 
 export default function MultimodalPage() {
@@ -25,6 +130,9 @@ export default function MultimodalPage() {
   const [progress, setProgress] = useState(0);
   const [progressMsg, setProgressMsg] = useState('');
   const [error, setError] = useState('');
+  const [initFailure, setInitFailure] = useState<InitFailure | null>(null);
+  const [demoMode, setDemoMode] = useState<'local' | 'simulated'>('local');
+  const [selectedBackend, setSelectedBackend] = useState<BrowserBackend | null>(null);
 
   const [imageData, setImageData] = useState<string | null>(null);
   const [result, setResult] = useState<ClassificationResult[] | null>(null);
@@ -43,6 +151,19 @@ export default function MultimodalPage() {
   const clipPipelineRef = useRef<any>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const dragOverRef = useRef(false);
+  const isMountedRef = useRef(false);
+  const initAttemptRef = useRef(0);
+  const isInitInFlightRef = useRef(false);
+  const activeWasmPathRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      initAttemptRef.current += 1;
+      isInitInFlightRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!exec.canAttemptLocal) return;
@@ -50,15 +171,118 @@ export default function MultimodalPage() {
     return () => cancelPreload();
   }, [exec.canAttemptLocal]);
 
+  const resetPipelines = () => {
+    classifyPipelineRef.current = null;
+    clipPipelineRef.current = null;
+    setSelectedBackend(null);
+  };
+
+  const getBackendCandidates = (): BrowserBackend[] => {
+    const nav = (globalThis as any).navigator;
+    const candidates: BrowserBackend[] = [];
+    if (nav?.gpu) candidates.push('webgpu');
+    if (nav?.ml) candidates.push('webnn');
+    candidates.push('wasm');
+    return [...new Set(candidates)];
+  };
+
+  const resolveWasmPath = async (): Promise<string | null> => {
+    for (const base of WASM_PATH_CANDIDATES) {
+      const probeUrl = `${base}ort-wasm-simd-threaded.wasm`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      try {
+        const response = await fetch(probeUrl, {
+          method: 'HEAD',
+          signal: controller.signal,
+        });
+        if (response.ok) {
+          return base;
+        }
+      } catch {
+        // Try next candidate
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+    return null;
+  };
+
+  const initWithBackend = async (
+    pipeline: (...args: any[]) => Promise<any>,
+    backend: BrowserBackend,
+    attemptId: number,
+  ) => {
+    const device = backend;
+    setProgressMsg(`Loading classifier (1/2) via ${backend}...`);
+    setProgress(10);
+
+    const classifyPipe = await pipeline(
+      'image-classification',
+      CLASSIFY_MODEL_ID,
+      {
+        device,
+        progress_callback: (p: any) => {
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+          if (p.progress) {
+            const pct = Math.round(10 + p.progress * 30);
+            setProgress(pct);
+          }
+        },
+      },
+    );
+
+    if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+    setProgress(40);
+    setProgressMsg(`Loading CLIP (2/2) via ${backend}...`);
+
+    const clipPipe = await pipeline(
+      'zero-shot-image-classification',
+      CLIP_MODEL_ID,
+      {
+        device,
+        progress_callback: (p: any) => {
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+          if (p.progress) {
+            const pct = Math.round(40 + p.progress * 60);
+            setProgress(pct);
+          }
+        },
+      },
+    );
+
+    if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+    classifyPipelineRef.current = classifyPipe;
+    clipPipelineRef.current = clipPipe;
+    setSelectedBackend(backend);
+  };
+
   const loadModels = async () => {
+    if (isInitInFlightRef.current) return;
+    const attemptId = initAttemptRef.current + 1;
+    initAttemptRef.current = attemptId;
+
+    resetPipelines();
+    setError('');
+    setInitFailure(null);
+    setResult(null);
+
     if (!exec.canAttemptLocal) {
-      // Mobile/low-memory: skip model load, go straight to ready UI
+      setDemoMode('simulated');
       setStatus('ready');
       return;
     }
+
+    isInitInFlightRef.current = true;
+    setDemoMode('local');
     setStatus('loading-model');
     setProgress(0);
-    setError('');
+
+    logInit('init_start', {
+      canAttemptLocal: exec.canAttemptLocal,
+      crossOriginIsolated: globalThis.crossOriginIsolated === true,
+    });
+
     try {
       setProgressMsg('Importing Transformers.js...');
       setProgress(5);
@@ -67,57 +291,78 @@ export default function MultimodalPage() {
       env.allowLocalModels = false;
       env.allowRemoteModels = true;
 
-      // Check for WebGPU
-      if (!(globalThis as any).navigator?.gpu) {
-        setProgressMsg('WebGPU not available, using CPU (slower)...');
+      const preferredWasmPath = await resolveWasmPath();
+      activeWasmPathRef.current = preferredWasmPath;
+      if (env.backends?.onnx?.wasm && preferredWasmPath) {
+        env.backends.onnx.wasm.wasmPaths = preferredWasmPath;
       }
 
-      // Load classifier (1/2)
-      setProgressMsg('Loading classifier (1/2)...');
-      setProgress(10);
+      logInit('asset_resolution', {
+        wasmPath: preferredWasmPath ?? 'default',
+      });
 
-      const classifyPipe = await pipeline(
-        'image-classification',
-        'Xenova/vit-base-patch16-224',
-        {
-          progress_callback: (p: any) => {
-            if (p.progress) {
-              const pct = Math.round(10 + p.progress * 30);
-              setProgress(pct);
-            }
-          },
+      const backends = getBackendCandidates();
+      logInit('backend_candidates', { backends });
+
+      let lastError: BrowserInitError | null = null;
+      for (const backend of backends) {
+        if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+        try {
+          logInit('backend_init_start', { backend });
+          await initWithBackend(pipeline, backend, attemptId);
+          if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+          setProgress(100);
+          setProgressMsg('Ready!');
+          setStatus('ready');
+          logInit('backend_init_success', { backend });
+          return;
+        } catch (error) {
+          resetPipelines();
+          lastError = parseInitError(error, backend);
+          logInit('backend_init_failed', {
+            backend,
+            code: lastError.code,
+            message: lastError.message,
+          });
+        }
+      }
+
+      throw (
+        lastError ?? {
+          code: 'backend_unavailable',
+          message: 'No browser backend could be initialized.',
         }
       );
-
-      classifyPipelineRef.current = classifyPipe;
-      setProgress(40);
-
-      // Load CLIP (2/2)
-      setProgressMsg('Loading CLIP (2/2)...');
-      setProgress(40);
-
-      const clipPipe = await pipeline(
-        'zero-shot-image-classification',
-        'Xenova/clip-vit-base-patch32',
-        {
-          progress_callback: (p: any) => {
-            if (p.progress) {
-              const pct = Math.round(40 + p.progress * 60);
-              setProgress(pct);
-            }
-          },
-        }
-      );
-
-      clipPipelineRef.current = clipPipe;
-      setProgress(100);
-      setProgressMsg('Ready!');
-      setStatus('ready');
-    } catch (e: any) {
-      console.error('Model load error:', e);
-      setError(e?.message || 'Failed to load models. Check console for details.');
-      setStatus('error');
+    } catch (error) {
+      if (!isMountedRef.current || initAttemptRef.current !== attemptId) return;
+      const parsed = parseInitError(error);
+      const failure = toInitFailure(parsed);
+      setInitFailure(failure);
+      setError(parsed.message);
+      setStatus('degraded');
+      logInit('fallback_activated', {
+        code: parsed.code,
+        message: parsed.message,
+      });
+    } finally {
+      if (initAttemptRef.current === attemptId) {
+        isInitInFlightRef.current = false;
+      }
     }
+  };
+
+  const switchToSimulatedMode = () => {
+    initAttemptRef.current += 1;
+    isInitInFlightRef.current = false;
+    resetPipelines();
+    setInitFailure(null);
+    setError('');
+    setDemoMode('simulated');
+    setStatus('ready');
+    logInit('switch_to_simulated', {
+      previousBackend: selectedBackend,
+      wasmPath: activeWasmPathRef.current,
+    });
   };
 
   const handleImageUpload = (file: File) => {
@@ -160,10 +405,11 @@ export default function MultimodalPage() {
     if (!imageData) return;
 
     // --- SIMULATED PATH (mobile / no-webgpu / low-memory) ---
-    if (!exec.canAttemptLocal) {
+    if (!exec.canAttemptLocal || demoMode === 'simulated') {
       setStatus('processing');
       setResult(null);
       await new Promise(r => setTimeout(r, 900));
+      if (!isMountedRef.current) return;
       setProcessingTime(312);
       setResult([
         { label: 'person', score: 0.94 },
@@ -177,7 +423,10 @@ export default function MultimodalPage() {
     }
     // --- END SIMULATED PATH ---
 
-    if (!classifyPipelineRef.current) return;
+    if (!classifyPipelineRef.current) {
+      setError('Local inference is not initialized yet. Retry initialization or use simulated mode.');
+      return;
+    }
 
     setStatus('processing');
     setResult(null);
@@ -188,6 +437,7 @@ export default function MultimodalPage() {
       const results = await classifyPipelineRef.current(imageData, {
         topk: 5,
       });
+      if (!isMountedRef.current) return;
 
       setProcessingTime(Math.round(performance.now() - t0));
       setResult(results);
@@ -195,7 +445,7 @@ export default function MultimodalPage() {
     } catch (e: any) {
       console.error('Classification error:', e);
       setError(e?.message || 'Classification failed');
-      setStatus('error');
+      setStatus('ready');
     }
   };
 
@@ -213,10 +463,11 @@ export default function MultimodalPage() {
     }
 
     // --- SIMULATED PATH (mobile / no-webgpu / low-memory) ---
-    if (!exec.canAttemptLocal) {
+    if (!exec.canAttemptLocal || demoMode === 'simulated') {
       setStatus('processing');
       setResult(null);
       await new Promise(r => setTimeout(r, 700));
+      if (!isMountedRef.current) return;
       setProcessingTime(284);
       setResult(labels.map((label, i) => ({ label, score: Math.max(0.05, 0.91 - i * 0.12) })));
       setStatus('ready');
@@ -224,7 +475,10 @@ export default function MultimodalPage() {
     }
     // --- END SIMULATED PATH ---
 
-    if (!clipPipelineRef.current) return;
+    if (!clipPipelineRef.current) {
+      setError('Local inference is not initialized yet. Retry initialization or use simulated mode.');
+      return;
+    }
 
     setStatus('processing');
     setResult(null);
@@ -233,6 +487,7 @@ export default function MultimodalPage() {
 
     try {
       const results = await clipPipelineRef.current(imageData, labels);
+      if (!isMountedRef.current) return;
 
       setProcessingTime(Math.round(performance.now() - t0));
       setResult(results);
@@ -240,7 +495,7 @@ export default function MultimodalPage() {
     } catch (e: any) {
       console.error('Zero-shot error:', e);
       setError(e?.message || 'Zero-shot classification failed');
-      setStatus('error');
+      setStatus('ready');
     }
   };
 
@@ -314,23 +569,48 @@ export default function MultimodalPage() {
           </Card>
         )}
 
-        {/* Error State */}
-        {status === 'error' && (
-          <Card className="border-red-800 bg-red-900/20 p-6">
-            <p className="mb-2 font-medium text-red-400">Error</p>
-            <p className="mb-4 text-sm text-red-300">{error}</p>
-            <button
-              onClick={loadModels}
-              className="rounded bg-red-700 px-4 py-2 text-sm text-white hover:bg-red-600"
-            >
-              Retry
-            </button>
+        {/* Degraded Recovery State */}
+        {status === 'degraded' && initFailure && (
+          <Card className="border-border bg-card p-6">
+            <p className="mb-2 font-medium text-foreground">{initFailure.title}</p>
+            <p className="mb-4 text-sm text-muted-foreground">{initFailure.message}</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={loadModels}
+                className="min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Retry Initialization
+              </button>
+              <button
+                onClick={switchToSimulatedMode}
+                className="min-h-[44px] rounded-lg border border-border bg-muted px-4 py-2 text-sm text-muted-foreground hover:bg-muted"
+              >
+                Switch to Simulated Demo
+              </button>
+            </div>
           </Card>
         )}
 
         {/* Main UI */}
         {(status === 'ready' || status === 'processing') && (
-          <div className="grid gap-6 lg:grid-cols-2">
+          <>
+            {demoMode === 'simulated' && (
+              <Card className="mb-4 border-border bg-card p-4">
+                <p className="text-sm text-muted-foreground">
+                  Simulated demo mode is active because local inference is unavailable in this session.
+                </p>
+                {exec.canAttemptLocal && (
+                  <button
+                    onClick={loadModels}
+                    className="mt-3 min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  >
+                    Retry Initialization
+                  </button>
+                )}
+              </Card>
+            )}
+
+            <div className="grid gap-6 lg:grid-cols-2">
             {/* Left: Image Upload & Preview */}
             <div className="space-y-4">
               {/* Upload Area */}
@@ -556,7 +836,8 @@ export default function MultimodalPage() {
                 </Card>
               )}
             </div>
-          </div>
+            </div>
+          </>
         )}
 
         {/* Info Footer */}

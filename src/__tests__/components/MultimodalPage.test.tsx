@@ -52,8 +52,12 @@ vi.mock('@/lib/stability-monitor', () => ({
 import MultimodalPage from '@/app/demos/multimodal/page';
 
 describe('MultimodalPage', () => {
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'info').mockImplementation(() => {});
     mockExecReturn = makeExecState();
     mockPipeline.mockImplementation(async (task: string) => {
       if (task === 'image-classification') {
@@ -70,6 +74,7 @@ describe('MultimodalPage', () => {
   });
 
   afterEach(() => {
+    consoleErrorSpy.mockRestore();
     vi.restoreAllMocks();
   });
 
@@ -101,6 +106,102 @@ describe('MultimodalPage', () => {
       expect(screen.getByText('Results')).toBeInTheDocument();
       expect(screen.getByText('cat')).toBeInTheDocument();
     });
+  });
+
+  it('shows graceful fallback card when backend init rejects', async () => {
+    mockPipeline.mockRejectedValueOnce(new Error('no available backend found. ERR: [wasm] TypeError: Failed to fetch'));
+    render(React.createElement(MultimodalPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Local Inference Assets Unavailable')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Retry Initialization/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Switch to Simulated Demo/i })).toBeInTheDocument();
+    });
+  });
+
+  it('does not render raw crash text when model asset fetch fails', async () => {
+    mockPipeline.mockRejectedValueOnce(new Error('no available backend found. ERR: [wasm] TypeError: Failed to fetch'));
+    render(React.createElement(MultimodalPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Local Inference Assets Unavailable')).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/no available backend found/i)).not.toBeInTheDocument();
+  });
+
+  it('retry re-attempts initialization from scratch', async () => {
+    let calls = 0;
+    mockPipeline.mockImplementation(async (task: string) => {
+      calls += 1;
+      if (calls === 1) {
+        throw new Error('Failed to fetch');
+      }
+      if (task === 'image-classification') {
+        return async () => [{ label: 'cat', score: 0.92 }];
+      }
+      return async (_img: string, labels: string[]) =>
+        labels.map((label, i) => ({ label, score: i === 0 ? 0.91 : 0.42 }));
+    });
+
+    render(React.createElement(MultimodalPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Retry Initialization/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Retry Initialization/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Drag & drop an image/i)).toBeInTheDocument();
+    });
+    expect(mockPipeline).toHaveBeenCalledTimes(3);
+  });
+
+  it('switches to simulated mode when backend init fails', async () => {
+    mockPipeline.mockRejectedValue(new Error('Failed to fetch'));
+    render(React.createElement(MultimodalPage));
+
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Switch to Simulated Demo/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Switch to Simulated Demo/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Simulated demo mode is active/i)).toBeInTheDocument();
+      expect(screen.getByText(/Drag & drop an image/i)).toBeInTheDocument();
+    });
+  });
+
+  it('avoids setState-on-unmounted warnings during in-flight initialization', async () => {
+    let resolvePipeline: ((value: any) => void) | null = null;
+    const deferred = new Promise((resolve) => {
+      resolvePipeline = resolve;
+    });
+    mockPipeline.mockImplementationOnce(() => deferred as any);
+
+    const { unmount } = render(React.createElement(MultimodalPage));
+    fireEvent.click(screen.getByRole('button', { name: /Load Models & Start/i }));
+
+    await waitFor(() => {
+      expect(mockPipeline).toHaveBeenCalledTimes(1);
+    });
+    unmount();
+    resolvePipeline?.(async () => [{ label: 'cat', score: 0.92 }]);
+    await Promise.resolve();
+
+    const warningCalls = consoleErrorSpy.mock.calls.filter(
+      (call) =>
+        typeof call[0] === 'string' &&
+        call[0].includes("Can't perform a React state update on an unmounted component"),
+    );
+    expect(warningCalls).toHaveLength(0);
   });
 
   it('shows simulated-mode notice when routed to simulated (e.g. iOS)', () => {

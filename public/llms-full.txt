@@ -1,0 +1,80 @@
+# Prasad Kavuri — Full Certification List (Raw)
+
+This document provides a raw, comprehensive list of all 69+ certifications held by Prasad Kavuri, spanning Agentic AI, LLM Orchestration, and Executive AI Leadership (2010–2026).
+
+---
+
+## Tier 1: Featured (2025–2026)
+
+### Anthropic Specialist
+- **Introduction to subagents** (Anthropic, Mar 2026): Validates ability to design and orchestrate modular Claude subagent architectures for complex task delegation.
+- **Building with the Claude API** (Anthropic, Mar 2026): Demonstrates mastery in integrating Claude's multi-modal capabilities into production-grade enterprise applications.
+- **Claude Code in Action** (Anthropic, Mar 2026): Confirms ability to leverage Claude Code for autonomous software engineering and optimized development workflows.
+- **Introduction to Model Context Protocol** (Anthropic, Feb 2026): Validates ability to build standardized AI-to-tool interfaces using the Model Context Protocol.
+- **Claude 101** (Anthropic, Feb 2026): Foundational mastery of Claude model architecture, prompt engineering, and core capabilities.
+- **Al Fluency Framework & Foundations** (Anthropic, Feb 2026): Validates broad alignment with Anthropic's safety and architectural frameworks.
+
+### Agentic Framework Master
+- **Agentic AI** (DeepLearning.AI, Nov 2025): Comprehensive validation of multi-agent orchestration, tool-use, and autonomous AI system design.
+- **Event-Driven Agentic Document Workflows** (DeepLearning.AI, Jul 2025): Validates implementation of autonomous document processing via event-driven agentic architectures.
+
+### Executive AI Leader
+- **Generative AI Leader Certification** (Google, Mar 2026): Validates executive competency in leading enterprise-wide generative AI transformation and ROI strategy.
+- **Agentic AI and AI Agents: A Primer for Leaders** (Vanderbilt University, Feb 2025): Bridges the gap between autonomous agent technology and strategic business leadership requirements.
+
+---
+
+## Tier 2: Categorized
+
+### LLMOps & Engineering
+- **Evaluating and Debugging Generative AI** (DeepLearning.AI, Oct 2025): Expertise in systematic AI evaluation, hallucination detection, and production debugging.
+- **Quantization Fundamentals with Hugging Face** (DeepLearning.AI, Oct 2025): Technical validation of model optimization techniques to reduce infrastructure costs and latency.
+- **LLMOps** (DeepLearning.AI, May 2025): Covers the full lifecycle of deploying, monitoring, and scaling large language models in production.
+- **Vector Search and Embeddings** (Google Cloud, Jul 2024): Validates technical skill in building semantic search and retrieval systems.
+- **Augment your LLM Using Retrieval Augmented Generation** (NVIDIA, Mar 2024): Validates production-grade RAG pipeline implementation using NVIDIA's stack.
+- **Fundamentals of Software-Defined Vehicles (SDVs)** (Qualcomm, 2025): Validates domain expertise in automotive AI and software-defined architectures.
+- **What is Data Science?** (IBM, Sep 2024): Foundational concepts of data exploration, statistics, and predictive modeling.
+- **The Data Scientist’s Toolbox** (Coursera, Jan 2015): Mastery of the essential tools and workflows for data science production.
+- **Programming for Everybody (Python)** (Coursera, Apr 2015): Foundational programming proficiency for AI and data automation.
+- **R Programming** (Coursera, Mar 2015): Specialized proficiency in statistical computing and data visualization.
+- **AWS Educate Machine Learning Foundations** (AWS, Nov 2023): Basic principles of machine learning models and cloud deployment.
+- **AWS Educate Introduction to Cloud 101** (AWS, Nov 2023): Foundational knowledge of cloud computing architecture and service models.
+- **AWS Educate Getting Started with Storage** (AWS, Nov 2023): Cloud-native data storage strategies for large-scale AI applications.
+
+### LLM & Generative AI
+- **Post-training of LLMs** (DeepLearning.AI, Jul 2025): Validates skills in RLHF, SFT, and model alignment techniques for specific domains.
+- **Building AI Plugins With Semantic Kernel** (DeepLearning.AI, Feb 2025): Demonstrates mastery of the Semantic Kernel framework for building modular AI capabilities.
+- **Responsible AI: Applying AI Principles with Google Cloud** (Google Cloud, Sep 2024): Validates ability to implement ethical AI guardrails and responsible deployment practices.
+- **Create Image Captioning Models** (Google Cloud, Aug 2024): Technical skills in developing and deploying vision-to-text multimodal models.
+- **Transformer Models and BERT Model** (Google Cloud, Aug 2024): Deep dive into the architecture of encoder-based transformer models for NLP.
+- **Attention Mechanism** (Google Cloud, Aug 2024): Advanced understanding of the mathematical foundations of the attention mechanism.
+- **Encoder-Decoder Architecture** (Google Cloud, Jul 2024): Core competency in sequence-to-sequence model architectures.
+- **Generative AI: Prompt Engineering Basics** (IBM, Apr 2024): Foundational skills in designing effective prompts for diverse LLM applications.
+- **Academy Accreditation - Generative AI Fundamentals** (Databricks, Nov 2023): Core understanding of large-scale GenAI within the Databricks data intelligence platform.
+- **Generative AI for Everyone** (Coursera, Nov 2023): Democratized understanding of GenAI capabilities and its impact on work.
+
+### Product & Agile Strategy
+- **Generative AI Learning Plan for Decision Makers** (AWS, Sep 2024): Strategic planning for AWS-native generative AI implementations and service selection.
+- **The Role of the CEO in Navigating GenAI** (Coursera, Sep 2024): Bridges corporate leadership requirements with technical generative AI opportunities.
+- **The AI Ladder: A Framework for Deploying AI in your Enterprise** (IBM, Sep 2024): Mastery of the modular approach to collecting, organizing, and analyzing data for AI deployment.
+- **Generative AI: Business Transformation and Career Growth** (IBM, Apr 2024): Strategic alignment of GenAI with organizational growth and professional development.
+- **GenAI for Business Leaders** (Coursera, Mar 2024): Validates ability to lead GenAI initiatives with a focus on business value and ROI.
+- **Generative AI for Executives and Business Leaders** (Coursera, Mar 2024): Advanced leadership frameworks for managing GenAI disruption at the board level.
+- **Generative AI Overview for Project Managers** (PMI, Mar 2024): Adaptation of classic project management methodologies for AI-centric delivery.
+- **PMI Agile Certified Practitioner (PMI-ACP)** (PMI, May 2012): Expert knowledge of agile methodologies, cross-functional leadership, and iterative delivery.
+- **Certified Scrum Product Owner (CSPO)** (Scrum Alliance, Nov 2010): Validates capability in maximizing product value through Scrum framework ownership.
+- **Certified Scrum Master (CSM)** (Scrum Alliance, Dec 2010): Foundational validation of Scrum team leadership and process facilitation.
+- **Certified Scrum Professional** (Scrum Alliance, Nov 2014): Advanced competency in the Scrum framework and organizational scaling.
+- **Leading Change** (Lynda.com, Mar 2019): Strategies for leading organizational transformation and adapting to innovation.
+- **Building Accountability Into Your Culture** (Lynda.com, Mar 2019): Frameworks for building high-performance, ownership-driven engineering teams.
+- **Coaching and Developing Employees** (Lynda.com, Mar 2019): Mentorship techniques for scaling engineering talent and individual growth.
+- **Solving Problems with Creative and Critical Thinking** (IBM, Nov 2024): Advanced cognitive frameworks for resolving complex architectural challenges.
+
+---
+
+## Tier 3: Legacy Infrastructure
+- **Microsoft Certified System Engineer (MCSE)** (Microsoft, Pre-2020): Legacy validation of complex enterprise network infrastructure design and administration.
+- **Cisco Certified Network Administrator (CCNA)** (Cisco, Pre-2020): Foundational validation of enterprise networking, routing, and switching.
+- **Sun Certified System Administrator Solaris 10 (SCSA)** (Sun Microsystems, Pre-2020): Expertise in Unix-based enterprise system administration and legacy server environments.
+- **OCP 10g DBA** (Oracle, Pre-2020): Legacy validation of professional database administration for Oracle 10g environments.
+- **ITIL Foundation** (APMG International, Jun 2015): Validates understanding of IT service management (ITSM) best practices.

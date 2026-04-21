@@ -631,6 +631,13 @@ export default function RAGPipelinePage() {
             <li>• No API keys or server-side processing required</li>
           </ul>
         </Card>
+
+        <Card className="mt-4 border-border bg-card p-5">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Why this matters</p>
+          <p className="text-sm text-muted-foreground">
+            Enterprise teams use RAG to ground responses in approved knowledge sources. This demo shows retrieval quality, fallback behavior, and operational reliability as platform concerns, not just model output quality.
+          </p>
+        </Card>
       </div>
     </div>
   );

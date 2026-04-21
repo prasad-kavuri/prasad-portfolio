@@ -75,8 +75,12 @@ export function AITools() {
         </p>
         <p className="text-sm text-muted-foreground mb-4">
           New to the platform?{' '}
+          <Link href="/capabilities" className="inline-flex items-center gap-1 font-medium hover:underline" style={{ color: 'var(--accent-brand)' }}>
+            → Platform Capabilities
+          </Link>
+          {' '}for a leadership-level map, then review the{' '}
           <Link href="/demos/evaluation-showcase" className="inline-flex items-center gap-1 font-medium hover:underline" style={{ color: 'var(--accent-brand)' }}>
-            → AI Evaluation Showcase
+            AI Evaluation Showcase
           </Link>
           {' '}to see the full governance pipeline, or browse the{' '}
           <Link href="/demos" className="font-medium hover:underline" style={{ color: 'var(--accent-brand)' }}>

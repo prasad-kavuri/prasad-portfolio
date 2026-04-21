@@ -39,6 +39,9 @@ export function Hero() {
               <p className="mt-1 text-sm font-medium text-muted-foreground">
                 Enterprise AI, Built for Day&nbsp;2
               </p>
+              <p className="mt-1 text-sm font-medium text-foreground">
+                Production AI platform reference architecture for VP / Head-level evaluation.
+              </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {profile.personal.pills.map((pill) => (
                   <Badge key={pill} variant="secondary">
@@ -54,7 +57,7 @@ export function Hero() {
           </p>
 
           <p className="mt-4 max-w-3xl rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm font-medium text-foreground">
-            Most AI programs fail in production because cost discipline, governance, and operational ownership are bolted on too late.
+            Most AI programs fail in production because governance, orchestration, reliability, and cost ownership are bolted on too late.
           </p>
 
           <div className="mt-5 space-y-2.5">
@@ -114,6 +117,9 @@ export function Hero() {
             </a>
             <Link href="/demos" className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium">
               Browse All {PORTFOLIO_FACTS.productionDemoCount} Demos
+            </Link>
+            <Link href="/capabilities" className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium">
+              Platform Capabilities
             </Link>
           </div>
 
@@ -190,7 +196,11 @@ export function Hero() {
                 <span className="font-medium text-foreground">
                   AI Platform Leadership
                 </span>
-                {' '}roles — Chicago area &amp; remote.{' '}
+                {' '}roles — Chicago area &amp; remote. Start with{' '}
+                <Link href="/capabilities" className="underline underline-offset-2 hover:no-underline">
+                  Platform Capabilities
+                </Link>
+                {', then review '} 
                 <a
                   href="https://calendly.com/vbkpkavuri"
                   target="_blank"
@@ -198,7 +208,7 @@ export function Hero() {
                   className="underline underline-offset-2 hover:no-underline"
                   style={{ color: 'var(--accent-brand)' }}
                 >
-                  Let&apos;s talk →
+                  recruiter path →
                 </a>
               </p>
               <p className="mt-1 text-xs text-muted-foreground">

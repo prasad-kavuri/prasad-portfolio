@@ -7,21 +7,21 @@ import { EXECUTIVE_METRICS } from '@/lib/executive-metrics';
 export const metadata: Metadata = {
   title: 'For Recruiters',
   description:
-    'Executive summary for recruiting teams: enterprise AI leadership outcomes, governance-first platform depth, and a guided review path.',
+    'Executive recruiter brief for VP/Head AI Platform and AI Engineering role matching, with capability map, demos, governance, and certification evidence.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/for-recruiters',
   },
   openGraph: {
     title: 'For Recruiters — Prasad Kavuri',
     description:
-      'Executive summary and guided review path for VP / Head of AI Engineering conversations.',
+      'Executive summary and guided review path for VP / Head / Senior Director AI Platform conversations.',
     url: 'https://www.prasadkavuri.com/for-recruiters',
     images: [{ url: 'https://www.prasadkavuri.com/og-image.jpg', width: 1200, height: 630, alt: 'Prasad Kavuri recruiter page' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'For Recruiters — Prasad Kavuri',
-    description: 'Executive summary, key outcomes, and a guided evaluation path for recruiting teams.',
+    description: 'Recruiter path across capabilities, demos, governance, and certifications.',
     images: ['https://www.prasadkavuri.com/og-image.jpg'],
   },
 };
@@ -130,7 +130,7 @@ export default function ForRecruitersPage() {
             Everything you need to evaluate Prasad
           </h1>
           <p className="text-muted-foreground mb-6">
-            VP / Head of AI Engineering candidate — in 60 seconds.
+            VP / Head / Senior Director AI Platform candidate — in 60 seconds.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -231,25 +231,32 @@ export default function ForRecruitersPage() {
         {/* ── Section 4: Guided path ────────────────────────────────────── */}
         <div className="mb-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
-            Recommended Path (2 minutes)
+            Recommended Path (2-3 minutes)
           </p>
           <div className="flex flex-col gap-3">
             <StepCard
               number="1"
-              heading="See the flagship demo"
+              heading="Start with capability map"
               time="30 sec"
-              description="Watch the AI governance pipeline in action — eval gating, drift detection, HITL checkpoint"
-              href="/demos/evaluation-showcase"
+              description="See platform capabilities mapped to concrete portfolio evidence in one executive view"
+              href="/capabilities"
             />
             <StepCard
               number="2"
-              heading="Review the architecture"
+              heading="See the flagship demo"
               time="60 sec"
-              description="6-layer enterprise AI control plane — the system thinking behind the platform"
-              href="/#architecture"
+              description="Watch the AI quality and governance pipeline in action — eval gating, drift detection, HITL checkpoint"
+              href="/demos/evaluation-showcase"
             />
             <StepCard
               number="3"
+              heading="Review governance controls"
+              time="45 sec"
+              description="Validate trust controls, traceability, and operational rigor before reviewing credentials"
+              href="/governance"
+            />
+            <StepCard
+              number="4"
               heading="Book a conversation"
               time="30 sec"
               description="30 minutes — I'll walk you through any part of the platform you want to explore"

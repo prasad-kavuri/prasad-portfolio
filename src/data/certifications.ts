@@ -67,7 +67,7 @@ export const certifications: Certification[] = [
 export const ALL_TAGS = [...new Set(certifications.flatMap((c) => c.tags))].sort();
 
 export const TIER_LABELS: Record<1 | 2 | 3, string> = {
-  1: 'Featured: 2025–2026 Specializations',
-  2: 'Categorized: Core Competencies',
-  3: 'Legacy: Infrastructure Roots',
+  1: 'Recent high-signal AI credentials (2025–2026)',
+  2: 'AI depth plus platform foundations',
+  3: 'Archive and legacy foundations',
 };

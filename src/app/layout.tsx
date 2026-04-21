@@ -112,7 +112,7 @@ export const metadata: Metadata = {
     template: '%s | Prasad Kavuri',
   },
   description:
-    'Enterprise AI, Built for Day 2. Prasad Kavuri is an AI engineering executive with 20+ years building production AI platforms, agentic systems, and global engineering teams.',
+    'Production AI platform portfolio for VP/Head-level evaluation: agentic orchestration, governance, retrieval systems, reliability controls, and enterprise AI operating rigor.',
   keywords: [
     'AI Engineering',
     'Agentic AI',
@@ -143,7 +143,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Prasad Kavuri — VP / Head of AI Engineering',
-    description: `Applied AI leader: ${PORTFOLIO_FACTS.costReductionDelivered} cost reduction, ${PORTFOLIO_FACTS.latencyReduction} latency improvement, ${PORTFOLIO_FACTS.b2bCustomersEnabled} B2B customers, ${PORTFOLIO_FACTS.productionDemoCount} production demos.`,
+    description: `Enterprise AI platform leadership: agentic orchestration, governance, evaluation, and reliability with ${PORTFOLIO_FACTS.productionDemoCount} production demos.`,
     images: ['/og-image.jpg'],
     creator: '@prasadkavuri',
   },

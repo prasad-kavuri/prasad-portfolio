@@ -162,6 +162,26 @@ const TIER2_SECTIONS: Array<string> = [
   'Product & Agile Strategy',
 ];
 
+function isCloudPlatformFoundation(cert: Certification) {
+  const foundationTags = new Set([
+    'AWS',
+    'Cloud',
+    'Infrastructure',
+    'Storage',
+    'Project Management',
+    'PMI',
+    'Scrum',
+    'Agile',
+    'Data Science',
+    'Python',
+    'R',
+  ]);
+
+  const issuerSignals = new Set(['AWS', 'PMI', 'Scrum Alliance', 'Lynda.com']);
+
+  return cert.tags.some((tag) => foundationTags.has(tag)) || issuerSignals.has(cert.issuer);
+}
+
 export function CertificationsHub({ certifications, allTags, tierLabels }: Props) {
   const [activeTag, setActiveTag] = useState<string>('All');
   const [tier3Open, setTier3Open] = useState(false);
@@ -213,7 +233,7 @@ export function CertificationsHub({ certifications, allTags, tierLabels }: Props
           <div className="flex items-center gap-2 mb-5">
             <span className="text-lg">⭐</span>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Tier 1 — Featured Specializations
+              Featured / Recent AI Certifications
             </h2>
             <span className="text-xs text-muted-foreground">· {tierLabels[1]}</span>
           </div>
@@ -248,11 +268,13 @@ export function CertificationsHub({ certifications, allTags, tierLabels }: Props
       {(() => {
         const anyTier2Visible = tier2.some(matchesTag);
         if (!anyTier2Visible) return null;
+        const aiTier2 = tier2.filter((cert) => !isCloudPlatformFoundation(cert));
+        const foundationTier2 = tier2.filter(isCloudPlatformFoundation);
         return (
           <section>
             <div className="flex items-center gap-2 mb-5">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Tier 2 — Core Competencies
+                AI / Agentic / LLMOps
               </h2>
               <span className="text-xs text-muted-foreground">· {tierLabels[2]}</span>
             </div>
@@ -261,11 +283,23 @@ export function CertificationsHub({ certifications, allTags, tierLabels }: Props
                 <AccordionSection
                   key={section}
                   label={section}
-                  certs={tier2.filter((c) => c.category === section)}
+                  certs={aiTier2.filter((c) => c.category === section)}
                   activeTag={activeTag}
                   defaultOpen
                 />
               ))}
+            </div>
+            <div className="mt-6">
+              <p className="text-sm font-semibold text-foreground mb-2">Cloud / Platform / Infrastructure Foundations</p>
+              <p className="text-xs text-muted-foreground mb-3">
+                Foundational platform credentials kept visible for context, but de-emphasized relative to recent AI leadership signal.
+              </p>
+              <AccordionSection
+                label="Cloud / Platform / Infrastructure Foundations"
+                certs={foundationTier2}
+                activeTag={activeTag}
+                defaultOpen={false}
+              />
             </div>
           </section>
         );
@@ -281,7 +315,7 @@ export function CertificationsHub({ certifications, allTags, tierLabels }: Props
             <div className="flex items-center gap-2">
               <span>🏛️</span>
               <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Tier 3 — Infrastructure Roots
+                Legacy / Archive
               </h2>
               <span className="text-xs font-medium text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-full">
                 {tier3.filter(matchesTag).length}

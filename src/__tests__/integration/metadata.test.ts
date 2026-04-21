@@ -99,10 +99,22 @@ describe('SEO metadata integrity', () => {
     expect(demosPage).toContain("canonical: '/demos'");
   });
 
+  it('capabilities page exists with metadata and CollectionPage structured data', () => {
+    const capabilitiesPage = readFileSync('src/app/capabilities/page.tsx', 'utf8');
+    expect(capabilitiesPage).toMatch(/title:\s*'AI Platform Capabilities'/);
+    expect(capabilitiesPage).toMatch(/CollectionPage/);
+    expect(capabilitiesPage).toContain('/capabilities');
+  });
+
   it('governance route has dedicated metadata layout with canonical URL', () => {
     const governanceLayout = readFileSync('src/app/governance/layout.tsx', 'utf8');
     expect(governanceLayout).toMatch(/title:\s*'Governance Dashboard'/);
     expect(governanceLayout).toContain("canonical: 'https://www.prasadkavuri.com/governance'");
+  });
+
+  it('sitemap includes capabilities route for crawler discovery', () => {
+    const sitemapSource = readFileSync('src/app/sitemap.ts', 'utf8');
+    expect(sitemapSource).toContain('/capabilities');
   });
 
   it('security.txt disclosure contact matches profile email', () => {

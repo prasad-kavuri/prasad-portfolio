@@ -815,6 +815,13 @@ export default function VectorSearchPage() {
             <li>• No API keys or server-side processing required</li>
           </ul>
         </Card>
+
+        <Card className="mt-4 border-border bg-card p-5">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Why this matters</p>
+          <p className="text-sm text-muted-foreground">
+            Semantic retrieval is foundational for enterprise support, search, and knowledge products. This demo makes the ranking mechanics visible so stakeholders can evaluate retrieval quality, resilience, and business relevance together.
+          </p>
+        </Card>
       </div>
     </div>
   );

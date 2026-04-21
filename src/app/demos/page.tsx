@@ -10,14 +10,14 @@ const demosUrl = `${SITE_URL}/demos`;
 export const metadata: Metadata = {
   title: 'AI Demos',
   description:
-    'Explore production AI demos across evaluation, agentic orchestration, governance, retrieval, multimodal systems, and platform tooling.',
+    'Explore production AI platform demos across routing, retrieval, governance, multi-agent orchestration, and reliability patterns tied to enterprise outcomes.',
   alternates: {
     canonical: '/demos',
   },
   openGraph: {
     title: `AI Demos (${PORTFOLIO_FACTS.productionDemoCount}) — ${SITE_NAME}`,
     description:
-      'Production AI demos running on shared governance infrastructure: guardrails, observability, evaluation, and drift monitoring.',
+      'Production AI demos with enterprise framing: cost-aware routing, grounded retrieval, governance controls, and resilient platform operations.',
     url: demosUrl,
     images: [{ url: `${SITE_URL}/og-image.jpg`, width: 1200, height: 630, alt: 'Prasad Kavuri AI demos' }],
   },
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: `AI Demos (${PORTFOLIO_FACTS.productionDemoCount}) — ${SITE_NAME}`,
     description:
-      'Production AI demos across evaluation, multi-agent orchestration, governance, and multimodal systems.',
+      'Enterprise AI demo index across routing, retrieval, governance, and multi-agent operational patterns.',
     images: [`${SITE_URL}/og-image.jpg`],
   },
 };
@@ -67,7 +67,7 @@ export default function DemosIndexPage() {
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">AI Demo Index</p>
             <h1 className="mt-2 text-3xl font-semibold">All Production Demos</h1>
             <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-              {PORTFOLIO_FACTS.productionDemoCount} production demos running on a shared governance foundation.
+              {PORTFOLIO_FACTS.productionDemoCount} production demos on a shared governance foundation, each tied to an enterprise platform concern: quality, reliability, cost, retrieval, orchestration, or oversight.
             </p>
           </div>
         </section>

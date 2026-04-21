@@ -24,6 +24,34 @@ Core differentiator: every demo shares platform-level controls in `src/lib/`.
 - Drift and runtime quality posture (`drift-monitor.ts`)
 - Rate limiting and runtime controls (`rate-limit.ts`, `cost-control.ts`)
 
+## How To Read This Repo (Recruiters and CTOs)
+
+If you are reviewing this repository for VP / Head / Senior Director AI Platform fit, use this path:
+
+1. `/for-recruiters` for executive summary and role-fit context
+2. `/capabilities` for capability-to-evidence mapping
+3. `/demos` for live system behavior
+4. `/governance` for trust, guardrails, and operational controls
+5. `/certifications` for recency-weighted AI validation signal
+
+This sequence is designed to show system thinking first, then implementation evidence.
+
+## Platform Capability Map
+
+The portfolio is organized around enterprise AI platform capability areas, not isolated demos:
+
+- Agentic AI systems and controlled orchestration
+- Tool and MCP-style integration patterns
+- LLM routing and model selection economics
+- RAG and retrieval grounding
+- Vector search and semantic ranking
+- Governance, HITL, and policy controls
+- Observability, reliability, and fallback behavior
+- AI FinOps (cost and latency discipline)
+- Platform modernization and executive operating model
+
+Canonical capability route: `/capabilities`
+
 ## Platform Architecture
 
 ```mermaid

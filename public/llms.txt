@@ -33,10 +33,17 @@ Key career highlights:
 ## Portfolio Structure
 
 - Homepage: https://www.prasadkavuri.com
+- Certifications & Skills Intelligence: https://www.prasadkavuri.com/certifications
 - For Recruiters: https://www.prasadkavuri.com/for-recruiters
 - Governance Dashboard: https://www.prasadkavuri.com/governance
 - Machine-readable Resume: https://www.prasadkavuri.com/resume.md
 - AI Agent Manifest: https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
+
+## Certifications & Skills Intelligence
+
+- Verified Hub: https://www.prasadkavuri.com/certifications
+- Description: A verified hub of 69+ certifications in Agentic AI, LLM Orchestration, and Executive AI Leadership (2010–2026).
+- Full Certification List (Raw): https://www.prasadkavuri.com/llms-full.txt
 
 ## Live AI Demos (13 production systems)
 

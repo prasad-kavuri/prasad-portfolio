@@ -135,6 +135,7 @@ export default function MultimodalPage() {
   const [selectedBackend, setSelectedBackend] = useState<BrowserBackend | null>(null);
 
   const [imageData, setImageData] = useState<string | null>(null);
+  const [imageBlob, setImageBlob] = useState<File | Blob | null>(null);
   const [result, setResult] = useState<ClassificationResult[] | null>(null);
   const [processingTime, setProcessingTime] = useState(0);
   const [activeTask, setActiveTask] = useState<TaskType>('classify');
@@ -374,6 +375,7 @@ export default function MultimodalPage() {
     }
     setError('');
     setResult(null);
+    setImageBlob(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       setImageData(e.target?.result as string);
@@ -396,6 +398,7 @@ export default function MultimodalPage() {
       }
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
+      setImageBlob(blob);
       setImageData(objectUrl);
     } catch {
       setError('Could not load URL — try uploading the image directly instead');
@@ -436,17 +439,21 @@ export default function MultimodalPage() {
     const t0 = performance.now();
 
     try {
-      const results = await classifyPipelineRef.current(imageData, {
-        topk: 5,
-      });
+      const { RawImage } = await loadTransformersModule();
+      const img = imageBlob ? await RawImage.fromBlob(imageBlob) : imageData;
+      const results = await classifyPipelineRef.current(img, { topk: 5 });
       if (!isMountedRef.current) return;
 
       setProcessingTime(Math.round(performance.now() - t0));
       setResult(results);
       setStatus('ready');
     } catch (e: any) {
-      console.error('Classification error:', e);
-      setError(e?.message || 'Classification failed');
+      console.error('[Multimodal] Inference error:', e);
+      if (e?.message?.includes('fetch')) {
+        setError('Image processing failed — check browser console for details.');
+      } else {
+        setError(`Classification error: ${e?.message || 'unknown'}`);
+      }
       setStatus('ready');
     }
   };
@@ -488,15 +495,21 @@ export default function MultimodalPage() {
     const t0 = performance.now();
 
     try {
-      const results = await clipPipelineRef.current(imageData, labels);
+      const { RawImage } = await loadTransformersModule();
+      const img = imageBlob ? await RawImage.fromBlob(imageBlob) : imageData;
+      const results = await clipPipelineRef.current(img, labels);
       if (!isMountedRef.current) return;
 
       setProcessingTime(Math.round(performance.now() - t0));
       setResult(results);
       setStatus('ready');
     } catch (e: any) {
-      console.error('Zero-shot error:', e);
-      setError(e?.message || 'Zero-shot classification failed');
+      console.error('[Multimodal] Inference error:', e);
+      if (e?.message?.includes('fetch')) {
+        setError('Image processing failed — check browser console for details.');
+      } else {
+        setError(`Zero-shot error: ${e?.message || 'unknown'}`);
+      }
       setStatus('ready');
     }
   };

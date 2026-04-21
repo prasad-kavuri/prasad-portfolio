@@ -18,6 +18,9 @@ vi.stubGlobal('fetch', mockFetch);
 vi.mock('@huggingface/transformers', () => ({
   env: {},
   pipeline: mockPipeline,
+  RawImage: {
+    fromBlob: async (blob: Blob) => blob,
+  },
 }));
 
 // Default execution state — capable desktop, local mode

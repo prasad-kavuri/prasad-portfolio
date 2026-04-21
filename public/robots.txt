@@ -27,8 +27,10 @@ User-agent: cohere-ai
 Allow: /
 
 Sitemap: https://www.prasadkavuri.com/sitemap.xml
+Sitemap: https://www.prasadkavuri.com/llms.txt
 
 # LLM-friendly machine-readable resources
 # llms.txt: https://www.prasadkavuri.com/llms.txt
+# llms-full.txt: https://www.prasadkavuri.com/llms-full.txt
 # agent-manifest: https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
 # resume: https://www.prasadkavuri.com/resume.md

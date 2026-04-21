@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Resume Generator",
-  description: "Paste a job description and get a tailored resume with ATS optimization, skill matching, and Groq Llama 3.3 70B.",
+  title: "AI Hiring Intelligence",
+  description: "Paste a job description — get multi-dimension fit scoring, HITL-gated tailoring, and an ATS-optimized resume with drift detection.",
   openGraph: {
-    title: "AI Resume Generator — Prasad Kavuri",
-    description: "ATS-optimized resume generation with JD parsing and skill matching.",
+    title: "AI Hiring Intelligence — Prasad Kavuri",
+    description: "Multi-dimension fit scoring, HITL checkpoint, and ATS-optimized resume generation.",
     url: "https://www.prasadkavuri.com/demos/resume-generator",
   },
   alternates: {

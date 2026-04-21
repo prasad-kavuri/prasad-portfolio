@@ -35,6 +35,18 @@ const VALID_RESUME: object = {
   atsKeywords: ['AI', 'LLM'],
 };
 
+const VALID_RESUME_WITH_FIT: object = {
+  ...VALID_RESUME,
+  roleTitle: 'VP of AI Engineering',
+  fitScores: {
+    skillsMatch: { score: 90, rationale: 'Strong LLM experience matches requirements.' },
+    seniorityAlignment: { score: 85, rationale: 'VP-level seniority is a strong match.' },
+    domainRelevance: { score: 88, rationale: 'AI domain experience is highly relevant.' },
+    cultureSignals: { score: 82, rationale: 'Startup culture signals align well.' },
+  },
+  tailoringChanges: ['Highlight RAG pipeline work', 'Emphasize P&L ownership', 'Add Groq API expertise'],
+};
+
 function makeRequest(body: object, ip = '127.0.0.1') {
   return new NextRequest('http://localhost/api/resume-generator', {
     method: 'POST',
@@ -184,5 +196,54 @@ describe('POST /api/resume-generator', () => {
     const { POST } = await import('@/app/api/resume-generator/route');
     const res = await POST(makeRequest({ jobDescription: 'VP of AI role' }));
     expect(res.status).toBe(500);
+  });
+
+  it('returns parsed resume including fit scores and tailoring changes', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: JSON.stringify(VALID_RESUME_WITH_FIT) } }] }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI Engineering role', focusAreas: [] }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toHaveProperty('roleTitle', 'VP of AI Engineering');
+    expect(body.fitScores).toHaveProperty('skillsMatch');
+    expect(body.tailoringChanges).toHaveLength(3);
+  });
+
+  it('returns 400 when userOverride exceeds 500 characters', async () => {
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI role', focusAreas: [], userOverride: 'x'.repeat(501) }));
+    expect(res.status).toBe(400);
+  });
+
+  it('accepts userOverride and returns valid resume', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: JSON.stringify(VALID_RESUME_WITH_FIT) } }] }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI role', focusAreas: [], userOverride: 'Focus on leadership and team building' }));
+    expect(res.status).toBe(200);
+  });
+
+  it('returns 500 when fitScores are present but malformed', async () => {
+    const badFit = { ...VALID_RESUME, fitScores: { skillsMatch: { score: 'not-a-number', rationale: 'ok' } } };
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: JSON.stringify(badFit) } }] }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    const { POST } = await import('@/app/api/resume-generator/route');
+    const res = await POST(makeRequest({ jobDescription: 'VP of AI role', focusAreas: [] }));
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toMatch(/invalid resume structure/i);
   });
 });

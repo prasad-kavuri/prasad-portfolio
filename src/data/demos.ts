@@ -149,11 +149,11 @@ export const demos: Demo[] = [
   {
     id: "resume-generator",
     emoji: "FileText",
-    title: "Resume Generator",
-    description: "Paste a job description, get a tailored resume with skill matching scores and selection reasoning.",
+    title: "AI Hiring Intelligence",
+    description: "Paste a job description — get multi-dimension fit scoring, HITL-gated tailoring, and an ATS-optimized resume with drift detection.",
     businessImpact: "Reduces recruiting cycle time through faster candidate-role alignment",
     href: "/demos/resume-generator",
-    tags: ["JD parsing", "Skill matching", "PDF export"],
+    tags: ["JD parsing", "Skill matching", "HITL", "Evaluation", "Multi-Agent"],
     skills: ['planning'],
     status: "live",
     mobileConfig: {

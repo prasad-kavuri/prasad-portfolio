@@ -80,7 +80,7 @@ The AI services layer contains both server-side and browser-side demos:
 | Multi-Agent System | `/demos/multi-agent` | Server route plus external agent backend |
 | MCP Tool Demo | `/demos/mcp-demo` | Server route calling Groq tool use |
 | AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming full-context grounding and retrieval cues |
-| Resume Generator | `/demos/resume-generator` | Server route calling Groq |
+| AI Hiring Intelligence | `/demos/resume-generator` | Server route calling Groq |
 | Multimodal Assistant | `/demos/multimodal` | Browser model execution |
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
 | Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, OTEL observability |

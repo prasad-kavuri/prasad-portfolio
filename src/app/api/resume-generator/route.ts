@@ -18,8 +18,21 @@ const ROUTE = '/api/resume-generator';
 const MAX_JOB_DESCRIPTION_LENGTH = 2000;
 const ALLOWED_RESUME_INPUT = /^[\p{L}\p{N}\s.,;:!?'"()/$%+\-#&@|•\[\]\n\r]+$/u;
 
+interface FitDimension {
+  score: number;
+  rationale: string;
+}
+
 interface ResumeResponse {
   matchScore: number;
+  roleTitle?: string;
+  fitScores?: {
+    skillsMatch: FitDimension;
+    seniorityAlignment: FitDimension;
+    domainRelevance: FitDimension;
+    cultureSignals: FitDimension;
+  };
+  tailoringChanges?: string[];
   matchedSkills: string[];
   missingSkills: string[];
   summary: string;
@@ -50,10 +63,27 @@ function isResumeExperience(value: unknown): value is ResumeResponse['experience
   });
 }
 
+function isFitDimension(value: unknown): value is FitDimension {
+  if (!value || typeof value !== 'object') return false;
+  const d = value as Record<string, unknown>;
+  return typeof d.score === 'number' && typeof d.rationale === 'string';
+}
+
+function isFitScores(value: unknown): boolean {
+  if (!value || typeof value !== 'object') return false;
+  const f = value as Record<string, unknown>;
+  return (
+    isFitDimension(f.skillsMatch) &&
+    isFitDimension(f.seniorityAlignment) &&
+    isFitDimension(f.domainRelevance) &&
+    isFitDimension(f.cultureSignals)
+  );
+}
+
 function isResumeResponse(value: unknown): value is ResumeResponse {
   if (!value || typeof value !== 'object') return false;
   const resume = value as Record<string, unknown>;
-  return (
+  const coreValid = (
     typeof resume.matchScore === 'number' &&
     Number.isFinite(resume.matchScore) &&
     resume.matchScore >= 0 &&
@@ -65,6 +95,11 @@ function isResumeResponse(value: unknown): value is ResumeResponse {
     isResumeStringArray(resume.skills) &&
     isResumeStringArray(resume.atsKeywords)
   );
+  if (!coreValid) return false;
+  // Optional fields: validate only if present
+  if (resume.fitScores !== undefined && !isFitScores(resume.fitScores)) return false;
+  if (resume.tailoringChanges !== undefined && !isResumeStringArray(resume.tailoringChanges)) return false;
+  return true;
 }
 
 function stripHtml(input: string): string {
@@ -108,7 +143,7 @@ export async function POST(req: NextRequest) {
     const body = await readJsonObject(req, { context });
     if (!body.ok) return body.response;
 
-    const { jobDescription, focusAreas } = body.data;
+    const { jobDescription, focusAreas, userOverride } = body.data;
 
     if (!jobDescription || typeof jobDescription !== 'string' || !jobDescription.trim()) {
       logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'missing_job_description', status: 400 });
@@ -120,6 +155,14 @@ export async function POST(req: NextRequest) {
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
     const safeAreas = (focusAreas ?? []).map(area => sanitizeResumeInput(area));
+
+    let safeUserOverride = '';
+    if (userOverride !== undefined) {
+      if (typeof userOverride !== 'string' || userOverride.length > 500) {
+        return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
+      }
+      safeUserOverride = sanitizeResumeInput(userOverride);
+    }
 
     if (jobDescription.length > MAX_JOB_DESCRIPTION_LENGTH) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'job_description_too_long', jobDescriptionLength: jobDescription.length, status: 400 });
@@ -163,29 +206,47 @@ Skills: Agentic AI, LLM Orchestration, RAG, Vector Search, CrewAI, LangGraph,
 AWS/Azure/GCP, Kubernetes, MLOps, LLMOps, Product Strategy, Data Platforms,
 Distributed Systems, P&L Management, Global Team Leadership`;
 
-    const systemPrompt = `You are an expert resume writer and ATS optimization specialist.
-Your task is to generate a tailored resume JSON for Prasad Kavuri based on a job description.
+    const systemPrompt = `You are an expert resume writer, ATS optimization specialist, and hiring intelligence system.
+Your task is to analyze a job description and generate a tailored resume JSON for Prasad Kavuri.
 
 ${PRASAD_PROFILE}
 
 Instructions:
-1. Analyze the job description to extract: required skills, seniority level, industry/domain, and key responsibilities
-2. Generate a match score (0-100) based on skill alignment
-3. Identify matched skills from Prasad's experience
-4. Identify missing skills that were requested
-5. Write a tailored professional summary (3-4 sentences) that highlights relevant experience
-6. Select the 3 most relevant experience entries and tailor bullet points to match JD language
-7. Extract the top 8-10 relevant skills
-8. Identify 5-7 ATS keywords from the JD
+1. Extract the role title from the job description
+2. Generate a match score (0-100) based on overall skill alignment
+3. Score 4 dimensions (0-100 each) with a one-sentence rationale:
+   - skillsMatch: How well Prasad's technical skills match the JD requirements
+   - seniorityAlignment: How well Prasad's seniority/level matches the role expectations
+   - domainRelevance: How relevant Prasad's domain experience is to this role
+   - cultureSignals: How well Prasad's background aligns with company culture signals in the JD
+4. Identify matched skills from Prasad's experience
+5. Identify missing skills that were requested
+6. Propose exactly 3 concrete resume tailoring changes (as short action phrases)
+7. Write a tailored professional summary (3-4 sentences) that highlights relevant experience
+8. Select the 3 most relevant experience entries and tailor bullet points to match JD language
+9. Extract the top 8-10 relevant skills
+10. Identify 5-7 ATS keywords from the JD
 
 Return ONLY valid JSON, no markdown or additional text.`;
 
+    const overrideClause = safeUserOverride
+      ? `\n\nUser tailoring override: ${safeUserOverride}\nApply this override when writing the summary, experience bullets, and tailoringChanges.`
+      : '';
+
     const userMessage = `Job Description:
-${safeJobDescription}${focusAreasText}
+${safeJobDescription}${focusAreasText}${overrideClause}
 
 Generate a tailored resume as JSON with this exact structure:
 {
   "matchScore": number (0-100),
+  "roleTitle": "string",
+  "fitScores": {
+    "skillsMatch": { "score": number, "rationale": "string" },
+    "seniorityAlignment": { "score": number, "rationale": "string" },
+    "domainRelevance": { "score": number, "rationale": "string" },
+    "cultureSignals": { "score": number, "rationale": "string" }
+  },
+  "tailoringChanges": ["change1", "change2", "change3"],
   "matchedSkills": string[],
   "missingSkills": string[],
   "summary": "string (3-4 sentences)",
@@ -268,6 +329,14 @@ Generate a tailored resume as JSON with this exact structure:
     // Sanitize all string fields before returning
     const sanitized = {
       ...parsedResume,
+      roleTitle: parsedResume.roleTitle ? sanitizeResumeOutput(parsedResume.roleTitle) : undefined,
+      fitScores: parsedResume.fitScores ? {
+        skillsMatch: { ...parsedResume.fitScores.skillsMatch, rationale: sanitizeResumeOutput(parsedResume.fitScores.skillsMatch.rationale) },
+        seniorityAlignment: { ...parsedResume.fitScores.seniorityAlignment, rationale: sanitizeResumeOutput(parsedResume.fitScores.seniorityAlignment.rationale) },
+        domainRelevance: { ...parsedResume.fitScores.domainRelevance, rationale: sanitizeResumeOutput(parsedResume.fitScores.domainRelevance.rationale) },
+        cultureSignals: { ...parsedResume.fitScores.cultureSignals, rationale: sanitizeResumeOutput(parsedResume.fitScores.cultureSignals.rationale) },
+      } : undefined,
+      tailoringChanges: parsedResume.tailoringChanges?.map(c => sanitizeResumeOutput(c)),
       summary: sanitizeResumeOutput(parsedResume.summary),
       experience: parsedResume.experience.map(exp => ({
         ...exp,
@@ -317,6 +386,7 @@ Generate a tailored resume as JSON with this exact structure:
       jobDescriptionLength: jobDescription.length,
       focusAreaCount: safeAreas.length,
       matchScore: parsedResume.matchScore,
+      hasUserOverride: safeUserOverride.length > 0,
     });
 
     return finalizeApiResponse(

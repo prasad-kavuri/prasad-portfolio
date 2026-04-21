@@ -407,7 +407,7 @@ export default function MultimodalPage() {
   };
 
   const runClassify = async () => {
-    if (!imageData) return;
+    if (!imageData || !imageBlob) return;
 
     // --- SIMULATED PATH (mobile / no-webgpu / low-memory) ---
     if (!exec.canAttemptLocal || demoMode === 'simulated') {
@@ -440,7 +440,7 @@ export default function MultimodalPage() {
 
     try {
       const { RawImage } = await loadTransformersModule();
-      const img = imageBlob ? await RawImage.fromBlob(imageBlob) : imageData;
+      const img = await RawImage.fromBlob(imageBlob);
       const results = await classifyPipelineRef.current(img, { topk: 5 });
       if (!isMountedRef.current) return;
 
@@ -449,17 +449,13 @@ export default function MultimodalPage() {
       setStatus('ready');
     } catch (e: any) {
       console.error('[Multimodal] Inference error:', e);
-      if (e?.message?.includes('fetch')) {
-        setError('Image processing failed — check browser console for details.');
-      } else {
-        setError(`Classification error: ${e?.message || 'unknown'}`);
-      }
+      setError(e?.message || 'Classification failed');
       setStatus('ready');
     }
   };
 
   const runZeroShot = async () => {
-    if (!imageData) return;
+    if (!imageData || !imageBlob) return;
 
     const labels = zeroShotLabels
       .split(',')
@@ -496,7 +492,7 @@ export default function MultimodalPage() {
 
     try {
       const { RawImage } = await loadTransformersModule();
-      const img = imageBlob ? await RawImage.fromBlob(imageBlob) : imageData;
+      const img = await RawImage.fromBlob(imageBlob);
       const results = await clipPipelineRef.current(img, labels);
       if (!isMountedRef.current) return;
 
@@ -505,11 +501,7 @@ export default function MultimodalPage() {
       setStatus('ready');
     } catch (e: any) {
       console.error('[Multimodal] Inference error:', e);
-      if (e?.message?.includes('fetch')) {
-        setError('Image processing failed — check browser console for details.');
-      } else {
-        setError(`Zero-shot error: ${e?.message || 'unknown'}`);
-      }
+      setError(e?.message || 'Zero-shot classification failed');
       setStatus('ready');
     }
   };

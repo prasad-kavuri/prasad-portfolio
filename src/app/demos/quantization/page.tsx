@@ -924,6 +924,70 @@ export default function QuantizationPage() {
           </div>
         )}
       </div>
+
+      {/* Real-world MoE Quantization Reference — static, always visible */}
+      <div className="mt-10">
+        <h2 className="mb-4 text-xl font-bold text-foreground">Real-world Quantization Reference</h2>
+        <Card className="border-purple-700/40 bg-card p-6">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-bold text-foreground">Qwen3.6-35B-A3B — Intel AutoRound</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Real-world MoE quantization example · Intel AutoRound on Qwen3 architecture
+              </p>
+            </div>
+            <Badge className="bg-purple-600 text-white border-0">int4</Badge>
+          </div>
+
+          <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg border border-border bg-background p-3">
+              <p className="text-xs text-muted-foreground">Architecture</p>
+              <p className="mt-1 text-sm font-medium text-foreground">MoE</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Mixture of Experts</p>
+            </div>
+            <div className="rounded-lg border border-border bg-background p-3">
+              <p className="text-xs text-muted-foreground">Total / Active Params</p>
+              <p className="mt-1 text-sm font-medium text-foreground">35B / ~3B active</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">per token</p>
+            </div>
+            <div className="rounded-lg border border-border bg-background p-3">
+              <p className="text-xs text-muted-foreground">Quantization Method</p>
+              <p className="mt-1 text-sm font-medium text-foreground">AutoRound</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">group_size=128</p>
+            </div>
+            <div className="rounded-lg border border-border bg-background p-3">
+              <p className="text-xs text-muted-foreground">Precision</p>
+              <p className="mt-1 text-sm font-medium text-foreground">INT4</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Intel AutoRound</p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-purple-700/30 bg-purple-900/10 p-4">
+            <p className="mb-1 text-sm font-medium text-foreground">Key Trade-off</p>
+            <p className="text-sm text-muted-foreground">
+              MoE int4 = enterprise reasoning at edge compute cost. Only active expert weights are
+              loaded per token — fundamentally different from dense model quantization.
+            </p>
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-border bg-background p-3">
+              <p className="mb-1 text-xs font-medium text-foreground">vs. Dense INT8</p>
+              <p className="text-xs text-muted-foreground">
+                Dense INT8 compresses all weights uniformly. MoE int4 activates only ~3B of 35B
+                weights per token — inference cost scales with active experts, not total parameters.
+              </p>
+            </div>
+            <div className="rounded-lg border border-border bg-background p-3">
+              <p className="mb-1 text-xs font-medium text-foreground">Deployment Profile</p>
+              <p className="text-xs text-muted-foreground">
+                Single GPU capable (served via vllm). AutoRound group_size=128 preserves weight
+                distribution accuracy while achieving ~8× compression vs FP32.
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

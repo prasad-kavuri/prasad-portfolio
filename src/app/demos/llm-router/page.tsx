@@ -19,6 +19,7 @@ interface ModelResult {
   output_tokens: number;
   cost_usd: number;
   error?: string;
+  isFallback?: boolean;
 }
 
 const MODEL_IDS = [
@@ -27,6 +28,21 @@ const MODEL_IDS = [
   'meta-llama/llama-4-scout-17b-16e-instruct',
   'qwen/qwen3-32b',
 ];
+
+const QWEN_MOE_FALLBACK: ModelResult = {
+  model: 'qwen-moe-local',
+  modelName: 'Qwen 3.6 MoE (int4) — Edge Efficient',
+  provider: 'Local vllm · localhost:8000',
+  response: '',
+  latency_ms: 0,
+  input_tokens: 0,
+  output_tokens: 0,
+  cost_usd: 0,
+  isFallback: true,
+  error:
+    'Qwen MoE local inference unavailable — requires local vllm server. ' +
+    'This demo shows the routing architecture; switch to Llama or Mixtral for live output.',
+};
 
 const EXAMPLE_PROMPTS = [
   'Explain quantum computing in simple terms',
@@ -57,23 +73,32 @@ export default function LLMRouterDemo() {
     setResults(null);
 
     try {
-      const promises = MODEL_IDS.map(modelId =>
+      const groqPromises = MODEL_IDS.map(modelId =>
         fetch('/api/llm-router', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt, model: modelId }),
         })
           .then(res => res.json())
-          .catch(error => ({ error: error.message }))
+          .catch((error: Error) => ({ error: error.message }))
       );
 
-      const settledResults = await Promise.allSettled(promises);
+      const qwenPromise = fetch('/api/qwen-moe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      })
+        .then(res => res.json())
+        .catch(() => QWEN_MOE_FALLBACK);
+
+      const allModelIds = [...MODEL_IDS, 'qwen-moe-local'];
+      const settledResults = await Promise.allSettled([...groqPromises, qwenPromise]);
       const results = settledResults.map((result, index) => {
         if (result.status === 'fulfilled') {
-          return result.value;
+          return result.value as ModelResult;
         }
         return {
-          model: MODEL_IDS[index],
+          model: allModelIds[index] ?? 'unknown',
           modelName: 'Unknown',
           provider: 'Unknown',
           error: 'Request failed',
@@ -82,7 +107,7 @@ export default function LLMRouterDemo() {
           input_tokens: 0,
           output_tokens: 0,
           cost_usd: 0,
-        };
+        } as ModelResult;
       });
 
       setResults(results);
@@ -205,7 +230,7 @@ export default function LLMRouterDemo() {
         {/* Results Grid */}
         {isLoading && (
           <div className="grid grid-cols-2 gap-4 mb-8">
-            {MODEL_IDS.map(modelId => (
+            {[...MODEL_IDS, 'qwen-moe-local'].map(modelId => (
               <Card key={modelId} className="bg-card border-border p-6 animate-pulse">
                 <div className="h-8 bg-muted rounded mb-4" />
                 <div className="h-4 bg-muted rounded mb-2" />
@@ -268,10 +293,36 @@ export default function LLMRouterDemo() {
                     )}
                   </div>
 
-                  {result.error ? (
+                  {result.isFallback ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">35B params / ~3B active</Badge>
+                        <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">MoE</Badge>
+                        <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">int4</Badge>
+                        <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">Single GPU</Badge>
+                      </div>
+                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-300">
+                        {result.error}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Intel AutoRound int4 quantization via vllm. MoE = only ~3B params activated per token,
+                        delivering 30B+ reasoning at 3B inference cost.
+                      </p>
+                    </div>
+                  ) : result.error ? (
                     <div className="text-sm text-red-400">Error: {result.error}</div>
                   ) : (
                     <>
+                      {/* Metadata badges for live Qwen MoE inference */}
+                      {result.model === 'qwen-moe-local' && (
+                        <div className="mb-3 flex flex-wrap gap-1.5">
+                          <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">35B params / ~3B active</Badge>
+                          <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">MoE</Badge>
+                          <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">int4</Badge>
+                          <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">Single GPU</Badge>
+                        </div>
+                      )}
+
                       {/* Latency */}
                       <div className="mb-4">
                         <Badge className={`${getLatencyColor(result.latency_ms)} border-0 text-xs font-mono`}>
@@ -285,7 +336,7 @@ export default function LLMRouterDemo() {
                           Input: {result.input_tokens} | Output: {result.output_tokens}
                         </div>
                         <div className="font-mono text-foreground">
-                          ${result.cost_usd.toFixed(6)}
+                          {result.model === 'qwen-moe-local' ? '$0.000000 (local)' : `$${result.cost_usd.toFixed(6)}`}
                         </div>
                       </div>
 
@@ -295,6 +346,13 @@ export default function LLMRouterDemo() {
                           {result.response}
                         </div>
                       </div>
+
+                      {result.model === 'qwen-moe-local' && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Intel AutoRound int4 quantization via vllm. MoE = only ~3B params activated per token,
+                          delivering 30B+ reasoning at 3B inference cost.
+                        </p>
+                      )}
                     </>
                   )}
                 </Card>

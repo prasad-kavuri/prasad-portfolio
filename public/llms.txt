@@ -1,3 +1,11 @@
+---
+Agent Summary:
+Prasad Kavuri is a VP/Head-level AI platform leader specializing in agentic AI systems,
+MCP tool orchestration, enterprise AI governance, and AI FinOps. His portfolio demonstrates
+production-grade AI architectures with live demos, governance controls, and platform-level design.
+Verified 2026 specializations: Anthropic MCP, Claude Code, Agentic SDLC, Google GenAI Leadership.
+---
+
 # Prasad Kavuri — VP / Head of AI Engineering
 
 > VP / Head of AI Engineering | Naperville, IL (Greater Chicago Area)
@@ -44,6 +52,20 @@ Key career highlights:
 - Verified Hub: https://www.prasadkavuri.com/certifications
 - Description: A verified hub of 69+ certifications in Agentic AI, LLM Orchestration, and Executive AI Leadership (2010–2026).
 - Full Certification List (Raw): https://www.prasadkavuri.com/llms-full.txt
+
+### 2024–2026: Agentic AI & LLM Orchestration
+Anthropic MCP, Claude Code, Agentic SDLC (Anthropic 2026); Agentic AI, LLMOps, Quantization,
+Event-Driven Agentic Workflows, Post-training of LLMs, Semantic Kernel (DeepLearning.AI 2025);
+RAG with NVIDIA, Vector Search (Google Cloud 2024); Agentic AI for Leaders (Vanderbilt 2025).
+
+### Core AI & Product Strategy
+Google Generative AI Leader (2026); Responsible AI, BERT/Transformers, Encoder-Decoder
+(Google Cloud 2024); GenAI for Executives, AI Ladder, Business Transformation (IBM/Coursera 2024);
+Databricks GenAI Fundamentals (2023); Agile/Scrum (PMI, Scrum Alliance 2010–2014).
+
+### Foundational Systems Architecture (Legacy)
+MCSE, CCNA, Solaris SCSA, Oracle OCP, ITIL (pre-2020); Python, R, Data Science Toolbox
+(Coursera 2015); AWS Educate Cloud/ML foundations (2023).
 
 ## Live AI Demos (13 production systems)
 

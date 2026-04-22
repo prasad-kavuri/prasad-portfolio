@@ -24,6 +24,22 @@ Core differentiator: every demo shares platform-level controls in `src/lib/`.
 - Drift and runtime quality posture (`drift-monitor.ts`)
 - Rate limiting and runtime controls (`rate-limit.ts`, `cost-control.ts`)
 
+---
+### Agent Skill — Install for AI-Assisted Development
+
+This repo includes an installable agent skill for Claude Code, Cursor,
+Copilot, and other coding agents:
+
+```bash
+npx skills add prasad-kavuri/prasad-portfolio
+```
+
+Installs architecture context, governance rules, file map, and development
+conventions — so your agent understands this codebase before touching it.
+
+Browse on skills.sh → [prasad-kavuri/prasad-portfolio](https://skills.sh)
+---
+
 ## How To Read This Repo (Recruiters and CTOs)
 
 If you are reviewing this repository for VP / Head / Senior Director AI Platform fit, use this path:

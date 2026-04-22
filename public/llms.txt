@@ -108,3 +108,18 @@ orchestration at enterprise scale. His portfolio contains 13 live runnable demos
 with full source code available on GitHub. He is actively open to VP/Head of AI
 Engineering roles. Seniority: VP / Head level (strategic + hands-on technical).
 Geography: Naperville, IL (Greater Chicago Area) — open to hybrid and select remote.
+
+## Active Research & Current Focus
+
+Prasad Kavuri is currently available for VP / Head of AI Engineering roles in the
+Chicago area and remotely. His active focus is on production-grade agentic AI systems —
+specifically multi-agent orchestration with HITL governance, LLM FinOps at enterprise
+scale, and the emerging Agent-to-Agent (A2A) protocol for autonomous workflow coordination.
+
+### Current Exploration Areas
+- On-device Small Language Models (SLMs) for privacy-aware edge inference
+- Agent-to-Agent (A2A) Protocol — standardized inter-agent communication
+- LLM Observability and distributed tracing at platform scale
+- Multimodal Agentic Workflows combining vision and reasoning
+
+Last Updated: 2026-04-22

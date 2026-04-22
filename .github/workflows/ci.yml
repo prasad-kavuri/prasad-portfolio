@@ -111,38 +111,47 @@ jobs:
       - name: Install Playwright browsers
         run: |
           set -euo pipefail
-          wait_for_dpkg_lock() {
-            # GitHub-hosted runners can have transient apt activity (e.g. apt-daily).
-            for i in $(seq 1 30); do
-              if sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then
-                echo "dpkg lock is held; waiting 10s (attempt ${i}/30)..."
+
+          # Stop background apt services that hold /var/lib/apt/lists/lock
+          sudo systemctl stop unattended-upgrades apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          sudo systemctl kill --kill-who=all apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+
+          wait_for_apt_locks() {
+            # Check all four apt/dpkg lock files (not just dpkg/lock-frontend).
+            local locks="/var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock"
+            for i in $(seq 1 36); do
+              # shellcheck disable=SC2086
+              if sudo fuser $locks >/dev/null 2>&1; then
+                echo "apt/dpkg lock held; waiting 10s (attempt ${i}/36)..."
                 sleep 10
               else
                 return 0
               fi
             done
-            echo "dpkg lock still held after waiting 5 minutes"
-            return 1
+            echo "Locks still held after 6 min — forcibly releasing (safe in CI)"
+            # shellcheck disable=SC2086
+            sudo rm -f $locks 2>/dev/null || true
+            sudo dpkg --configure -a 2>/dev/null || true
           }
 
           install_cmd="npx playwright install ${{ matrix.install_browser }}"
           if [ "${{ matrix.with_deps }}" = "true" ]; then
             install_cmd="npx playwright install --with-deps ${{ matrix.install_browser }}"
           fi
-          for attempt in 1 2; do
+          for attempt in 1 2 3; do
             if [ "${{ matrix.with_deps }}" = "true" ]; then
-              wait_for_dpkg_lock
+              wait_for_apt_locks
             fi
-            echo "Playwright install attempt ${attempt} for ${{ matrix.project }} using: ${install_cmd}"
-            if timeout 8m bash -lc "${install_cmd}"; then
+            echo "Playwright install attempt ${attempt}/3 for ${{ matrix.project }}: ${install_cmd}"
+            if timeout 10m bash -lc "${install_cmd}"; then
               exit 0
             fi
-            if [ "${attempt}" -eq 2 ]; then
-              echo "Playwright browser install failed after 2 attempts"
+            if [ "${attempt}" -eq 3 ]; then
+              echo "Playwright browser install failed after 3 attempts"
               exit 1
             fi
-            echo "Install attempt ${attempt} failed; retrying in 15s..."
-            sleep 15
+            echo "Attempt ${attempt} failed; retrying in 20s..."
+            sleep 20
           done
 
       - name: Run E2E tests

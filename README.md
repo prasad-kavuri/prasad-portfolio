@@ -25,19 +25,19 @@ Core differentiator: every demo shares platform-level controls in `src/lib/`.
 - Rate limiting and runtime controls (`rate-limit.ts`, `cost-control.ts`)
 
 ---
-### Agent Skill — Install for AI-Assisted Development
+### 🤖 Agent Skill — AI-Assisted Development
 
-This repo includes an installable agent skill for Claude Code, Cursor,
-Copilot, and other coding agents:
+This repo includes an installable agent skill for Claude Code, Cursor, Copilot,
+and 40+ other coding agents. Install it once and your agent understands the
+full codebase — stack, governance rules, file map, and conventions — before
+touching a single file.
 
 ```bash
 npx skills add prasad-kavuri/prasad-portfolio
 ```
 
-Installs architecture context, governance rules, file map, and development
-conventions — so your agent understands this codebase before touching it.
-
-Browse on skills.sh → [prasad-kavuri/prasad-portfolio](https://skills.sh)
+No setup required. The skill auto-loads in Claude Code sessions.
+Browse on [skills.sh →](https://skills.sh)
 ---
 
 ## How To Read This Repo (Recruiters and CTOs)

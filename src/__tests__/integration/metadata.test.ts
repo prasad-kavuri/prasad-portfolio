@@ -48,9 +48,12 @@ describe('SEO metadata integrity', () => {
     expect(page).toMatch(/main id=\"main-content\"/);
   });
 
-  it('layout.tsx JSON-LD includes Calendly in sameAs', () => {
+  it('layout.tsx JSON-LD includes professional contactPoint and canonical sameAs links', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
-    expect(layout).toMatch(/calendly\.com\/vbkpkavuri/);
+    expect(layout).toMatch(/contactPoint/);
+    expect(layout).toMatch(/contactType:\s*'professional'/);
+    expect(layout).toMatch(/linkedin\.com\/in\/pkavuri/);
+    expect(layout).toMatch(/github\.com\/prasad-kavuri/);
   });
 
   it('layout.tsx contains openGraph metadata', () => {

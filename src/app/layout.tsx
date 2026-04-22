@@ -33,10 +33,16 @@ const siteStructuredData = {
       name: 'Prasad Kavuri',
       jobTitle: 'VP / Head of AI Engineering',
       description:
-        'AI engineering executive leading agentic AI platforms, LLM orchestration, and enterprise AI transformation.',
+        'AI engineering executive with 15+ years building  production AI platforms at scale. Led 200+ engineers, delivered  $10M+ revenue impact, 70% cost reduction through LLM governance, multi-agent systems, and shared AI infrastructure.',
       url: SITE_URL,
       mainEntityOfPage: SITE_URL,
       email: 'vbkpkavuri@gmail.com',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'professional',
+        email: 'vbkpkavuri@gmail.com',
+        url: 'https://www.linkedin.com/in/pkavuri/',
+      },
       image: {
         '@type': 'ImageObject',
         url: `${SITE_URL}/profile-photo.jpg`,
@@ -50,9 +56,8 @@ const siteStructuredData = {
         addressCountry: 'US',
       },
       sameAs: [
-        'https://linkedin.com/in/pkavuri',
+        'https://www.linkedin.com/in/pkavuri/',
         'https://github.com/prasad-kavuri',
-        'https://calendly.com/vbkpkavuri',
       ],
       significantLink: [`${SITE_URL}/resume.md`, `${SITE_URL}/.well-known/ai-agent-manifest.json`, `${SITE_URL}/llms.txt`],
       worksFor: { '@id': krutrimId },

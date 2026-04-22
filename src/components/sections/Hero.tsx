@@ -165,9 +165,16 @@ export function Hero() {
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
                 On-device Small Language Models
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
-                Agent-to-Agent (A2A) Protocol
-              </span>
+              <div className="inline-flex flex-col rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
+                <span className="flex items-center gap-2">Agent-to-Agent (A2A) Protocol</span>
+                <span className="mt-0.5 text-[10px] text-muted-foreground/70">
+                  Demonstrated in the{' '}
+                  <Link href="/demos/multi-agent" className="underline underline-offset-2 hover:text-foreground">
+                    Multi-Agent System
+                  </Link>
+                  {' '}demo — Researcher → Strategist coordination with HITL checkpoint
+                </span>
+              </div>
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
                 LLM Observability and Tracing
               </span>
@@ -258,6 +265,13 @@ export function Hero() {
                 security.txt
               </a>
             </p>
+            <Link
+              href="/governance"
+              className="mt-3 inline-flex items-center gap-1 text-xs underline underline-offset-2 hover:no-underline"
+              style={{ color: 'var(--accent-brand)' }}
+            >
+              View Live Governance Dashboard →
+            </Link>
           </div>
         </div>
       </div>

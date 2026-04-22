@@ -27,6 +27,7 @@ export default function MCPDemoPage() {
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<MCPResponse | null>(null);
+  const [mcpError, setMcpError] = useState<string | null>(null);
   const [expandedToolIndex, setExpandedToolIndex] = useState<number | null>(null);
 
   const exampleQueries = [
@@ -41,6 +42,7 @@ export default function MCPDemoPage() {
 
     setLoading(true);
     setResponse(null);
+    setMcpError(null);
 
     try {
       const res = await fetch("/api/mcp-demo", {
@@ -54,8 +56,8 @@ export default function MCPDemoPage() {
       const data = (await res.json()) as MCPResponse;
       setResponse(data);
     } catch (error) {
-      console.error("Error:", error);
-      alert("Failed to run demo. Check console for details.");
+      console.error("[mcp-demo] fetch error:", error);
+      setMcpError(error instanceof Error ? error.message : "Failed to run demo");
     } finally {
       setLoading(false);
     }
@@ -159,6 +161,15 @@ export default function MCPDemoPage() {
             )}
           </Button>
         </Card>
+
+        {/* Groq error banner */}
+        {mcpError && (
+          <div className="rounded border border-yellow-400 bg-yellow-50 text-yellow-900 px-4 py-3 text-sm mb-6">
+            ⚠️ Live model unavailable — Groq API may be rate-limited or temporarily down.
+            The demo architecture and governance layer remain fully functional.
+            <a href="/governance" className="underline ml-1">View platform status →</a>
+          </div>
+        )}
 
         {/* Results Section */}
         {response && (

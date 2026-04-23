@@ -30,6 +30,28 @@ function makeScene(objects: SpatialObject[] = []): ParametricScene {
   };
 }
 
+describe('applyRefinement — scale (shorter/narrower/default branches)', () => {
+  it('make the loading bay 20% shorter', () => {
+    const scene = makeScene([makeObj({ height: 4 })]);
+    const result = applyRefinement(scene, 'make the loading bay 20% shorter');
+    expect(result.success).toBe(true);
+    expect(result.scene!.objects[0].height).toBeCloseTo(4 * 0.8, 1);
+  });
+
+  it('make the loading bay 20% smaller', () => {
+    const scene = makeScene([makeObj({ height: 4 })]);
+    const result = applyRefinement(scene, 'make the loading bay 20% smaller');
+    expect(result.success).toBe(true);
+  });
+
+  it('make the loading bay 20% narrower', () => {
+    const scene = makeScene([makeObj({ width: 5 })]);
+    const result = applyRefinement(scene, 'make the loading bay 20% narrower');
+    expect(result.success).toBe(true);
+    expect(result.scene!.objects[0].width).toBeCloseTo(5 * 0.8, 1);
+  });
+});
+
 describe('applyRefinement — scale', () => {
   it('make the loading bay 20% taller', () => {
     const scene = makeScene([makeObj({ height: 3 })]);
@@ -112,6 +134,104 @@ describe('applyRefinement — remove', () => {
     expect(result.success).toBe(true);
     expect(result.scene!.objects.some((o) => o.id === 'cp1')).toBe(false);
     expect(result.scene!.objects.some((o) => o.id === 'cp2')).toBe(true);
+  });
+});
+
+describe('applyRefinement — scale by meters', () => {
+  it('make the loading bay 2 meters taller', () => {
+    const scene = makeScene([makeObj({ height: 3 })]);
+    const result = applyRefinement(scene, 'make the loading bay 2 meters taller');
+    expect(result.success).toBe(true);
+    expect(result.scene!.objects[0].height).toBeCloseTo(5, 1);
+  });
+});
+
+describe('applyRefinement — set property', () => {
+  it('set loading bay height to 10', () => {
+    const scene = makeScene([makeObj({ height: 3 })]);
+    const result = applyRefinement(scene, 'set loading bay height to 10');
+    expect(result.success).toBe(true);
+    expect(result.scene!.objects[0].height).toBeCloseTo(10, 1);
+  });
+
+  it('set loading bay width to 8', () => {
+    const scene = makeScene([makeObj({ width: 4 })]);
+    const result = applyRefinement(scene, 'set loading bay width to 8');
+    expect(result.success).toBe(true);
+    expect(result.scene!.objects[0].width).toBeCloseTo(8, 1);
+  });
+
+  it('set — no match returns failure', () => {
+    const scene = makeScene();
+    const result = applyRefinement(scene, 'set xyz height to 10');
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('applyRefinement — sim-ready', () => {
+  it('mark loading bay as simulation-ready', () => {
+    const scene = makeScene([makeObj({ simulationReady: false })]);
+    const result = applyRefinement(scene, 'mark loading bay as simulation-ready');
+    expect(result.success).toBe(true);
+    expect(result.scene!.objects[0].simulationReady).toBe(true);
+  });
+
+  it('mark — no match returns failure', () => {
+    const scene = makeScene();
+    const result = applyRefinement(scene, 'mark xyz as simulation-ready');
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('applyRefinement — policy', () => {
+  it('apply safety-first policy to loading bay', () => {
+    const scene = makeScene();
+    const result = applyRefinement(scene, 'apply safety-first policy to loading bay');
+    expect(result.success).toBe(true);
+    expect(result.scene!.objects[0].policy).toBe('safety-first');
+  });
+
+  it('policy — no match returns failure', () => {
+    const scene = makeScene();
+    const result = applyRefinement(scene, 'apply ada policy to xyz');
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('applyRefinement — add with location', () => {
+  it('add a block on the right → positive x offset', () => {
+    const scene = makeScene();
+    const result = applyRefinement(scene, 'add a block on the right');
+    expect(result.success).toBe(true);
+    const newObj = result.scene!.objects.find((o) => o.type === 'block' && o.id !== 'obj-1');
+    expect(newObj?.position.x).toBeGreaterThan(0);
+  });
+
+  it('add invalid type returns failure', () => {
+    const scene = makeScene();
+    const result = applyRefinement(scene, 'add a skyscraper');
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('applyRefinement — no-target branches', () => {
+  it('scale — no object found returns failure', () => {
+    const scene = makeScene([makeObj({ label: 'something-else' })]);
+    const result = applyRefinement(scene, 'make the loading bay 10% taller');
+    // Falls through to unrecognized since label match fails
+    expect(result.success).toBe(false);
+  });
+
+  it('move — no object found returns failure', () => {
+    const scene = makeScene([makeObj({ label: 'dock' })]);
+    const result = applyRefinement(scene, 'move the xyz north 5 meters');
+    expect(result.success).toBe(false);
+  });
+
+  it('remove — no object found returns failure', () => {
+    const scene = makeScene([makeObj({ label: 'dock' })]);
+    const result = applyRefinement(scene, 'remove nonexistent-thing');
+    expect(result.success).toBe(false);
   });
 });
 

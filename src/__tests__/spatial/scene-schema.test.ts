@@ -86,6 +86,59 @@ describe('validateParametricScene', () => {
     const result = validateParametricScene(null);
     expect(result.valid).toBe(false);
   });
+
+  it('height out of range fails', () => {
+    const obj = makeObj({ height: 201 });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('height'))).toBe(true);
+  });
+
+  it('radius out of range fails', () => {
+    const obj = makeObj({ radius: 0.1 });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('radius'))).toBe(true);
+  });
+
+  it('invalid material fails', () => {
+    const obj = makeObj({ material: 'titanium' as never });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('material'))).toBe(true);
+  });
+
+  it('objects not an array fails', () => {
+    const result = validateParametricScene({ ...makeScene(), objects: 'not-an-array' });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('objects'))).toBe(true);
+  });
+
+  it('refinementHistory not array fails', () => {
+    const result = validateParametricScene({ ...makeScene(), refinementHistory: null });
+    expect(result.valid).toBe(false);
+  });
+
+  it('depth out of range fails', () => {
+    const obj = makeObj({ depth: 0.1 });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('depth'))).toBe(true);
+  });
+
+  it('width < 0.5 fails', () => {
+    const obj = makeObj({ width: 0.1 });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('width'))).toBe(true);
+  });
+
+  it('scale > 50 fails', () => {
+    const obj = makeObj({ scale: { x: 1, y: 55, z: 1 } });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('scale.y'))).toBe(true);
+  });
 });
 
 describe('makeParametricScene', () => {

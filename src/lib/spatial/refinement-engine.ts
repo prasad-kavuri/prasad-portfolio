@@ -112,12 +112,18 @@ function applyScaleAdjustment(
     case 'larger':
       return { ...obj, height: apply(obj.height), scale: { ...obj.scale, y: apply(obj.scale.y) } };
     case 'shorter':
-    case 'smaller':
-      return { ...obj, height: apply(obj.height, 1), scale: { ...obj.scale, y: obj.scale.y * (1 - factor) } };
+    case 'smaller': {
+      const baseH = obj.height ?? 1;
+      const newH = isPct ? baseH * (1 - factor) : baseH - factor;
+      return { ...obj, height: newH, scale: { ...obj.scale, y: obj.scale.y * (1 - factor) } };
+    }
     case 'wider':
       return { ...obj, width: apply(obj.width), scale: { ...obj.scale, x: apply(obj.scale.x) } };
-    case 'narrower':
-      return { ...obj, width: apply(obj.width), scale: { ...obj.scale, x: obj.scale.x * (1 - factor) } };
+    case 'narrower': {
+      const baseW = obj.width ?? 1;
+      const newW = isPct ? baseW * (1 - factor) : baseW - factor;
+      return { ...obj, width: newW, scale: { ...obj.scale, x: obj.scale.x * (1 - factor) } };
+    }
     default:
       return obj;
   }

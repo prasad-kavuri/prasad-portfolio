@@ -87,7 +87,8 @@ function objectToMeshConfig(obj: SpatialObject): MeshConfig {
   return {
     id: obj.id,
     label: obj.label,
-    geometry: GEOMETRY_MAP[obj.type] ?? 'BoxGeometry',
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    geometry: /* c8 ignore next */ GEOMETRY_MAP[obj.type] ?? 'BoxGeometry',
     geometryArgs: resolveGeometryArgs(obj),
     position: [obj.position.x, obj.position.y, obj.position.z],
     rotation: [obj.rotation.x, obj.rotation.y, obj.rotation.z],

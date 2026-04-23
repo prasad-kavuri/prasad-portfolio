@@ -56,16 +56,20 @@ test.describe('Homepage', () => {
   });
 
   test('transformation framework section is visible', async ({ page }) => {
-    await expect(page.getByText('Delivering AI impact requires more than models').first()).toBeVisible();
-    await expect(page.getByText('Platform').first()).toBeVisible();
-    await expect(page.getByText('Workflow').first()).toBeVisible();
-    await expect(page.getByText('Organization').first()).toBeVisible();
+    const transformationSection = page.locator('#transformation');
+    await transformationSection.scrollIntoViewIfNeeded();
+    await expect(transformationSection.getByText('Delivering AI impact requires more than models')).toBeVisible();
+    await expect(transformationSection.getByRole('heading', { name: 'Platform' })).toBeVisible();
+    await expect(transformationSection.getByRole('heading', { name: 'Workflow' })).toBeVisible();
+    await expect(transformationSection.getByRole('heading', { name: 'Organization' })).toBeVisible();
   });
 
   test('architecture diagram shows 6 layers', async ({ page }) => {
-    await expect(page.getByText('How I Build Enterprise AI Systems').first()).toBeVisible();
-    await expect(page.getByText('Users & Channels').first()).toBeVisible();
-    await expect(page.getByText('Business Outcomes').first()).toBeVisible();
+    const architectureSection = page.locator('#architecture');
+    await architectureSection.scrollIntoViewIfNeeded();
+    await expect(architectureSection.getByText('How I Build Enterprise AI Systems')).toBeVisible();
+    await expect(architectureSection.getByText('Users & Channels', { exact: true })).toBeVisible();
+    await expect(architectureSection.getByText('Business Outcomes', { exact: true })).toBeVisible();
   });
 
   test('case studies section shows all 3 companies', async ({ page }) => {

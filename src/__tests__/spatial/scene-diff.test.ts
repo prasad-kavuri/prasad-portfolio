@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateDiff } from '@/lib/spatial/scene-diff';
+import { generateDiff, formatDiffEntry } from '@/lib/spatial/scene-diff';
 import type { ParametricScene, SpatialObject } from '@/lib/spatial/scene-schema';
 
 function makeObj(overrides: Partial<SpatialObject> = {}): SpatialObject {
@@ -72,5 +72,39 @@ describe('generateDiff', () => {
     expect(matDiff).toBeDefined();
     expect(matDiff!.before).toBe('concrete');
     expect(matDiff!.after).toBe('metal');
+  });
+
+  it('position change detected (line 47 branch)', () => {
+    const before = makeScene([makeObj({ position: { x: 0, y: 0, z: 0 } })]);
+    const after = makeScene([makeObj({ position: { x: 5, y: 0, z: 0 } })]);
+    const diff = generateDiff(before, after);
+    const posDiff = diff.find((d) => d.property === 'position.x');
+    expect(posDiff).toBeDefined();
+    expect(posDiff!.type).toBe('updated');
+    expect(posDiff!.before).toBe(0);
+    expect(posDiff!.after).toBe(5);
+  });
+});
+
+describe('formatDiffEntry', () => {
+  it('formats updated entry with number values', () => {
+    const result = formatDiffEntry({ type: 'updated', objectId: 'o1', objectLabel: 'bay', property: 'height', before: 3, after: 4 });
+    expect(result).toBe('bay.height: 3 m → 4 m');
+  });
+
+  it('formats updated entry with undefined before', () => {
+    const result = formatDiffEntry({ type: 'updated', objectId: 'o1', objectLabel: 'bay', property: 'material', before: undefined, after: 'metal' });
+    expect(result).toContain('unset');
+    expect(result).toContain('metal');
+  });
+
+  it('formats added entry', () => {
+    const result = formatDiffEntry({ type: 'added', objectId: 'o2', objectLabel: 'node-1' });
+    expect(result).toBe('+ node-1 (added)');
+  });
+
+  it('formats removed entry', () => {
+    const result = formatDiffEntry({ type: 'removed', objectId: 'o3', objectLabel: 'congestion-point' });
+    expect(result).toBe('- congestion-point (removed)');
   });
 });

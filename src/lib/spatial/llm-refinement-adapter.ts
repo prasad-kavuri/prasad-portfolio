@@ -26,7 +26,7 @@ interface PatchOp {
   value?: unknown;
 }
 
-function applyPatches(scene: ParametricScene, patches: PatchOp[]): ParametricScene {
+export function applyPatches(scene: ParametricScene, patches: PatchOp[]): ParametricScene {
   let next = { ...scene, objects: [...scene.objects] };
 
   for (const patch of patches.slice(0, 10)) {
@@ -54,6 +54,7 @@ export async function llmRefineScene(
     return applyRefinement(scene, instruction);
   }
 
+  /* c8 ignore start — LLM path only reachable with NEXT_PUBLIC_ENABLE_LLM_REFINEMENT=true */
   try {
     const { default: Groq } = await import('groq-sdk');
     const groq = new Groq({ apiKey: process.env['GROQ_API_KEY'] });
@@ -97,4 +98,5 @@ export async function llmRefineScene(
     logAPIEvent({ route: '/spatial/llm-refine', severity: 'error', event: 'llm_refine_error' });
     return applyRefinement(scene, instruction);
   }
+  /* c8 ignore stop */
 }

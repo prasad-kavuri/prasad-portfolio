@@ -78,4 +78,38 @@ describe('buildSceneRenderConfig', () => {
       expect(GEOMETRY_MAP[t]).toBeDefined();
     }
   });
+
+  it('platform → BoxGeometry (line 76 branch)', () => {
+    const scene = makeParametricScene({ sourcePrompt: 'test', region: 'downtown', objective: 'speed', objects: [makeObj({ type: 'platform' })] });
+    const config = buildSceneRenderConfig(scene);
+    expect(config.meshes[0].geometry).toBe('BoxGeometry');
+  });
+
+  it('primitive → BoxGeometry (default branch)', () => {
+    const scene = makeParametricScene({ sourcePrompt: 'test', region: 'downtown', objective: 'speed', objects: [makeObj({ type: 'primitive' })] });
+    const config = buildSceneRenderConfig(scene);
+    expect(config.meshes[0].geometry).toBe('BoxGeometry');
+    expect(config.meshes[0].color).toBe('#6a6aaa');
+  });
+
+  it('explicit color overrides material color (line 54 branch)', () => {
+    const scene = makeParametricScene({
+      sourcePrompt: 'test', region: 'downtown', objective: 'speed',
+      objects: [makeObj({ color: '#ff0000', material: 'concrete' })],
+    });
+    const config = buildSceneRenderConfig(scene);
+    expect(config.meshes[0].color).toBe('#ff0000');
+  });
+
+  it('no material and no color uses default', () => {
+    const scene = makeParametricScene({ sourcePrompt: 'test', region: 'downtown', objective: 'speed', objects: [makeObj()] });
+    const config = buildSceneRenderConfig(scene);
+    expect(config.meshes[0].color).toBe('#6a6aaa');
+  });
+
+  it('concrete maps to correct color', () => {
+    const scene = makeParametricScene({ sourcePrompt: 'test', region: 'downtown', objective: 'speed', objects: [makeObj({ material: 'concrete' })] });
+    const config = buildSceneRenderConfig(scene);
+    expect(config.meshes[0].color).toBe(MATERIAL_MAP.concrete.color);
+  });
 });

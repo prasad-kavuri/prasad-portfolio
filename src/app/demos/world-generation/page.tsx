@@ -27,6 +27,11 @@ import {
   Minimize2,
   X,
 } from 'lucide-react';
+import { validateRefinementInstruction } from '@/lib/guardrails';
+import { applyRefinement } from '@/lib/spatial/refinement-engine';
+import { generateDiff, formatDiffEntry } from '@/lib/spatial/scene-diff';
+import { makeParametricScene } from '@/lib/spatial/scene-schema';
+import type { ParametricScene, SceneDiff, RefinementEntry } from '@/lib/spatial/scene-schema';
 import { ProceduralWorldCanvas } from '@/components/demos/world/ProceduralWorldCanvas';
 import { WorldPreviewErrorBoundary } from '@/components/demos/world/WorldPreviewErrorBoundary';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -202,6 +207,12 @@ export default function WorldGenerationPage() {
   const spatialTraceRef = useRef<SpatialTraceContext | null>(null);
   const [spatialTraceId, setSpatialTraceId] = useState<string | null>(null);
   const [hitlDecision, setHitlDecision] = useState<'awaiting_approval' | 'approved' | 'rejected'>('awaiting_approval');
+  const [parametricScene, setParametricScene] = useState<ParametricScene | null>(null);
+  const [refinementInstruction, setRefinementInstruction] = useState('');
+  const [refinementLoading, setRefinementLoading] = useState(false);
+  const [refinementError, setRefinementError] = useState('');
+  const [diffBatches, setDiffBatches] = useState<Array<{ version: number; diffs: SceneDiff[] }>>([]);
+  const [showAllDiffs, setShowAllDiffs] = useState(false);
   const artifactSession = workflowState.artifactSession;
   const result = (artifactSession?.response as WorldApiResponse | undefined) ?? null;
   const canonicalArtifact = artifactSession?.artifact ?? null;
@@ -235,6 +246,68 @@ export default function WorldGenerationPage() {
       approvalState: artifactSession.artifact.approvalState,
     });
   }, [artifactSession, workflowState.status]);
+
+  // Initialize parametric scene when generation produces a valid artifact
+  useEffect(() => {
+    if (!canonicalArtifact || !result) return;
+    setParametricScene(makeParametricScene({
+      sourcePrompt: prompt,
+      region,
+      objective,
+      objects: [],
+    }));
+    setDiffBatches([]);
+    setRefinementError('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canonicalArtifact?.worldId]);
+
+  const handleRefineScene = () => {
+    if (!parametricScene || !refinementInstruction.trim()) return;
+    const guard = validateRefinementInstruction(refinementInstruction);
+    if (!guard.safe) {
+      setRefinementError(`Instruction blocked: ${guard.reason ?? 'guardrail violation'}`);
+      return;
+    }
+    setRefinementLoading(true);
+    setRefinementError('');
+    try {
+      const before = parametricScene;
+      const result = applyRefinement(before, refinementInstruction);
+      if (!result.success || !result.scene) {
+        setRefinementError(
+          `Could not apply — try rephrasing. ${result.fallbackSuggestions ? 'Suggestions: ' + result.fallbackSuggestions.slice(0, 2).join(', ') : ''}`
+        );
+        return;
+      }
+      const diffs = generateDiff(before, result.scene);
+      const entry: RefinementEntry = {
+        instruction: refinementInstruction,
+        diff: diffs,
+        appliedAt: new Date().toISOString(),
+        engine: 'deterministic',
+      };
+      const next: ParametricScene = {
+        ...result.scene,
+        refinementHistory: [...before.refinementHistory, entry],
+      };
+      setParametricScene(next);
+      setDiffBatches((prev) => [...prev, { version: next.version, diffs }]);
+      setRefinementInstruction('');
+    } finally {
+      setRefinementLoading(false);
+    }
+  };
+
+  const handleExportSceneJson = () => {
+    if (!parametricScene) return;
+    const blob = new Blob([JSON.stringify(parametricScene, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `scene-${parametricScene.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const runGeneration = async () => {
     const trace = createSpatialTrace();
@@ -464,6 +537,9 @@ export default function WorldGenerationPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold">Real-Time Spatial AI + World Modeling Engine</h1>
+            <p className="mt-0.5 text-sm font-medium" style={{ color: 'var(--accent-brand)' }}>
+              Controllable Spatial AI — Parametric Scene Refinement
+            </p>
             <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
               Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer.
             </p>
@@ -475,6 +551,8 @@ export default function WorldGenerationPage() {
           <Badge variant="outline">Spatial AI</Badge>
           <Badge variant="outline">Governed Output</Badge>
           <Badge variant="outline">Explainable Pipeline</Badge>
+          <Badge variant="outline">Parametric Refinement</Badge>
+          <Badge variant="outline">Instruction-Led Editing</Badge>
           <Badge variant="outline">Desktop-Friendly</Badge>
         </div>
 
@@ -900,6 +978,17 @@ export default function WorldGenerationPage() {
                         >
                           <Maximize2 className="size-4" /> Expand Preview
                         </Button>
+                        {parametricScene && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleExportSceneJson}
+                            className="gap-2"
+                            data-testid="export-scene-json-button"
+                          >
+                            <Download className="size-4" /> Export Scene JSON
+                          </Button>
+                        )}
                       </div>
                     </div>
 
@@ -1077,6 +1166,95 @@ export default function WorldGenerationPage() {
               </CardContent>
             </Card>
 
+            {/* ── Refinement Panel — only after generation ── */}
+            {parametricScene && canonicalArtifact && artifactReadiness.valid && (
+              <Card className="border-border bg-card" data-testid="refinement-panel">
+                <CardHeader>
+                  <CardTitle>Refine this scene</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <textarea
+                      value={refinementInstruction}
+                      onChange={(e) => setRefinementInstruction(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleRefineScene(); } }}
+                      placeholder="e.g. Make the loading bay 20% wider"
+                      className="h-20 w-full rounded-md border border-border bg-background p-2 text-sm"
+                      data-testid="refinement-input"
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Using deterministic spatial engine
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleRefineScene}
+                    disabled={refinementLoading || !refinementInstruction.trim()}
+                    data-testid="apply-refinement-button"
+                  >
+                    {refinementLoading ? (
+                      <><Loader2 className="mr-2 size-4 animate-spin" />Applying...</>
+                    ) : (
+                      'Apply refinement'
+                    )}
+                  </Button>
+                  {refinementError && (
+                    <p className="text-sm text-amber-400" data-testid="refinement-error">{refinementError}</p>
+                  )}
+                  {parametricScene.version > 1 && (
+                    <p className="text-xs text-muted-foreground">
+                      Scene version: {parametricScene.version} · {parametricScene.refinementHistory.length} refinement(s) applied
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ── Diff Panel — only after at least one refinement ── */}
+            {diffBatches.length > 0 && (
+              <Card className="border-border bg-card" data-testid="diff-panel">
+                <CardHeader>
+                  <CardTitle>What changed</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {diffBatches.map((batch) => {
+                    const allItems = batch.diffs;
+                    const visible = showAllDiffs ? allItems : allItems.slice(0, 8);
+                    return (
+                      <div key={batch.version}>
+                        <p className="mb-2 text-xs font-semibold text-muted-foreground">
+                          [version {batch.version - 1} → {batch.version}]
+                        </p>
+                        <ul className="space-y-1">
+                          {visible.map((diff, i) => (
+                            <li
+                              key={`${diff.objectId}-${diff.property ?? 'obj'}-${i}`}
+                              className={`text-xs font-mono ${
+                                diff.type === 'added' ? 'text-emerald-400'
+                                : diff.type === 'removed' ? 'text-red-400'
+                                : 'text-amber-400'
+                              }`}
+                            >
+                              {formatDiffEntry(diff)}
+                            </li>
+                          ))}
+                        </ul>
+                        {allItems.length > 8 && !showAllDiffs && (
+                          <button
+                            type="button"
+                            onClick={() => setShowAllDiffs(true)}
+                            className="mt-1 text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            show all {allItems.length} changes →
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            )}
+
             {(workflowState.status === 'approval' || approvalStatus !== 'awaiting') && canonicalArtifact && artifactReadiness.valid && result && (
               <Card className="border-amber-500/40 bg-amber-500/10">
                 <CardHeader>
@@ -1126,6 +1304,7 @@ export default function WorldGenerationPage() {
                     'Faster scenario ideation with generated world concepts',
                     'Simulation-ready planning artifacts with governance checkpoints',
                     'Policy-aware world generation for safer rollout decisions',
+                    'Instruction-based scene mutation with full audit trail',
                   ]).map((value) => (
                     <li key={value} className="flex items-start gap-2">
                       <Building2 className="mt-0.5 size-4 text-muted-foreground" />
@@ -1146,6 +1325,7 @@ export default function WorldGenerationPage() {
                 <p className="flex items-center gap-2"><UserCheck className="size-4 text-amber-400" /> Human approval checkpoint</p>
                 <p className="flex items-center gap-2"><GitBranch className="size-4 text-blue-400" /> Audit trace: {result?.governance.auditTraceId ?? 'Generated on run'}{spatialTraceId && <code className="ml-1 text-xs font-mono text-muted-foreground">· spatial:{spatialTraceId.slice(0, 8)}</code>}</p>
                 <p className="flex items-center gap-2"><FileWarning className="size-4 text-indigo-400" /> Evaluation: {result?.evaluation.passed ? 'pass' : 'review'}</p>
+                <p className="flex items-center gap-2"><Shield className="size-4 text-violet-400" /> Parametric schema validation</p>
               </CardContent>
             </Card>
 

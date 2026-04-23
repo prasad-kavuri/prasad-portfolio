@@ -154,6 +154,12 @@ export default function ForRecruitersPage() {
               LinkedIn
             </a>
             <a
+              href="mailto:vbkpkavuri@gmail.com"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted/40 transition-colors"
+            >
+              vbkpkavuri@gmail.com
+            </a>
+            <a
               href="https://calendly.com/vbkpkavuri"
               target="_blank"
               rel="noopener noreferrer"
@@ -290,6 +296,27 @@ export default function ForRecruitersPage() {
           </div>
         </div>
 
+        {/* ── Section 6: Who this portfolio is built for ───────────────── */}
+        <div className="mb-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+            Who This Portfolio Is Built For
+          </p>
+          <ul className="space-y-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
+              Orgs moving from AI experimentation to production — where governance, cost, and reliability matter
+            </li>
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
+              Teams that need platform thinking, not just model tuning
+            </li>
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
+              Chicago-area or remote-first VP / Head of AI Engineering searches
+            </li>
+          </ul>
+        </div>
+
         {/* ── Footer ───────────────────────────────────────────────────── */}
         <div className="border-t border-border pt-6">
           <Link
@@ -302,6 +329,28 @@ export default function ForRecruitersPage() {
         </div>
 
       </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Prasad Kavuri",
+            "jobTitle": "VP / Head of AI Engineering",
+            "email": "mailto:vbkpkavuri@gmail.com",
+            "url": "https://www.prasadkavuri.com/for-recruiters",
+            "availableChannel": {
+              "@type": "ServiceChannel",
+              "serviceUrl": "https://calendly.com/vbkpkavuri",
+            },
+            "workLocation": {
+              "@type": "Place",
+              "address": "Chicago, IL",
+            },
+          }),
+        }}
+      />
     </div>
   );
 }

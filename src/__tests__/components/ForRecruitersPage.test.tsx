@@ -53,4 +53,25 @@ describe('ForRecruitersPage', () => {
     expect(screen.getByText(/Review governance controls/i)).toBeInTheDocument();
     expect(screen.getByText(/Book a conversation/i)).toBeInTheDocument();
   });
+
+  it('renders visible email address as text in CTA row', () => {
+    render(React.createElement(ForRecruitersPage));
+    const emailLink = screen.getByRole('link', { name: 'vbkpkavuri@gmail.com' });
+    expect(emailLink.getAttribute('href')).toBe('mailto:vbkpkavuri@gmail.com');
+  });
+
+  it('renders "Who this portfolio is built for" qualifier section', () => {
+    render(React.createElement(ForRecruitersPage));
+    expect(screen.getByText(/Who This Portfolio Is Built For/i)).toBeInTheDocument();
+    expect(screen.getByText(/platform thinking, not just model tuning/i)).toBeInTheDocument();
+    expect(screen.getByText(/Chicago-area or remote-first/i)).toBeInTheDocument();
+  });
+
+  it('CTA row has 4 elements: Download Resume, LinkedIn, email, Book Call', () => {
+    render(React.createElement(ForRecruitersPage));
+    expect(screen.getByRole('link', { name: /Download Resume/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /LinkedIn/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'vbkpkavuri@gmail.com' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Book 30-min Call/i })).toBeInTheDocument();
+  });
 });

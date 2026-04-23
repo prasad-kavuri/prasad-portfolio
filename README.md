@@ -1,4 +1,4 @@
-# Prasad Kavuri — AI Engineering Portfolio Platform
+# Prasad Kavuri — VP / Head of AI Engineering
 
 ![Version](https://img.shields.io/badge/release-v1.0.0-blue?style=flat-square)
 ![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen?style=flat-square&logo=vitest)
@@ -6,11 +6,26 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)
 ![CI](https://img.shields.io/github/actions/workflow/status/prasad-kavuri/prasad-portfolio/ci.yml?branch=main&style=flat-square&label=CI&logo=github)
 
-Enterprise AI, built for Day 2: a production-style portfolio platform that demonstrates governed, observable, evaluated AI systems instead of isolated demo pages.
+20 years building AI platforms at enterprise scale — from Krutrim's agentic AI (India's first) to Ola Maps at 13,000+ B2B customers. This portfolio demonstrates governed, observable, evaluated AI systems running in production, not isolated demo pages.
 
-Live site: [www.prasadkavuri.com](https://www.prasadkavuri.com)  
-Role target: VP / Head of AI Engineering  
+| Metric | Signal |
+|--------|--------|
+| 200+ engineers led | Krutrim, Ola, HERE Technologies — US, Europe, India |
+| 70% cost reduction | FinOps-aware LLM routing and inference optimization at Ola |
+| 13,000+ B2B customers | Enterprise API platform at Ola Maps |
+| 13 live AI demos | Eval-gated, observable, production-pattern systems |
+
+**Live site:** [www.prasadkavuri.com](https://www.prasadkavuri.com) · **For recruiters:** [/for-recruiters](https://www.prasadkavuri.com/for-recruiters) · **Contact:** vbkpkavuri@gmail.com
+
+Role target: VP / Head of AI Engineering — Chicago area or remote  
 Current release: [v1.0.0](CHANGELOG.md)
+
+## Stack
+
+- **Next.js 16.2.3** (App Router + Turbopack) · React 19 · TypeScript · Tailwind CSS v4
+- **LLM inference**: Groq SDK (server-side) · Transformers.js v4 (browser WASM) · Florence-2 (WebGPU)
+- **Platform controls**: Upstash Redis (rate limiting) · OpenTelemetry · Vitest + Playwright
+- **Deployment**: Vercel (edge functions + static)
 
 ## What This Repo Is
 
@@ -151,7 +166,7 @@ npm run build
 npm audit --audit-level=high
 ```
 
-## Local Development
+## Development
 
 ```bash
 # Prerequisites: Node 18+

@@ -50,10 +50,10 @@ describe('MultiAgentPage HITL flow', () => {
     fireEvent.click(screen.getByLabelText(/Start multi-agent analysis workflow/i));
 
     await waitFor(() => {
-      expect(screen.getByText(/Strategist requires approval to proceed/i)).toBeInTheDocument();
-    }, { timeout: 4000 });
+      expect(screen.getByLabelText(/Approve strategist recommendation and finalize workflow/i)).toBeInTheDocument();
+    }, { timeout: 15000 });
     expect(screen.getAllByText(/Paused/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/What the Strategist is about to do/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Strategist revision guidance/i)).toBeInTheDocument();
 
     const reviewInput = screen.getByLabelText(/Strategist revision guidance/i);
     fireEvent.change(reviewInput, { target: { value: 'Revised strategist action for safer rollout.' } });

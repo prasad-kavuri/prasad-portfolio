@@ -52,9 +52,27 @@ export function Hero() {
             </div>
           </div>
 
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {EXECUTIVE_METRICS_DISPLAY.map((s) => (
+              <div key={s.label} className="rounded-xl border border-border bg-muted/60 px-4 py-3.5">
+                <AnimatedCounter value={s.value} className="text-2xl font-semibold tracking-tight" />
+                <p className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</p>
+                {s.context && (
+                  <p className="mt-0.5 text-[10px] text-muted-foreground/70">{s.context}</p>
+                )}
+              </div>
+            ))}
+          </div>
+
           <p id="profile-summary" className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            {profile.personal.summary}
+            20 years building AI platforms at enterprise scale — from Krutrim&apos;s agentic AI (India&apos;s first) to Ola Maps at 13,000+ B2B customers. I specialize in the gap most teams skip: taking AI from demo to production with governance, cost discipline, and measurable outcomes.
           </p>
+          <details className="mt-2 max-w-3xl">
+            <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">Full background →</summary>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {profile.personal.summary}
+            </p>
+          </details>
 
           <p className="mt-4 max-w-3xl rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm font-medium text-foreground">
             Most AI programs fail in production because governance, orchestration, reliability, and cost ownership are bolted on too late.
@@ -142,19 +160,13 @@ export function Hero() {
             >
               Download Resume
             </a>
+            <a
+              href="mailto:vbkpkavuri@gmail.com"
+              className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
+            >
+              vbkpkavuri@gmail.com
+            </a>
             <CopyForAI />
-          </div>
-
-          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {EXECUTIVE_METRICS_DISPLAY.map((s) => (
-              <div key={s.label} className="rounded-xl border border-border bg-muted/60 px-4 py-3.5">
-                <AnimatedCounter value={s.value} className="text-2xl font-semibold tracking-tight" />
-                <p className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</p>
-                {s.context && (
-                  <p className="mt-0.5 text-[10px] text-muted-foreground/70">{s.context}</p>
-                )}
-              </div>
-            ))}
           </div>
 
           <div className="mt-8 border-t border-border pt-7">

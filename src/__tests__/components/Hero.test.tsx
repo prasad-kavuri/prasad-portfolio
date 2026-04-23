@@ -164,4 +164,31 @@ describe('Hero', () => {
     fireEvent.click(link);
     expect(trackEvent).toHaveBeenCalledWith('resume_downloaded');
   });
+
+  it('renders compressed bio as primary visible text (not inside details)', () => {
+    render(<Hero />);
+    const summary = document.getElementById('profile-summary');
+    expect(summary).not.toBeNull();
+    const text = summary!.textContent ?? '';
+    expect(text.length).toBeLessThan(300);
+    expect(text).toMatch(/20 years building AI platforms/i);
+  });
+
+  it('renders stat bar before bio in DOM order', () => {
+    render(<Hero />);
+    const summary = document.getElementById('profile-summary');
+    const statLabels = screen.getAllByText('Years Experience');
+    const statEl = statLabels[0].closest('.rounded-xl') as HTMLElement | null;
+    expect(summary).not.toBeNull();
+    expect(statEl).not.toBeNull();
+    const order = summary!.compareDocumentPosition(statEl!);
+    // DOCUMENT_POSITION_PRECEDING = 2 — statEl comes before summary in DOM
+    expect(order & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+  });
+
+  it('renders visible email address as text in contact row', () => {
+    render(<Hero />);
+    const emailLink = screen.getByRole('link', { name: 'vbkpkavuri@gmail.com' });
+    expect(emailLink.getAttribute('href')).toBe('mailto:vbkpkavuri@gmail.com');
+  });
 });

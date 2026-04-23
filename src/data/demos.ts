@@ -242,7 +242,7 @@ export const demos: Demo[] = [
     emoji: "Cuboid",
     title: "Real-Time Spatial AI + World Modeling Engine",
     description:
-      "Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer.",
+      "Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. Controllable parametric spatial design — refine generated scenes with natural-language instructions. Changes are validated, diffed, and auditable.",
     businessImpact:
       "Accelerates logistics and spatial planning with policy-aware world artifacts that are explainable, reviewable, and simulation-ready",
     href: "/demos/world-generation",
@@ -256,6 +256,9 @@ export const demos: Demo[] = [
       "Desktop-Friendly",
       "World Model",
       "Perception",
+      "Parametric Refinement",
+      "Instruction-Led Editing",
+      "Scene Diff",
     ],
     skills: [],
     desktopOnly: true,

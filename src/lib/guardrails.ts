@@ -224,7 +224,11 @@ export function validateHandoffContext(contextSummary: string): {
     return { safe: false, reason: 'context summary failed prompt-injection checks' };
   }
 
-  if (/[{}[\]<>`;$]|(?:\.\.\/|\/\.\.)|(?:^|[^\w])(?:import|require|eval|process\.|__dirname)(?:$|[^\w])/i.test(contextSummary)) {
+  if (
+    /[{}[\]<>`;$]|(?:\.\.\/|\/\.\.)|(?:\bimport\s+[\w*{]|(?:^|[^\w])require\s*\(|\beval\s*\(|\bprocess\.\w+|\b__dirname\b)/i.test(
+      contextSummary
+    )
+  ) {
     return { safe: false, reason: 'context summary contains blocked code-like patterns' };
   }
 

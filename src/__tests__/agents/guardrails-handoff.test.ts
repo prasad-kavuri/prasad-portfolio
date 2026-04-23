@@ -37,6 +37,11 @@ describe('handoff guardrails', () => {
     expect(result.safe).toBe(true);
   });
 
+  it('allows natural-language approval phrasing', () => {
+    const result = validateHandoffContext('Strategist recommendation requires approval before release.');
+    expect(result.safe).toBe(true);
+  });
+
   it('blocks context with code-like patterns', () => {
     const result = validateHandoffContext('import fs from \"fs\"; ../secrets path');
     expect(result.safe).toBe(false);

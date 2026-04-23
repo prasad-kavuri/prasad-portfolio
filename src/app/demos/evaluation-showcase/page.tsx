@@ -872,6 +872,19 @@ export default function EvaluationShowcasePage() {
         {/* Step 2 — Framing panel */}
         <FramingPanel />
 
+        {/* Production-derived patterns callout */}
+        <div className="my-6 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-2">
+            Production-derived patterns
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            The eval thresholds shown here (fidelity ≥ 0.85, hallucination ≤ 0.10, p95 latency &lt; 500ms)
+            are calibrated from real LLM deployment patterns at Krutrim, where drift monitoring and CI eval
+            gating ran across a 200+ engineer org. The architecture is not a prototype — it reflects how
+            quality regressions were actually caught before reaching users.
+          </p>
+        </div>
+
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <div className="flex items-center gap-2">

@@ -82,7 +82,7 @@ export const demos: Demo[] = [
     id: "evaluation-showcase",
     emoji: "ShieldCheck",
     title: "AI Evaluation Showcase",
-    description: "Closed-loop LLM evaluation pipeline — semantic fidelity, hallucination detection, guardrails, and CI gating in action.",
+    description: "Closed-loop LLM evaluation pipeline — semantic fidelity, hallucination detection, guardrails, and CI gating in action. Production-derived eval thresholds — calibrated from real Krutrim deployment patterns.",
     businessImpact: "Improves release confidence through measurable quality gates and regression visibility before deployment",
     href: "/demos/evaluation-showcase",
     tags: ["LLM-as-Judge", "Semantic Fidelity", "Guardrails", "CI Gating"],

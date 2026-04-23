@@ -168,6 +168,27 @@ export function validateAgentHandoff(
   };
 }
 
+export function validateRefinementInstruction(instruction: string): { safe: boolean; reason?: string } {
+  if (!instruction || instruction.trim().length === 0) {
+    return { safe: false, reason: 'instruction cannot be empty' };
+  }
+  if (instruction.length > 500) {
+    return { safe: false, reason: 'instruction blocked by guardrail' };
+  }
+  if (isPromptInjection(instruction)) {
+    return { safe: false, reason: 'instruction blocked by guardrail' };
+  }
+  // Block code-like patterns: brackets, semicolons, script tags, system paths
+  if (/[{}\[\];<>]/.test(instruction)) {
+    return { safe: false, reason: 'instruction blocked by guardrail' };
+  }
+  if (/\b(?:system|process|exec|eval|require|import|__dirname)\b/i.test(instruction) ||
+      /\/etc\/|\/proc\//i.test(instruction)) {
+    return { safe: false, reason: 'instruction blocked by guardrail' };
+  }
+  return { safe: true };
+}
+
 // Single entry point for all routes
 export function enforceGuardrails(
   input: string,

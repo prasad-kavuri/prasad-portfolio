@@ -45,7 +45,7 @@ describe('MultiAgentPage HITL flow', () => {
 
     fireEvent.click(screen.getByLabelText(/Start multi-agent analysis workflow/i));
 
-    await screen.findByText(/Strategist requires approval to proceed/i, {}, { timeout: 15000 });
+    await screen.findByText(/Human Approval Required/i, {}, { timeout: 15000 });
     await screen.findByLabelText(/Approve strategist recommendation and finalize workflow/i, {}, { timeout: 15000 });
 
     expect(screen.getAllByText(/Paused/i).length).toBeGreaterThan(0);

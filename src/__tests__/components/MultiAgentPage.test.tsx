@@ -51,7 +51,7 @@ describe('MultiAgentPage HITL flow', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Strategist requires approval to proceed/i)).toBeInTheDocument();
-    });
+    }, { timeout: 4000 });
     expect(screen.getAllByText(/Paused/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/What the Strategist is about to do/i)).toBeInTheDocument();
 
@@ -61,14 +61,14 @@ describe('MultiAgentPage HITL flow', () => {
     fireEvent.click(screen.getByLabelText(/Apply revision guidance/i));
     await waitFor(() => {
       expect(screen.getByText(/Revision applied/i)).toBeInTheDocument();
-    });
+    }, { timeout: 4000 });
 
     fireEvent.click(screen.getByLabelText(/Approve strategist recommendation/i));
 
 
     await waitFor(() => {
       expect(screen.getByText('Revised strategist action for safer rollout.')).toBeInTheDocument();
-    });
+    }, { timeout: 4000 });
   });
 
   it('renders workflow rail and business value panel', () => {

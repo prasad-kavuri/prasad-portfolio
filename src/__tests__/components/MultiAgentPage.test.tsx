@@ -1,9 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
 const mockFetch = vi.fn();
-vi.stubGlobal('fetch', mockFetch);
 
 vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) =>
@@ -25,6 +24,7 @@ import MultiAgentPage from '@/app/demos/multi-agent/page';
 describe('MultiAgentPage HITL flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('fetch', mockFetch);
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -40,18 +40,14 @@ describe('MultiAgentPage HITL flow', () => {
     });
   });
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it('pauses at strategist approval gate with approve/revise/cancel controls', async () => {
     render(React.createElement(MultiAgentPage));
 
     fireEvent.click(screen.getByLabelText(/Start multi-agent analysis workflow/i));
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Approve strategist recommendation and finalize workflow/i)).toBeInTheDocument();
-    }, { timeout: 15000 });
+    await screen.findByText(/Strategist requires approval to proceed/i, {}, { timeout: 15000 });
+    await screen.findByLabelText(/Approve strategist recommendation and finalize workflow/i, {}, { timeout: 15000 });
+
     expect(screen.getAllByText(/Paused/i).length).toBeGreaterThan(0);
     expect(screen.getByLabelText(/Strategist revision guidance/i)).toBeInTheDocument();
 

@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
+              // unsafe-eval required for WASM JIT compilation (Transformers.js / ONNX Runtime Web)
               // blob: required for Transformers.js WASM worker bootstrap
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com",
               // worker-src blob: required for WASM web workers spun up by @xenova/transformers
@@ -30,6 +31,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               // huggingface.co for model weights; blob: for local object-URL fetches
+              // https: wildcard required for Transformers.js v4 — CDN model weights load from arbitrary https: origins
               "connect-src 'self' https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co blob: https:",
               "font-src 'self' data:",
               "frame-ancestors 'none'",
@@ -42,6 +44,7 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
     ];

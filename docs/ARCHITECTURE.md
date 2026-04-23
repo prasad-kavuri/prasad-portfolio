@@ -67,6 +67,8 @@ The orchestration layer is represented by two production-facing demos:
 
 The intent is to show the architecture pattern rather than hide it behind a single chat box: narrow agents, explicit tools, and auditable handoffs.
 
+The multi-agent demo implements a handoff-first orchestration model — the same conceptual pattern formalised by frameworks like the OpenAI Agents SDK, where agents transfer control via explicit typed primitives rather than through a central manager. Each handoff is validated by policy, guarded at the point of transfer, and recorded in a structured audit trail. The implementation is TypeScript-native and open-source-first — the pattern, not any external SDK, is what drives the architecture.
+
 ## Routing and AI Services
 
 The AI services layer contains both server-side and browser-side demos:

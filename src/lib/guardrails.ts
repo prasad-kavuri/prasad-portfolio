@@ -1,7 +1,8 @@
 // src/lib/guardrails.ts
 // 2026 AI Governance Layer — Centralized, observable, testable
 
-import { recordSkillInvocation, createTraceId, createSpanId } from './observability';
+import { recordSkillInvocation, createTraceId, createSpanId, logAPIEvent } from './observability';
+import type { AgentDefinition, AgentId } from '@/lib/agents/handoff-model';
 
 export interface GuardrailResult {
   isSafe: boolean;
@@ -166,6 +167,72 @@ export function validateAgentHandoff(
     issues,
     sanitizedOutput: outputCheck.sanitizedOutput,
   };
+}
+
+export function validateHandoff(
+  from: AgentId,
+  to: AgentId,
+  definitions: Record<AgentId, AgentDefinition>
+): { valid: boolean; reason?: string } {
+  if (!definitions || typeof definitions !== 'object') {
+    return { valid: false, reason: 'handoff definitions unavailable' };
+  }
+
+  const fromDefinition = definitions[from];
+  const toDefinition = definitions[to];
+
+  if (!fromDefinition || !toDefinition) {
+    const reason = 'invalid agent id in handoff';
+    logAPIEvent({
+      event: 'guardrails.handoff_blocked',
+      route: '/demos/multi-agent',
+      severity: 'warn',
+      traceId: createTraceId(),
+      fromAgent: String(from),
+      toAgent: String(to),
+      reason,
+    });
+    return { valid: false, reason };
+  }
+
+  if (!fromDefinition.canHandoffTo.includes(to)) {
+    const reason = `handoff destination ${to} is not allowed for ${from}`;
+    logAPIEvent({
+      event: 'guardrails.handoff_blocked',
+      route: '/demos/multi-agent',
+      severity: 'warn',
+      traceId: createTraceId(),
+      fromAgent: from,
+      toAgent: to,
+      reason,
+    });
+    return { valid: false, reason };
+  }
+
+  return { valid: true };
+}
+
+export function validateHandoffContext(contextSummary: string): {
+  safe: boolean;
+  reason?: string;
+} {
+  if (contextSummary.length >= 1000) {
+    return { safe: false, reason: 'context summary exceeds 1000 character limit' };
+  }
+
+  if (isPromptInjection(contextSummary)) {
+    return { safe: false, reason: 'context summary failed prompt-injection checks' };
+  }
+
+  if (/[{}[\]<>`;$]|(?:\.\.\/|\/\.\.)|(?:^|[^\w])(?:import|require|eval|process\.|__dirname)(?:$|[^\w])/i.test(contextSummary)) {
+    return { safe: false, reason: 'context summary contains blocked code-like patterns' };
+  }
+
+  if (/(?:\/etc\/|\/proc\/|\/var\/|[a-zA-Z]:\\)/.test(contextSummary)) {
+    return { safe: false, reason: 'context summary contains blocked path traversal patterns' };
+  }
+
+  return { safe: true };
 }
 
 export function validateRefinementInstruction(instruction: string): { safe: boolean; reason?: string } {

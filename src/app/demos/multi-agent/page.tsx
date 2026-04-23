@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import Link from "next/link";
 import {
@@ -24,8 +24,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { GovernancePillars } from "@/components/ui/governance-pillars";
-import { resolveReviewCheckpoint } from "@/lib/hitl";
-import { createTracedFetch } from "@/lib/observability";
+import { createTracedFetch, generateClientTraceId, logAPIEvent } from "@/lib/observability";
+import { validateHandoff, validateHandoffContext } from "@/lib/guardrails";
+import {
+  AGENT_DEFINITIONS,
+  INITIAL_ORCHESTRATION_STATE,
+  type AgentId,
+  type HandoffEvent,
+} from "@/lib/agents/handoff-model";
+import { orchestrationReducer } from "@/lib/agents/orchestration";
+import { AgentGraph } from "./AgentGraph";
+import { AuditTrail } from "./AuditTrail";
 
 interface AgentResult {
   name: string;
@@ -44,7 +53,6 @@ interface AnalysisResult {
   total_tokens: number;
 }
 
-type RunStatus = "idle" | "running" | "pending_review" | "done" | "error";
 type StageState = "idle" | "running" | "completed" | "paused" | "failed";
 
 type WorkflowStageId =
@@ -120,6 +128,10 @@ const STATUS_STYLES: Record<StageState, string> = {
   failed: "border-red-500/40 bg-red-500/10 text-red-600 dark:text-red-300",
 };
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function getStateIcon(state: StageState) {
   if (state === "running") return <Loader2 className="size-4 animate-spin" aria-hidden="true" />;
   if (state === "completed") return <CheckCircle2 className="size-4" aria-hidden="true" />;
@@ -136,111 +148,122 @@ function getStateText(state: StageState) {
   return "Idle";
 }
 
+function getDomain(inputUrl: string): string {
+  try {
+    return new URL(inputUrl).hostname.replace(/^www\./, "");
+  } catch {
+    return "target site";
+  }
+}
+
+function buildDeterministicFallback(website: string): AnalysisResult {
+  const domain = getDomain(website);
+  return {
+    website,
+    total_duration_ms: 2280,
+    total_tokens: 1370,
+    agents: [
+      {
+        name: "Analyzer",
+        role: "Technical site analysis",
+        findings: [
+          `${domain} shows strong executive positioning and clear AI platform signal hierarchy.`,
+          "Navigation prioritizes recruiter paths and capability evidence.",
+        ],
+        recommendation: "Retain current information architecture and tighten demo-to-business linkage copy.",
+        confidence: 84,
+        duration_ms: 560,
+        tokens: 380,
+      },
+      {
+        name: "Researcher",
+        role: "Best-practice and benchmark review",
+        findings: [
+          "Comparable executive AI portfolios emphasize explicit governance and handoff control patterns.",
+          "Structured evidence maps improve recruiter comprehension in under 60 seconds.",
+        ],
+        recommendation: "Highlight governance checkpoints and explicit handoff policies in workflow storytelling.",
+        confidence: 81,
+        duration_ms: 690,
+        tokens: 430,
+      },
+      {
+        name: "Strategist",
+        role: "Action plan proposal",
+        findings: [
+          "Promote a handoff-first operating model with visible policy checks and traceability.",
+        ],
+        recommendation:
+          "Adopt governed handoff orchestration: enforce destination policy, require approval at high-impact steps, and publish audit events for every transfer.",
+        confidence: 86,
+        duration_ms: 1030,
+        tokens: 560,
+      },
+    ],
+  };
+}
+
+function getLatestHandoff(handoffs: HandoffEvent[], fromAgent: AgentId, toAgent: AgentId) {
+  for (let i = handoffs.length - 1; i >= 0; i -= 1) {
+    const item = handoffs[i];
+    if (item.fromAgent === fromAgent && item.toAgent === toAgent) {
+      return item;
+    }
+  }
+  return null;
+}
+
 export default function MultiAgentPage() {
-  const [traceId, setTraceId] = useState<string>('');
-  const tracedFetch = useRef(createTracedFetch(''));
+  const [traceId, setTraceId] = useState<string>("");
+  const tracedFetch = useRef(createTracedFetch(""));
   const [url, setUrl] = useState<string>("https://www.prasadkavuri.com");
-  const [status, setStatus] = useState<RunStatus>("idle");
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [pendingResult, setPendingResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string>("");
-  const [currentAgent, setCurrentAgent] = useState<string>("");
-  const [progress, setProgress] = useState<number>(0);
   const [reviewMode, setReviewMode] = useState(true);
   const [reviewDraft, setReviewDraft] = useState("");
   const [reviewNote, setReviewNote] = useState("");
   const [runtimeSeconds, setRuntimeSeconds] = useState(0);
+  const [usedFallback, setUsedFallback] = useState(false);
+  const [workflowStartAt, setWorkflowStartAt] = useState<number | null>(null);
+
+  const [orchState, dispatch] = useReducer(orchestrationReducer, INITIAL_ORCHESTRATION_STATE);
+  const orchStateRef = useRef(orchState);
+  const activeRunRef = useRef(0);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    if (status !== "running") return;
-
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 95) return prev;
-        return prev + Math.random() * 15;
-      });
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [status]);
+    orchStateRef.current = orchState;
+  }, [orchState]);
 
   useEffect(() => {
-    if (status !== "running") return;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (orchState.status !== "running") return;
     setRuntimeSeconds(0);
     const timer = setInterval(() => {
       setRuntimeSeconds((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(timer);
-  }, [status]);
+  }, [orchState.status, workflowStartAt]);
 
-  useEffect(() => {
-    if (progress >= 33 && progress < 66 && currentAgent !== "Researcher") {
-      setCurrentAgent("Researcher");
-    } else if (progress >= 66 && currentAgent !== "Strategist") {
-      setCurrentAgent("Strategist");
-    } else if (progress < 33 && currentAgent !== "Analyzer") {
-      setCurrentAgent("Analyzer");
-    }
-  }, [progress, currentAgent]);
+  const runStatus = useMemo(() => {
+    if (error || orchState.status === "failed") return "error";
+    if (pendingResult) return "pending_review";
+    if (orchState.status === "completed" && result) return "done";
+    if (orchState.status === "running") return "running";
+    return "idle";
+  }, [error, orchState.status, pendingResult, result]);
 
   const activeData = pendingResult ?? result;
 
-  const workflowStates = useMemo(() => {
-    const getStageState = (stageId: WorkflowStageId): StageState => {
-      if (status === "error") {
-        if (stageId === "request-intake" || stageId === "analyzer" || stageId === "researcher") {
-          return "failed";
-        }
-        return "idle";
-      }
-
-      if (status === "idle") return "idle";
-
-      if (status === "running") {
-        if (stageId === "request-intake") return "completed";
-        if (stageId === "analyzer") {
-          if (currentAgent === "Analyzer") return "running";
-          return progress >= 33 ? "completed" : "idle";
-        }
-        if (stageId === "researcher") {
-          if (currentAgent === "Researcher") return "running";
-          return progress >= 66 ? "completed" : "idle";
-        }
-        if (stageId === "strategist") {
-          return currentAgent === "Strategist" ? "running" : "idle";
-        }
-        return "idle";
-      }
-
-      if (status === "pending_review") {
-        if (["request-intake", "analyzer", "researcher"].includes(stageId)) return "completed";
-        if (stageId === "strategist" || stageId === "human-approval") return "paused";
-        return "idle";
-      }
-
-      if (status === "done") {
-        if (stageId === "human-approval" && !reviewMode) return "idle";
-        return "completed";
-      }
-
-      return "idle";
-    };
-
-    return WORKFLOW_STAGES.map((stage) => ({
-      ...stage,
-      state: getStageState(stage.id),
-    }));
-  }, [status, currentAgent, progress, reviewMode]);
-
   const traceCards = useMemo(() => {
     const source = activeData?.agents ?? [];
-    const domain = (() => {
-      try {
-        return new URL(url).hostname.replace(/^www\./, "");
-      } catch {
-        return "target site";
-      }
-    })();
+    const domain = getDomain(url);
 
     const fallbackRecommendation = (agentName: string, stage: StageState) => {
       if (stage === "running") {
@@ -256,24 +279,40 @@ export default function MultiAgentPage() {
         if (agentName === "Researcher") return "Best-practice options and risks summarized for strategist synthesis.";
         return "Recommendation drafted with constraints, options, and business impact.";
       }
+      if (stage === "failed") return "Execution halted due to a blocked transition.";
       return "Waiting for workflow execution.";
     };
+
+    const analyzerHandoff = getLatestHandoff(orchState.handoffs, "analyzer", "researcher");
+    const researcherHandoff = getLatestHandoff(orchState.handoffs, "researcher", "strategist");
 
     return AGENTS.map((agent, index) => {
       const found = source.find((a) => a.name === agent.name);
       let state: StageState = "idle";
-      if (status === "running") {
-        if (currentAgent === agent.name) state = "running";
-        else if ((agent.name === "Analyzer" && progress >= 33) || (agent.name === "Researcher" && progress >= 66)) {
-          state = "completed";
-        }
+      const id = agent.id as AgentId;
+
+      if (orchState.activeAgent === id && runStatus === "running") {
+        state = "running";
+      } else if (id === "analyzer" && analyzerHandoff && analyzerHandoff.status !== "blocked") {
+        state = "completed";
+      } else if (id === "researcher" && researcherHandoff && researcherHandoff.status !== "blocked") {
+        state = "completed";
+      } else if (id === "strategist" && pendingResult) {
+        state = "paused";
+      } else if (runStatus === "done") {
+        state = "completed";
       }
-      if (status === "pending_review") {
-        if (agent.name === "Strategist") state = "paused";
-        else state = "completed";
+
+      if (
+        orchState.handoffs.some(
+          (handoff) =>
+            (handoff.fromAgent === id || handoff.toAgent === id) &&
+            (handoff.status === "blocked" || handoff.status === "denied")
+        ) ||
+        runStatus === "error"
+      ) {
+        state = "failed";
       }
-      if (status === "done") state = "completed";
-      if (status === "error") state = "failed";
 
       return {
         ...agent,
@@ -286,27 +325,160 @@ export default function MultiAgentPage() {
         tokens: found?.tokens,
       };
     });
-  }, [activeData, currentAgent, progress, status, url]);
+  }, [activeData, orchState.activeAgent, orchState.handoffs, pendingResult, runStatus, url]);
+
+  const workflowStates = useMemo(() => {
+    const hasAnalyzerHandoff = Boolean(getLatestHandoff(orchState.handoffs, "analyzer", "researcher"));
+    const hasResearcherHandoff = Boolean(getLatestHandoff(orchState.handoffs, "researcher", "strategist"));
+    const strategistToHitl = getLatestHandoff(orchState.handoffs, "strategist", "hitl");
+    const hitlToSynth = getLatestHandoff(orchState.handoffs, "hitl", "synthesizer");
+
+    const getStageState = (stageId: WorkflowStageId): StageState => {
+      if (runStatus === "error") {
+        if (["request-intake", "analyzer", "researcher", "strategist", "human-approval"].includes(stageId)) {
+          return "failed";
+        }
+        return "idle";
+      }
+
+      if (runStatus === "idle") return "idle";
+
+      if (stageId === "request-intake") return "completed";
+      if (stageId === "analyzer") {
+        if (orchState.activeAgent === "analyzer") return "running";
+        return hasAnalyzerHandoff ? "completed" : "idle";
+      }
+      if (stageId === "researcher") {
+        if (orchState.activeAgent === "researcher") return "running";
+        return hasResearcherHandoff ? "completed" : "idle";
+      }
+      if (stageId === "strategist") {
+        if (orchState.activeAgent === "strategist") return "running";
+        if (strategistToHitl) {
+          if (strategistToHitl.status === "blocked" || strategistToHitl.status === "denied") return "failed";
+          return "completed";
+        }
+        return "idle";
+      }
+      if (stageId === "human-approval") {
+        if (!reviewMode) return runStatus === "done" ? "completed" : "idle";
+        if (pendingResult) return "paused";
+        if (strategistToHitl && ["approved", "completed", "accepted"].includes(strategistToHitl.status)) {
+          return "completed";
+        }
+        return "idle";
+      }
+      if (stageId === "final-output") {
+        if (runStatus === "done") return "completed";
+        if (orchState.activeAgent === "synthesizer") return "running";
+        if (hitlToSynth && hitlToSynth.status === "blocked") return "failed";
+        return "idle";
+      }
+
+      return "idle";
+    };
+
+    return WORKFLOW_STAGES.map((stage) => ({ ...stage, state: getStageState(stage.id) }));
+  }, [orchState.activeAgent, orchState.handoffs, pendingResult, reviewMode, runStatus]);
+
+  const progress = useMemo(() => {
+    if (runStatus === "idle") return 0;
+    const completed = workflowStates.filter((stage) => stage.state === "completed").length;
+    const running = workflowStates.some((stage) => stage.state === "running") ? 1 : 0;
+    const paused = workflowStates.some((stage) => stage.state === "paused") ? 1 : 0;
+    const baseline = Math.round((completed / workflowStates.length) * 100);
+    const inFlight = running ? 8 : paused ? 4 : 0;
+    return Math.min(100, baseline + inFlight);
+  }, [runStatus, workflowStates]);
+
+  const executeHandoff = async (
+    runId: number,
+    from: AgentId,
+    to: AgentId,
+    reason: string,
+    contextSummary: string
+  ) => {
+    const destinationCheck = validateHandoff(from, to, AGENT_DEFINITIONS);
+    if (!destinationCheck.valid) {
+      dispatch({ type: "REQUEST_HANDOFF", from, to, reason, contextSummary });
+      await sleep(20);
+      const blocked = getLatestHandoff(orchStateRef.current.handoffs, from, to);
+      if (blocked) {
+        dispatch({ type: "BLOCK_HANDOFF", handoffId: blocked.id, reason: destinationCheck.reason ?? "Policy blocked handoff" });
+      }
+      dispatch({ type: "FAIL_WORKFLOW", reason: destinationCheck.reason ?? "Handoff validation failed" });
+      return null;
+    }
+
+    const contextCheck = validateHandoffContext(contextSummary);
+    if (!contextCheck.safe) {
+      dispatch({ type: "REQUEST_HANDOFF", from, to, reason, contextSummary });
+      await sleep(20);
+      const blocked = getLatestHandoff(orchStateRef.current.handoffs, from, to);
+      if (blocked) {
+        dispatch({ type: "BLOCK_HANDOFF", handoffId: blocked.id, reason: contextCheck.reason ?? "Context blocked" });
+      }
+      dispatch({ type: "FAIL_WORKFLOW", reason: contextCheck.reason ?? "Handoff context blocked" });
+      return null;
+    }
+
+    dispatch({ type: "REQUEST_HANDOFF", from, to, reason, contextSummary });
+    await sleep(40);
+    if (!mountedRef.current || activeRunRef.current !== runId) return null;
+
+    const handoff = getLatestHandoff(orchStateRef.current.handoffs, from, to);
+    if (!handoff || handoff.status === "blocked") {
+      dispatch({ type: "FAIL_WORKFLOW", reason: "Handoff request failed" });
+      return null;
+    }
+
+    dispatch({ type: "ACCEPT_HANDOFF", handoffId: handoff.id });
+    await sleep(30);
+    return handoff.id;
+  };
+
+  const continueToCompletion = async (runId: number, data: AnalysisResult) => {
+    const strategistAgent = data.agents.find((agent) => agent.name === "Strategist");
+    const hitlToSynthId = await executeHandoff(
+      runId,
+      "hitl",
+      "synthesizer",
+      "Approved recommendation can move to final synthesis.",
+      strategistAgent?.recommendation ?? "Approved strategy ready for publication"
+    );
+    if (!hitlToSynthId || !mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "ACTIVATE_AGENT", agentId: "synthesizer" });
+    await sleep(80);
+    if (!mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "COMPLETE_AGENT", agentId: "synthesizer" });
+    dispatch({ type: "COMPLETE_WORKFLOW" });
+    setResult(data);
+  };
 
   const handleAnalyze = async () => {
     if (!url.trim()) return;
 
-    // Regenerate trace ID on each workflow run — real trace IDs are unique per invocation
-    const newTraceId = crypto.randomUUID();
+    const runId = activeRunRef.current + 1;
+    activeRunRef.current = runId;
+
+    const newTraceId = generateClientTraceId();
     setTraceId(newTraceId);
     tracedFetch.current = createTracedFetch(newTraceId);
-
-    setStatus("running");
     setError("");
     setResult(null);
     setPendingResult(null);
     setReviewDraft("");
     setReviewNote("");
-    setProgress(0);
-    setCurrentAgent("Analyzer");
+    setUsedFallback(false);
+    setWorkflowStartAt(Date.now());
 
+    dispatch({ type: "START_WORKFLOW", traceId: newTraceId });
+
+    let data: AnalysisResult;
     try {
-      const res = await tracedFetch.current("/api/multi-agent", {
+      const response = await tracedFetch.current("/api/multi-agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -315,35 +487,94 @@ export default function MultiAgentPage() {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to analyze website");
+      if (!response.ok) {
+        throw new Error("API workflow request failed");
       }
 
-      const data = (await res.json()) as AnalysisResult;
-      setProgress(100);
-      setCurrentAgent("");
-
-      setTimeout(() => {
-        const checkpoint = resolveReviewCheckpoint(data, reviewMode);
-        if (checkpoint.status === "pending") {
-          setPendingResult(checkpoint.pending);
-          const strategist = checkpoint.pending.agents.find((a) => a.name === "Strategist");
-          setReviewDraft(strategist?.recommendation ?? "");
-          setStatus("pending_review");
-        } else {
-          setResult(checkpoint.approved);
-          setStatus("done");
-        }
-      }, 350);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      setStatus("error");
+      data = (await response.json()) as AnalysisResult;
+    } catch {
+      setUsedFallback(true);
+      logAPIEvent({
+        event: "multi_agent.fallback_activated",
+        route: "/demos/multi-agent",
+        severity: "warn",
+        traceId: newTraceId,
+        reason: "api_unavailable_or_failed",
+      });
+      data = buildDeterministicFallback(url);
     }
+
+    if (!mountedRef.current || activeRunRef.current !== runId) return;
+
+    const analyzer = data.agents.find((agent) => agent.name === "Analyzer");
+    const researcher = data.agents.find((agent) => agent.name === "Researcher");
+    const strategist = data.agents.find((agent) => agent.name === "Strategist");
+
+    dispatch({ type: "ACTIVATE_AGENT", agentId: "analyzer" });
+    await sleep(30);
+    if (!mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "COMPLETE_AGENT", agentId: "analyzer" });
+    const analyzerHandoffId = await executeHandoff(
+      runId,
+      "analyzer",
+      "researcher",
+      "Analyzer findings passed for benchmark comparison.",
+      analyzer?.findings.join(" ") ?? "Analyzer constraints summary"
+    );
+    if (!analyzerHandoffId || !mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "ACTIVATE_AGENT", agentId: "researcher" });
+    await sleep(30);
+    if (!mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "COMPLETE_AGENT", agentId: "researcher" });
+    const researcherHandoffId = await executeHandoff(
+      runId,
+      "researcher",
+      "strategist",
+      "Research synthesis passed for recommendation drafting.",
+      researcher?.findings.join(" ") ?? "Research benchmark summary"
+    );
+    if (!researcherHandoffId || !mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "ACTIVATE_AGENT", agentId: "strategist" });
+    await sleep(30);
+    if (!mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "COMPLETE_AGENT", agentId: "strategist" });
+    const strategistHandoffId = await executeHandoff(
+      runId,
+      "strategist",
+      "hitl",
+      "Strategist recommendation requires release governance review.",
+      strategist?.recommendation ?? "Strategist recommendation summary"
+    );
+    if (!strategistHandoffId || !mountedRef.current || activeRunRef.current !== runId) return;
+
+    dispatch({ type: "ACTIVATE_AGENT", agentId: "hitl" });
+
+    if (reviewMode) {
+      dispatch({ type: "REQUEST_APPROVAL", handoffId: strategistHandoffId });
+      setPendingResult(data);
+      setReviewDraft(strategist?.recommendation ?? "");
+      return;
+    }
+
+    dispatch({ type: "REQUEST_APPROVAL", handoffId: strategistHandoffId });
+    dispatch({ type: "GRANT_APPROVAL", handoffId: strategistHandoffId });
+    await continueToCompletion(runId, data);
   };
 
-  const handleApprovePending = () => {
+  const handleApprovePending = async () => {
     if (!pendingResult) return;
+
+    const strategistToHitl = getLatestHandoff(orchState.handoffs, "strategist", "hitl");
+    if (!strategistToHitl) {
+      setError("Approval handoff reference is missing. Please rerun the workflow.");
+      return;
+    }
+
     const revised = reviewDraft.trim();
     const nextResult = revised
       ? {
@@ -353,10 +584,13 @@ export default function MultiAgentPage() {
           ),
         }
       : pendingResult;
-    setResult(nextResult);
+
+    const runId = activeRunRef.current;
+    dispatch({ type: "GRANT_APPROVAL", handoffId: strategistToHitl.id });
     setPendingResult(null);
     setReviewNote("");
-    setStatus("done");
+
+    await continueToCompletion(runId, nextResult);
   };
 
   const handleRegeneratePending = () => {
@@ -377,10 +611,11 @@ export default function MultiAgentPage() {
   };
 
   const handleCancelPending = () => {
-    setPendingResult(null);
-    setReviewDraft("");
-    setReviewNote("");
-    setStatus("idle");
+    const strategistToHitl = getLatestHandoff(orchState.handoffs, "strategist", "hitl");
+    if (strategistToHitl) {
+      dispatch({ type: "DENY_APPROVAL", handoffId: strategistToHitl.id });
+    }
+    setReviewNote("Approval denied. You can revise or restart the workflow.");
   };
 
   const strategist = activeData?.agents.find((a) => a.name === "Strategist");
@@ -405,11 +640,11 @@ export default function MultiAgentPage() {
             <div className="max-w-3xl">
               <h1 className="text-3xl font-bold tracking-tight">Multi-Agent System</h1>
               <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-                Controlled multi-agent workflow with explicit human approval, traceable decisions, and executive-ready recommendations.
+                Governed Multi-Agent Orchestration — Handoff Architecture · Audit Trail · HITL
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {["CrewAI", "Groq", "Human Approval", "Traceable Decisions"].map((item) => (
+              {["CrewAI", "Groq", "Handoff Architecture", "Audit Trail", "Human Approval", "Traceable Decisions"].map((item) => (
                 <Badge key={item} variant="outline" className="bg-muted/40">
                   {item}
                 </Badge>
@@ -436,10 +671,10 @@ export default function MultiAgentPage() {
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
                 className="mt-3 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
-                disabled={status === "running"}
+                disabled={runStatus === "running"}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && status !== "running") {
-                    handleAnalyze();
+                  if (e.key === "Enter" && runStatus !== "running") {
+                    void handleAnalyze();
                   }
                 }}
               />
@@ -449,7 +684,7 @@ export default function MultiAgentPage() {
                     key={example}
                     onClick={() => setUrl(example)}
                     className="rounded-md border border-border bg-muted/60 px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted"
-                    disabled={status === "running"}
+                    disabled={runStatus === "running"}
                   >
                     Example: {example.replace("https://", "")}
                   </button>
@@ -468,12 +703,12 @@ export default function MultiAgentPage() {
                 Enable Human Review Mode
               </label>
               <Button
-                onClick={handleAnalyze}
-                disabled={status === "running" || !url.trim()}
+                onClick={() => void handleAnalyze()}
+                disabled={runStatus === "running" || !url.trim()}
                 aria-label="Start multi-agent analysis workflow"
                 className="min-h-[44px] bg-blue-600 hover:bg-blue-700 focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
               >
-                {status === "running" ? (
+                {runStatus === "running" ? (
                   <>
                     <Loader2 className="mr-2 size-4 animate-spin" />
                     Running workflow...
@@ -485,10 +720,17 @@ export default function MultiAgentPage() {
                   </>
                 )}
               </Button>
-              <p className="text-xs text-muted-foreground">Trace ID: <span className={traceId ? 'font-mono text-blue-400' : 'text-slate-500'}>{traceId || '— run workflow to generate —'}</span></p>
+              <p className="text-xs text-muted-foreground">Trace ID: <span className={traceId ? "font-mono text-blue-400" : "text-slate-500"}>{traceId || "— run workflow to generate —"}</span></p>
+              {usedFallback ? (
+                <p className="text-xs text-amber-500">Fallback mode active: running deterministic local orchestration because backend execution was unavailable.</p>
+              ) : null}
             </div>
           </div>
         </Card>
+
+        <div className="mb-6">
+          <AgentGraph state={orchState} definitions={AGENT_DEFINITIONS} />
+        </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
           <div className="space-y-6">
@@ -532,6 +774,8 @@ export default function MultiAgentPage() {
               </CardContent>
             </Card>
 
+            {orchState.version > 0 ? <AuditTrail events={orchState.auditLog} /> : null}
+
             <Card className="border-border bg-card/70">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Execution Trace</CardTitle>
@@ -565,7 +809,7 @@ export default function MultiAgentPage() {
               </CardContent>
             </Card>
 
-            {status === "running" && (
+            {runStatus === "running" && (
               <Card className="border-border bg-card/70">
                 <CardContent className="p-4">
                   <div className="mb-2 flex items-center justify-between text-sm">
@@ -581,7 +825,7 @@ export default function MultiAgentPage() {
           </div>
 
           <div className="space-y-6">
-            {status === "pending_review" && pendingResult ? (
+            {pendingResult ? (
               <Card className="border-amber-500/40 bg-amber-500/5 shadow-sm ring-1 ring-amber-500/20">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg text-amber-600 dark:text-amber-300">Human Approval Required</CardTitle>
@@ -614,35 +858,35 @@ export default function MultiAgentPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    <Button 
-                      onClick={handleApprovePending} 
+                    <Button
+                      onClick={() => void handleApprovePending()}
                       aria-label="Approve strategist recommendation and finalize workflow"
                       className="min-h-[44px] min-w-[44px] px-6 py-3 bg-green-600 hover:bg-green-700 focus-visible:ring-4 focus-visible:ring-green-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
                     >
                       Approve
                     </Button>
-                    <Button 
-                      onClick={handleRegeneratePending} 
-                      variant="outline" 
+                    <Button
+                      onClick={handleRegeneratePending}
+                      variant="outline"
                       aria-label="Apply revision guidance to strategist recommendation"
                       className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
                     >
                       Revise
                     </Button>
-                    <Button 
-                      onClick={handleCancelPending} 
-                      variant="outline" 
+                    <Button
+                      onClick={handleCancelPending}
+                      variant="outline"
                       aria-label="Cancel pending review and return to start"
                       className="min-h-[44px] min-w-[44px] px-6 py-3 focus-visible:ring-4 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
                     >
-                      Cancel
+                      Deny
                     </Button>
                   </div>
 
                   {reviewNote && <p className="text-xs text-muted-foreground">{reviewNote}</p>}
                 </CardContent>
               </Card>
-            ) : status === "done" && result ? (
+            ) : runStatus === "done" && result ? (
               <Card className="border-border bg-card/70">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Final Recommendation</CardTitle>
@@ -680,17 +924,18 @@ export default function MultiAgentPage() {
                   </div>
                 </CardContent>
               </Card>
-            ) : status === "error" ? (
+            ) : runStatus === "error" ? (
               <Card className="border-red-500/40 bg-red-500/5">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg text-red-600 dark:text-red-300">Workflow Failed</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                  <p className="text-sm text-red-700 dark:text-red-300">{error || "Workflow blocked due to failed handoff validation."}</p>
                   <Button
                     onClick={() => {
-                      setStatus("idle");
                       setError("");
+                      setPendingResult(null);
+                      setResult(null);
                     }}
                     variant="outline"
                     className="mt-3"
@@ -721,6 +966,7 @@ export default function MultiAgentPage() {
                 <p><span className="font-medium text-foreground">Safer execution:</span> approval checkpoints prevent unreviewed strategic actions.</p>
                 <p><span className="font-medium text-foreground">Clear auditability:</span> trace IDs and stage history support review.</p>
                 <p><span className="font-medium text-foreground">Better coordination:</span> scoped agent roles reduce ambiguity in recommendations.</p>
+                <p><span className="font-medium text-foreground">Explicit handoff policies:</span> typed transfers with blocked-state handling.</p>
               </CardContent>
             </Card>
 
@@ -732,6 +978,7 @@ export default function MultiAgentPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">Handoff validation — destination and context checked before transfer executes.</p>
                 <GovernancePillars compact />
               </CardContent>
             </Card>

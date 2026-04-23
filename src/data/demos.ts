@@ -102,7 +102,7 @@ export const demos: Demo[] = [
     description: "CrewAI-powered agents with real LLM calls via Groq — Analyzer, Researcher, and Strategist collaborating in real time.",
     businessImpact: "Coordinates specialized agent workflows with approvals and auditability for high-impact enterprise decisions",
     href: "/demos/multi-agent",
-    tags: ["CrewAI", "Groq", "Llama 3.3"],
+    tags: ["CrewAI", "Groq", "Llama 3.3", "Handoff Architecture", "Audit Trail", "Agent Orchestration"],
     skills: ['planning', 'hitl', 'guardrails', 'observability', 'eval-engine', 'drift-monitor'],
     status: "live",
     mobileConfig: {

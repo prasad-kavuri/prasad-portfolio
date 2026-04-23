@@ -17,6 +17,7 @@ vi.mock('@/components/theme-toggle', () => ({
 vi.mock('@/lib/observability', () => ({
   generateClientTraceId: () => 'trace-hitl-test',
   createTracedFetch: () => (url: string, init: RequestInit) => fetch(url, init),
+  logAPIEvent: vi.fn(),
 }));
 
 import MultiAgentPage from '@/app/demos/multi-agent/page';
@@ -77,5 +78,17 @@ describe('MultiAgentPage HITL flow', () => {
     expect(screen.getAllByText(/Human Approval/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Execution Trace/i)).toBeInTheDocument();
     expect(screen.getByText(/Business Value of This Pattern/i)).toBeInTheDocument();
+  });
+
+  it('activates deterministic fallback orchestration when API call fails', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('network down'));
+    render(React.createElement(MultiAgentPage));
+
+    fireEvent.click(screen.getByLabelText(/Start multi-agent analysis workflow/i));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Fallback mode active/i)).toBeInTheDocument();
+    }, { timeout: 4000 });
+    expect(screen.queryByText(/API workflow request failed/i)).not.toBeInTheDocument();
   });
 });

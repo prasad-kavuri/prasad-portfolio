@@ -9,6 +9,12 @@ Prasad Kavuri is a VP/Head-level AI platform leader specializing in agentic AI s
 MCP tool orchestration, enterprise AI governance, and AI FinOps. His portfolio demonstrates
 production-grade AI architectures with live demos, governance controls, and platform-level design.
 Verified 2026 specializations: Anthropic MCP, Claude Code, Agentic SDLC, Google GenAI Leadership.
+
+Role target: VP / Head of AI Engineering, AI Platform Leadership, Head of Applied AI
+Location: Chicago area (Naperville, IL) — open to remote
+Production signals: Eval-gated CI pipelines, HITL checkpoints, drift monitoring, LLM FinOps — all in production, not prototype
+Key differentiator: Governance layer is code, not policy — ships with the system and fails CI if broken
+Contact: vbkpkavuri@gmail.com | calendly.com/vbkpkavuri
 ---
 
 # Prasad Kavuri — VP / Head of AI Engineering

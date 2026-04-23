@@ -9,6 +9,24 @@ Prasad's competency is anchored in the transition from Cloud Infrastructure (201
 to Agentic AI Orchestration (2023–2026). His 69 certifications span three competency clusters:
 Agentic AI & LLM Orchestration (primary, 2024–2026), Core AI & Product Strategy (2022–2024),
 and Foundational Systems Architecture (pre-2022, legacy context).
+
+--- CLUSTER 4: Production-Validated Patterns (2024–2026) ---
+These are not prototype patterns — they ran in production at enterprise scale.
+
+- Eval-gated CI pipelines: LLM-as-Judge eval suite blocks merges on quality regression (Krutrim deployment)
+- HITL checkpoint architecture: Human-in-the-loop gate between Researcher and Strategist agents
+- Drift monitoring: Online output drift signals with CI regression thresholds, not just offline eval
+- LLM FinOps: 70% infrastructure cost reduction via intelligent LLM routing and token budget controls (Ola)
+- SOC 2 Type II audit trail patterns: trace-ID propagation, structured logging, tamper-evident decision records
+- Governance as code: guardrails, observability, and eval gating ship with the system — not bolted on later
+
+--- RECRUITER SIGNALS ---
+Availability: immediately available
+Target roles: VP of AI Engineering, Head of AI Engineering, Head of Applied AI, AI Platform Lead
+Geography: Chicago, IL (Naperville) — open to hybrid and select remote
+Interview status: interview-ready
+Target compensation range: [contact to discuss]
+Contact: vbkpkavuri@gmail.com | https://calendly.com/vbkpkavuri
 ---
 
 Prasad Kavuri — LLM-Optimized Executive AI Platform Profile (2026)

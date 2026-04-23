@@ -130,10 +130,10 @@
     "Autonomous systems"
   ],
   "target_roles": [
-    "VP AI Engineering",
+    "VP of AI Engineering",
     "Head of AI Engineering",
-    "Head of AI Platform",
-    "Director/Senior Director AI Engineering"
+    "AI Platform Lead",
+    "Head of Applied AI"
   ],
   "certifications": [
     {
@@ -149,8 +149,10 @@
     "50% latency reduction via multi-model LLM orchestration",
     "70% infrastructure cost reduction at Ola"
   ],
-  "availability": "Open to VP / Head of AI Engineering roles",
-  "location": "Naperville, IL (Chicago area)",
+  "availability": "immediately available",
+  "location": "Chicago, IL (open to remote)",
+  "production_signals": ["eval-gated-CI", "HITL-checkpoints", "drift-monitoring", "LLM-FinOps", "70pct-cost-reduction", "200-engineer-org"],
+  "verified_demos": 13,
   "reasoning": {
     "philosophy": "Prioritises FinOps, Agentic Orchestration, and responsible AI governance. Designs systems that degrade gracefully, audit themselves, and surface cost signals to non-technical stakeholders.",
     "approach": "Production-first: every demo ships with observability, guardrails, and a clear ROI narrative. Treats AI reliability as a risk management problem, not just an engineering one.",

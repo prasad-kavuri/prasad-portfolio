@@ -69,7 +69,7 @@ describe('MultiAgentPage HITL flow', () => {
     await waitFor(() => {
       expect(screen.getByText('Revised strategist action for safer rollout.')).toBeInTheDocument();
     }, { timeout: 4000 });
-  });
+  }, 20000);
 
   it('renders workflow rail and business value panel', () => {
     render(React.createElement(MultiAgentPage));

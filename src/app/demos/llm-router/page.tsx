@@ -29,6 +29,35 @@ const MODEL_IDS = [
   'qwen/qwen3-32b',
 ];
 
+const MID_TIER_MODELS = [
+  {
+    id: 'qwen3.6-27b',
+    name: 'Qwen 3.6 27B',
+    tier: 'mid',
+    type: 'dense',
+    badges: ['Apache 2.0', '262K ctx', 'Thinking Preservation', 'FP8'],
+    description:
+      'Dense 27B model with reported 77.2% SWE-bench Verified — flagship coding performance on single-GPU hardware. Native Thinking Preservation retains chain-of-thought across turns.',
+    strengths: ['Agentic coding', 'Multi-turn stability', 'Repository-level reasoning', 'Frontend generation'],
+    vram: '~16.8GB (Q4)',
+    contextWindow: 262144,
+    isFallback: false,
+  },
+  {
+    id: 'qwen3-35b-a3b-int4',
+    name: 'Qwen3-35B-A3B-int4',
+    tier: 'mid',
+    type: 'moe',
+    badges: ['MoE', 'int4', '3B active', 'Single GPU'],
+    description:
+      'Mixture-of-experts model tuned for low-latency UI paths where only a small active parameter slice is used per token.',
+    strengths: ['Low-latency UI', 'Cost-sensitive routing', 'Local fallback demos'],
+    vram: '~21GB (Q4)',
+    contextWindow: 32768,
+    isFallback: true,
+  },
+];
+
 const QWEN_MOE_FALLBACK: ModelResult = {
   model: 'qwen-moe-local',
   modelName: 'Qwen 3.6 MoE (int4) — Edge Efficient',
@@ -237,6 +266,94 @@ export default function LLMRouterDemo() {
             />
             <span>Business Value Mode</span>
           </label>
+        </Card>
+
+        <Card className="mb-8 border-border bg-card p-5">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                Mid Tier Model Cards
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Mid-tier routes balance coding quality, latency, and single-GPU deployment constraints.
+              </p>
+            </div>
+            <Badge variant="outline" className="w-fit bg-muted/40">reported benchmarks</Badge>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            {MID_TIER_MODELS.map((model) => (
+              <div key={model.id} className="rounded-lg border border-border bg-muted/20 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-lg font-semibold text-foreground">{model.name}</p>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      {model.tier} tier · {model.type}
+                    </p>
+                  </div>
+                  <Badge className={model.type === 'dense' ? 'border-0 bg-blue-500/20 text-blue-300' : 'border-0 bg-purple-500/20 text-purple-300'}>
+                    {model.type}
+                  </Badge>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {model.badges.map((badge) => (
+                    <Badge key={badge} variant="outline" className="bg-background/60 text-xs">
+                      {badge}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">{model.description}</p>
+                <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
+                  <p><span className="font-medium text-foreground">VRAM:</span> {model.vram}</p>
+                  <p><span className="font-medium text-foreground">Context:</span> {model.contextWindow.toLocaleString()} tokens</p>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {model.strengths.map((strength) => (
+                    <span key={strength} className="rounded-md bg-background px-2 py-1 text-xs text-muted-foreground">
+                      {strength}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 text-sm">
+            <p className="font-medium text-foreground">Qwen3.6-27B Routing Rule</p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">
+              task.type === &quot;agent&quot; || task.complexity === &quot;medium-high&quot;
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              Dense architecture + Thinking Preservation = stable multi-turn reasoning without MoE routing overhead.
+            </p>
+          </div>
+
+          <div className="mt-4 overflow-x-auto rounded-lg border border-border">
+            <table className="w-full min-w-[560px] text-left text-sm">
+              <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2">Dense vs MoE</th>
+                  <th className="px-3 py-2">27B Dense</th>
+                  <th className="px-3 py-2">35B-A3B MoE</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border text-muted-foreground">
+                {[
+                  ['Active params', '27B', '3B'],
+                  ['SWE-bench', '77.2%', '~72%'],
+                  ['Inference speed', 'Moderate', 'Fast'],
+                  ['VRAM (Q4)', '~16.8GB', '~21GB'],
+                  ['Best for', 'Agent loops', 'Low-latency UI'],
+                ].map(([label, dense, moe]) => (
+                  <tr key={label}>
+                    <td className="px-3 py-2 font-medium text-foreground">{label}</td>
+                    <td className="px-3 py-2">{dense}</td>
+                    <td className="px-3 py-2">{moe}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Card>
 
         {/* Results Grid */}

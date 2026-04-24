@@ -744,6 +744,23 @@ export default function MultiAgentPage() {
           <AgentGraph state={orchState} definitions={AGENT_DEFINITIONS} />
         </div>
 
+        <Card className="mb-6 border-blue-500/30 bg-blue-500/5 p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <Shield className="size-4 text-blue-500" aria-hidden="true" />
+                <h2 className="text-lg font-semibold text-foreground">Thinking Preservation</h2>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Qwen3.6-27B natively retains chain-of-thought reasoning across historical messages — reducing context drift in long-running agentic workflows. This demo&apos;s orchestration pattern is designed to leverage this capability for more stable multi-turn decision chains.
+              </p>
+            </div>
+            <Badge variant="outline" className="w-fit bg-background/70">
+              Qwen3.6-27B compatible
+            </Badge>
+          </div>
+        </Card>
+
         <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
           <div className="space-y-6">
             <Card className="border-border bg-card/70">

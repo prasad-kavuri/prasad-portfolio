@@ -49,7 +49,7 @@ export const demos: Demo[] = [
     title: "LLM Router",
     description: "Real multi-model routing across Llama 3.1 8B, 70B, and Mixtral — see live latency, cost, and quality trade-offs.",
     businessImpact: "Balances quality, latency, and spend across model tiers for production AI request routing",
-    businessOutcome: "Reduces LLM inference cost and latency by routing each request to the right model based on complexity, budget, and governance policy.",
+    businessOutcome: "Routes each AI request to the optimal model — from fast WASM models for simple tasks to Qwen3.6-27B for agentic reasoning — demonstrating LLM FinOps and decision intelligence at the platform level.",
     href: "/demos/llm-router",
     tags: ["Groq", "Multi-model", "Live latency"],
     skills: ['guardrails', 'eval-engine', 'drift-monitor'],

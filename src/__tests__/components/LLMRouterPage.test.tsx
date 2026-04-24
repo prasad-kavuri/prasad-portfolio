@@ -38,6 +38,7 @@ describe('LLMRouterDemo page', () => {
     expect(screen.getByText('LLM Router Demo')).toBeInTheDocument();
     expect(screen.getByText('FinOps Routing Signal')).toBeInTheDocument();
     expect(screen.getByText(/illustrative estimates/i)).toBeInTheDocument();
+    expect(screen.getByText('Qwen 3.6 27B')).toBeInTheDocument();
   });
 
   it('shows business value projection only when business mode is enabled', async () => {

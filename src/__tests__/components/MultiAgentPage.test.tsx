@@ -63,7 +63,6 @@ describe('MultiAgentPage HITL flow', () => {
     // flushed the preceding dispatch(REQUEST_HANDOFF), the handoff won't be found and
     // executeHandoff returns null — preventing setPendingResult from ever being called.
     for (let i = 0; i < 10; i++) {
-      // eslint-disable-next-line no-await-in-loop
       await act(async () => {
         await vi.advanceTimersByTimeAsync(40);
       });
@@ -100,6 +99,7 @@ describe('MultiAgentPage HITL flow', () => {
     expect(screen.getAllByText(/Human Approval/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Execution Trace/i)).toBeInTheDocument();
     expect(screen.getByText(/Business Value of This Pattern/i)).toBeInTheDocument();
+    expect(screen.getByText(/Thinking Preservation/i)).toBeInTheDocument();
   });
 
   it('activates deterministic fallback orchestration when API call fails', async () => {

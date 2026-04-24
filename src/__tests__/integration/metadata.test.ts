@@ -86,13 +86,13 @@ describe('SEO metadata integrity', () => {
     const llmsTxt = readFileSync('public/llms.txt', 'utf8');
     expect(llmsTxt).toMatch(/Prasad Kavuri/);
     expect(llmsTxt).toMatch(/Head of AI Engineering/);
-    expect(llmsTxt).toMatch(/calendly\.com/);
-    const demoLines = llmsTxt.match(/^- .+: https:\/\/www\.prasadkavuri\.com\/demos\//gm) ?? [];
-    expect(demoLines).toHaveLength(13);
-    expect(llmsTxt).toMatch(/AI Evaluation Showcase/);
-    expect(llmsTxt).toMatch(/Enterprise Control Plane/);
-    expect(llmsTxt).toMatch(/Native Browser AI Skill/);
-    expect(llmsTxt).toMatch(/AI Spatial Intelligence & World Generation/);
+    expect(llmsTxt).toMatch(/vbkpkavuri@gmail\.com/);
+    expect(llmsTxt).toMatch(/Flagship: \/demos\/evaluation-showcase/);
+    expect(llmsTxt).toMatch(/Full catalog: \/demos/);
+    expect(llmsTxt).toMatch(/Recruiters:\s+\/for-recruiters/);
+    expect(llmsTxt).toMatch(/Machine JSON:\s+\/ai-profile\.json/);
+    expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
+    expect(llmsTxt.trim().split('\n')).toHaveLength(44);
   });
 
   it('demos index page exists with CollectionPage structured data and canonical route', () => {

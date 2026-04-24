@@ -62,6 +62,26 @@ describe('LLMRouterDemo page', () => {
     });
   });
 
+  it('Qwen3.6-27B card contains GGUF reference', () => {
+    render(React.createElement(LLMRouterDemo));
+    const ggufMatches = screen.getAllByText(/GGUF/i);
+    expect(ggufMatches.length).toBeGreaterThan(0);
+  });
+
+  it('HuggingFace unsloth link is present', () => {
+    render(React.createElement(LLMRouterDemo));
+    const link = screen.getByRole('link', { name: /HuggingFace/i });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', 'https://huggingface.co/unsloth/Qwen3.6-27B-GGUF');
+    expect(link).toHaveAttribute('target', '_blank');
+  });
+
+  it('"Local" badge or text is present on Qwen3.6-27B card', () => {
+    render(React.createElement(LLMRouterDemo));
+    const localMatches = screen.getAllByText(/GGUF \/ Local|Local Deployment/i);
+    expect(localMatches.length).toBeGreaterThan(0);
+  });
+
   it('falls back to deterministic estimates when the live routed call is rate limited', async () => {
     mockFetch
       .mockResolvedValueOnce({

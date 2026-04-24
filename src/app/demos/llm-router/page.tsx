@@ -74,13 +74,17 @@ const MID_TIER_MODELS = [
     name: 'Qwen 3.6 27B',
     tier: 'mid',
     type: 'dense',
-    badges: ['Apache 2.0', '262K ctx', 'Thinking Preservation', 'FP8'],
+    badges: ['Apache 2.0', '262K ctx', 'Thinking Preservation', 'FP8', 'GGUF / Local'],
     description:
-      'Dense 27B model with reported 77.2% SWE-bench Verified — flagship coding performance on single-GPU hardware. Native Thinking Preservation retains chain-of-thought across turns.',
+      'Dense 27B model with reported 77.2% SWE-bench Verified — flagship coding performance on single-GPU hardware. Native Thinking Preservation retains chain-of-thought across turns. Unsloth GGUF variant available for local deployment via llama.cpp or LM Studio — tool calling supported, no API dependency.',
     strengths: ['Agentic coding', 'Multi-turn stability', 'Repository-level reasoning', 'Frontend generation'],
     vram: '~16.8GB (Q4)',
     contextWindow: 262144,
     isFallback: false,
+    localDeploy: {
+      label: 'Unsloth GGUF (Q4_K_M ~16.8GB VRAM)',
+      url: 'https://huggingface.co/unsloth/Qwen3.6-27B-GGUF',
+    },
   },
   {
     id: 'qwen3-35b-a3b-int4',
@@ -362,7 +366,15 @@ export default function LLMRouterDemo() {
                 </div>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {model.badges.map((badge) => (
-                    <Badge key={badge} variant="outline" className="bg-background/60 text-xs">
+                    <Badge
+                      key={badge}
+                      variant="outline"
+                      className={
+                        badge === 'GGUF / Local'
+                          ? 'border-teal-500/40 bg-teal-500/10 text-teal-400 text-xs'
+                          : 'bg-background/60 text-xs'
+                      }
+                    >
                       {badge}
                     </Badge>
                   ))}
@@ -379,6 +391,20 @@ export default function LLMRouterDemo() {
                     </span>
                   ))}
                 </div>
+                {'localDeploy' in model && model.localDeploy && (
+                  <div className="mt-3 rounded-md border border-teal-500/20 bg-teal-500/5 px-3 py-2 text-xs">
+                    <span className="font-medium text-foreground">Local Deployment: </span>
+                    <span className="text-muted-foreground">{model.localDeploy.label} — </span>
+                    <a
+                      href={model.localDeploy.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-teal-400 hover:underline"
+                    >
+                      HuggingFace ↗
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -390,6 +416,9 @@ export default function LLMRouterDemo() {
             </p>
             <p className="mt-2 text-muted-foreground">
               Dense architecture + Thinking Preservation = stable multi-turn reasoning without MoE routing overhead.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              <span className="font-medium text-foreground">Local fallback:</span> when external API unavailable → Qwen3.6-27B GGUF via llama.cpp
             </p>
           </div>
 
@@ -408,6 +437,7 @@ export default function LLMRouterDemo() {
                   ['SWE-bench', '77.2%', '~72%'],
                   ['Inference speed', 'Moderate', 'Fast'],
                   ['VRAM (Q4)', '~16.8GB', '~21GB'],
+                  ['Deployment', 'llama.cpp / LM Studio (GGUF)', 'API/Cloud'],
                   ['Best for', 'Agent loops', 'Low-latency UI'],
                 ].map(([label, dense, moe]) => (
                   <tr key={label}>

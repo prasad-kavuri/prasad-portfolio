@@ -63,8 +63,20 @@ export default function MCPDemoPage() {
     }
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'MCP Tool Demo',
+    description: 'Model Context Protocol in action — watch an LLM discover and call tools to answer questions about Prasad\'s background.',
+    keywords: 'MCP, Tool Use, Groq API',
+    url: 'https://www.prasadkavuri.com/demos/mcp-demo',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Header */}
       <div className="border-b border-border bg-background sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

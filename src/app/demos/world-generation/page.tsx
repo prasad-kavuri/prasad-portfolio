@@ -527,8 +527,20 @@ export default function WorldGenerationPage() {
     }
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Real-Time Spatial AI + World Modeling Engine',
+    description: 'Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. Controllable parametric spatial design — refine generated scenes with natural-language instructions.',
+    keywords: 'World Generation, Spatial AI, Three.js, GLB Export, Governance, Simulation-Ready, World Model, Perception, Parametric Refinement',
+    url: 'https://www.prasadkavuri.com/demos/world-generation',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <main className="min-h-screen bg-background px-6 py-8 text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center gap-3">
           <ThemeToggle />

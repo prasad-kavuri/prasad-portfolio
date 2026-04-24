@@ -459,8 +459,20 @@ export default function RAGPipelinePage() {
     });
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'RAG Pipeline',
+    description: 'Real retrieval-augmented generation with Transformers.js embeddings and ChromaDB — runs entirely in your browser.',
+    keywords: 'Transformers.js, ChromaDB, nomic-embed-text',
+    url: 'https://www.prasadkavuri.com/demos/rag-pipeline',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-[100svh] bg-background p-6 text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <div>

@@ -279,8 +279,20 @@ export default function PortfolioAssistantPage() {
 
   const isEmpty = messages.length === 0 && !streamingText;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'AI Portfolio Assistant',
+    description: 'Streaming full-context assistant over my experience with optional retrieval-enhanced grounding and cited context cues.',
+    keywords: 'Vercel AI SDK, Streaming, Retrieval Grounding',
+    url: 'https://www.prasadkavuri.com/demos/portfolio-assistant',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Header */}
       <div className="border-b border-border p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">

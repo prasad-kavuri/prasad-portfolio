@@ -865,8 +865,20 @@ function PlatformImpact() {
 // ---------------------------------------------------------------------------
 
 export default function EvaluationShowcasePage() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'AI Evaluation Showcase',
+    description: 'Closed-loop LLM evaluation pipeline — semantic fidelity, hallucination detection, guardrails, and CI gating in action. Production-derived eval thresholds — calibrated from real Krutrim deployment patterns.',
+    keywords: 'LLM-as-Judge, Semantic Fidelity, Guardrails, CI Gating',
+    url: 'https://www.prasadkavuri.com/demos/evaluation-showcase',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="max-w-6xl mx-auto">
 
         {/* Step 2 — Framing panel */}

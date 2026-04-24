@@ -154,8 +154,20 @@ export default function LLMRouterDemo() {
   const summary = getSummary();
   const businessProjection = getBusinessProjection();
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'LLM Router',
+    description: 'Real multi-model routing across Llama 3.1 8B, 70B, and Mixtral — see live latency, cost, and quality trade-offs.',
+    keywords: 'Groq, Multi-model, Live latency',
+    url: 'https://www.prasadkavuri.com/demos/llm-router',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

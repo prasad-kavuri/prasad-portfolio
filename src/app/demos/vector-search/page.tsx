@@ -624,8 +624,20 @@ export default function VectorSearchPage() {
     }
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Vector Search',
+    description: 'Semantic search with real sentence-BERT embeddings and UMAP visualisation of the embedding space.',
+    keywords: 'all-MiniLM-L6-v2, UMAP, Cosine similarity',
+    url: 'https://www.prasadkavuri.com/demos/vector-search',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-[100svh] bg-background p-6 text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex items-center justify-between">
           <div>

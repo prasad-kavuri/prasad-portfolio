@@ -119,8 +119,20 @@ export default function EnterpriseControlPlanePage() {
     { id: 'observability', label: 'Observability' },
   ];
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Enterprise Control Plane',
+    description: 'Org-wide AI governance dashboard — RBAC, group spend limits with token-cost tracking, and OpenTelemetry observability feed.',
+    keywords: 'Enterprise, RBAC, OpenTelemetry, Token Analytics',
+    url: 'https://www.prasadkavuri.com/demos/enterprise-control-plane',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Sticky header */}
       <div className="border-b border-border bg-background sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">

@@ -92,8 +92,20 @@ export default function BrowserNativeAISkillPage() {
     }
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Native Browser AI Skill',
+    description: 'A reusable Chrome AI Skill that audits webpage accessibility using on-device Gemini Nano.',
+    keywords: 'Chrome Prompt API, Gemini Nano, WASM',
+    url: 'https://www.prasadkavuri.com/demos/browser-native-ai-skill',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto max-w-4xl">
         <div className="flex items-center gap-3 mb-8">
           <ThemeToggle />

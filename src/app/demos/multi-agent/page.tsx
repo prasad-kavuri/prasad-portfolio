@@ -622,8 +622,20 @@ export default function MultiAgentPage() {
   const analyzer = activeData?.agents.find((a) => a.name === "Analyzer");
   const researcher = activeData?.agents.find((a) => a.name === "Researcher");
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Multi-Agent System',
+    description: 'CrewAI-powered agents with real LLM calls via Groq — Analyzer, Researcher, and Strategist collaborating in real time.',
+    keywords: 'CrewAI, Groq, Llama 3.3, Handoff Architecture, Audit Trail, Agent Orchestration',
+    url: 'https://www.prasadkavuri.com/demos/multi-agent',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <div className="mb-4 flex items-center gap-2">

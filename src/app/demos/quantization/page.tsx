@@ -495,8 +495,20 @@ export default function QuantizationPage() {
       )
     : 100;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Model Quantization',
+    description: 'Live ONNX benchmark comparing INT8 vs FP32 inference — real file sizes, real latency, real quality diff.',
+    keywords: 'ONNX, INT8 vs FP32, Transformers.js',
+    url: 'https://www.prasadkavuri.com/demos/quantization',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-[100svh] bg-background p-6 text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">

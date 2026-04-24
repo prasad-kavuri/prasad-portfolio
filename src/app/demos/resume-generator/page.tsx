@@ -287,8 +287,20 @@ export default function ResumeGeneratorPage() {
   const resume = finalResume;
   const isLoading = phase === 'analyzing' || phase === 'regenerating';
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'AI Hiring Intelligence',
+    description: 'Paste a job description — get multi-dimension fit scoring, HITL-gated tailoring, and an ATS-optimized resume with drift detection.',
+    keywords: 'JD parsing, Skill matching, HITL, Evaluation, Multi-Agent',
+    url: 'https://www.prasadkavuri.com/demos/resume-generator',
+    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    about: { '@type': 'Thing', name: 'AI Engineering' },
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Header */}
       <div className="border-b border-border p-4 sticky top-0 z-10 bg-background">
         <div className="max-w-7xl mx-auto">

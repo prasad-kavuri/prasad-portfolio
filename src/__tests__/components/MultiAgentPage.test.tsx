@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 
 const mockFetch = vi.fn();
@@ -22,8 +22,13 @@ vi.mock('@/lib/observability', () => ({
 import MultiAgentPage from '@/app/demos/multi-agent/page';
 
 describe('MultiAgentPage HITL flow', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
     vi.stubGlobal('fetch', mockFetch);
     mockFetch.mockResolvedValue({
       ok: true,
@@ -43,10 +48,32 @@ describe('MultiAgentPage HITL flow', () => {
   it('pauses at strategist approval gate with approve/revise/cancel controls', async () => {
     render(React.createElement(MultiAgentPage));
 
+    // Use fake timers so the ~300ms of sleep() calls in the multi-agent workflow
+    // complete deterministically without depending on CI wall-clock timing.
+    vi.useFakeTimers();
     fireEvent.click(screen.getByLabelText(/Start multi-agent analysis workflow/i));
 
-    await screen.findByText(/Human Approval Required/i, {}, { timeout: 15000 });
-    await screen.findByLabelText(/Approve strategist recommendation and finalize workflow/i, {}, { timeout: 15000 });
+    // Flush the fetch + json Promise microtasks before advancing fake clock.
+    // Without this, the fetch hasn't resolved yet when the timers advance.
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Advance in 40ms increments so act() flushes React (orchStateRef useEffect) between each
+    // batch. executeHandoff reads orchStateRef.current.handoffs after sleep(40); if React hasn't
+    // flushed the preceding dispatch(REQUEST_HANDOFF), the handoff won't be found and
+    // executeHandoff returns null — preventing setPendingResult from ever being called.
+    for (let i = 0; i < 10; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(40);
+      });
+    }
+
+    // Restore real timers before any subsequent async assertions.
+    vi.useRealTimers();
+
+    expect(screen.getByText(/Human Approval Required/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Approve strategist recommendation and finalize workflow/i)).toBeInTheDocument();
 
     expect(screen.getAllByText(/Paused/i).length).toBeGreaterThan(0);
     expect(screen.getByLabelText(/Strategist revision guidance/i)).toBeInTheDocument();
@@ -60,7 +87,6 @@ describe('MultiAgentPage HITL flow', () => {
     }, { timeout: 4000 });
 
     fireEvent.click(screen.getByLabelText(/Approve strategist recommendation/i));
-
 
     await waitFor(() => {
       expect(screen.getByText('Revised strategist action for safer rollout.')).toBeInTheDocument();

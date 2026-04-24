@@ -42,3 +42,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Agent workspace and skill caches
+.agents/
+.claude/
+
+# Codex skills lockfile (auto-generated)
+skills-lock.json

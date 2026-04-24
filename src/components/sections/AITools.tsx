@@ -215,9 +215,14 @@ export function AITools() {
                         </p>
                       </CardHeader>
                       <CardContent>
-                        <p className="mb-3 text-sm text-muted-foreground">
+                        <p className="mb-2 text-sm text-muted-foreground">
                           {demo.description}
                         </p>
+                        {demo.businessOutcome && (
+                          <p className="mb-3 text-xs text-muted-foreground border-l-2 border-border pl-2 italic">
+                            {demo.businessOutcome}
+                          </p>
+                        )}
                         <div className="flex flex-wrap gap-1">
                           {demo.tags.map((tag) => (
                             <Badge key={tag} variant="outline" className="text-xs">

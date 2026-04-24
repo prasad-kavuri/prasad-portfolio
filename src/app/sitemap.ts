@@ -20,9 +20,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Tier 2 — primary recruiter/contact page
     { url: `${SITE_URL}/for-recruiters`, lastModified: now, changeFrequency: 'monthly', priority: 0.95 },
 
-    // Tier 3 — high-value hub pages + machine-readable AI entry point
+    // Tier 3 — high-value hub pages + machine-readable AI entry points
     { url: `${SITE_URL}/governance`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${SITE_URL}/demos`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${SITE_URL}/agent`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${SITE_URL}/ai-profile.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
 
     // Supporting pages

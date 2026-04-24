@@ -85,7 +85,7 @@ describe('SEO metadata integrity', () => {
   it('llms.txt exists with correct identity and availability', () => {
     const llmsTxt = readFileSync('public/llms.txt', 'utf8');
     expect(llmsTxt).toMatch(/Prasad Kavuri/);
-    expect(llmsTxt).toMatch(/VP \/ Head/);
+    expect(llmsTxt).toMatch(/Head of AI Engineering/);
     expect(llmsTxt).toMatch(/calendly\.com/);
     const demoLines = llmsTxt.match(/^- .+: https:\/\/www\.prasadkavuri\.com\/demos\//gm) ?? [];
     expect(demoLines).toHaveLength(13);

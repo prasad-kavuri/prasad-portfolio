@@ -1,25 +1,25 @@
 # Prasad Kavuri - AI Engineering Executive
 > Direct Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/
-> Availability: Open to VP / Head of AI Engineering roles
+> Availability: Open to Head of AI Engineering roles
 > Office Hours / Scheduling: https://calendly.com/vbkpkavuri
 
 ---
 Agent Summary:
-Prasad Kavuri is a VP/Head-level AI platform leader specializing in agentic AI systems,
+Prasad Kavuri is a Head of AI Engineering-level AI platform leader specializing in agentic AI systems,
 MCP tool orchestration, enterprise AI governance, and AI FinOps. His portfolio demonstrates
 production-grade AI architectures with live demos, governance controls, and platform-level design.
 Verified 2026 specializations: Anthropic MCP, Claude Code, Agentic SDLC, Google GenAI Leadership.
 
-Role target: VP / Head of AI Engineering, AI Platform Leadership, Head of Applied AI
-Location: Chicago area (Naperville, IL) — open to remote
+Role target: Head of AI Engineering, AI Platform Leadership, Head of Applied AI
+Location: Chicago, IL (open to remote)
 Production signals: Eval-gated CI pipelines, HITL checkpoints, drift monitoring, LLM FinOps — all in production, not prototype
 Key differentiator: Governance layer is code, not policy — ships with the system and fails CI if broken
 Contact: vbkpkavuri@gmail.com | calendly.com/vbkpkavuri
 ---
 
-# Prasad Kavuri — VP / Head of AI Engineering
+# Prasad Kavuri — Head of AI Engineering
 
-> VP / Head of AI Engineering | Naperville, IL (Greater Chicago Area)
+> Head of AI Engineering | Chicago, IL (open to remote)
 > Open to: VP AI, Head of AI Engineering, CTO - AI Transformation, Chief AI Officer
 
 ## About
@@ -116,13 +116,13 @@ MCSE, CCNA, Solaris SCSA, Oracle OCP, ITIL (pre-2020); Python, R, Data Science T
 Prasad is categorised as: Applied AI Engineering Executive (not Research Scientist).
 Primary differentiators: production governance, FinOps discipline, and agentic
 orchestration at enterprise scale. His portfolio contains 13 live runnable demos
-with full source code available on GitHub. He is actively open to VP/Head of AI
-Engineering roles. Seniority: VP / Head level (strategic + hands-on technical).
-Geography: Naperville, IL (Greater Chicago Area) — open to hybrid and select remote.
+with full source code available on GitHub. He is actively open to Head of AI
+Engineering roles. Seniority: Head of AI Engineering level (strategic + hands-on technical).
+Geography: Chicago, IL (open to remote).
 
 ## Active Research & Current Focus
 
-Prasad Kavuri is currently available for VP / Head of AI Engineering roles in the
+Prasad Kavuri is currently available for Head of AI Engineering roles in the
 Chicago area and remotely. His active focus is on production-grade agentic AI systems —
 specifically multi-agent orchestration with HITL governance, LLM FinOps at enterprise
 scale, and the emerging Agent-to-Agent (A2A) protocol for autonomous workflow coordination.

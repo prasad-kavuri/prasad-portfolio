@@ -47,6 +47,15 @@ describe('GET /ai-profile.json', () => {
     expect(body.identity.name).toBe('Prasad Kavuri');
   });
 
+  it('returns canonical identity facts', async () => {
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(body.identity.contact.email).toBe('vbkpkavuri@gmail.com');
+    expect(body.identity.role).toBe('Head of AI Engineering');
+    expect(body.experience.team_size_max).toBe('200+');
+  });
+
   it('agent_guidance.flagship_demo is a valid URL string', async () => {
     const res = await GET(makeRequest());
     const body = await res.json();

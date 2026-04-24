@@ -15,7 +15,7 @@ function buildPayload() {
       contact: {
         portfolio: BASE_URL,
         github: 'https://github.com/prasad-kavuri/prasad-portfolio',
-        email: 'prasad.kavuri@gmail.com',
+        email: 'vbkpkavuri@gmail.com',
       },
     },
     experience: {

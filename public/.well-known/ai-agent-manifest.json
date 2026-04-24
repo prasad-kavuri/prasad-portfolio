@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
   "name": "Prasad Kavuri",
-  "current_role": "VP / Head of AI Engineering",
+  "current_role": "Head of AI Engineering",
   "target_roles": [
     "VP of AI Engineering",
     "Head of AI Engineering",
     "CTO - AI Transformation",
     "Chief AI Officer"
   ],
-  "location": "Naperville, IL (Greater Chicago Area)",
+  "location": "Chicago, IL (open to remote)",
   "open_to_remote": true,
-  "description": "Executive AI Engineering leader with 20+ years experience operating 13 production AI systems. Available for VP/Head of AI Engineering roles.",
+  "description": "Executive AI Engineering leader with 20+ years experience operating 13 production AI systems. Available for Head of AI Engineering roles.",
   "experience_summary": "Applied AI engineering executive with 20+ years building production-grade AI platforms at enterprise scale. Specialises in agentic orchestration, LLM FinOps, and responsible AI governance. Led AI infrastructure serving 13,000+ B2B customers at Krutrim/Ola; scaled global AI platforms at HERE Technologies across APAC, EMEA, Americas. Primary differentiator: bridges AI research and enterprise reliability.",
   "core_capabilities": [
     "Agentic Orchestration",

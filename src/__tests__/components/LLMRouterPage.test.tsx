@@ -61,4 +61,41 @@ describe('LLMRouterDemo page', () => {
       expect(screen.getByText(/Business Value Projection/i)).toBeInTheDocument();
     });
   });
+
+  it('falls back to deterministic estimates when the live routed call is rate limited', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        json: async () => ({ error: 'Too many requests' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          model: 'qwen-moe-local',
+          modelName: 'Qwen MoE local',
+          provider: 'Local',
+          response: '',
+          latency_ms: 0,
+          input_tokens: 0,
+          output_tokens: 0,
+          cost_usd: 0,
+          isFallback: true,
+          error: 'Local inference unavailable.',
+        }),
+      });
+
+    render(React.createElement(LLMRouterDemo));
+
+    fireEvent.change(screen.getByPlaceholderText(/Enter your prompt/i), {
+      target: { value: 'What is the capital of France?' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Route & Run All Models/i }));
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/Estimated comparison/i).length).toBeGreaterThan(0);
+    });
+    expect(screen.queryByText(/Error: Too many requests/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Live route temporarily rate-limited/i)).toBeInTheDocument();
+  });
 });

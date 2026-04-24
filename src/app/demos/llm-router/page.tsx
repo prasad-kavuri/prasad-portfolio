@@ -29,6 +29,45 @@ const MODEL_IDS = [
   'qwen/qwen3-32b',
 ];
 
+const MODEL_ESTIMATES: Record<string, Omit<ModelResult, 'response'>> = {
+  'llama-3.1-8b-instant': {
+    model: 'llama-3.1-8b-instant',
+    modelName: 'Llama 3.1 8B',
+    provider: 'Meta · Groq',
+    latency_ms: 280,
+    input_tokens: 25,
+    output_tokens: 80,
+    cost_usd: 0.000008,
+  },
+  'llama-3.3-70b-versatile': {
+    model: 'llama-3.3-70b-versatile',
+    modelName: 'Llama 3.3 70B',
+    provider: 'Meta · Groq',
+    latency_ms: 840,
+    input_tokens: 25,
+    output_tokens: 120,
+    cost_usd: 0.00011,
+  },
+  'meta-llama/llama-4-scout-17b-16e-instruct': {
+    model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+    modelName: 'Llama 4 Scout',
+    provider: 'Meta · Groq',
+    latency_ms: 520,
+    input_tokens: 25,
+    output_tokens: 95,
+    cost_usd: 0.000035,
+  },
+  'qwen/qwen3-32b': {
+    model: 'qwen/qwen3-32b',
+    modelName: 'Qwen3 32B',
+    provider: 'Alibaba · Groq',
+    latency_ms: 680,
+    input_tokens: 25,
+    output_tokens: 110,
+    cost_usd: 0.000072,
+  },
+};
+
 const MID_TIER_MODELS = [
   {
     id: 'qwen3.6-27b',
@@ -81,6 +120,29 @@ const EXAMPLE_PROMPTS = [
   'Translate Hello how are you to Spanish',
 ];
 
+function createEstimatedResult(modelId: string, prompt: string): ModelResult {
+  const estimate = MODEL_ESTIMATES[modelId];
+  if (!estimate) {
+    return {
+      model: modelId,
+      modelName: 'Unknown',
+      provider: 'Estimated',
+      response: 'No estimate available for this model.',
+      latency_ms: 0,
+      input_tokens: 0,
+      output_tokens: 0,
+      cost_usd: 0,
+      isFallback: true,
+    };
+  }
+
+  return {
+    ...estimate,
+    response: `Estimated comparison for "${prompt.slice(0, 80)}${prompt.length > 80 ? '...' : ''}". Live inference runs on the routed model to avoid rate-limit bursts; remaining cards show stable FinOps estimates.`,
+    isFallback: true,
+  };
+}
+
 export default function LLMRouterDemo() {
   const [prompt, setPrompt] = useState('');
   const [results, setResults] = useState<ModelResult[] | null>(null);
@@ -102,15 +164,28 @@ export default function LLMRouterDemo() {
     setResults(null);
 
     try {
-      const groqPromises = MODEL_IDS.map(modelId =>
-        fetch('/api/llm-router', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, model: modelId }),
+      const recommendedPromise = fetch('/api/llm-router', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, model: recommendation.model }),
+      })
+        .then(async (res) => {
+          const data = await res.json() as ModelResult;
+          if (!res.ok) {
+            return {
+              ...createEstimatedResult(recommendation.model, prompt),
+              error:
+                res.status === 429
+                  ? 'Live route temporarily rate-limited. Showing deterministic routing estimate.'
+                  : data.error ?? 'Live route unavailable. Showing deterministic routing estimate.',
+            };
+          }
+          return data;
         })
-          .then(res => res.json())
-          .catch((error: Error) => ({ error: error.message }))
-      );
+        .catch(() => ({
+          ...createEstimatedResult(recommendation.model, prompt),
+          error: 'Live route unavailable. Showing deterministic routing estimate.',
+        }));
 
       const qwenPromise = fetch('/api/qwen-moe', {
         method: 'POST',
@@ -120,24 +195,14 @@ export default function LLMRouterDemo() {
         .then(res => res.json())
         .catch(() => QWEN_MOE_FALLBACK);
 
-      const allModelIds = [...MODEL_IDS, 'qwen-moe-local'];
-      const settledResults = await Promise.allSettled([...groqPromises, qwenPromise]);
-      const results = settledResults.map((result, index) => {
-        if (result.status === 'fulfilled') {
-          return result.value as ModelResult;
-        }
-        return {
-          model: allModelIds[index] ?? 'unknown',
-          modelName: 'Unknown',
-          provider: 'Unknown',
-          error: 'Request failed',
-          response: '',
-          latency_ms: 0,
-          input_tokens: 0,
-          output_tokens: 0,
-          cost_usd: 0,
-        } as ModelResult;
-      });
+      const [recommendedResult, qwenResult] = await Promise.all([recommendedPromise, qwenPromise]);
+      const results = [
+        recommendedResult,
+        ...MODEL_IDS.filter((modelId) => modelId !== recommendation.model).map((modelId) =>
+          createEstimatedResult(modelId, prompt)
+        ),
+        qwenResult as ModelResult,
+      ];
 
       setResults(results);
     } finally {
@@ -422,7 +487,7 @@ export default function LLMRouterDemo() {
                     )}
                   </div>
 
-                  {result.isFallback ? (
+                  {result.isFallback && result.model === 'qwen-moe-local' ? (
                     <div className="flex flex-col gap-3">
                       <div className="flex flex-wrap gap-1.5">
                         <Badge className="bg-purple-500/20 text-purple-300 border-0 text-xs">35B params / ~3B active</Badge>
@@ -437,6 +502,31 @@ export default function LLMRouterDemo() {
                         Intel AutoRound int4 quantization via vllm. MoE = only ~3B params activated per token,
                         delivering 30B+ reasoning at 3B inference cost.
                       </p>
+                    </div>
+                  ) : result.isFallback ? (
+                    <div className="flex flex-col gap-3">
+                      <Badge className="w-fit border-0 bg-blue-500/20 text-blue-300 text-xs">Estimated comparison</Badge>
+                      {result.error && (
+                        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-300">
+                          {result.error}
+                        </div>
+                      )}
+                      <div className="mb-1">
+                        <Badge className={`${getLatencyColor(result.latency_ms)} border-0 text-xs font-mono`}>
+                          ~{result.latency_ms}ms
+                        </Badge>
+                      </div>
+                      <div className="text-xs space-y-1 text-muted-foreground">
+                        <div>
+                          Input: ~{result.input_tokens} | Output: ~{result.output_tokens}
+                        </div>
+                        <div className="font-mono text-foreground">
+                          ~${result.cost_usd.toFixed(6)}
+                        </div>
+                      </div>
+                      <div className="rounded bg-background p-3 text-sm text-muted-foreground font-mono">
+                        {result.response}
+                      </div>
                     </div>
                   ) : result.error ? (
                     <div className="text-sm text-red-400">Error: {result.error}</div>

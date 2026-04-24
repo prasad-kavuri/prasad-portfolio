@@ -124,6 +124,7 @@ function applyScaleAdjustment(
       const newW = isPct ? baseW * (1 - factor) : baseW - factor;
       return { ...obj, width: newW, scale: { ...obj.scale, x: obj.scale.x * (1 - factor) } };
     }
+    // c8 ignore next — regex guarantees only enumerated dimension strings reach here
     default:
       return obj;
   }

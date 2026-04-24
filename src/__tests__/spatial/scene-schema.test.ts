@@ -139,6 +139,56 @@ describe('validateParametricScene', () => {
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.includes('scale.y'))).toBe(true);
   });
+
+  it('depth > 200 fails', () => {
+    const obj = makeObj({ depth: 300 });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('depth'))).toBe(true);
+  });
+
+  it('radius > 100 fails', () => {
+    const obj = makeObj({ radius: 150 });
+    const result = validateParametricScene(makeScene({ objects: [obj] }));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('radius'))).toBe(true);
+  });
+
+  it('missing id fails', () => {
+    const result = validateParametricScene({ ...makeScene(), id: '' });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('id'))).toBe(true);
+  });
+
+  it('version not a number fails', () => {
+    const result = validateParametricScene({ ...makeScene(), version: 'one' });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('version'))).toBe(true);
+  });
+
+  it('missing sourcePrompt fails', () => {
+    const result = validateParametricScene({ ...makeScene(), sourcePrompt: 42 });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('sourcePrompt'))).toBe(true);
+  });
+
+  it('missing region fails', () => {
+    const result = validateParametricScene({ ...makeScene(), region: null });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('region'))).toBe(true);
+  });
+
+  it('missing objective fails', () => {
+    const result = validateParametricScene({ ...makeScene(), objective: undefined });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('objective'))).toBe(true);
+  });
+
+  it('missing generatedAt fails', () => {
+    const result = validateParametricScene({ ...makeScene(), generatedAt: 99 });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('generatedAt'))).toBe(true);
+  });
 });
 
 describe('makeParametricScene', () => {

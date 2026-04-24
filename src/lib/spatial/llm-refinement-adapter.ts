@@ -50,6 +50,7 @@ export async function llmRefineScene(
   scene: ParametricScene,
   instruction: string
 ): Promise<RefinementResult> {
+  // c8 ignore next — false branch only reachable when NEXT_PUBLIC_ENABLE_LLM_REFINEMENT=true
   if (!LLM_ENABLED) {
     return applyRefinement(scene, instruction);
   }

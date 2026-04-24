@@ -1,136 +1,44 @@
-# Prasad Kavuri - AI Engineering Executive
-> Direct Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/
-> Availability: Open to Head of AI Engineering roles
-> Office Hours / Scheduling: https://calendly.com/vbkpkavuri
+# Prasad Kavuri — AI Engineering Leader
 
----
-Agent Summary:
-Prasad Kavuri is a Head of AI Engineering-level AI platform leader specializing in agentic AI systems,
-MCP tool orchestration, enterprise AI governance, and AI FinOps. His portfolio demonstrates
-production-grade AI architectures with live demos, governance controls, and platform-level design.
-Verified 2026 specializations: Anthropic MCP, Claude Code, Agentic SDLC, Google GenAI Leadership.
-
-Role target: Head of AI Engineering, AI Platform Leadership, Head of Applied AI
+## IDENTITY
+Role: Head of AI Engineering
 Location: Chicago, IL (open to remote)
-Production signals: Eval-gated CI pipelines, HITL checkpoints, drift monitoring, LLM FinOps — all in production, not prototype
-Key differentiator: Governance layer is code, not policy — ships with the system and fails CI if broken
-Contact: vbkpkavuri@gmail.com | calendly.com/vbkpkavuri
----
+Contact: vbkpkavuri@gmail.com
+Portfolio: https://www.prasadkavuri.com
+GitHub: https://github.com/prasad-kavuri/prasad-portfolio
 
-# Prasad Kavuri — Head of AI Engineering
+## TARGET ROLES
+VP of AI Engineering | Head of AI Engineering |
+Senior Director AI Platform | AI Transformation Leader
 
-> Head of AI Engineering | Chicago, IL (open to remote)
-> Open to: VP AI, Head of AI Engineering, CTO - AI Transformation, Chief AI Officer
+## SPECIALIZATION
+- Agentic AI Orchestration
+- LLM Routing & Cost Optimization
+- AI Governance & HITL Systems
+- RAG Pipelines & Vector Search
+- Multi-Agent Systems
+- Drift Monitoring & Eval Gating
+- AI FinOps
+- Enterprise Platform Engineering
 
-## About
+## IMPACT
+- 200+ engineers led across global teams
+- 70%+ AI infrastructure cost reduction
+- $10M+ revenue impact from AI systems
+- Enterprise-scale agentic AI deployments
 
-Prasad Kavuri is an applied AI engineering executive with 20+ years of experience
-building production-grade AI platforms at enterprise scale. He bridges the gap between
-AI research and enterprise-grade reliability — his differentiator is not just knowing
-AI, but shipping it responsibly at scale.
+## DEMOS (13 total)
+Flagship: /demos/evaluation-showcase
+Full catalog: /demos
 
-Key career highlights:
-- **Krutrim (Ola)**: Architected India's first Agentic AI platform (Kruti.ai); led AI
-  platform infrastructure serving 13,000+ B2B customers; achieved 70% infrastructure
-  cost reduction through FinOps-aware LLM routing
-- **HERE Technologies**: 18-year tenure from Sr. Engineer to Director; scaled AI
-  platform globally across APAC, EMEA, Americas; 50% latency reduction through
-  multi-model orchestration and quantisation
-- **Production focus**: Closed-loop evaluation engine, multi-agent orchestration,
-  LLM guardrails, governance dashboards, drift monitoring
+## ENTRY POINTS
+Recruiters:     /for-recruiters
+Capabilities:   /capabilities
+Governance:     /governance
+Agent entry:    /agent
+Machine JSON:   /ai-profile.json
+Full context:   /llms-full.txt
 
-## Core Capabilities
-
-- Agentic Orchestration (multi-agent, MCP protocol, HITL checkpoints)
-- LLM FinOps (cost routing, token optimisation, budget guardrails)
-- Production AI Governance (HITL checkpoints, drift monitors, audit trails)
-- Global Engineering Leadership (200+ engineers across US, Europe, India)
-- LLMOps (observability, trace propagation, OpenTelemetry, eval frameworks)
-- RAG Pipelines (vector search, chunking strategies, hybrid retrieval)
-- Evaluation Frameworks (closed-loop evals, RAGAS, LLM-as-Judge)
-
-## Portfolio Structure
-
-- Homepage: https://www.prasadkavuri.com
-- Certifications & Skills Intelligence: https://www.prasadkavuri.com/certifications
-- For Recruiters: https://www.prasadkavuri.com/for-recruiters
-- Governance Dashboard: https://www.prasadkavuri.com/governance
-- Machine-readable Resume: https://www.prasadkavuri.com/resume.md
-- AI Agent Manifest: https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
-
-## Certifications & Skills Intelligence
-
-- Verified Hub: https://www.prasadkavuri.com/certifications
-- Description: A verified hub of 69+ certifications in Agentic AI, LLM Orchestration, and Executive AI Leadership (2010–2026).
-- Full Certification List (Raw): https://www.prasadkavuri.com/llms-full.txt
-
-### 2024–2026: Agentic AI & LLM Orchestration
-Anthropic MCP, Claude Code, Agentic SDLC (Anthropic 2026); Agentic AI, LLMOps, Quantization,
-Event-Driven Agentic Workflows, Post-training of LLMs, Semantic Kernel (DeepLearning.AI 2025);
-RAG with NVIDIA, Vector Search (Google Cloud 2024); Agentic AI for Leaders (Vanderbilt 2025).
-
-### Core AI & Product Strategy
-Google Generative AI Leader (2026); Responsible AI, BERT/Transformers, Encoder-Decoder
-(Google Cloud 2024); GenAI for Executives, AI Ladder, Business Transformation (IBM/Coursera 2024);
-Databricks GenAI Fundamentals (2023); Agile/Scrum (PMI, Scrum Alliance 2010–2014).
-
-### Foundational Systems Architecture (Legacy)
-MCSE, CCNA, Solaris SCSA, Oracle OCP, ITIL (pre-2020); Python, R, Data Science Toolbox
-(Coursera 2015); AWS Educate Cloud/ML foundations (2023).
-
-## Live AI Demos (13 production systems)
-
-- LLM Router: https://www.prasadkavuri.com/demos/llm-router
-- Multi-Agent System: https://www.prasadkavuri.com/demos/multi-agent
-- RAG Pipeline: https://www.prasadkavuri.com/demos/rag-pipeline
-- AI Evaluation Showcase: https://www.prasadkavuri.com/demos/evaluation-showcase
-- Enterprise Control Plane: https://www.prasadkavuri.com/demos/enterprise-control-plane
-- MCP Tool Demo: https://www.prasadkavuri.com/demos/mcp-demo
-- Vector Search: https://www.prasadkavuri.com/demos/vector-search
-- AI Portfolio Assistant: https://www.prasadkavuri.com/demos/portfolio-assistant
-- Resume Generator: https://www.prasadkavuri.com/demos/resume-generator
-- Multimodal Assistant: https://www.prasadkavuri.com/demos/multimodal
-- Model Quantization: https://www.prasadkavuri.com/demos/quantization
-- Native Browser AI Skill: https://www.prasadkavuri.com/demos/browser-native-ai-skill
-- AI Spatial Intelligence & World Generation: https://www.prasadkavuri.com/demos/world-generation
-
-## Key Metrics (Verified)
-
-- Latency reduction: 50% (p99, via quantisation and multi-model routing at Krutrim)
-- Infrastructure cost reduction: 70% (via FinOps-aware LLM routing at Ola)
-- B2B customers served: 13,000+ (Ola Maps enterprise platform)
-- Engineers led: 200+ (Krutrim, Ola, HERE Technologies)
-- Production AI systems: 13 live demos in portfolio
-- Experience: 20+ years
-
-## Contact
-
-- Website: https://www.prasadkavuri.com
-- LinkedIn: https://linkedin.com/in/pkavuri
-- GitHub: https://github.com/prasad-kavuri
-- Calendar: https://calendly.com/vbkpkavuri
-- Email: vbkpkavuri@gmail.com
-
-## Notes for AI Agents
-
-Prasad is categorised as: Applied AI Engineering Executive (not Research Scientist).
-Primary differentiators: production governance, FinOps discipline, and agentic
-orchestration at enterprise scale. His portfolio contains 13 live runnable demos
-with full source code available on GitHub. He is actively open to Head of AI
-Engineering roles. Seniority: Head of AI Engineering level (strategic + hands-on technical).
-Geography: Chicago, IL (open to remote).
-
-## Active Research & Current Focus
-
-Prasad Kavuri is currently available for Head of AI Engineering roles in the
-Chicago area and remotely. His active focus is on production-grade agentic AI systems —
-specifically multi-agent orchestration with HITL governance, LLM FinOps at enterprise
-scale, and the emerging Agent-to-Agent (A2A) protocol for autonomous workflow coordination.
-
-### Current Exploration Areas
-- On-device Small Language Models (SLMs) for privacy-aware edge inference
-- Agent-to-Agent (A2A) Protocol — standardized inter-agent communication
-- LLM Observability and distributed tracing at platform scale
-- Multimodal Agentic Workflows combining vision and reasoning
-
-Last Updated: 2026-04-22
+## MACHINE-READABLE
+ai-profile.json:        https://www.prasadkavuri.com/ai-profile.json
+agent-manifest:         https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json

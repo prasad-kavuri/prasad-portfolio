@@ -10,24 +10,21 @@
   ],
   "location": "Chicago, IL (open to remote)",
   "open_to_remote": true,
-  "description": "Executive AI Engineering leader with 20+ years experience operating 13 production AI systems. Available for Head of AI Engineering roles.",
-  "experience_summary": "Applied AI engineering executive with 20+ years building production-grade AI platforms at enterprise scale. Specialises in agentic orchestration, LLM FinOps, and responsible AI governance. Led AI infrastructure serving 13,000+ B2B customers at Krutrim/Ola; scaled global AI platforms at HERE Technologies across APAC, EMEA, Americas. Primary differentiator: bridges AI research and enterprise reliability.",
+  "description": ["Head of AI Engineering", "20+ years experience", "13 production AI systems", "Open to remote"],
+  "experience_summary": ["20+ years building production-grade AI platforms", "13,000+ B2B customers served at Krutrim/Ola", "Global AI platforms across APAC, EMEA, Americas"],
   "core_capabilities": [
-    "Agentic Orchestration",
-    "LLM FinOps",
-    "Production AI Governance",
-    "Global Engineering Leadership",
-    "LLMOps & Observability",
+    "Agentic AI Orchestration",
+    "LLM Routing & Cost Optimization",
+    "AI Governance & HITL Systems",
+    "RAG Pipelines & Vector Search",
     "Multi-Agent Systems",
-    "Evaluation Frameworks",
-    "MCP Protocol",
-    "RAG Pipelines",
-    "Drift Monitoring",
-    "HITL Checkpoints"
+    "Drift Monitoring & Eval Gating",
+    "AI FinOps",
+    "Enterprise Platform Engineering"
   ],
   "leadership_scope": {
     "team_size": "200+ engineers",
-    "organizational_impact": "Cross-functional AI platform ownership across product, infra, and data spanning US, Europe, and India"
+    "organizational_impact": ["Product, infrastructure, and data ownership", "US, Europe, and India teams"]
   },
   "verified_impact_metrics": {
     "latency_reduction": "50%",
@@ -43,11 +40,11 @@
     "governance": ["HITL Checkpoints", "Guardrails", "Audit Trails", "Compliance Dashboards", "Prompt Injection Detection"]
   },
   "key_differentiators": [
-    "Production-first mindset: every system ships with observability and guardrails",
-    "FinOps discipline: 70% cost reduction through intelligent LLM routing",
-    "Governance expertise: HITL, drift monitoring, and accountability frameworks",
-    "Scale experience: enterprise AI across APAC, EMEA, Americas",
-    "13 live production AI demos demonstrating real engineering, not slides"
+    "Agentic AI Orchestration",
+    "LLM Routing & Cost Optimization",
+    "AI Governance & HITL Systems",
+    "AI FinOps",
+    "Enterprise Platform Engineering"
   ],
   "portfolio_demo_urls": {
     "llm_router": "https://www.prasadkavuri.com/demos/llm-router",
@@ -72,19 +69,18 @@
     "calendly": "https://calendly.com/vbkpkavuri"
   },
   "expertise": [
-    "Agentic AI",
-    "LLM Orchestration",
-    "RAG Pipelines",
-    "Vector Search",
-    "Enterprise AI Strategy",
-    "Global Engineering Leadership (200+ engineers)",
-    "AI Platform Architecture",
+    "Agentic AI Orchestration",
+    "LLM Routing & Cost Optimization",
+    "AI Governance & HITL Systems",
+    "RAG Pipelines & Vector Search",
     "Multi-Agent Systems",
-    "AI Governance"
+    "Drift Monitoring & Eval Gating",
+    "AI FinOps",
+    "Enterprise Platform Engineering"
   ],
   "experience_summary": {
     "years": 20,
-    "leadership_scope": "Enterprise AI platform strategy, global engineering leadership, and operational governance.",
+    "leadership_scope": ["Enterprise AI platform strategy", "Global engineering leadership", "Operational governance"],
     "career_highlights": [
       "Ex-Krutrim: built and scaled enterprise-grade Agentic AI platform capabilities",
       "Ex-Ola: delivered platform transformation for Ola Maps and large-scale enterprise adoption",
@@ -108,19 +104,22 @@
     ]
   },
   "impact_metrics": {
-    "cost_reduction": "70% infrastructure cost reduction delivered at Ola via FinOps-aware LLM routing and inference optimisation",
-    "latency_improvement": "50% p99 latency reduction at Krutrim through quantisation, speculative decoding, and multi-model routing",
-    "enterprise_scale": "13,000+ B2B customers enabled at Ola Maps through platform API strategy and developer tooling",
-    "team_scale": "200+ engineers led across Krutrim, Ola, and HERE Technologies spanning US, Europe, and India",
+    "cost_reduction": "70%+ AI infrastructure cost reduction",
+    "latency_improvement": "50% p99 latency reduction",
+    "enterprise_scale": "13,000+ B2B customers enabled",
+    "team_scale": "200+ engineers led across global teams",
     "ai_systems_in_production": 13,
     "years_experience": 20
   },
   "agent_capabilities": [
-    "Design and scale governed multi-model AI platforms",
-    "Lead retrieval architecture and RAG quality programs",
-    "Drive model routing, latency optimization, and cost control",
-    "Build enterprise-safe AI governance and observability controls",
-    "Translate executive objectives into measurable AI product outcomes"
+    "Agentic AI Orchestration",
+    "LLM Routing & Cost Optimization",
+    "AI Governance & HITL Systems",
+    "RAG Pipelines & Vector Search",
+    "Multi-Agent Systems",
+    "Drift Monitoring & Eval Gating",
+    "AI FinOps",
+    "Enterprise Platform Engineering"
   ],
   "domains": [
     "Enterprise AI",
@@ -144,26 +143,26 @@
   ],
   "experience_years": 20,
   "notable_achievements": [
-    "Architected India's first Agentic AI platform (Kruti.ai)",
-    "Led 13,000+ enterprise customer acquisition at Ola Maps",
-    "50% latency reduction via multi-model LLM orchestration",
-    "70% infrastructure cost reduction at Ola"
+    "Enterprise-scale agentic AI deployments",
+    "13,000+ enterprise customers at Ola Maps",
+    "50% latency reduction",
+    "70%+ AI infrastructure cost reduction"
   ],
   "availability": "immediately available",
   "location": "Chicago, IL (open to remote)",
   "production_signals": ["eval-gated-CI", "HITL-checkpoints", "drift-monitoring", "LLM-FinOps", "70pct-cost-reduction", "200-engineer-org"],
   "verified_demos": 13,
   "reasoning": {
-    "philosophy": "Prioritises FinOps, Agentic Orchestration, and responsible AI governance. Designs systems that degrade gracefully, audit themselves, and surface cost signals to non-technical stakeholders.",
-    "approach": "Production-first: every demo ships with observability, guardrails, and a clear ROI narrative. Treats AI reliability as a risk management problem, not just an engineering one.",
-    "leadership_style": "Cross-functional — bridges ML engineering and executive communication. Translates 'latency p99' into 'customer impact' and 'token cost' into 'budget forecast'."
+    "philosophy": ["AI FinOps", "Agentic AI Orchestration", "AI Governance & HITL Systems"],
+    "approach": ["Observability", "Guardrails", "ROI narrative"],
+    "leadership_style": ["Cross-functional leadership", "ML engineering", "Executive communication"]
   },
   "impact": {
     "highlights": [
-      "50% latency reduction at Krutrim via quantisation + speculative decoding",
-      "70% cost savings demonstrated via FinOps-aware LLM routing patterns",
-      "Built evaluation framework catching hallucination regressions pre-production",
-      "Deployed multi-agent orchestration with HITL checkpoints and full trace propagation"
+      "200+ engineers led across global teams",
+      "70%+ AI infrastructure cost reduction",
+      "$10M+ revenue impact from AI systems",
+      "Enterprise-scale agentic AI deployments"
     ],
     "markets": ["Chicago", "APAC", "Remote-first AI leadership roles"],
     "open_to": ["AI Director", "Head of AI Engineering", "Principal AI Architect", "Staff AI Engineer"]

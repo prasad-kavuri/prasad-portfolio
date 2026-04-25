@@ -18,7 +18,7 @@ function getClientIp(request: NextRequest): string {
 }
 
 async function hashClient(value: string): Promise<string> {
-  const data = new TextEncoder().encode(value);
+  const data = new TextEncoder().encode(value + (process.env.RATE_LIMIT_SALT ?? ''));
   const digest = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(digest))
     .slice(0, 12)

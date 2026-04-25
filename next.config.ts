@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // unsafe-eval required for WASM JIT compilation (Transformers.js / ONNX Runtime Web)
               // blob: required for Transformers.js WASM worker bootstrap
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net https://unpkg.com",
               // worker-src blob: required for WASM web workers spun up by @xenova/transformers
               "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline'",

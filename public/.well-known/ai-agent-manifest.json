@@ -11,7 +11,6 @@
   "location": "Chicago, IL (open to remote)",
   "open_to_remote": true,
   "description": ["Head of AI Engineering", "20+ years experience", "13 production AI systems", "Open to remote"],
-  "experience_summary": ["20+ years building production-grade AI platforms", "13,000+ B2B customers served at Krutrim/Ola", "Global AI platforms across APAC, EMEA, Americas"],
   "core_capabilities": [
     "Agentic AI Orchestration",
     "LLM Routing & Cost Optimization",
@@ -128,12 +127,6 @@
     "Developer platforms",
     "Autonomous systems"
   ],
-  "target_roles": [
-    "VP of AI Engineering",
-    "Head of AI Engineering",
-    "AI Platform Lead",
-    "Head of Applied AI"
-  ],
   "certifications": [
     {
       "name": "Google Cloud Certified - Generative AI Leader",
@@ -149,7 +142,6 @@
     "70%+ AI infrastructure cost reduction"
   ],
   "availability": "immediately available",
-  "location": "Chicago, IL (open to remote)",
   "production_signals": ["eval-gated-CI", "HITL-checkpoints", "drift-monitoring", "LLM-FinOps", "70pct-cost-reduction", "200-engineer-org"],
   "verified_demos": 13,
   "reasoning": {

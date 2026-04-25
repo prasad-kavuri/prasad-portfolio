@@ -33,7 +33,7 @@ const siteStructuredData = {
       name: 'Prasad Kavuri',
       jobTitle: 'VP / Head of AI Engineering',
       description:
-        'AI engineering executive with 15+ years building  production AI platforms at scale. Led 200+ engineers, delivered  $10M+ revenue impact, 70% cost reduction through LLM governance, multi-agent systems, and shared AI infrastructure.',
+        'AI engineering executive with 20+ years building production AI platforms at scale. Led 200+ engineers, delivered $10M+ revenue impact, 70% cost reduction through LLM governance, multi-agent systems, and shared AI infrastructure.',
       url: SITE_URL,
       mainEntityOfPage: SITE_URL,
       email: 'vbkpkavuri@gmail.com',

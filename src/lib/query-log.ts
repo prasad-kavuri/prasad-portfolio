@@ -6,7 +6,7 @@
  * production output quality against offline baselines — closing the loop
  * between static datasets and real user traffic.
  *
- * Privacy: queries are truncated to 200 chars before storage.
+ * Privacy: queries are redacted and truncated to 200 chars before storage.
  * No user-identifying information is retained.
  */
 
@@ -22,6 +22,21 @@ export interface QueryRecord {
 const MAX_QUERIES = 50;
 const queryBuffer: QueryRecord[] = [];
 
+const REDACTION_PATTERNS: Array<[RegExp, string]> = [
+  [/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[redacted-email]'],
+  [/\b(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}\b/g, '[redacted-phone]'],
+  [/\bBearer\s+[A-Za-z0-9._~+/=-]{12,}\b/gi, 'Bearer [redacted-token]'],
+  [/\b(?:sk|gsk|pk|api|key|token)_[A-Za-z0-9_-]{16,}\b/gi, '[redacted-api-key]'],
+  [/\b[A-Z][A-Z0-9_]{2,}\s*=\s*["']?[^"'\s]{8,}["']?/g, '[redacted-env]'],
+];
+
+export function redactQueryLogText(value: string): string {
+  return REDACTION_PATTERNS.reduce(
+    (text, [pattern, replacement]) => text.replace(pattern, replacement),
+    value
+  );
+}
+
 /**
  * Log an anonymized (query, response) pair for later eval scoring.
  * Call this after every successful LLM completion.
@@ -35,8 +50,8 @@ export function logQueryForEval(
   queryBuffer.push({
     id: crypto.randomUUID(),
     route,
-    query: query.slice(0, 200),
-    response: response.slice(0, 500),
+    query: redactQueryLogText(query).slice(0, 200),
+    response: redactQueryLogText(response).slice(0, 500),
     timestamp: Date.now(),
     traceId,
   });

@@ -1,8 +1,10 @@
-import { isBlockedOutboundUrl } from '@/lib/url-security';
+import * as dns from 'node:dns/promises';
+import { classifyIpAddress, isBlockedOutboundUrl } from '@/lib/url-security';
 
 type SafeFetchErrorCode =
   | 'invalid_url'
   | 'blocked_url'
+  | 'dns_resolution_failed'
   | 'redirect_without_location'
   | 'redirect_limit_exceeded'
   | 'blocked_redirect_target';
@@ -49,13 +51,33 @@ function assertSafeTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): v
   }
 }
 
+async function assertDnsSafeTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): Promise<void> {
+  try {
+    const records = await dns.lookup(url.hostname, { all: true, verbatim: true });
+    for (const record of records) {
+      const block = classifyIpAddress(record.address);
+      if (block.blocked) {
+        throw new SafeFetchError('Blocked outbound URL after DNS resolution', code, block.reason);
+      }
+    }
+  } catch (error) {
+    if (error instanceof SafeFetchError) throw error;
+    throw new SafeFetchError('DNS resolution failed for outbound URL', 'dns_resolution_failed');
+  }
+}
+
+async function assertSafeFetchTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): Promise<void> {
+  assertSafeTarget(url, code);
+  await assertDnsSafeTarget(url, code);
+}
+
 /**
  * Server-side fetch wrapper with consistent outbound URL safety checks.
  *
  * Guarantees:
  * - protocol allowlist (`http`/`https`)
  * - credentialed URL blocking
- * - internal/private hostname and IP blocking (via `url-security.ts`)
+ * - internal/private hostname, IP, and DNS result blocking (via `url-security.ts`)
  * - redirect validation at each hop
  */
 export async function safeServerFetch(
@@ -67,7 +89,7 @@ export async function safeServerFetch(
   let currentUrl = parseRequestUrl(url);
   let currentInit: RequestInit = { ...init, redirect: 'manual' };
 
-  assertSafeTarget(currentUrl);
+  await assertSafeFetchTarget(currentUrl);
 
   for (let redirectCount = 0; redirectCount <= maxRedirects; redirectCount += 1) {
     const response = await fetch(currentUrl, currentInit);
@@ -86,7 +108,7 @@ export async function safeServerFetch(
     }
 
     const nextUrl = new URL(location, currentUrl);
-    assertSafeTarget(nextUrl, 'blocked_redirect_target');
+    await assertSafeFetchTarget(nextUrl, 'blocked_redirect_target');
 
     // 303 always, and 301/302 for non-GET/HEAD, should become GET without body.
     const method = (currentInit.method ?? 'GET').toUpperCase();

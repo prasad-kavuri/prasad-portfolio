@@ -12,6 +12,17 @@ describe('Security configuration integrity', () => {
     expect(config).toMatch(/blob:/);
   });
 
+  it('CSP connect-src does not include a broad https: wildcard', () => {
+    const config = readFileSync('next.config.ts', 'utf8');
+    const proxy = readFileSync('src/proxy.ts', 'utf8');
+    const configConnectSrc = config.match(/"connect-src ([^"]+)"/)?.[1] ?? '';
+    const proxyConnectSrc = proxy.match(/connect-src ([^;]+);/)?.[1] ?? '';
+    expect(configConnectSrc.split(/\s+/)).not.toContain('https:');
+    expect(proxyConnectSrc.split(/\s+/)).not.toContain('https:');
+    expect(config).toMatch(/https:\/\/api\.groq\.com/);
+    expect(config).toMatch(/https:\/\/cdn-lfs\.huggingface\.co/);
+  });
+
   it('next.config.ts sets worker-src for WASM web workers', () => {
     const config = readFileSync('next.config.ts', 'utf8');
     expect(config).toMatch(/worker-src/);

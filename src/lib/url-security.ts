@@ -69,6 +69,14 @@ function parseFlexibleIpv4(host: string): string | null {
   ].join('.');
 }
 
+export function classifyIpAddress(ip: string): BlockResult {
+  const normalizedIp = ip.trim().toLowerCase();
+  const ipFamily = net.isIP(normalizedIp);
+  if (ipFamily === 4) return classifyIpv4(normalizedIp);
+  if (ipFamily === 6) return classifyIpv6(normalizedIp);
+  return { blocked: false };
+}
+
 function classifyIpv4(ipv4: string): BlockResult {
   const blockedCidrs: Array<[string, number, string]> = [
     ['0.0.0.0', 8, 'ipv4_unspecified'],
@@ -134,10 +142,10 @@ export function getHostBlockReason(hostname: string): string | null {
 
   const ipFamily = net.isIP(normalizedHost);
   if (ipFamily === 4) {
-    return classifyIpv4(normalizedHost).reason ?? null;
+    return classifyIpAddress(normalizedHost).reason ?? null;
   }
   if (ipFamily === 6) {
-    return classifyIpv6(normalizedHost).reason ?? null;
+    return classifyIpAddress(normalizedHost).reason ?? null;
   }
 
   const flexibleIpv4 = parseFlexibleIpv4(normalizedHost);

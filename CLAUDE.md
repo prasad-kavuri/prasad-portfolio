@@ -45,10 +45,20 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 - ALWAYS add observability (`startTimer`, `logAPIEvent`) to API routes
 - ALWAYS add input validation (length + type checks) at route entry
 - ALWAYS run input through `enforceGuardrails` (or at minimum `checkInput`) from `src/lib/guardrails.ts`
-- ALWAYS sanitize LLM output with DOMPurify before rendering as HTML
+- ALWAYS sanitize LLM output with the existing guardrail sanitizer before rendering
 - Run `npm run build` before committing — never commit broken builds
 - Run `npm run test` — all tests must pass before every commit
 - Run `npm audit --audit-level=high` — 0 high/critical vulnerabilities required
+
+---
+
+## Security Scope
+- DO NOT read, write, or reference .env files
+- DO NOT expose API keys or credentials in any output
+- DO NOT execute shell commands that write outside
+  designated temp directories
+- Skill execution is scoped to documentation and source
+  code understanding only
 
 ---
 
@@ -60,7 +70,7 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 - No default exports — use named exports everywhere
 - State management: React `useState`/`useEffect` only — no Redux, no Zustand
 - Tailwind utilities only — no custom CSS files, no styled-components
-- All LLM outputs rendered as React text nodes (`{text}`) — never `dangerouslySetInnerHTML` without DOMPurify
+- All LLM outputs rendered as React text nodes (`{text}`) — never `dangerouslySetInnerHTML` without an explicit vetted HTML sanitizer
 - `react-hooks/set-state-in-effect` ESLint rule fires on synchronous `setState` inside `useEffect` — use `// eslint-disable-next-line` when the pattern is intentional
 
 ---
@@ -129,9 +139,9 @@ To add new teams: edit `src/lib/enterpriseMockData.ts`. Types in `src/components
 ---
 
 ## Security Posture
-CSP (`next.config.ts` + `proxy.ts`), rate limiting, prompt injection detection,
-competitor mention redaction, hallucination heuristics, XSS sanitization,
-input validation, IP SHA-256 hashing, HITL checkpoint (multi-agent), eval
+CSP (`next.config.ts` + `proxy.ts`), middleware and route rate limiting,
+prompt injection detection, competitor mention redaction, hallucination heuristics,
+regex-based LLM output sanitization, input validation, IP SHA-256 hashing, HITL checkpoint (multi-agent), eval
 regression gate in CI, `npm audit` in CI.
 See README security table and `/governance` page for full inventory.
 
@@ -141,7 +151,7 @@ See README security table and `/governance` page for full inventory.
 
 - Do not re-introduce `blob:` CSP errors by overwriting `vercel.json` — this broke all 4 WASM demos previously
 - Do not raise Redis rate-limit keys with raw IPs — always SHA-256 hash before storage
-- Do not set `dangerouslySetInnerHTML` on LLM output without DOMPurify
+- Do not set `dangerouslySetInnerHTML` on LLM output without an explicit vetted HTML sanitizer
 - Do not add `.html` files to `public/` — they get indexed by Google as separate pages
 - Do not change the copyright year manually — it is dynamic
 - Do not use `getByText(regex)` in Playwright without `.first()` — nav/footer links cause strict-mode violations

@@ -30,9 +30,8 @@ const nextConfig: NextConfig = {
               "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
-              // huggingface.co for model weights; blob: for local object-URL fetches
-              // https: wildcard required for Transformers.js v4 — CDN model weights load from arbitrary https: origins
-              "connect-src 'self' https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co blob: https:",
+              // huggingface.co for model weights; api.groq.com for server demo calls; blob: for local object-URL fetches
+              "connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://va.vercel-scripts.com blob:",
               "font-src 'self' data:",
               "frame-ancestors 'none'",
             ].join("; "),

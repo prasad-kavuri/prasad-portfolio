@@ -4,6 +4,7 @@ import {
   getRecentQueries,
   getQueryCount,
   _resetQueryLog,
+  redactQueryLogText,
 } from '@/lib/query-log';
 
 describe('query-log', () => {
@@ -29,6 +30,29 @@ describe('query-log', () => {
     const [q] = getRecentQueries();
     expect(q.query.length).toBe(200);
     expect(q.response.length).toBe(500);
+  });
+
+  it('redacts PII and secrets before storing query and response snippets', () => {
+    logQueryForEval(
+      '/api/test',
+      'Email person@example.com or +1 (415) 555-1212 with Bearer abcdefghijklmnop and gsk_live_abcdefghijklmnopqrstuvwxyz and GROQ_API_KEY=super-secret-value',
+      'Response mentions admin@example.com, 212-555-0100, Bearer zyxwvutsrqponmlkj, token_test_abcdefghijklmnopqrstuvwxyz, and DATABASE_URL=postgres-password'
+    );
+
+    const [record] = getRecentQueries();
+    const combined = `${record.query} ${record.response}`;
+    expect(combined).toContain('[redacted-email]');
+    expect(combined).toContain('[redacted-phone]');
+    expect(combined).toContain('Bearer [redacted-token]');
+    expect(combined).toContain('[redacted-api-key]');
+    expect(combined).toContain('[redacted-env]');
+    expect(combined).not.toMatch(/person@example\.com|admin@example\.com/);
+    expect(combined).not.toMatch(/415|212-555/);
+    expect(combined).not.toMatch(/super-secret-value|postgres-password/);
+  });
+
+  it('exposes redaction helper for focused pattern checks', () => {
+    expect(redactQueryLogText('OPENAI_API_KEY=sk-test-secret-value')).toBe('[redacted-env]');
   });
 
   it('stores optional traceId', () => {

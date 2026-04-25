@@ -1,19 +1,48 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { lookup } from 'node:dns/promises';
 import { SafeFetchError, safeServerFetch } from '@/lib/safe-fetch';
+
+vi.mock('node:dns/promises', () => ({
+  lookup: vi.fn(),
+  default: {
+    lookup: vi.fn(),
+  },
+}));
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
+const mockLookup = vi.mocked(lookup);
 
 describe('safeServerFetch', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockLookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
   });
 
-  it('rejects blocked outbound targets before fetch', async () => {
-    await expect(safeServerFetch('http://127.0.0.1/admin')).rejects.toMatchObject<Partial<SafeFetchError>>({
+  it.each([
+    ['localhost', 'http://localhost/admin', 'localhost'],
+    ['127.0.0.1', 'http://127.0.0.1/admin', 'ipv4_loopback'],
+    ['169.254.169.254', 'http://169.254.169.254/latest/meta-data', 'ipv4_link_local'],
+    ['private IPv4', 'http://10.1.2.3/admin', 'ipv4_private'],
+    ['IPv6 loopback', 'http://[::1]/admin', 'ipv6_loopback'],
+    ['IPv6 private', 'http://[fc00::1234]/admin', 'ipv6_unique_local'],
+    ['IPv6 link-local', 'http://[fe80::1]/admin', 'ipv6_link_local'],
+  ])('rejects blocked outbound target: %s', async (_label, url, reason) => {
+    await expect(safeServerFetch(url)).rejects.toMatchObject<Partial<SafeFetchError>>({
       name: 'SafeFetchError',
       code: 'blocked_url',
-      reason: 'ipv4_loopback',
+      reason,
+    });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('blocks public hostnames that resolve to private addresses', async () => {
+    mockLookup.mockResolvedValueOnce([{ address: '192.168.1.10', family: 4 }]);
+
+    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject<Partial<SafeFetchError>>({
+      name: 'SafeFetchError',
+      code: 'blocked_url',
+      reason: 'ipv4_private',
     });
     expect(mockFetch).not.toHaveBeenCalled();
   });
@@ -39,9 +68,12 @@ describe('safeServerFetch', () => {
   });
 
   it('blocks redirects that resolve to internal targets', async () => {
+    mockLookup
+      .mockResolvedValueOnce([{ address: '93.184.216.34', family: 4 }])
+      .mockResolvedValueOnce([{ address: '169.254.169.254', family: 4 }]);
     mockFetch.mockResolvedValueOnce({
       status: 301,
-      headers: new Headers({ location: 'http://169.254.169.254/latest/meta-data' }),
+      headers: new Headers({ location: 'https://metadata.example/latest/meta-data' }),
     });
 
     await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject<Partial<SafeFetchError>>({

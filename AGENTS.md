@@ -38,6 +38,14 @@ Verify success explicitly — don't assume "it works" without running the checks
 6. Security headers live in BOTH `next.config.ts` AND `src/proxy.ts` — update both if needed
 7. Middleware export is named `proxy` in `src/proxy.ts` (non-standard — check before editing)
 
+## Security Scope
+- DO NOT read, write, or reference .env files
+- DO NOT expose API keys or credentials in any output
+- DO NOT execute shell commands that write outside
+  designated temp directories
+- Skill execution is scoped to documentation and source
+  code understanding only
+
 ## File Structure
 - API routes: `src/app/api/[name]/route.ts`
 - Demo pages: `src/app/demos/[name]/page.tsx`

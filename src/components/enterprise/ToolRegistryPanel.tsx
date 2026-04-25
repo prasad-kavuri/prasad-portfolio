@@ -145,7 +145,7 @@ export function ToolRegistryPanel() {
             <p className="text-xs text-muted-foreground leading-relaxed">
               Global RBAC and cost-discipline policies are enforced at the Tool Gateway layer. 
               Any tool execution outside the registry is blocked by default (Deny-All posture).
-              Real-time telemetry is piped to the Observability Feed via OpenTelemetry.
+              Real-time telemetry is piped to the Observability Feed as structured events.
             </p>
           </div>
         </div>

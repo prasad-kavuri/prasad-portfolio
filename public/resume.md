@@ -46,7 +46,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 - Browser-native inference (WASM, WebGPU, ONNX Runtime, Transformers.js)
 
 ### Infrastructure & Operations
-- LLMOps: OpenTelemetry, distributed tracing, trace-ID propagation, anomaly detection
+- LLMOps: structured observability logs, distributed tracing, trace-ID propagation, anomaly detection
 - FinOps: token cost monitoring, routing optimisation, budget guardrails
 - Drift Monitoring: statistical drift detection, alert pipelines, regression gates
 - Guardrails: input/output validation, PII detection, prompt injection detection, toxicity filtering
@@ -56,7 +56,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 - Compliance dashboards with real-time operational metrics
 - Audit trails with immutable logging and trace propagation
 - Model governance frameworks aligned to enterprise risk standards
-- OTEL event streams conforming to OpenTelemetry semantic conventions for LLM spans
+- Structured event streams with LLM span fields and token-cost metadata
 
 ### Engineering Leadership
 - Team scaling: 0→200+ engineers across distributed orgs (US, Europe, India)

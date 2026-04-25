@@ -46,10 +46,10 @@ export const STATUS_SNAPSHOT = {
     ['CI Pipeline', 'Parallel (lint + e2e matrix)'],
   ] satisfies SnapshotMetric[],
   stack: [
-    'Next.js 16.2.3', 'React 19.2.5',
-    'Tailwind CSS v4', 'TypeScript 5',
-    'Groq SDK 1.1.2', 'Transformers.js v4',
-    'Vitest 4', 'Playwright 1.59',
+    'Next.js 16.2.4', 'React 19.2.5',
+    'Tailwind CSS 4.2.4', 'TypeScript 5.9.3',
+    'Groq SDK 1.1.2', 'Transformers.js 4.2.0',
+    'Vitest 4.1.5', 'Playwright 1.59.1',
   ],
 } as const;
 

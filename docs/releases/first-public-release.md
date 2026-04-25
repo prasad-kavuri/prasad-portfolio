@@ -23,7 +23,7 @@ Production-grade AI engineering portfolio platform demonstrating governed, obser
 | Resume Generator | Groq · JD parsing · Skill matching | Server |
 | Multimodal Assistant | Florence-2 · WebGPU · Transformers.js | Browser WebGPU |
 | Model Quantization | ONNX · INT8 vs FP32 · Transformers.js | Browser WASM |
-| Enterprise Control Plane | RBAC · OpenTelemetry · Token analytics | Server |
+| Enterprise Control Plane | RBAC · Structured observability · Token analytics | Server |
 | Native Browser AI Skill | Chrome Prompt API · Gemini Nano | Browser |
 | AI Spatial Intelligence | Three.js · GLB export · Governance gates | Server + Browser |
 
@@ -41,9 +41,9 @@ Every demo runs through shared platform controls in `src/lib/`:
 
 ### Tech Stack
 
-- Next.js 16.2.3 App Router + Turbopack · React 19 · TypeScript strict · Tailwind CSS v4
+- Next.js 16.2.4 App Router + Turbopack · React 19.2.5 · TypeScript 5.9.3 strict · Tailwind CSS 4.2.4
 - Groq API (server LLM) · `@huggingface/transformers` v4 (browser WASM/WebGPU)
-- Upstash Redis · Vercel (static + edge functions)
+- Upstash Redis · Vercel (serverless API routes + static assets)
 - Canonical host: `https://www.prasadkavuri.com`
 
 ### Testing

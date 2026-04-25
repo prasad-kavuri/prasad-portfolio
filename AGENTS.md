@@ -1,7 +1,7 @@
 # AI Agent Context — prasad-portfolio
 
 ## What This Project Is
-Production-grade AI engineering portfolio. Next.js 16.2.3 App Router + Turbopack.
+Production-grade AI engineering portfolio. Next.js 16.2.4 App Router + Turbopack.
 **Do NOT assume standard Next.js patterns** — verify in `node_modules/next/dist/docs/`
 before writing any code. APIs, middleware, and config differ from training data.
 
@@ -81,7 +81,7 @@ Coverage gates: API routes ≥90% statements / ≥85% branches; lib ≥95% funct
 Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/patch updates
 
 ## Key Invariants
-- `next` is pinned to exact `16.2.3` (no caret) — do not add `^`
+- `next` is pinned to exact `16.2.4` (no caret) — do not add `^`
 - `profile.personal.title` = "VP / Head of AI Engineering" — do not change without updating layout.tsx
 - All URLs use `https://www.prasadkavuri.com` (with www) — be consistent
 - New demos need entries in BOTH `src/data/demos.ts` AND `src/components/sections/AITools.tsx` (DEMO_GROUPS ids array)
@@ -102,7 +102,7 @@ Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/pa
   `{ input_tokens, output_tokens, cache_read_input_tokens, cache_creation_input_tokens }`
 
 ### OTEL event schema
-Events follow the OpenTelemetry semantic conventions for LLM spans. The `tokenCost` field mirrors the `anthropic-beta: usage-metadata-2024` response shape.
+Events use structured observability fields for LLM spans. The `tokenCost` field mirrors the `anthropic-beta: usage-metadata-2024` response shape.
 
 ### Security constraints
 - No write operations (read-only simulation)

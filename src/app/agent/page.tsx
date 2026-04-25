@@ -95,7 +95,7 @@ const CAPABILITY_TREE = [
         leaves: [
           'AI governance & FinOps',
           'RBAC & spend controls',
-          'OpenTelemetry observability',
+          'structured observability logs',
         ],
       },
       {

@@ -49,7 +49,7 @@ export interface DailyTokenUsage {
   totalTokens: number;
 }
 
-// OpenTelemetry events
+// Structured observability events
 export type OtelEventType =
   | 'tool_call'
   | 'connector_call'

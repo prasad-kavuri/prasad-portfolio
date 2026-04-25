@@ -123,8 +123,8 @@ export default function EnterpriseControlPlanePage() {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: 'Enterprise Control Plane',
-    description: 'Org-wide AI governance dashboard — RBAC, group spend limits with token-cost tracking, and OpenTelemetry observability feed.',
-    keywords: 'Enterprise, RBAC, OpenTelemetry, Token Analytics',
+    description: 'Org-wide AI governance dashboard — RBAC, group spend limits with token-cost tracking, and structured observability feed.',
+    keywords: 'Enterprise, RBAC, Structured Observability, Token Analytics',
     url: 'https://www.prasadkavuri.com/demos/enterprise-control-plane',
     author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
     about: { '@type': 'Thing', name: 'AI Engineering' },
@@ -147,7 +147,7 @@ export default function EnterpriseControlPlanePage() {
           </div>
           <h1 className="text-3xl font-bold">Enterprise Control Plane</h1>
           <p className="text-muted-foreground mt-1">
-            Org-wide AI governance — access control, spend management, and OpenTelemetry observability
+            Org-wide AI governance — access control, spend management, and structured observability
           </p>
         </div>
       </div>
@@ -361,7 +361,7 @@ export default function EnterpriseControlPlanePage() {
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:underline text-xs"
                 >
-                  Anthropic OpenTelemetry monitoring docs →
+                  Anthropic monitoring docs →
                 </a>
               </p>
             </div>

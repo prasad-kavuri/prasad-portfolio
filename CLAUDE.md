@@ -3,12 +3,12 @@
 # Claude Code Context — prasad-portfolio
 
 ## Project Overview
-Production AI engineering portfolio at prasadkavuri.com. Next.js 16.2.3 / React 19 / TypeScript / Tailwind CSS v4 / Vercel.
+Production AI engineering portfolio at prasadkavuri.com. Next.js 16.2.4 / React 19.2.5 / TypeScript 5.9.3 / Tailwind CSS 4.2.4 / Vercel.
 Full architecture: see `docs/ARCHITECTURE.md`.
 
 ## Tech Stack
-- Next.js 16.2.3 (App Router + Turbopack) — pinned exact, no `^`
-- React 19.2.5, TypeScript, Tailwind CSS v4
+- Next.js 16.2.4 (App Router + Turbopack) — pinned exact, no `^`
+- React 19.2.5, TypeScript 5.9.3, Tailwind CSS 4.2.4
 - Groq SDK for LLM inference (server-side only)
 - @huggingface/transformers v4 for browser WASM inference
 - Upstash Redis for rate limiting
@@ -117,7 +117,7 @@ add simulated fallback path for mobile/low-memory devices.
 
 ## Architecture Constraints
 
-- **Vercel deployment** — static + edge functions only. No long-running processes.
+- **Vercel deployment** — static assets + serverless API routes. No long-running processes.
 - WASM headers (`COOP`, `COEP`, `blob:` CSP) are set in `next.config.ts` AND `src/proxy.ts`. Both must be consistent.
 - `public/.well-known/ai-agent-manifest.json` — AI recruiter manifest. Keep valid JSON after any edit: `node -e "JSON.parse(require('fs').readFileSync('public/.well-known/ai-agent-manifest.json','utf8'))"`
 - No legacy `.html` files in `public/` — Next.js serves them verbatim. Delete any found.

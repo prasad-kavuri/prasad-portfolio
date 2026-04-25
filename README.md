@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/release-v1.0.0-blue?style=flat-square)
 ![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen?style=flat-square&logo=vitest)
 ![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen?style=flat-square&logo=vitest)
-![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16.2.4-black?style=flat-square&logo=next.js)
 ![CI](https://img.shields.io/github/actions/workflow/status/prasad-kavuri/prasad-portfolio/ci.yml?branch=main&style=flat-square&label=CI&logo=github)
 
 20 years building AI platforms at enterprise scale — from Krutrim's agentic AI (India's first) to Ola Maps at 13,000+ B2B customers. This portfolio demonstrates governed, observable, evaluated AI systems running in production, not isolated demo pages.
@@ -22,10 +22,10 @@ Current release: [v1.0.0](CHANGELOG.md)
 
 ## Stack
 
-- **Next.js 16.2.3** (App Router + Turbopack) · React 19 · TypeScript · Tailwind CSS v4
-- **LLM inference**: Groq SDK (server-side) · Transformers.js v4 (browser WASM) · Florence-2 (WebGPU)
-- **Platform controls**: Upstash Redis (rate limiting) · OpenTelemetry · Vitest + Playwright
-- **Deployment**: Vercel (edge functions + static)
+- **Next.js 16.2.4** (App Router + Turbopack) · React 19.2.5 · TypeScript 5.9.3 · Tailwind CSS 4.2.4
+- **LLM inference**: Groq SDK 1.1.2 (server-side) · Transformers.js 4.2.0 (browser WASM) · Florence-2 (WebGPU)
+- **Platform controls**: Upstash Redis (rate limiting) · structured observability logs · Vitest 4.1.5 + Playwright 1.59.1
+- **Deployment**: Vercel (serverless API routes + static assets)
 
 ## What This Repo Is
 
@@ -125,7 +125,7 @@ Canonical source: `src/data/demos.ts` — 13 live demos as of v1.0.0.
 | Resume Generator | `/demos/resume-generator` | Groq · JD parsing · Skill matching | Server |
 | Multimodal Assistant | `/demos/multimodal` | Florence-2 · WebGPU · Transformers.js | Browser WebGPU |
 | Model Quantization | `/demos/quantization` | ONNX · INT8 vs FP32 · Transformers.js | Browser WASM |
-| Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC · OpenTelemetry · Token analytics | Server |
+| Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC · Structured observability · Token analytics | Server |
 | Native Browser AI Skill | `/demos/browser-native-ai-skill` | Chrome Prompt API · Gemini Nano | Browser |
 | AI Spatial Intelligence | `/demos/world-generation` | Three.js · GLB export · Governance gates | Server + Browser |
 

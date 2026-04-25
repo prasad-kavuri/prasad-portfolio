@@ -1,13 +1,13 @@
 ---
 name: prasad-portfolio
-description: "Architecture context, governance rules, file map, and dev conventions for the prasadkavuri.com AI engineering portfolio. Use when adding demos, modifying governance/observability code, touching llms.txt or certifications, or writing Claude Code prompts for this Next.js 15 + React 19 TypeScript codebase."
+description: "Architecture context, governance rules, file map, and dev conventions for the prasadkavuri.com AI engineering portfolio. Use when adding demos, modifying governance/observability code, touching llms.txt or certifications, or writing Claude Code prompts for this Next.js 16.2.4 + React 19.2.5 TypeScript codebase."
 ---
 
 # Prasad Kavuri AI Portfolio — Architecture & Development Skill
 
 This skill provides full context for developing, extending, and auditing the
-prasadkavuri.com AI engineering portfolio — a production-grade Next.js 15 +
-React 19 TypeScript platform demonstrating VP/Head-level AI engineering competency.
+prasadkavuri.com AI engineering portfolio — a production-grade Next.js 16.2.4 +
+React 19.2.5 TypeScript platform demonstrating VP/Head-level AI engineering competency.
 
 ## When to Use This Skill
 
@@ -20,13 +20,13 @@ Use when:
 
 ## Stack Identity
 
-- Framework: Next.js 15 + React 19 + TypeScript (NOT static HTML)
-- Deployment: Vercel (edge network)
+- Framework: Next.js 16.2.4 + React 19.2.5 + TypeScript 5.9.3 (NOT static HTML)
+- Deployment: Vercel (serverless API routes + static assets)
 - Styling: Tailwind CSS
 - Rate limiting: Upstash Redis
 - Local inference: vllm at localhost:8000 (Qwen MoE only — fallback expected in prod)
 - External models: Groq API (Llama 3.1 8B, 70B, Llama 3.3, Mixtral)
-- In-browser inference: Transformers.js v4 (RAG, Vector Search, Multimodal, Quantization)
+- In-browser inference: Transformers.js 4.2.0 (RAG, Vector Search, Multimodal, Quantization)
 
 ## Key Source Files
 

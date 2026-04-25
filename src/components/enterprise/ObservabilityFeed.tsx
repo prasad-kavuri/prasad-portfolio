@@ -241,7 +241,7 @@ export function ObservabilityFeed({ events: initialEvents }: Props) {
               </button>
             </div>
             <p className="mb-3 text-xs text-muted-foreground">
-              This NDJSON format is compatible with Splunk HEC, Cribl, and OpenTelemetry collectors.
+              This NDJSON format is compatible with Splunk HEC, Cribl, and structured log collectors.
             </p>
             <pre className="max-h-64 overflow-auto rounded border border-border bg-muted p-4 text-xs font-mono">
               {NDJSON_SAMPLE(filtered.slice(0, 3))}

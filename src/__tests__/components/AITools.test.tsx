@@ -76,7 +76,7 @@ vi.mock('@/data/demos', () => ({
       description: 'Org-wide governance dashboard.',
       businessImpact: 'Governs access, spend, and auditability at scale',
       href: '/demos/enterprise-control-plane',
-      tags: ['RBAC', 'OpenTelemetry'],
+      tags: ['RBAC', 'Structured Observability'],
       status: 'live',
     },
     {

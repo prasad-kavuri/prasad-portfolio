@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
       })),
       // Catch-all: any /demos/*.html not covered above → /demos
       { source: '/demos/:path*.html', destination: '/demos', permanent: true },
+      // Catch-all: any root-level legacy .html slug not covered above → /demos
+      { source: '/:path*.html', destination: '/demos', permanent: true },
     ];
   },
   async headers() {

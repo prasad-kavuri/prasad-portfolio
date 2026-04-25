@@ -24,6 +24,15 @@ describe('Legacy routing policy', () => {
     }
   });
 
+  it('next.config redirects unknown root .html slugs to demos index', async () => {
+    const redirects = await nextConfig.redirects?.();
+    expect(redirects).toContainEqual({
+      source: '/:path*.html',
+      destination: '/demos',
+      permanent: true,
+    });
+  });
+
   it('resolveLegacyHtmlPath maps explicit legacy URLs to canonical demo routes', () => {
     expect(resolveLegacyHtmlPath('/multi-agent-demo.html')).toBe('/demos/multi-agent');
     expect(resolveLegacyHtmlPath('/demos/portfolio-assistant.html')).toBe('/demos/portfolio-assistant');

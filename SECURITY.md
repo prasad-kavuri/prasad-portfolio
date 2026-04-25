@@ -69,7 +69,7 @@ These defenses run before each outbound request. DNS validation materially reduc
 Current controls implemented in this repo include:
 - centralized guardrails (`src/lib/guardrails.ts`) for prompt-injection heuristics, competitor mention redaction, output checks, and regex-based output filtering,
 - CSP in both `next.config.ts` and `src/proxy.ts`, including restricted `connect-src` origins for Groq, Hugging Face model assets, Vercel analytics, and blob workers,
-- API-only middleware rate limiting plus route-level validation/rate limiting as deeper defense (`middleware.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`),
+- API-only proxy-layer rate limiting plus route-level validation/rate limiting as deeper defense (`src/proxy.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`),
 - outbound URL hardening (`src/lib/url-security.ts`) and DNS-aware safe server-side fetch behavior (`src/lib/safe-fetch.ts`),
 - eval/query log redaction before snippets are stored (`src/lib/query-log.ts`),
 - traceable logging and standardized error handling without raw IP logging (`src/lib/observability.ts`),

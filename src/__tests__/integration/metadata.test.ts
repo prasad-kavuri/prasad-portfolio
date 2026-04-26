@@ -272,4 +272,61 @@ describe('SEO metadata integrity', () => {
     expect(globalStyles).toMatch(/a:focus-visible/);
     expect(globalStyles).toMatch(/outline:\s*2px/);
   });
+
+  it('entity.json canonical_urls includes resume_download field', () => {
+    const entity = JSON.parse(readFileSync('public/entity.json', 'utf8'));
+    expect(entity.canonical_urls).toHaveProperty('resume_download');
+    expect(entity.canonical_urls.resume_download).toBe('https://www.prasadkavuri.com/api/resume-download');
+  });
+
+  it('entity.json target_roles contains no IC/Staff/Principal/Lead roles', () => {
+    const entity = JSON.parse(readFileSync('public/entity.json', 'utf8'));
+    const forbidden = /IC engineering|Staff Engineer|Principal Engineer|Lead Engineer/;
+    expect(entity.target_roles.join(' | ')).not.toMatch(forbidden);
+  });
+
+  it('robots.txt allows /about and /for-recruiters', () => {
+    const robots = readFileSync('public/robots.txt', 'utf8');
+    expect(robots).toContain('Allow: /about');
+    expect(robots).toContain('Allow: /for-recruiters');
+  });
+
+  it('robots.txt allows /.well-known/ai-agent-manifest.json', () => {
+    const robots = readFileSync('public/robots.txt', 'utf8');
+    expect(robots).toContain('Allow: /.well-known/ai-agent-manifest.json');
+  });
+
+  it('robots.txt does not disallow /about or /for-recruiters', () => {
+    const robots = readFileSync('public/robots.txt', 'utf8');
+    expect(robots).not.toMatch(/Disallow:.*\/about/);
+    expect(robots).not.toMatch(/Disallow:.*\/for-recruiters/);
+  });
+
+  it('layout.tsx sameAs includes the canonical portfolio URL', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/sameAs.*\[/s);
+    expect(layout).toContain('SITE_URL');
+    expect(layout).toContain('linkedin.com/in/pkavuri');
+    expect(layout).toContain('github.com/prasad-kavuri');
+  });
+
+  it('layout.tsx alternates.canonical uses the full site URL', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toMatch(/canonical:\s*SITE_URL/);
+  });
+
+  it('resume-generator, multi-agent, multimodal demos have canonical metadata', () => {
+    const files = [
+      'src/app/demos/resume-generator/metadata.ts',
+      'src/app/demos/multi-agent/metadata.ts',
+      'src/app/demos/multimodal/metadata.ts',
+    ];
+    const slugs = ['resume-generator', 'multi-agent', 'multimodal'];
+    files.forEach((file, i) => {
+      const content = readFileSync(file, 'utf8');
+      expect(content).toContain(`/demos/${slugs[i]}`);
+      expect(content).toMatch(/alternates/);
+      expect(content).toMatch(/canonical/);
+    });
+  });
 });

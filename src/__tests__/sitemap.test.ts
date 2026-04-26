@@ -49,4 +49,31 @@ describe('sitemap()', () => {
     const bad = result.filter((e) => e.priority === undefined);
     expect(bad).toHaveLength(0);
   });
+
+  it('no .html URLs appear in sitemap output', () => {
+    const result = sitemap();
+    const htmlEntries = result.filter((e) => e.url.endsWith('.html'));
+    expect(htmlEntries).toHaveLength(0);
+  });
+
+  it('/about entry has priority 0.95', () => {
+    const result = sitemap();
+    const entry = result.find((e) => e.url.endsWith('/about'));
+    expect(entry).toBeDefined();
+    expect(entry?.priority).toBeGreaterThanOrEqual(0.9);
+    expect(entry?.priority).toBe(0.95);
+  });
+
+  it('/entity.json is present in sitemap', () => {
+    const result = sitemap();
+    const entry = result.find((e) => e.url.includes('/entity.json'));
+    expect(entry).toBeDefined();
+  });
+
+  it('/certifications has priority 0.75', () => {
+    const result = sitemap();
+    const entry = result.find((e) => e.url.endsWith('/certifications'));
+    expect(entry).toBeDefined();
+    expect(entry?.priority).toBe(0.75);
+  });
 });

@@ -20,7 +20,8 @@ describe('GET /api/resume-download', () => {
     // 307 redirect
     expect(res.status).toBe(307);
     const location = res.headers.get('location');
-    expect(location).toMatch(/Prasad_Kavuri_Resume\.pdf/);
+    // Falls back to legacy filename when new canonical PDF is not yet deployed
+    expect(location).toMatch(/prasad-kavuri-vp-ai-engineering-2026\.pdf|Prasad_Kavuri_Resume\.pdf/);
   });
 
   it('redirects when a normal referer header is present', async () => {

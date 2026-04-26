@@ -104,6 +104,7 @@ const canonicalLinks = [
   { href: '/governance', label: 'Governance' },
   { href: '/demos', label: 'Demos' },
   { href: '/certifications', label: 'Certifications' },
+  { href: '/api/resume-download', label: 'Resume (PDF)' },
   { href: '/resume.md', label: 'Resume Markdown' },
   { href: '/llms.txt', label: 'llms.txt' },
   { href: '/llms-full.txt', label: 'llms-full.txt' },
@@ -176,6 +177,7 @@ export default function AboutPage() {
           Structured data and entity files support disambiguation for recruiter and AI-agent discovery.
           Search engines decide independently whether to show rich results or Knowledge Panel features.
         </p>
+        <p className="mt-4 text-xs text-muted-foreground/60">Profile last updated: April 2026</p>
       </section>
     </main>
   );

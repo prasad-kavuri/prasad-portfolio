@@ -58,6 +58,7 @@ const siteStructuredData = {
       sameAs: [
         'https://www.linkedin.com/in/pkavuri/',
         'https://github.com/prasad-kavuri',
+        SITE_URL,
       ],
       significantLink: [
         `${SITE_URL}/about`,
@@ -170,7 +171,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: '/',
+    canonical: SITE_URL,
   },
 };
 

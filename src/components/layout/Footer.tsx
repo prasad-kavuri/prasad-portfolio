@@ -26,6 +26,9 @@ export function Footer() {
           <Link href="/governance" className="hover:text-foreground">
             Governance
           </Link>
+          <Link href="/about" className="hover:text-foreground">
+            About / Entity Profile
+          </Link>
           </div>
         </div>
       </div>

@@ -16,7 +16,8 @@
     "resume_md": "https://www.prasadkavuri.com/resume.md",
     "llms_txt": "https://www.prasadkavuri.com/llms.txt",
     "llms_full_txt": "https://www.prasadkavuri.com/llms-full.txt",
-    "ai_agent_manifest": "https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json"
+    "ai_agent_manifest": "https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json",
+    "resume_download": "https://www.prasadkavuri.com/api/resume-download"
   },
   "same_as": [
     "https://www.linkedin.com/in/pkavuri/",

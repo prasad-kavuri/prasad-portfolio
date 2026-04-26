@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Prevent Google from continuing to index the stale legacy PDF filename.
+        source: "/Prasad_Kavuri_Resume.pdf",
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
+      {
         source: "/(.*)",
         headers: [
           {

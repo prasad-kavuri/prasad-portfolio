@@ -29,7 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Supporting pages
     { url: `${SITE_URL}/capabilities`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${SITE_URL}/certifications`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/certifications`, lastModified: now, changeFrequency: 'monthly', priority: 0.75 },
 
     // Machine-readable resources for AI agents and LLM crawlers
     { url: `${SITE_URL}/resume.md`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },

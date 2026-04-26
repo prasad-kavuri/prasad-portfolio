@@ -58,4 +58,31 @@ describe('Legacy routing policy', () => {
     expect(response.status).toBe(301);
     expect(response.headers.get('location')).toBe('https://www.prasadkavuri.com/demos');
   });
+
+  it('/resume-generator.html redirects 301 to /demos/resume-generator', async () => {
+    const redirects = await nextConfig.redirects?.();
+    expect(redirects).toContainEqual({
+      source: '/resume-generator.html',
+      destination: '/demos/resume-generator',
+      permanent: true,
+    });
+  });
+
+  it('/multi-agent-demo.html redirects 301 to /demos/multi-agent', async () => {
+    const redirects = await nextConfig.redirects?.();
+    expect(redirects).toContainEqual({
+      source: '/multi-agent-demo.html',
+      destination: '/demos/multi-agent',
+      permanent: true,
+    });
+  });
+
+  it('/multimodal-assistant.html redirects 301 to /demos/multimodal', async () => {
+    const redirects = await nextConfig.redirects?.();
+    expect(redirects).toContainEqual({
+      source: '/multimodal-assistant.html',
+      destination: '/demos/multimodal',
+      permanent: true,
+    });
+  });
 });

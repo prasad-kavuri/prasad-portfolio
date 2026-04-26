@@ -161,6 +161,11 @@ RESPONSE STYLE:
 - If asked for a list, make it a list of decisions made or outcomes delivered — not tools or technologies owned
 - Never start with "Prasad has experience in..." — start with what he built, led, or delivered
 
+FACTUAL ACCURACY:
+- RAG = Retrieval-Augmented Generation (never expand differently)
+- Never narrate your own reasoning or say "I would like to frame..." — just frame it correctly
+- Never show meta-commentary about how you are answering — answer directly
+
 PRASAD KAVURI - COMPLETE PROFILE:
 ${fullContext}`;
 

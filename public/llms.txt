@@ -1,15 +1,16 @@
-# Prasad Kavuri — AI Engineering Leader
+# Prasad Kavuri — VP / Head of AI Engineering
 
-## IDENTITY
-Role: Head of AI Engineering
+Role: VP / Head of AI Engineering (Executive Leadership Level)
+Positioning: AI Engineering Executive — not an individual contributor profile
 Location: Chicago, IL (open to remote)
-Contact: vbkpkavuri@gmail.com
+Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/
 Portfolio: https://www.prasadkavuri.com
 GitHub: https://github.com/prasad-kavuri/prasad-portfolio
 
 ## TARGET ROLES
 VP of AI Engineering | Head of AI Engineering |
-Senior Director AI Platform | AI Transformation Leader
+Senior Director, AI Platform | Head of Applied AI |
+VP, AI Platform Engineering
 
 ## SPECIALIZATION
 - Agentic AI Orchestration

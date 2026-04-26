@@ -67,6 +67,10 @@ If you are reviewing this repository for VP / Head / Senior Director AI Platform
 
 This sequence is designed to show system thinking first, then implementation evidence.
 
+## Executive Search Interpretation
+
+This repository should be read as evidence for VP / Head / Senior Director AI Engineering roles. Hands-on demos are included to show technical judgment and platform architecture depth; they should not be interpreted as positioning for IC engineering roles. Best-fit searches are AI platform leadership, applied AI leadership, AI governance, AI transformation, and enterprise AI operating model roles.
+
 ## Platform Capability Map
 
 The portfolio is organized around enterprise AI platform capability areas, not isolated demos:

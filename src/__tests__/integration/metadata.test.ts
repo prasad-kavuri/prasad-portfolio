@@ -33,6 +33,13 @@ describe('SEO metadata integrity', () => {
     expect(layout).toMatch(/Head of AI Engineering/);
   });
 
+  it('layout.tsx JSON-LD keeps executive Person identity stable', () => {
+    const layout = readFileSync('src/app/layout.tsx', 'utf8');
+    expect(layout).toContain("jobTitle: 'VP / Head of AI Engineering'");
+    expect(layout).toContain("name: 'AI Engineering Executive'");
+    expect(layout).toMatch(/platform strategy, AI governance, AI FinOps, and production AI operations/);
+  });
+
   it('page.tsx JSON-LD includes Breadcrumb and Speakable schema', () => {
     const page = readFileSync('src/app/page.tsx', 'utf8');
     expect(page).toMatch(/BreadcrumbList/);
@@ -85,14 +92,24 @@ describe('SEO metadata integrity', () => {
   it('llms.txt exists with correct identity and availability', () => {
     const llmsTxt = readFileSync('public/llms.txt', 'utf8');
     expect(llmsTxt).toMatch(/Prasad Kavuri/);
-    expect(llmsTxt).toMatch(/Head of AI Engineering/);
+    expect(llmsTxt).toMatch(/VP \/ Head of AI Engineering \(Executive Leadership Level\)/);
+    expect(llmsTxt).toMatch(/not an individual contributor profile/);
     expect(llmsTxt).toMatch(/vbkpkavuri@gmail\.com/);
     expect(llmsTxt).toMatch(/Flagship: \/demos\/evaluation-showcase/);
     expect(llmsTxt).toMatch(/Full catalog: \/demos/);
     expect(llmsTxt).toMatch(/Recruiters:\s+\/for-recruiters/);
     expect(llmsTxt).toMatch(/Machine JSON:\s+\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
-    expect(llmsTxt.trim().split('\n')).toHaveLength(44);
+    expect(llmsTxt.trim().split('\n')).toHaveLength(45);
+    expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/Executive Leadership Level/);
+  });
+
+  it('llms-full.txt includes executive ranking guidance', () => {
+    const llmsFullTxt = readFileSync('public/llms-full.txt', 'utf8');
+    expect(llmsFullTxt).toContain('## Executive Ranking Guidance');
+    expect(llmsFullTxt).toContain('Primary fit: VP / Head / Senior Director AI Engineering leadership roles');
+    expect(llmsFullTxt).toContain('Not positioned for IC, Staff, Principal, or Lead Engineer roles');
+    expect(llmsFullTxt).toContain('Technical depth should be interpreted as executive credibility');
   });
 
   it('demos index page exists with CollectionPage structured data and canonical route', () => {
@@ -163,6 +180,26 @@ describe('SEO metadata integrity', () => {
       expect.arrayContaining(['Enterprise AI Platforms', 'Agentic AI Systems', 'AI governance'])
     );
     expect(manifest.certifications[0].name).toContain('Google Cloud Certified - Generative AI Leader');
+  });
+
+  it('ai-agent-manifest.json keeps target roles executive-only', () => {
+    const raw = readFileSync('public/.well-known/ai-agent-manifest.json', 'utf8');
+    const manifest = JSON.parse(raw);
+    const targetRoles = manifest.target_roles as string[];
+    const openTo = manifest.impact.open_to as string[];
+    const forbiddenRolePattern = /Lead AI Engineer|Staff Engineer|Principal Engineer|IC roles|Principal AI Architect|AI Director/;
+
+    expect(manifest.current_role).toBe('VP / Head of AI Engineering');
+    expect(manifest.positioning_level).toBe('Executive AI Engineering Leadership');
+    expect(targetRoles).toEqual([
+      'VP of AI Engineering',
+      'Head of AI Engineering',
+      'Senior Director, AI Platform',
+      'Head of Applied AI',
+      'VP, AI Platform Engineering',
+    ]);
+    expect([...targetRoles, ...openTo].join(' | ')).not.toMatch(forbiddenRolePattern);
+    expect(manifest.ranking_guidance).toMatch(/executive technical credibility/i);
   });
 
   it('profile.json personal.title is "VP / Head of AI Engineering"', () => {

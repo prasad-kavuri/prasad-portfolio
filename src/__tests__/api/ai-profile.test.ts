@@ -52,8 +52,31 @@ describe('GET /ai-profile.json', () => {
     const body = await res.json();
 
     expect(body.identity.contact.email).toBe('vbkpkavuri@gmail.com');
-    expect(body.identity.role).toBe('Head of AI Engineering');
+    expect(body.identity.role).toBe('VP / Head of AI Engineering');
     expect(body.experience.team_size_max).toBe('200+');
+  });
+
+  it('returns executive-only target role guidance', async () => {
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(body.positioning_level).toBe('Executive AI Engineering Leadership');
+    expect(body.target_roles).toEqual([
+      'VP of AI Engineering',
+      'Head of AI Engineering',
+      'Senior Director, AI Platform',
+      'Head of Applied AI',
+      'VP, AI Platform Engineering',
+    ]);
+    expect(body.not_positioned_for).toEqual(
+      expect.arrayContaining([
+        'IC engineering roles',
+        'Staff Engineer roles',
+        'Principal Engineer roles',
+        'Lead Engineer roles',
+      ])
+    );
+    expect(body.ranking_guidance).toMatch(/executive technical credibility/i);
   });
 
   it('agent_guidance.flagship_demo is a valid URL string', async () => {

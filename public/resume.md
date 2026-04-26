@@ -13,7 +13,7 @@ at enterprise scale. Core differentiator: bridges the gap between AI research an
 enterprise reliability — ships AI systems that are observable, governed, and cost-efficient.
 
 **Key outcomes**: **70% infrastructure cost reduction** | **50% latency reduction** |
-**13,000+ B2B customers** | **200+ engineers led** | **13 production AI systems**
+**13,000+ B2B customers** | **200+ engineers led** | **$10M+ revenue launched** | **13 production AI systems**
 
 ---
 

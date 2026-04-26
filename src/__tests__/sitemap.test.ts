@@ -26,6 +26,17 @@ describe('sitemap()', () => {
     expect(entry?.priority).toBe(0.95);
   });
 
+  it('includes canonical entity profile and machine-readable entity resources', () => {
+    const result = sitemap();
+    const urls = result.map((entry) => entry.url);
+    expect(urls).toContain('https://www.prasadkavuri.com/about');
+    expect(urls).toContain('https://www.prasadkavuri.com/entity.json');
+    expect(urls).toContain('https://www.prasadkavuri.com/resume.md');
+    expect(urls).toContain('https://www.prasadkavuri.com/llms.txt');
+    expect(urls).toContain('https://www.prasadkavuri.com/llms-full.txt');
+    expect(urls).toContain('https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json');
+  });
+
   it('evaluation-showcase entry has priority 0.9', () => {
     const result = sitemap();
     const entry = result.find((e) => e.url.includes('evaluation-showcase'));

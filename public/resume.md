@@ -1,7 +1,7 @@
 # Prasad Kavuri | VP / Head of AI Engineering
 
 **Location**: Naperville, IL (Greater Chicago Area) | **Open to**: VP AI, Head of AI Engineering, CTO-AI, Chief AI Officer
-**Website**: https://www.prasadkavuri.com | **LinkedIn**: https://linkedin.com/in/pkavuri
+**Website**: https://www.prasadkavuri.com | **LinkedIn**: https://www.linkedin.com/in/pkavuri/
 **GitHub**: https://github.com/prasad-kavuri | **Calendar**: https://calendly.com/vbkpkavuri
 
 ---

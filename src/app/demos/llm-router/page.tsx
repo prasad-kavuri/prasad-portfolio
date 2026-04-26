@@ -259,7 +259,7 @@ export default function LLMRouterDemo() {
     description: 'Real multi-model routing across Llama 3.1 8B, 70B, and Mixtral — see live latency, cost, and quality trade-offs.',
     keywords: 'Groq, Multi-model, Live latency',
     url: 'https://www.prasadkavuri.com/demos/llm-router',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

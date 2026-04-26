@@ -70,7 +70,7 @@ export default function MCPDemoPage() {
     description: 'Model Context Protocol in action — watch an LLM discover and call tools to answer questions about Prasad\'s background.',
     keywords: 'MCP, Tool Use, Groq API',
     url: 'https://www.prasadkavuri.com/demos/mcp-demo',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

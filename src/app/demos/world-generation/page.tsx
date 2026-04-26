@@ -534,7 +534,7 @@ export default function WorldGenerationPage() {
     description: 'Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. Controllable parametric spatial design — refine generated scenes with natural-language instructions.',
     keywords: 'World Generation, Spatial AI, Three.js, GLB Export, Governance, Simulation-Ready, World Model, Perception, Parametric Refinement',
     url: 'https://www.prasadkavuri.com/demos/world-generation',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

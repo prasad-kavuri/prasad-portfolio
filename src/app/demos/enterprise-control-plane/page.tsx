@@ -126,7 +126,7 @@ export default function EnterpriseControlPlanePage() {
     description: 'Org-wide AI governance dashboard — RBAC, group spend limits with token-cost tracking, and structured observability feed.',
     keywords: 'Enterprise, RBAC, Structured Observability, Token Analytics',
     url: 'https://www.prasadkavuri.com/demos/enterprise-control-plane',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

@@ -60,7 +60,9 @@
   },
   "links": {
     "website": "https://www.prasadkavuri.com",
-    "linkedin": "https://linkedin.com/in/pkavuri",
+    "about": "https://www.prasadkavuri.com/about",
+    "entity_json": "https://www.prasadkavuri.com/entity.json",
+    "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "github": "https://github.com/prasad-kavuri",
     "resume_md": "https://www.prasadkavuri.com/resume.md",
     "llms_txt": "https://www.prasadkavuri.com/llms.txt",
@@ -68,7 +70,7 @@
   },
   "contact": {
     "email": "vbkpkavuri@gmail.com",
-    "linkedin": "https://linkedin.com/in/pkavuri",
+    "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "calendly": "https://calendly.com/vbkpkavuri"
   },
   "expertise": [

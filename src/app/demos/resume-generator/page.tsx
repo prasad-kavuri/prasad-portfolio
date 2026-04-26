@@ -294,7 +294,7 @@ export default function ResumeGeneratorPage() {
     description: 'Paste a job description — get multi-dimension fit scoring, HITL-gated tailoring, and an ATS-optimized resume with drift detection.',
     keywords: 'JD parsing, Skill matching, HITL, Evaluation, Multi-Agent',
     url: 'https://www.prasadkavuri.com/demos/resume-generator',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

@@ -502,7 +502,7 @@ export default function QuantizationPage() {
     description: 'Live ONNX benchmark comparing INT8 vs FP32 inference — real file sizes, real latency, real quality diff.',
     keywords: 'ONNX, INT8 vs FP32, Transformers.js',
     url: 'https://www.prasadkavuri.com/demos/quantization',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

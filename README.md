@@ -71,6 +71,10 @@ This sequence is designed to show system thinking first, then implementation evi
 
 This repository should be read as evidence for VP / Head / Senior Director AI Engineering roles. Hands-on demos are included to show technical judgment and platform architecture depth; they should not be interpreted as positioning for IC engineering roles. Best-fit searches are AI platform leadership, applied AI leadership, AI governance, AI transformation, and enterprise AI operating model roles.
 
+## Canonical Entity Links
+
+Portfolio: [www.prasadkavuri.com](https://www.prasadkavuri.com) · Recruiter page: [/for-recruiters](https://www.prasadkavuri.com/for-recruiters) · Entity JSON: [/entity.json](https://www.prasadkavuri.com/entity.json) · [llms.txt](https://www.prasadkavuri.com/llms.txt) · [llms-full.txt](https://www.prasadkavuri.com/llms-full.txt) · [AI agent manifest](https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json) · [LinkedIn](https://www.linkedin.com/in/pkavuri/)
+
 ## Platform Capability Map
 
 The portfolio is organized around enterprise AI platform capability areas, not isolated demos:

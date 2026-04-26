@@ -513,7 +513,7 @@ export default function MultimodalPage() {
     description: 'Florence-2 image captioning and OCR running in-browser via Transformers.js — no server, no API key.',
     keywords: 'Florence-2, WebGPU, In-browser',
     url: 'https://www.prasadkavuri.com/demos/multimodal',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

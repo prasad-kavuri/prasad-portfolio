@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "entity_type": "Person",
+  "canonical_id": "https://www.prasadkavuri.com/#person",
+  "name": "Prasad Kavuri",
+  "primary_title": "VP / Head of AI Engineering",
+  "positioning_level": "Executive AI Engineering Leadership",
+  "location": "Chicago area / Naperville, IL",
+  "canonical_urls": {
+    "website": "https://www.prasadkavuri.com",
+    "about": "https://www.prasadkavuri.com/about",
+    "for_recruiters": "https://www.prasadkavuri.com/for-recruiters",
+    "capabilities": "https://www.prasadkavuri.com/capabilities",
+    "governance": "https://www.prasadkavuri.com/governance",
+    "demos": "https://www.prasadkavuri.com/demos",
+    "resume_md": "https://www.prasadkavuri.com/resume.md",
+    "llms_txt": "https://www.prasadkavuri.com/llms.txt",
+    "llms_full_txt": "https://www.prasadkavuri.com/llms-full.txt",
+    "ai_agent_manifest": "https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json"
+  },
+  "same_as": [
+    "https://www.linkedin.com/in/pkavuri/",
+    "https://github.com/prasad-kavuri",
+    "https://www.prasadkavuri.com"
+  ],
+  "target_roles": [
+    "VP of AI Engineering",
+    "Head of AI Engineering",
+    "Senior Director, AI Platform",
+    "Head of Applied AI",
+    "VP, AI Platform Engineering"
+  ],
+  "not_positioned_for": [
+    "IC engineering roles",
+    "Staff Engineer roles",
+    "Principal Engineer roles",
+    "Lead Engineer roles"
+  ],
+  "key_capabilities": [
+    "Agentic AI",
+    "LLM orchestration",
+    "RAG",
+    "Vector search",
+    "AI governance",
+    "AI FinOps",
+    "Enterprise AI platform engineering",
+    "Multi-agent systems",
+    "LLMOps",
+    "Evaluation frameworks"
+  ],
+  "proof_points": [
+    "200+ engineers led",
+    "70%+ AI infrastructure cost reduction",
+    "13,000+ B2B customers enabled",
+    "13 production AI demos / platform patterns"
+  ],
+  "contact": {
+    "email": "vbkpkavuri@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/pkavuri/",
+    "github": "https://github.com/prasad-kavuri"
+  },
+  "last_updated": "2026-04-26"
+}

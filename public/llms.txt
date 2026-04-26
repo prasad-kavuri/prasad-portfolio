@@ -33,6 +33,7 @@ Flagship: /demos/evaluation-showcase
 Full catalog: /demos
 
 ## ENTRY POINTS
+About:          /about
 Recruiters:     /for-recruiters
 Capabilities:   /capabilities
 Governance:     /governance
@@ -41,5 +42,6 @@ Machine JSON:   /ai-profile.json
 Full context:   /llms-full.txt
 
 ## MACHINE-READABLE
+entity.json:            https://www.prasadkavuri.com/entity.json
 ai-profile.json:        https://www.prasadkavuri.com/ai-profile.json
 agent-manifest:         https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json

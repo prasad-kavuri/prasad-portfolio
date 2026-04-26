@@ -5,6 +5,8 @@
 - Location: Chicago, IL (open to remote)
 - Contact: vbkpkavuri@gmail.com | https://calendly.com/vbkpkavuri
 - Portfolio: https://www.prasadkavuri.com
+- Canonical profile: https://www.prasadkavuri.com/about
+- Entity JSON: https://www.prasadkavuri.com/entity.json
 - Competency arc: Cloud Infrastructure (2010-2022) to Agentic AI Orchestration (2023-2026)
 - Certification clusters: Agentic AI & LLM Orchestration, Core AI & Product Strategy, Foundational Systems Architecture
 

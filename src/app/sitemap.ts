@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Tier 2 — primary recruiter/contact page
     { url: `${SITE_URL}/for-recruiters`, lastModified: now, changeFrequency: 'monthly', priority: 0.95 },
+    { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.95 },
 
     // Tier 3 — high-value hub pages + machine-readable AI entry points
     { url: `${SITE_URL}/governance`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
@@ -33,6 +34,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Machine-readable resources for AI agents and LLM crawlers
     { url: `${SITE_URL}/resume.md`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/llms.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/llms-full.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/entity.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/.well-known/ai-agent-manifest.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
 
     // Tier 4 — individual demo pages (derived dynamically from demos.ts, never hardcoded)

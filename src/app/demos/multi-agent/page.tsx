@@ -629,7 +629,7 @@ export default function MultiAgentPage() {
     description: 'CrewAI-powered agents with real LLM calls via Groq — Analyzer, Researcher, and Strategist collaborating in real time.',
     keywords: 'CrewAI, Groq, Llama 3.3, Handoff Architecture, Audit Trail, Agent Orchestration',
     url: 'https://www.prasadkavuri.com/demos/multi-agent',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

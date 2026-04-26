@@ -466,7 +466,7 @@ export default function RAGPipelinePage() {
     description: 'Real retrieval-augmented generation with Transformers.js embeddings and ChromaDB — runs entirely in your browser.',
     keywords: 'Transformers.js, ChromaDB, nomic-embed-text',
     url: 'https://www.prasadkavuri.com/demos/rag-pipeline',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

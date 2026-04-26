@@ -631,7 +631,7 @@ export default function VectorSearchPage() {
     description: 'Semantic search with real sentence-BERT embeddings and UMAP visualisation of the embedding space.',
     keywords: 'all-MiniLM-L6-v2, UMAP, Cosine similarity',
     url: 'https://www.prasadkavuri.com/demos/vector-search',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

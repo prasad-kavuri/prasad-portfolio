@@ -59,7 +59,13 @@ const siteStructuredData = {
         'https://www.linkedin.com/in/pkavuri/',
         'https://github.com/prasad-kavuri',
       ],
-      significantLink: [`${SITE_URL}/resume.md`, `${SITE_URL}/.well-known/ai-agent-manifest.json`, `${SITE_URL}/llms.txt`],
+      significantLink: [
+        `${SITE_URL}/about`,
+        `${SITE_URL}/entity.json`,
+        `${SITE_URL}/resume.md`,
+        `${SITE_URL}/.well-known/ai-agent-manifest.json`,
+        `${SITE_URL}/llms.txt`,
+      ],
       worksFor: { '@id': krutrimId },
       alumniOf: [
         {

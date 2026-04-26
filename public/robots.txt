@@ -34,8 +34,10 @@ Sitemap: https://www.prasadkavuri.com/llms.txt
 
 # LLM-friendly machine-readable resources
 Allow: /ai-profile.json
+Allow: /entity.json
 # llms.txt: https://www.prasadkavuri.com/llms.txt
 # llms-full.txt: https://www.prasadkavuri.com/llms-full.txt
+# entity: https://www.prasadkavuri.com/entity.json
 # agent-manifest: https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
 # resume: https://www.prasadkavuri.com/resume.md
 # ai-profile: https://www.prasadkavuri.com/ai-profile.json

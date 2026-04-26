@@ -286,7 +286,7 @@ export default function PortfolioAssistantPage() {
     description: 'Streaming full-context assistant over my experience with optional retrieval-enhanced grounding and cited context cues.',
     keywords: 'Vercel AI SDK, Streaming, Retrieval Grounding',
     url: 'https://www.prasadkavuri.com/demos/portfolio-assistant',
-    author: { '@type': 'Person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com' },
+    author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
   };
 

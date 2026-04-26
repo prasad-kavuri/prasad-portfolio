@@ -145,7 +145,7 @@ export default function ForRecruitersPage() {
               Download Resume
             </a>
             <a
-              href="https://linkedin.com/in/pkavuri"
+              href="https://www.linkedin.com/in/pkavuri/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted/40 transition-colors"
@@ -336,10 +336,15 @@ export default function ForRecruitersPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
+            "@id": "https://www.prasadkavuri.com/#person",
             "name": "Prasad Kavuri",
             "jobTitle": "VP / Head of AI Engineering",
             "email": "mailto:vbkpkavuri@gmail.com",
             "url": "https://www.prasadkavuri.com/for-recruiters",
+            "sameAs": [
+              "https://www.linkedin.com/in/pkavuri/",
+              "https://github.com/prasad-kavuri",
+            ],
             "availableChannel": {
               "@type": "ServiceChannel",
               "serviceUrl": "https://calendly.com/vbkpkavuri",

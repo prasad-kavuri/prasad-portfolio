@@ -3,7 +3,18 @@
  * Reads source files directly — verifies correctness without a running server.
  */
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
+
+function expectParsedObjectsHaveUniqueKeys(value: unknown) {
+  if (!value || typeof value !== 'object') return;
+  if (Array.isArray(value)) {
+    value.forEach(expectParsedObjectsHaveUniqueKeys);
+    return;
+  }
+  const keys = Object.keys(value);
+  expect(new Set(keys).size).toBe(keys.length);
+  Object.values(value).forEach(expectParsedObjectsHaveUniqueKeys);
+}
 
 describe('SEO metadata integrity', () => {
   it('layout.tsx title is "VP / Head of AI Engineering"', () => {
@@ -63,6 +74,16 @@ describe('SEO metadata integrity', () => {
     expect(layout).toMatch(/github\.com\/prasad-kavuri/);
   });
 
+  it('about page provides ProfilePage JSON-LD anchored to the canonical Person id', () => {
+    const aboutPage = readFileSync('src/app/about/page.tsx', 'utf8');
+    expect(aboutPage).toContain("'@type': 'ProfilePage'");
+    expect(aboutPage).toContain("const personId = `${SITE_URL}/#person`");
+    expect(aboutPage).toContain("jobTitle: 'VP / Head of AI Engineering'");
+    expect(aboutPage).toContain("sameAs: [");
+    expect(aboutPage).toContain('https://www.linkedin.com/in/pkavuri/');
+    expect(aboutPage).toContain('https://github.com/prasad-kavuri');
+  });
+
   it('layout.tsx contains openGraph metadata', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
     expect(layout).toMatch(/openGraph/);
@@ -100,7 +121,8 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/Recruiters:\s+\/for-recruiters/);
     expect(llmsTxt).toMatch(/Machine JSON:\s+\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
-    expect(llmsTxt.trim().split('\n')).toHaveLength(45);
+    expect(llmsTxt).toMatch(/entity\.json:\s+https:\/\/www\.prasadkavuri\.com\/entity\.json/);
+    expect(llmsTxt.trim().split('\n')).toHaveLength(47);
     expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/Executive Leadership Level/);
   });
 
@@ -135,6 +157,15 @@ describe('SEO metadata integrity', () => {
   it('sitemap includes capabilities route for crawler discovery', () => {
     const sitemapSource = readFileSync('src/app/sitemap.ts', 'utf8');
     expect(sitemapSource).toContain('/capabilities');
+    expect(sitemapSource).toContain('/about');
+    expect(sitemapSource).toContain('/entity.json');
+    expect(sitemapSource).toContain('/llms-full.txt');
+  });
+
+  it('robots.txt references entity.json for machine-readable discovery', () => {
+    const robots = readFileSync('public/robots.txt', 'utf8');
+    expect(robots).toContain('Allow: /entity.json');
+    expect(robots).toContain('https://www.prasadkavuri.com/entity.json');
   });
 
   it('security.txt disclosure contact matches profile email', () => {
@@ -200,6 +231,24 @@ describe('SEO metadata integrity', () => {
     ]);
     expect([...targetRoles, ...openTo].join(' | ')).not.toMatch(forbiddenRolePattern);
     expect(manifest.ranking_guidance).toMatch(/executive technical credibility/i);
+    expect(manifest.links.entity_json).toBe('https://www.prasadkavuri.com/entity.json');
+  });
+
+  it('entity.json is valid and aligned to the canonical Person identity', () => {
+    expect(existsSync('public/entity.json')).toBe(true);
+    const raw = readFileSync('public/entity.json', 'utf8');
+    const entity = JSON.parse(raw);
+    const forbiddenRolePattern = /Lead AI Engineer|Staff Engineer|Principal Engineer|IC roles|Principal AI Architect|AI Director/;
+
+    expectParsedObjectsHaveUniqueKeys(entity);
+    expect(entity.entity_type).toBe('Person');
+    expect(entity.canonical_id).toBe('https://www.prasadkavuri.com/#person');
+    expect(entity.primary_title).toBe('VP / Head of AI Engineering');
+    expect(entity.canonical_urls.about).toBe('https://www.prasadkavuri.com/about');
+    expect(entity.same_as).toEqual(
+      expect.arrayContaining(['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'])
+    );
+    expect(entity.target_roles.join(' | ')).not.toMatch(forbiddenRolePattern);
   });
 
   it('profile.json personal.title is "VP / Head of AI Engineering"', () => {

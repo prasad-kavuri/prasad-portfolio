@@ -3,7 +3,22 @@
  * Verifies CSP, COOP/COEP, and no hardcoded secrets in source files.
  */
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
+
+function assertParsedObjectsHaveUniqueKeys(value: unknown) {
+  if (!value || typeof value !== 'object') {
+    return;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach(assertParsedObjectsHaveUniqueKeys);
+    return;
+  }
+
+  const keys = Object.keys(value);
+  expect(new Set(keys).size).toBe(keys.length);
+  Object.values(value).forEach(assertParsedObjectsHaveUniqueKeys);
+}
 
 describe('Security configuration integrity', () => {
   it('next.config.ts sets Content-Security-Policy with blob: for WASM', () => {
@@ -98,5 +113,44 @@ describe('Security configuration integrity', () => {
     expect(example).toMatch(/GROQ_API_KEY/);
     expect(example).toMatch(/UPSTASH_REDIS_REST_URL/);
     expect(example).toMatch(/UPSTASH_REDIS_REST_TOKEN/);
+  });
+
+  it('publishes a valid machine-readable security posture summary', () => {
+    const json = readFileSync('public/.well-known/security-posture.json', 'utf8');
+    const posture = JSON.parse(json) as {
+      schema_version?: string;
+      controls?: Record<string, string>;
+      residual_risks?: string[];
+      validation_commands?: string[];
+      security_policy_url?: string;
+      threat_model_url?: string;
+    };
+
+    assertParsedObjectsHaveUniqueKeys(posture);
+    expect(posture.schema_version).toBe('1.0');
+    expect(posture.controls?.agent_sandbox).toContain('AGENTS.md');
+    expect(posture.residual_risks).toContain('No formal third-party penetration test has been completed');
+    expect(posture.validation_commands).toContain('npm run test:coverage');
+    expect(posture.security_policy_url).toContain('SECURITY.md');
+    expect(posture.threat_model_url).toContain('SECURITY_THREAT_MODEL.md');
+  });
+
+  it('documents the external security threat model', () => {
+    expect(existsSync('docs/SECURITY_THREAT_MODEL.md')).toBe(true);
+    const threatModel = readFileSync('docs/SECURITY_THREAT_MODEL.md', 'utf8');
+
+    expect(threatModel).toContain('| Threat | Likelihood | Impact | Control | Residual Risk |');
+    expect(threatModel).toContain('| SSRF | Low | High | DNS lookup + private IP block + redirect recheck | Very Low |');
+    expect(threatModel).toContain('Agent Sandbox Contract');
+    expect(threatModel).toContain('npm audit --audit-level=high');
+  });
+
+  it('documents no-secret and no-env-access rules for coding agents', () => {
+    const agentDocs = `${readFileSync('AGENTS.md', 'utf8')}\n${readFileSync('CLAUDE.md', 'utf8')}`;
+
+    expect(agentDocs).toContain('must not read, print, copy, summarize, commit, or expose `.env*`');
+    expect(agentDocs).toContain('Vercel secrets, API keys, tokens, private logs');
+    expect(agentDocs).toContain('Do not write outside this repository');
+    expect(agentDocs).toContain('Human approval is required before changes touching security headers');
   });
 });

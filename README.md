@@ -155,6 +155,10 @@ src/app/demos/
 - Trace-ID propagation and audit-friendly observability
 - CI-enforced quality gates and coverage thresholds
 - Security headers, SSRF protections, and rate limiting
+- Agent sandbox contract for Codex, Claude Code, Cursor, Copilot, and skills.sh workflows
+- Documented threat model and machine-readable trust signal:
+  [`docs/SECURITY_THREAT_MODEL.md`](docs/SECURITY_THREAT_MODEL.md) and
+  [`/.well-known/security-posture.json`](public/.well-known/security-posture.json)
 
 Run quality checks:
 

@@ -35,7 +35,7 @@
   },
   "technical_domains": {
     "ai_platform": ["Multi-Agent Orchestration", "RAG Pipelines", "LLM Routing", "Eval Frameworks", "Browser WASM Inference", "WebGPU"],
-    "infrastructure": ["LLMOps", "FinOps", "Observability", "Drift Monitoring", "OpenTelemetry"],
+    "infrastructure": ["LLMOps", "FinOps", "Observability", "Drift Monitoring", "Structured Observability"],
     "governance": ["HITL Checkpoints", "Guardrails", "Audit Trails", "Compliance Dashboards", "Prompt Injection Detection"]
   },
   "key_differentiators": [

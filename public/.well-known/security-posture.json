@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "owner": "Prasad Kavuri",
+  "contact": "vbkpkavuri@gmail.com",
+  "last_reviewed": "2026-04-26",
+  "controls": {
+    "csp": "Allowlisted Content-Security-Policy in next.config.ts and src/proxy.ts",
+    "isolation_headers": "COOP/COEP configured for browser WASM/WebGPU requirements",
+    "rate_limiting": "Proxy-level API rate limiting plus route-level limits",
+    "ssrf": "safeServerFetch validates URLs, DNS resolution, private IP ranges, and redirects",
+    "guardrails": "Prompt-injection heuristics and input/output validation in guardrails.ts",
+    "log_redaction": "query-log.ts redacts emails, phone numbers, bearer tokens, API-key-like strings, and env assignments",
+    "env_hygiene": ".env files are gitignored and secrets load from environment variables",
+    "ci": "npm audit, lint, coverage tests, build, and E2E checks",
+    "agent_sandbox": "AGENTS.md, CLAUDE.md, SECURITY.md, and repo skill define coding-agent boundaries"
+  },
+  "residual_risks": [
+    "Third-party agent runtimes may vary in policy enforcement",
+    "Browser model/CDN availability can affect browser-side demos",
+    "No formal third-party penetration test has been completed",
+    "Prompt-injection detection is heuristic, not a complete guarantee",
+    "DNS validation depends on Node DNS API availability and deployment infrastructure behavior"
+  ],
+  "validation_commands": [
+    "npm audit --audit-level=high",
+    "npm run lint",
+    "npm run test:coverage",
+    "npm run build",
+    "npm run test:e2e"
+  ],
+  "security_policy_url": "https://github.com/prasad-kavuri/prasad-portfolio/blob/main/SECURITY.md",
+  "threat_model_url": "https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/SECURITY_THREAT_MODEL.md"
+}

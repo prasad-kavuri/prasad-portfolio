@@ -61,8 +61,20 @@ Use when:
 - Rate limiting (Upstash) must apply on all user-facing routes
 - Fallback responses return HTTP 200 with isFallback:true — never 5xx
 - No raw IPs stored — SHA-256 hash only
-- All LLM output sanitized via DOMPurify before render
+- All LLM output must pass the existing guardrail sanitizer before render
 - Governance dashboard timestamp must be dynamic, never hardcoded
+
+## Agent Sandbox Contract
+
+- Do not read, print, copy, summarize, commit, or expose `.env*`, Vercel secrets, API keys, tokens, private logs, or local machine files.
+- Stay limited to repo-scoped source files only.
+- Default to read-only mode unless the user explicitly requests a code change.
+- Do not write outside this repository.
+- Do not run shell commands that exfiltrate secrets or copy sensitive files.
+- Do not make network calls except approved package installs, GitHub, npm registry access, and documented public model/source URLs.
+- Do not run destructive commands such as `rm -rf`, force pushes, credential changes, chmod/chown outside the repo, or global config mutations.
+- Preserve `.gitignore` secret exclusions in any file-system touching workflow.
+- Require human approval before changes touching security headers, auth, env handling, rate limits, SSRF, logging, or deployment config.
 
 ## Demo Registry — Exactly 13 Demos
 

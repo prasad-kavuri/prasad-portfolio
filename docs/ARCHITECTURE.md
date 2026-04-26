@@ -85,7 +85,7 @@ The AI services layer contains both server-side and browser-side demos:
 | AI Hiring Intelligence | `/demos/resume-generator` | Server route calling Groq |
 | Multimodal Assistant | `/demos/multimodal` | Browser model execution |
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
-| Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, OTEL observability |
+| Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, structured observability |
 | Native Browser AI Skill | `/demos/browser-native-ai-skill` | On-device accessibility and agent-readiness analysis |
 | Real-Time Spatial AI + World Modeling Engine | `/demos/world-generation` | Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. |
 
@@ -118,6 +118,7 @@ Security controls are implemented at route boundaries and platform configuration
 - API routes enforce input shape and length limits before external calls.
 - Middleware/proxy and Next config provide HTTP security headers such as CSP and COOP/COEP where needed.
 - CI runs `npm audit --audit-level=high`, lint, unit coverage, and Playwright checks across chromium, firefox, webkit, and mobile projects.
+- Agent sandbox rules are documented in `AGENTS.md`, `CLAUDE.md`, and `SECURITY.md`; the repo threat model is maintained in `docs/SECURITY_THREAT_MODEL.md`.
 
 ## Snapshot Telemetry Data
 

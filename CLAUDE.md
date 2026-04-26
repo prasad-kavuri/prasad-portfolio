@@ -53,12 +53,24 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 ---
 
 ## Security Scope
-- DO NOT read, write, or reference .env files
-- DO NOT expose API keys or credentials in any output
-- DO NOT execute shell commands that write outside
-  designated temp directories
-- Skill execution is scoped to documentation and source
-  code understanding only
+This Agent Sandbox Contract applies to Codex, Claude Code, Cursor, Copilot,
+skills.sh, and any coding-agent workflow used with this repository.
+
+- Agents must not read, print, copy, summarize, commit, or expose `.env*`,
+  Vercel secrets, API keys, tokens, private logs, or local machine files.
+- Agents are limited to repo-scoped source files only.
+- Default to read-only mode unless the user explicitly requests a code change.
+- Do not write outside this repository.
+- Do not run shell commands that exfiltrate secrets or copy sensitive files.
+- Do not make network calls except approved package installs, GitHub, npm
+  registry access, and documented public model/source URLs.
+- Do not run destructive commands such as `rm -rf`, force pushes, credential
+  changes, chmod/chown outside the repo, or global config mutations.
+- Any file-system touching workflow must preserve `.gitignore` secret
+  exclusions.
+- Human approval is required before changes touching security headers, auth,
+  env handling, rate limits, SSRF, logging, or deployment config.
+- Skill execution is scoped to documentation and source code understanding only.
 
 ---
 

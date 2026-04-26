@@ -68,6 +68,15 @@ describe('GovernancePage', () => {
     render(React.createElement(GovernancePage));
 
     expect(screen.getByText('AI Governance & Trust Model')).toBeInTheDocument();
+    expect(screen.getByText('Security & Agent Sandbox')).toBeInTheDocument();
+    expect(screen.getByText('Security Threat Model')).toHaveAttribute(
+      'href',
+      'https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/SECURITY_THREAT_MODEL.md'
+    );
+    expect(screen.getByText('security-posture.json')).toHaveAttribute(
+      'href',
+      '/.well-known/security-posture.json'
+    );
     expect(screen.getByText('Trust Control Flow')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText(GOVERNANCE_SNAPSHOT.trustFlow[0])).toBeInTheDocument();

@@ -220,6 +220,44 @@ export default function GovernancePage() {
           </Card>
         </section>
 
+        <section className="mb-8" aria-labelledby="security-sandbox-heading">
+          <h2 id="security-sandbox-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            Security & Agent Sandbox
+          </h2>
+          <Card className="border border-border bg-card p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Production-style security controls with documented residual risks.
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Agent sandbox rules, threat model, and machine-readable posture are versioned with the repo.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <Link
+                  href="https://github.com/prasad-kavuri/prasad-portfolio/blob/main/SECURITY.md"
+                  className="rounded-lg border border-border px-3 py-1.5 text-muted-foreground hover:text-foreground"
+                >
+                  SECURITY.md
+                </Link>
+                <Link
+                  href="https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/SECURITY_THREAT_MODEL.md"
+                  className="rounded-lg border border-border px-3 py-1.5 text-muted-foreground hover:text-foreground"
+                >
+                  Security Threat Model
+                </Link>
+                <Link
+                  href="/.well-known/security-posture.json"
+                  className="rounded-lg border border-border px-3 py-1.5 text-muted-foreground hover:text-foreground"
+                >
+                  security-posture.json
+                </Link>
+              </div>
+            </div>
+          </Card>
+        </section>
+
         <section className="mb-8" aria-labelledby="trust-flow-heading">
           <h2 id="trust-flow-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             Trust Control Flow

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import {
   enforceRateLimit,
@@ -17,7 +17,7 @@ const LEGACY_PDF = 'Prasad_Kavuri_Resume.pdf';
 
 function resolveResumePath(): string {
   const newPath = join(process.cwd(), 'public', NEW_PDF);
-  return existsSync(newPath) ? `/${NEW_PDF}` : `/${LEGACY_PDF}`;
+  return existsSync(newPath) ? NEW_PDF : LEGACY_PDF;
 }
 
 function safeReferrer(referrer: string): string {
@@ -34,14 +34,29 @@ export async function GET(req: NextRequest) {
     if (referrer.length >= 200) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'referer_too_long' });
     }
+
+    const fileName = resolveResumePath();
+    const filePath = join(process.cwd(), 'public', fileName);
+    const fileBuffer = readFileSync(filePath);
+
     logApiEvent('api.request_completed', {
       route: ROUTE,
       traceId: context.traceId,
-      status: 307,
+      status: 200,
       durationMs: Date.now() - context.startedAt,
       hasReferer: referrer !== 'direct',
     });
-    return finalizeApiResponse(NextResponse.redirect(new URL(resolveResumePath(), req.url)), context);
+
+    const response = new NextResponse(fileBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="prasad-kavuri-vp-ai-engineering-2026.pdf"`,
+        'Content-Length': String(fileBuffer.length),
+        'Cache-Control': 'no-store',
+      },
+    });
+    return finalizeApiResponse(response, context);
   } catch (error) {
     captureAndLogApiError('api.request_failed', error, {
       route: ROUTE,

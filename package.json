@@ -11,7 +11,8 @@
     "test:e2e": "playwright test",
     "test:coverage": "vitest --coverage",
     "test:fuzz": "vitest run src/__tests__/fuzz",
-    "test:evals": "vitest run src/__tests__/evals"
+    "test:evals": "vitest run src/__tests__/evals",
+    "generate:pdf": "node scripts/generate-pdf.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.2.0",
@@ -53,8 +54,10 @@
     "eslint-config-next": "^16.2.4",
     "happy-dom": "^20.9.0",
     "jsdom": "^29.0.2",
+    "marked": "^18.0.2",
     "msw": "^2.13.6",
     "playwright": "^1.59.1",
+    "puppeteer": "^24.42.0",
     "tailwindcss": "^4.2.4",
     "typescript": "^5.9.3",
     "vitest": "^4.1.5",

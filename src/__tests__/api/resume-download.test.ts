@@ -14,33 +14,39 @@ describe('GET /api/resume-download', () => {
     vi.clearAllMocks();
   });
 
-  it('redirects to the PDF when called without a referer', async () => {
+  it('returns 200 with PDF content-type and executive filename in Content-Disposition', async () => {
     const { GET } = await import('@/app/api/resume-download/route');
     const res = await GET(makeRequest());
-    // 307 redirect
-    expect(res.status).toBe(307);
-    const location = res.headers.get('location');
-    // Falls back to legacy filename when new canonical PDF is not yet deployed
-    expect(location).toMatch(/prasad-kavuri-vp-ai-engineering-2026\.pdf|Prasad_Kavuri_Resume\.pdf/);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toMatch(/application\/pdf/);
+    const disposition = res.headers.get('content-disposition') ?? '';
+    expect(disposition).toContain('attachment');
+    expect(disposition).toContain('prasad-kavuri-vp-ai-engineering-2026.pdf');
   });
 
-  it('redirects when a normal referer header is present', async () => {
+  it('serves a non-empty PDF buffer', async () => {
+    const { GET } = await import('@/app/api/resume-download/route');
+    const res = await GET(makeRequest());
+    expect(res.status).toBe(200);
+    const buf = await res.arrayBuffer();
+    expect(buf.byteLength).toBeGreaterThan(1000);
+  });
+
+  it('returns 200 when a normal referer header is present', async () => {
     const { GET } = await import('@/app/api/resume-download/route');
     const res = await GET(makeRequest('127.0.0.1', 'https://www.prasadkavuri.com/'));
-    expect(res.status).toBe(307);
+    expect(res.status).toBe(200);
   });
 
   it('logs abnormal usage when referer is 200+ chars (triggers the >= 200 branch)', async () => {
     const { GET } = await import('@/app/api/resume-download/route');
     const req = makeRequest('127.0.0.3');
-    // req.headers.get('referer') returns null in the test environment for GET requests,
-    // so spy on it to return a long value and exercise the warning branch.
     vi.spyOn(req.headers, 'get').mockImplementation((name: string) => {
-      if (name === 'referer') return 'https://example.com/' + 'a'.repeat(200); // >200 chars
+      if (name === 'referer') return 'https://example.com/' + 'a'.repeat(200);
       return null;
     });
     const res = await GET(req);
-    expect(res.status).toBe(307);
+    expect(res.status).toBe(200);
   });
 
   it('returns 429 after exceeding rate limit', async () => {
@@ -53,18 +59,12 @@ describe('GET /api/resume-download', () => {
     expect(res.status).toBe(429);
   });
 
-  it('returns 500 when an unexpected error is thrown', async () => {
-    // Force createRequestContext to throw by passing a broken request
+  it('returns 500 when an internal API utility throws unexpectedly', async () => {
+    const apiModule = await import('@/lib/api');
+    vi.spyOn(apiModule, 'enforceRateLimit').mockRejectedValueOnce(new Error('simulated internal failure'));
     const { GET } = await import('@/app/api/resume-download/route');
-    // Craft a request that causes NextResponse.redirect to throw by
-    // providing a relative URL that cannot be resolved
-    const badReq = new NextRequest('http://localhost/api/resume-download', {
-      method: 'GET',
-      headers: { 'x-forwarded-for': '127.0.0.2' },
-    });
-    // Patch url to trigger the catch branch
-    Object.defineProperty(badReq, 'url', { get: () => { throw new Error('forced'); } });
-    const res = await GET(badReq);
+    const res = await GET(makeRequest('127.0.0.5'));
     expect(res.status).toBe(500);
+    vi.restoreAllMocks();
   });
 });

@@ -122,7 +122,7 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/Machine JSON:\s+\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
     expect(llmsTxt).toMatch(/entity\.json:\s+https:\/\/www\.prasadkavuri\.com\/entity\.json/);
-    expect(llmsTxt.trim().split('\n')).toHaveLength(47);
+    expect(llmsTxt.trim().split('\n')).toHaveLength(48);
     expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/Executive Leadership Level/);
   });
 

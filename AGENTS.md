@@ -29,6 +29,31 @@ For multi-step tasks, state a brief plan with verifiable checks before starting.
 Transform vague goals into testable outcomes: build passes, tests pass, coverage gates pass.
 Verify success explicitly — don't assume "it works" without running the checks.
 
+## Agent Operating Contract
+
+For every non-trivial coding task, state this before editing:
+- Assumptions: what you believe is true, and what remains unknown.
+- Scope boundaries: what is intentionally in and out of scope.
+- Files expected to change: the smallest expected file set.
+- Verification commands: exact commands that will prove the change.
+- Rollback notes: only for risky changes, describe the simplest way back.
+
+Anti-patterns:
+- No drive-by refactors.
+- No broad rewrites.
+- No speculative abstractions.
+- No touching CSP, security headers, auth, env handling, SSRF, rate limits,
+  logging, or deployment config unless explicitly requested.
+- No changing executive positioning, profile title, signature system, metadata,
+  JSON-LD, llms files, entity files, or demo registry entries unless requested.
+
+Definition of Done:
+- `npm run lint` passes.
+- `npm run test` or the task-specific test command passes.
+- `npm run build` passes.
+- `npm audit --audit-level=high` passes with 0 high/critical vulnerabilities.
+- Every changed line directly maps to the user's request.
+
 ## Architecture Rules
 1. Rate limit ALL new API routes using `enforceRateLimit` from `src/lib/api.ts`
 2. Log ALL API requests using `startTimer` + `logAPIEvent` from `src/lib/observability.ts`

@@ -52,6 +52,58 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 
 ---
 
+## Coding Behavior (Karpathy-Inspired)
+
+Four rules apply to every change. They prevent unfounded assumptions,
+overengineering, and unwanted scope creep while preserving the portfolio's
+security, demo, CSP, SSRF, rate-limit, and executive-positioning invariants.
+
+**1. Think Before Coding**
+State assumptions explicitly. If multiple interpretations are valid, surface them
+rather than picking silently. If something is unclear, stop and ask before implementing.
+
+**2. Simplicity First**
+Write the minimum code that solves the stated problem. No speculative abstractions.
+No flexibility that wasn't requested. No error handling for impossible scenarios.
+If it can be 50 lines instead of 200, it should be.
+
+**3. Surgical Changes**
+Touch only what the task requires. Do not improve, reformat, or rename adjacent code.
+Match the existing style. Mention unrelated dead code — don't delete it.
+Every changed line must trace directly to the user's request.
+
+**4. Goal-Driven Execution**
+For multi-step tasks, state a brief plan with verifiable checks before starting.
+Transform vague goals into testable outcomes: build passes, tests pass, coverage gates pass.
+Verify success explicitly — don't assume "it works" without running the checks.
+
+## Agent Operating Contract
+
+For every non-trivial coding task, state this before editing:
+- Assumptions: what you believe is true, and what remains unknown.
+- Scope boundaries: what is intentionally in and out of scope.
+- Files expected to change: the smallest expected file set.
+- Verification commands: exact commands that will prove the change.
+- Rollback notes: only for risky changes, describe the simplest way back.
+
+Anti-patterns:
+- No drive-by refactors.
+- No broad rewrites.
+- No speculative abstractions.
+- No touching CSP, security headers, auth, env handling, SSRF, rate limits,
+  logging, or deployment config unless explicitly requested.
+- No changing executive positioning, profile title, signature system, metadata,
+  JSON-LD, llms files, entity files, or demo registry entries unless requested.
+
+Definition of Done:
+- `npm run lint` passes.
+- `npm run test` or the task-specific test command passes.
+- `npm run build` passes.
+- `npm audit --audit-level=high` passes with 0 high/critical vulnerabilities.
+- Every changed line directly maps to the user's request.
+
+---
+
 ## Security Scope
 This Agent Sandbox Contract applies to Codex, Claude Code, Cursor, Copilot,
 skills.sh, and any coding-agent workflow used with this repository.

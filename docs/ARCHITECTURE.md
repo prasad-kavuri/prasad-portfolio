@@ -8,7 +8,7 @@ This document describes the real system architecture implemented in this reposit
 
 | Layer | Repo implementation | Purpose |
 |---|---|---|
-| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 13 production demos |
+| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 14 production demos |
 | Skills Layer | `src/data/skills.ts`, `src/app/skills/` | Reusable capability modules (guardrails, observability, eval, drift, HITL, planning) wired to demos |
 | Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
@@ -238,6 +238,46 @@ Without governance controls, hallucinations become a business problem: customer-
 This platform addresses that risk as an operating discipline. Eval gating catches regressions before release, reducing rollback and support cost. The HITL checkpoint between Researcher and Strategist prevents unreviewed agent decisions from propagating on high-stakes transitions. Drift monitoring surfaces degradation early, before customers experience it as failure. Centralized observability with trace IDs makes decisions fully auditable end-to-end. Guardrails enforce abuse prevention and input/output safety at the infrastructure layer, so protection does not depend on each feature team re-implementing policy logic.
 
 The operating model is governance-first rather than demo-first: evaluation before deployment, human oversight on critical paths, and full observability from request to response. The result is an AI platform that can scale responsibly, with measurable control over quality, risk, and cost.
+
+## Hybrid Edge + Cloud Agent Architecture
+
+### Why Edge Agents
+
+Edge agents run model inference directly in the browser via WASM (Transformers.js).
+They are appropriate when:
+- Input contains PII or sensitive fields that must not leave the device
+- Latency requirements demand sub-100ms preprocessing before server round-trip
+- Inference cost must be zero (no API calls for the edge tier)
+- Compliance requires data residency at the client boundary
+
+### When to Escalate to Cloud
+
+Cloud agents handle tasks requiring:
+- Multi-step reasoning across large context windows
+- Tool use and multi-agent orchestration
+- RAG over enterprise knowledge bases
+- Quality-gated outputs with eval scoring
+
+### Governance Boundary
+
+The HITL policy gate sits between edge and cloud tiers.
+It is enforced at both the UI layer (user approval) and the API layer (server-side `approvedByUser` check).
+This ensures no PII payload reaches cloud agents without explicit human authorization.
+
+### Cost and Privacy Benefits
+
+| Dimension       | Edge Tier             | Cloud Tier                     |
+|-----------------|-----------------------|--------------------------------|
+| Inference cost  | Zero                  | Optimized via LLM Router       |
+| Data exposure   | None (local only)     | Sanitized payload only         |
+| Latency         | ~100–500ms WASM       | ~1–3s cloud round-trip         |
+| Capability      | Extraction, NER       | Reasoning, summarization       |
+
+**Demo**: [Edge Agent + Cloud Agent Collaboration](/demos/edge-agent-collaboration)
+
+**Implementation**: `src/lib/edge-inference.ts` (Transformers.js BERT NER), `src/app/api/edge-agent/route.ts` (HITL-gated Groq handoff), `src/app/demos/edge-agent-collaboration/page.tsx` (three-stage UI).
+
+---
 
 ## Synthesis
 

@@ -5,7 +5,7 @@
 
 ---
 
-Production-grade AI engineering portfolio platform demonstrating governed, observable, evaluated AI systems across 13 live demos.
+Production-grade AI engineering portfolio platform demonstrating governed, observable, evaluated AI systems across 14 live demos.
 
 ## What's Included
 

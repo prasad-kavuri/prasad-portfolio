@@ -29,7 +29,7 @@ VP, AI Platform Engineering
 - $10M+ revenue impact from AI systems
 - Enterprise-scale agentic AI deployments
 
-## DEMOS (13 total)
+## DEMOS (14 total)
 Flagship: /demos/evaluation-showcase
 Full catalog: /demos
 

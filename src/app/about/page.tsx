@@ -95,7 +95,7 @@ const proofPoints = [
   '200+ engineers led',
   '70%+ AI infrastructure cost reduction',
   '13,000+ B2B customers enabled',
-  '13 production AI demos / platform patterns',
+  '14 production AI demos / platform patterns',
 ];
 
 const canonicalLinks = [

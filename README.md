@@ -13,7 +13,7 @@
 | 200+ engineers led | Krutrim, Ola, HERE Technologies — US, Europe, India |
 | 70% cost reduction | FinOps-aware LLM routing and inference optimization at Ola |
 | 13,000+ B2B customers | Enterprise API platform at Ola Maps |
-| 13 live AI demos | Eval-gated, observable, production-pattern systems |
+| 14 live AI demos | Eval-gated, observable, production-pattern systems |
 
 **Live site:** [www.prasadkavuri.com](https://www.prasadkavuri.com) · **For recruiters:** [/for-recruiters](https://www.prasadkavuri.com/for-recruiters) · **Contact:** vbkpkavuri@gmail.com
 
@@ -119,7 +119,7 @@ Live architecture section: [www.prasadkavuri.com/#architecture](https://www.pras
 
 ## Demo Catalog
 
-Canonical source: `src/data/demos.ts` — 13 live demos as of v1.0.0.
+Canonical source: `src/data/demos.ts` — 14 live demos as of v1.0.0.
 
 | Demo | Route | Engine / Stack | Mode |
 |------|-------|----------------|------|

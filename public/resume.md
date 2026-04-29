@@ -13,7 +13,7 @@ at enterprise scale. Core differentiator: bridges the gap between AI research an
 enterprise reliability — ships AI systems that are observable, governed, and cost-efficient.
 
 **Key outcomes**: **70% infrastructure cost reduction** | **50% latency reduction** |
-**13,000+ B2B customers** | **200+ engineers led** | **$10M+ revenue launched** | **13 production AI systems**
+**13,000+ B2B customers** | **200+ engineers led** | **$10M+ revenue launched** | **14 production AI systems**
 
 ---
 
@@ -99,4 +99,4 @@ All demos: https://www.prasadkavuri.com/demos
 **Seniority**: VP / Head level (strategic + hands-on technical)
 **Geography**: Naperville, IL (Greater Chicago Area) — open to hybrid and select remote roles
 **Differentiator**: Production governance, FinOps discipline, and agentic orchestration at enterprise scale
-**Active**: 13 live production AI demos with full source code available at https://www.prasadkavuri.com
+**Active**: 14 live production AI demos with full source code available at https://www.prasadkavuri.com

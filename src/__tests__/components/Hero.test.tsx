@@ -80,7 +80,7 @@ describe('Hero', () => {
 
   it('renders Browse All Demos CTA linking to /demos', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /Browse All 13 Demos/i });
+    const link = screen.getByRole('link', { name: /Browse All 14 Demos/i });
     expect(link.getAttribute('href')).toBe('/demos');
   });
 

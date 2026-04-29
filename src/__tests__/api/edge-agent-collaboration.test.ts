@@ -95,6 +95,110 @@ describe('classifyPII — edge inference', () => {
     expect(result.redacted).not.toContain('user@domain.com');
     expect(result.redacted).not.toContain('ACC-1234-AB');
   });
+
+  it('adds NAME redaction for NER PER entity with defined positions', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([
+      { entity_group: 'PER', word: 'Alice', start: 0, end: 5, score: 0.99 },
+    ]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Alice wants an upgrade.');
+    expect(result.redactedFields).toContain('NAME');
+    expect(result.redacted).not.toContain('Alice');
+  });
+
+  it('skips NER entity with non-PER label (e.g. ORG)', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([
+      { entity_group: 'ORG', word: 'Acme', start: 0, end: 4, score: 0.99 },
+    ]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Acme Corp is our client.');
+    expect(result.redactedFields).not.toContain('NAME');
+  });
+
+  it('skips NER entity when start/end are undefined', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([
+      { entity_group: 'PER', word: 'Bob' }, // no start/end
+    ]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Bob wants an upgrade.');
+    expect(result.redactedFields).not.toContain('NAME');
+  });
+
+  it('uses entity.entity fallback label when entity_group is absent', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([
+      { entity: 'PER', word: 'Carol', start: 0, end: 5, score: 0.99 },
+    ]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Carol wants an upgrade.');
+    expect(result.redactedFields).toContain('NAME');
+  });
+
+  it('skips NER NAME span that overlaps an existing EMAIL span', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const text = 'Contact: user@example.com for help';
+    const emailStart = text.indexOf('user@example.com');
+    const mockNer = vi.fn().mockResolvedValue([
+      { entity_group: 'PER', word: 'user', start: emailStart, end: emailStart + 4, score: 0.5 },
+    ]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII(text);
+    expect(result.redactedFields).toContain('EMAIL');
+    expect(result.redactedFields).not.toContain('NAME');
+  });
+
+  it('adds NAME span when it does not overlap existing regex spans', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const text = 'David needs help. Contact: david@corp.com';
+    const mockNer = vi.fn().mockResolvedValue([
+      { entity_group: 'PER', word: 'David', start: 0, end: 5, score: 0.99 },
+    ]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII(text);
+    expect(result.redactedFields).toContain('NAME');
+    expect(result.redactedFields).toContain('EMAIL');
+  });
+
+  it('reuses cached NER pipeline on subsequent calls without reload', async () => {
+    const { classifyPII } = await import('@/lib/edge-inference');
+    await classifyPII('First call: first@example.com');
+    const result = await classifyPII('Second call: second@example.org');
+    expect(result.redactedFields).toContain('EMAIL');
+  });
+
+  it('falls back to empty label when both entity_group and entity are absent', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([
+      { word: 'something', start: 0, end: 9, score: 0.5 }, // no entity_group, no entity
+    ]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('something else entirely');
+    expect(result.redactedFields).not.toContain('NAME');
+  });
 });
 
 // --- POST /api/edge-agent route tests ---

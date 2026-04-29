@@ -32,13 +32,13 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // unsafe-eval required for WASM JIT compilation (Transformers.js / ONNX Runtime Web)
               // blob: required for Transformers.js WASM worker bootstrap
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net https://unpkg.com",
+              "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net https://unpkg.com",
               // worker-src blob: required for WASM web workers spun up by @xenova/transformers
               "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               // huggingface.co for model weights; api.groq.com for server demo calls; blob: for local object-URL fetches
-              "connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://cdn.jsdelivr.net https://unpkg.com https://va.vercel-scripts.com blob:",
+              "connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://cdn-lfs-us-1.huggingface.co https://cdn.jsdelivr.net https://unpkg.com https://va.vercel-scripts.com blob:",
               "font-src 'self' data:",
               "frame-ancestors 'none'",
             ].join("; "),

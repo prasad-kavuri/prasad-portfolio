@@ -37,7 +37,9 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
     "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net https://unpkg.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://cdn-lfs-us-1.huggingface.co https://cdn.jsdelivr.net https://unpkg.com https://va.vercel-scripts.com blob:; frame-ancestors 'none';"
   );
   response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
-  response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
+  // credentialless required: HuggingFace CDN does not send CORP headers;
+  // require-corp blocks cross-origin model weight fetches on desktop Chrome
+  response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
   return response;
 }
 

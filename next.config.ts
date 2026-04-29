@@ -45,7 +45,9 @@ const nextConfig: NextConfig = {
           },
           // Required for SharedArrayBuffer (used by WASM multi-threading)
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+          // credentialless required: HuggingFace CDN does not send CORP headers;
+          // require-corp blocks cross-origin model weight fetches on desktop Chrome
+          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
           // Belt-and-suspenders hardening headers
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },

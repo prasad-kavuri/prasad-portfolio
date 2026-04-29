@@ -45,10 +45,10 @@ interface InitFailure {
 }
 
 const MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
-const WASM_PATH_CANDIDATES = [
-  'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/',
-  'https://unpkg.com/onnxruntime-web/dist/',
-] as const;
+// Empty: let @huggingface/transformers self-configure wasmPaths with its own versioned CDN URL.
+// Unversioned CDN probes return the stable release, which is binary-incompatible with the
+// installed dev build (onnxruntime-web@1.26.0-dev.20260416-b7804b056c).
+const WASM_PATH_CANDIDATES: readonly string[] = [];
 
 function logInit(event: string, details?: Record<string, unknown>) {
   if (process.env.NODE_ENV === 'test') return;

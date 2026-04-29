@@ -20,7 +20,7 @@ test.describe('Homepage', () => {
   });
 
   test('Browse All Demos CTA navigates to canonical demos index', async ({ page }) => {
-    await page.getByRole('link', { name: /Browse All 13 Demos/i }).first().click();
+    await page.getByRole('link', { name: /Browse All 14 Demos/i }).first().click();
     await expect(page).toHaveURL(/\/demos\/?$/);
     await expect(page.getByRole('heading', { name: /All Production Demos/i })).toBeVisible();
   });
@@ -33,7 +33,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('AI Applications', { exact: true }).first()).toBeVisible();
   });
 
-  test('all 13 demo cards are present', async ({ page }) => {
+  test('all 14 demo cards are present', async ({ page }) => {
     // Use first() because card titles may appear in multiple elements (heading + aria-label etc.)
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
     await expect(page.getByText('LLM Router').first()).toBeVisible();
@@ -48,6 +48,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
     await expect(page.getByText('Native Browser AI Skill').first()).toBeVisible();
     await expect(page.getByText('Real-Time Spatial AI + World Modeling Engine').first()).toBeVisible();
+    await expect(page.getByText('Edge Agent + Cloud Agent Collaboration').first()).toBeVisible();
   });
 
   test('Desktop badge appears on exactly 4 cards', async ({ page }) => {

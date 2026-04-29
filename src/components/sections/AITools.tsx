@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demos } from "@/data/demos";
 import { PORTFOLIO_FACTS } from "@/data/site-config";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Bot, Building2, Cuboid, Database, Eye, FileText, GitBranch, MonitorCheck, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
+import { ArrowRight, Bot, Building2, Cuboid, Database, Eye, FileText, GitBranch, Layers, MonitorCheck, Plug, Search, ShieldCheck, Users, Zap } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 const statusLabel: Record<string, string> = {
@@ -32,7 +32,7 @@ const DEMO_GROUPS = [
   {
     label: "Agentic Systems",
     description: "Autonomous agents and tool-use orchestration",
-    ids: ["multi-agent", "mcp-demo", "enterprise-control-plane", "world-generation"]
+    ids: ["multi-agent", "mcp-demo", "edge-agent-collaboration", "enterprise-control-plane", "world-generation"]
   },
   {
     label: "AI Applications",
@@ -53,6 +53,7 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
   "enterprise-control-plane": Building2,
   "world-generation": Cuboid,
   "browser-native-ai-skill": MonitorCheck,
+  "edge-agent-collaboration": Layers,
   "portfolio-assistant": Bot,
   "resume-generator": FileText,
   "multimodal": Eye,

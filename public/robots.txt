@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /_next/
 Disallow: /*.html$
 
 # Explicitly allow major AI crawlers (override /api/ disallow above)
@@ -30,7 +29,6 @@ User-agent: cohere-ai
 Allow: /
 
 Sitemap: https://www.prasadkavuri.com/sitemap.xml
-Sitemap: https://www.prasadkavuri.com/llms.txt
 
 # Canonical entity and discovery resources
 Allow: /about

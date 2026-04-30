@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /*.html$
+Disallow: /*.html
 
 # Explicitly allow major AI crawlers (override /api/ disallow above)
 User-agent: GPTBot
@@ -29,16 +29,3 @@ User-agent: cohere-ai
 Allow: /
 
 Sitemap: https://www.prasadkavuri.com/sitemap.xml
-
-# Canonical entity and discovery resources
-Allow: /about
-Allow: /for-recruiters
-Allow: /ai-profile.json
-Allow: /entity.json
-Allow: /.well-known/ai-agent-manifest.json
-# llms.txt: https://www.prasadkavuri.com/llms.txt
-# llms-full.txt: https://www.prasadkavuri.com/llms-full.txt
-# entity: https://www.prasadkavuri.com/entity.json
-# agent-manifest: https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
-# resume: https://www.prasadkavuri.com/resume.md
-# ai-profile: https://www.prasadkavuri.com/ai-profile.json

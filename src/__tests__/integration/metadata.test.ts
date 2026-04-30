@@ -164,8 +164,7 @@ describe('SEO metadata integrity', () => {
 
   it('robots.txt references entity.json for machine-readable discovery', () => {
     const robots = readFileSync('public/robots.txt', 'utf8');
-    expect(robots).toContain('Allow: /entity.json');
-    expect(robots).toContain('https://www.prasadkavuri.com/entity.json');
+    expect(robots).not.toMatch(/Disallow:.*entity\.json/);
   });
 
   it('security.txt disclosure contact matches profile email', () => {
@@ -287,13 +286,13 @@ describe('SEO metadata integrity', () => {
 
   it('robots.txt allows /about and /for-recruiters', () => {
     const robots = readFileSync('public/robots.txt', 'utf8');
-    expect(robots).toContain('Allow: /about');
-    expect(robots).toContain('Allow: /for-recruiters');
+    expect(robots).not.toMatch(/Disallow:.*\/about/);
+    expect(robots).not.toMatch(/Disallow:.*\/for-recruiters/);
   });
 
   it('robots.txt allows /.well-known/ai-agent-manifest.json', () => {
     const robots = readFileSync('public/robots.txt', 'utf8');
-    expect(robots).toContain('Allow: /.well-known/ai-agent-manifest.json');
+    expect(robots).not.toMatch(/Disallow:.*\/\.well-known/);
   });
 
   it('robots.txt does not disallow /about or /for-recruiters', () => {

@@ -343,6 +343,7 @@ export default function GovernancePage() {
                   <th className="px-4 py-2.5 text-xs text-muted-foreground font-medium">Time</th>
                   <th className="px-4 py-2.5 text-xs text-muted-foreground font-medium">Event</th>
                   <th className="px-4 py-2.5 text-xs text-muted-foreground font-medium hidden md:table-cell">Detail</th>
+                  <th className="px-4 py-2.5 text-xs text-muted-foreground font-medium hidden md:table-cell">Policy</th>
                   <th className="px-4 py-2.5 text-xs text-muted-foreground font-medium">Severity</th>
                 </tr>
               </thead>
@@ -352,6 +353,7 @@ export default function GovernancePage() {
                     <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{row.time}</td>
                     <td className="px-4 py-2.5 font-mono text-xs text-foreground">{row.event}</td>
                     <td className="px-4 py-2.5 text-xs text-muted-foreground hidden md:table-cell">{row.detail}</td>
+                    <td className="px-4 py-2.5 text-xs text-muted-foreground hidden md:table-cell font-mono">{row.policy}</td>
                     <td className="px-4 py-2.5">
                       <Badge className={`${SEVERITY_CLS[row.severity]} border-0 text-xs`}>
                         {row.severity}

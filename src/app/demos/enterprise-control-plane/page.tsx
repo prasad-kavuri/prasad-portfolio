@@ -34,7 +34,6 @@ import { SpendAnalyticsPanel } from "@/components/enterprise/SpendAnalyticsPanel
 import { ObservabilityFeed } from "@/components/enterprise/ObservabilityFeed";
 import { TokenUsageChart } from "@/components/enterprise/TokenUsageChart";
 import { ToolRegistryPanel } from "@/components/enterprise/ToolRegistryPanel";
-import { STATUS_SNAPSHOT } from "@/data/telemetry-snapshots";
 import type { TeamPermissions, TeamSpendConfig, UsageMetrics, DailyTokenUsage, OtelEvent, OrgSummary } from "@/components/enterprise/types";
 
 type TabId = 'registry' | 'rbac' | 'spend' | 'observability';
@@ -103,6 +102,9 @@ function ErrorCard({ message, onRetry }: { message: string; onRetry: () => void 
 export default function EnterpriseControlPlanePage() {
   const [activeTab, setActiveTab] = useState<TabId>('registry');
   const [archOpen, setArchOpen] = useState(false);
+  const [snapshotTs, setSnapshotTs] = useState('');
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setSnapshotTs(new Date().toISOString()); }, []);
 
   // Data fetches
   const permissions = useFetch<TeamPermissions[]>('/api/enterprise-sim?resource=permissions');
@@ -179,7 +181,7 @@ export default function EnterpriseControlPlanePage() {
               </p>
             </div>
             <p className="text-xs text-muted-foreground">
-              Snapshot timestamp: {STATUS_SNAPSHOT.generatedAtIso}
+              Snapshot timestamp: {snapshotTs || '—'}
             </p>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

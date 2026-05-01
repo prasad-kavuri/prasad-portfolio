@@ -8,8 +8,8 @@ import type {
   OrgSummary,
 } from '@/components/enterprise/types';
 
-// Captured once on module load — ensures determinism within a session
-const MODULE_INIT_TIME = new Date('2026-04-13T14:00:00Z').getTime();
+// Captured once on module load — anchors all event/chart timestamps to the current session
+const MODULE_INIT_TIME = Date.now();
 
 function seededRand(seed: number): () => number {
   let s = seed;

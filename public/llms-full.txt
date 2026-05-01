@@ -81,6 +81,7 @@ REPRESENTATIVE PLATFORM CAPABILITIES
 - Reliability engineering mindset: graceful fallback modes, retry flows, and resilient UX under runtime/backend failure
 - Monitoring and observability posture to support production governance
 - Structured approach to governance communication for technical and executive audiences
+- Spatial Intelligence roadmap: open-source 3D world modeling, simulation-ready environments, and Physical AI platform patterns — demonstrated in the live Real-Time Spatial AI + World Modeling Engine demo.
 
 LEADERSHIP AND SCALE SIGNALS
 - Executive-level AI engineering leadership narrative aligned to platform outcomes

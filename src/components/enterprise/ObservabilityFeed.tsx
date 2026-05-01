@@ -79,11 +79,17 @@ let refreshCounter = 0;
 function makeSimulatedEvent(events: OtelEvent[]): OtelEvent {
   refreshCounter += 1;
   const base = events[refreshCounter % events.length];
+  const hasTokenCost = base.tokenCost !== undefined;
+  const inputTokens  = hasTokenCost ? Math.floor(200  + Math.random() * 1800) : undefined;
+  const outputTokens = hasTokenCost ? Math.floor(50   + Math.random() *  750) : undefined;
   return {
     ...base,
     eventId: `evt-live-${refreshCounter}`,
     timestamp: new Date().toISOString(),
     userId: `${base.teamId.slice(0, 3)}-user-${(refreshCounter % 10) + 1}`,
+    tokenCost: hasTokenCost && inputTokens !== undefined && outputTokens !== undefined
+      ? { inputTokens, outputTokens, totalTokens: inputTokens + outputTokens }
+      : undefined,
   };
 }
 
@@ -177,6 +183,7 @@ export function ObservabilityFeed({ events: initialEvents }: Props) {
     if (autoRefresh) {
       intervalRef.current = setInterval(() => {
         setEvents((prev) => [makeSimulatedEvent(initialEvents), ...prev].slice(0, 200));
+        setNowMs(Date.now());
       }, 4000);
     }
 

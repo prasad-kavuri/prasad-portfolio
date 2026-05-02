@@ -94,4 +94,70 @@ describe('safeServerFetch', () => {
       code: 'redirect_limit_exceeded',
     });
   });
+
+  it('rejects invalid URLs and DNS failures before fetching', async () => {
+    await expect(safeServerFetch('not a url')).rejects.toMatchObject<Partial<SafeFetchError>>({
+      name: 'SafeFetchError',
+      code: 'invalid_url',
+    });
+
+    mockLookup.mockRejectedValueOnce(new Error('lookup failed'));
+    await expect(safeServerFetch(new URL('https://example.com/start'))).rejects.toMatchObject<Partial<SafeFetchError>>({
+      name: 'SafeFetchError',
+      code: 'dns_resolution_failed',
+    });
+
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('requires redirect locations and preserves HEAD on 301/302', async () => {
+    mockFetch.mockResolvedValueOnce({
+      status: 302,
+      headers: new Headers(),
+    });
+
+    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject<Partial<SafeFetchError>>({
+      name: 'SafeFetchError',
+      code: 'redirect_without_location',
+    });
+
+    mockFetch
+      .mockResolvedValueOnce({
+        status: 301,
+        headers: new Headers({ location: '/final' }),
+      })
+      .mockResolvedValueOnce({
+        status: 204,
+        ok: true,
+        headers: new Headers(),
+      });
+
+    const res = await safeServerFetch('https://example.com/start', { method: 'HEAD' });
+    expect(res.status).toBe(204);
+    expect(mockFetch.mock.calls.at(-1)?.[1]?.method).toBe('HEAD');
+  });
+
+  it('converts 303 redirects to GET and strips content type', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        status: 303,
+        headers: new Headers({ location: '/final' }),
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        ok: true,
+        headers: new Headers(),
+      });
+
+    await safeServerFetch('https://example.com/start', {
+      method: 'POST',
+      body: 'payload',
+      headers: { 'content-type': 'application/json' },
+    });
+
+    const followUpInit = mockFetch.mock.calls[1]?.[1];
+    expect(followUpInit?.method).toBe('GET');
+    expect(followUpInit?.body).toBeUndefined();
+    expect(new Headers(followUpInit?.headers).has('content-type')).toBe(false);
+  });
 });

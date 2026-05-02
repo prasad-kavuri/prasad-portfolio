@@ -62,6 +62,18 @@ describe('POST /api/multi-agent', () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
+  it('returns 400 for invalid approval state and non-string URL values', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+
+    const invalidApproval = await POST(makeRequest({ website_url: 'https://example.com', approvalState: 'done' }) as any);
+    expect(invalidApproval.status).toBe(400);
+    expect((await invalidApproval.json()).error).toBe('Invalid approval state');
+
+    const invalidType = await POST(makeRequest({ website_url: 123 }) as any);
+    expect(invalidType.status).toBe(400);
+    expect((await invalidType.json()).error).toBe('Invalid input');
+  });
+
   it('returns 400 for URL over 200 chars', async () => {
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(makeRequest({ website_url: 'https://' + 'a'.repeat(200) + '.com' }) as any);
@@ -186,6 +198,41 @@ describe('POST /api/multi-agent', () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body).toHaveProperty('agents');
+  });
+
+  it('handles non-array agents payloads without sanitization assumptions', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ agents: { unexpected: true }, total_duration_ms: 100 }),
+    });
+
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com', approvalState: 'approved' }) as any);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.agents).toEqual({ unexpected: true });
+  });
+
+  it('leaves non-string agent fields unchanged while sanitizing string fields', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        agents: [
+          {
+            name: 'Analyzer',
+            findings: 'plain text findings',
+            recommendation: { structured: true },
+          },
+        ],
+      }),
+    });
+
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.agents[0].findings).toBe('plain text findings');
+    expect(body.agents[0].recommendation).toEqual({ structured: true });
   });
 
   it('sanitizes string fields returned by the agent backend', async () => {

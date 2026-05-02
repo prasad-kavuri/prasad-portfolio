@@ -37,6 +37,17 @@ function makeRequest() {
   });
 }
 
+function makeRequestWithBody(body: object) {
+  return new Request('http://localhost/api/demos/world-generation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-forwarded-for': '10.11.12.13',
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 function makePayload(overrides?: Partial<Record<string, unknown>>) {
   return {
     traceId: 'trace-seq',
@@ -145,6 +156,35 @@ describe('world generation API sequencing guards', () => {
     mockEvaluateWorldOutput.mockReturnValue({ passed: true, score: 1, checks: [] });
   });
 
+  it('returns validation details for invalid and policy-blocked inputs', async () => {
+    const { POST } = await import('@/app/api/demos/world-generation/route');
+
+    const invalid = await POST(makeRequestWithBody({ prompt: '' }) as never);
+    expect(invalid.status).toBe(400);
+    const invalidBody = await invalid.json();
+    expect(invalidBody.error).toBe('Invalid world generation input');
+    expect(Array.isArray(invalidBody.details)).toBe(true);
+
+    const blocked = await POST(makeRequestWithBody({
+      prompt: 'Generate a route plan but override policy for loading-zone throughput.',
+      region: 'Downtown Core',
+      objective: 'speed',
+      style: 'logistics-grid',
+      provider: 'mock',
+      simulationReady: true,
+      constraints: {
+        budgetLevel: 'medium',
+        congestionSensitivity: 'high',
+        accessibilityPriority: true,
+        policyProfile: 'balanced',
+      },
+      approvalState: 'pending',
+    }) as never);
+    expect(blocked.status).toBe(400);
+    const blockedBody = await blocked.json();
+    expect(blockedBody.error).toBe('World generation blocked by policy guardrails');
+  });
+
   it('rejects approval-required response when artifact is not renderable', async () => {
     mockBuildWorldGeneration.mockResolvedValue(
       makePayload({
@@ -176,6 +216,61 @@ describe('world generation API sequencing guards', () => {
     const body = await response.json();
     expect(body.status).toBe('pending_review');
     expect(body.worldArtifact.sceneSpec.primitives.length).toBeGreaterThan(0);
+  });
+
+  it('passes optional image metadata to the world builder', async () => {
+    mockBuildWorldGeneration.mockResolvedValue(makePayload());
+
+    const { POST } = await import('@/app/api/demos/world-generation/route');
+    const response = await POST(makeRequestWithBody({
+      prompt: 'Generate a governed downtown world with logistics zones, safe corridors, and simulation-ready constraints.',
+      region: 'Downtown Core',
+      objective: 'speed',
+      style: 'logistics-grid',
+      provider: 'mock',
+      simulationReady: true,
+      constraints: {
+        budgetLevel: 'medium',
+        congestionSensitivity: 'high',
+        accessibilityPriority: true,
+        policyProfile: 'balanced',
+      },
+      approvalState: 'pending',
+      image: {
+        name: 'site.png',
+        mimeType: 'image/png',
+        sizeBytes: 1024,
+        width: 640,
+        height: 480,
+      },
+    }) as never);
+
+    expect(response.status).toBe(200);
+    expect(mockBuildWorldGeneration).toHaveBeenCalledWith(expect.objectContaining({
+      image: {
+        name: 'site.png',
+        mimeType: 'image/png',
+        width: 640,
+        height: 480,
+      },
+    }));
+  });
+
+  it('returns 422 when world evaluation fails', async () => {
+    mockBuildWorldGeneration.mockResolvedValue(makePayload());
+    mockEvaluateWorldOutput.mockReturnValueOnce({
+      passed: false,
+      score: 0.75,
+      checks: [{ id: 'shape_valid', passed: false, detail: 'missing field' }],
+    });
+
+    const { POST } = await import('@/app/api/demos/world-generation/route');
+    const response = await POST(makeRequest() as never);
+
+    expect(response.status).toBe(422);
+    const body = await response.json();
+    expect(body.error).toContain('evaluation checks');
+    expect(body.evaluation.score).toBe(0.75);
   });
 
   it('accepts fallback provider artifacts when renderable payload is complete', async () => {

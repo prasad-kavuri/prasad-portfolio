@@ -117,6 +117,75 @@ describe('world workflow state sequencing', () => {
     expect(completed.artifactSession?.response.status).toBe('completed');
   });
 
+  it('handles workflow reducer status transitions, completion guards, and reset', async () => {
+    let state = worldWorkflowReducer(INITIAL_WORLD_WORKFLOW_STATE, { type: 'BEGIN_VALIDATING' });
+    expect(state.status).toBe('validating');
+    state = worldWorkflowReducer(state, { type: 'BEGIN_GENERATING' });
+    expect(state.status).toBe('generating');
+    state = worldWorkflowReducer(state, { type: 'BEGIN_STRUCTURING' });
+    expect(state.status).toBe('structuring');
+    state = worldWorkflowReducer(state, { type: 'BEGIN_REVIEWING' });
+    expect(state.status).toBe('reviewing');
+    state = worldWorkflowReducer(state, { type: 'SET_ERROR', message: 'Generation failed' });
+    expect(state.status).toBe('error');
+    expect(state.errorMessage).toBe('Generation failed');
+    expect(worldWorkflowReducer(state, { type: 'RESET' })).toBe(INITIAL_WORLD_WORKFLOW_STATE);
+
+    const blocked = worldWorkflowReducer(INITIAL_WORLD_WORKFLOW_STATE, { type: 'ENTER_COMPLETED' });
+    expect(blocked.status).toBe('error');
+    expect(blocked.errorMessage).toMatch(/Completion blocked/i);
+
+    const payload = await buildWorldGeneration({
+      traceId: 'trace-workflow-enter-completed',
+      prompt: 'Generate a governed world with simulation-ready corridors.',
+      region: 'Downtown Core',
+      objective: 'speed',
+      style: 'logistics-grid',
+      provider: 'mock',
+      simulationReady: true,
+      constraints: {
+        budgetLevel: 'medium',
+        congestionSensitivity: 'high',
+        accessibilityPriority: true,
+        policyProfile: 'balanced',
+      },
+      approvalState: 'pending',
+    });
+    const session = buildArtifactSession(payload);
+    const ready = worldWorkflowReducer(INITIAL_WORLD_WORKFLOW_STATE, { type: 'SET_ARTIFACT_READY', session });
+    expect(worldWorkflowReducer(ready, { type: 'ENTER_COMPLETED' }).status).toBe('completed');
+  });
+
+  it('blocks approval when no valid artifact is available and accepts blank approval notes', async () => {
+    const blocked = worldWorkflowReducer(INITIAL_WORLD_WORKFLOW_STATE, { type: 'APPROVE_ARTIFACT' });
+    expect(blocked.status).toBe('error');
+    expect(blocked.errorMessage).toMatch(/no valid artifact/i);
+
+    const payload = await buildWorldGeneration({
+      traceId: 'trace-workflow-blank-note',
+      prompt: 'Generate a governed world with simulation-ready corridors.',
+      region: 'Downtown Core',
+      objective: 'speed',
+      style: 'logistics-grid',
+      provider: 'mock',
+      simulationReady: true,
+      constraints: {
+        budgetLevel: 'medium',
+        congestionSensitivity: 'high',
+        accessibilityPriority: true,
+        policyProfile: 'balanced',
+      },
+      approvalState: 'pending',
+    });
+    const ready = worldWorkflowReducer(INITIAL_WORLD_WORKFLOW_STATE, {
+      type: 'SET_ARTIFACT_READY',
+      session: buildArtifactSession(payload),
+    });
+    const completed = worldWorkflowReducer(ready, { type: 'APPROVE_ARTIFACT', note: '   ' });
+    expect(completed.status).toBe('completed');
+    expect(completed.artifactSession?.artifact.approvalNotes).toEqual([]);
+  });
+
   it('rejects approval transitions when canonical artifact is not renderable', async () => {
     const payload = await buildWorldGeneration({
       traceId: 'trace-workflow-not-renderable',
@@ -156,5 +225,52 @@ describe('world workflow state sequencing', () => {
     expect(ready.artifactSession?.validation.valid).toBe(false);
     expect(approval.status).toBe('error');
     expect(approval.errorMessage).toMatch(/Approval blocked/i);
+  });
+
+  it('validates canonical artifacts with missing structural fields', async () => {
+    const payload = await buildWorldGeneration({
+      traceId: 'trace-workflow-structural-validation',
+      prompt: 'Generate a downtown operations world concept with policy-safe corridors and curbside zones.',
+      region: 'Downtown Core',
+      objective: 'cost',
+      style: 'logistics-grid',
+      provider: 'mock',
+      simulationReady: true,
+      constraints: {
+        budgetLevel: 'medium',
+        congestionSensitivity: 'medium',
+        accessibilityPriority: true,
+        policyProfile: 'balanced',
+      },
+      approvalState: 'pending',
+    });
+
+    const artifact = buildCanonicalArtifact(payload);
+    const invalid = validateCanonicalArtifact({
+      ...artifact,
+      sceneSpec: {
+        ...artifact.sceneSpec,
+        worldId: '',
+        exportReadiness: 'ready',
+        primitives: [],
+      },
+      preview: {
+        ...artifact.preview,
+        cells: [],
+      },
+      sceneZones: [],
+      routeCorridors: [],
+    });
+
+    expect(invalid.valid).toBe(false);
+    expect(invalid.reasons).toEqual(expect.arrayContaining([
+      'scene_spec_missing',
+      'scene_primitives_missing',
+      'renderable_scene_missing',
+      'preview_cells_missing',
+      'scene_zones_missing',
+      'route_corridors_missing',
+      'export_marked_ready_but_invalid',
+    ]));
   });
 });

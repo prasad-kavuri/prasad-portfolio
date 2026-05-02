@@ -11,6 +11,15 @@ function makeRequest(params: Record<string, string> = {}, ip = '127.0.0.1') {
   });
 }
 
+function makeRequestWithHeaders(params: Record<string, string> = {}, headers: Record<string, string> = {}) {
+  const url = new URL('http://localhost/api/enterprise-sim');
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  return new NextRequest(url.toString(), {
+    method: 'GET',
+    headers,
+  });
+}
+
 describe('GET /api/enterprise-sim', () => {
   beforeEach(() => {
     _resetStore();
@@ -108,6 +117,32 @@ describe('GET /api/enterprise-sim', () => {
     expect(body.error).toBeDefined();
     expect(body.error).not.toContain('Error:');
     expect(body.error).not.toContain('at ');
+  });
+
+  it('returns 400 when capped string params exceed length limits', async () => {
+    const { GET } = await import('@/app/api/enterprise-sim/route');
+    const res = await GET(makeRequest({ resource: 'summary', period: '30d', teamId: 'x'.repeat(101) }));
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Invalid request parameters');
+  });
+
+  it('clamps numeric query params and supports x-real-ip fallback', async () => {
+    const { GET } = await import('@/app/api/enterprise-sim/route');
+
+    const tokens = await GET(makeRequestWithHeaders(
+      { resource: 'tokens', days: 'not-a-number' },
+      { 'x-real-ip': '203.0.113.9' }
+    ));
+    expect(tokens.status).toBe(200);
+    expect((await tokens.json()).data).toHaveLength(30);
+
+    const events = await GET(makeRequestWithHeaders(
+      { resource: 'events', limit: '999' },
+      { 'x-real-ip': '203.0.113.10' }
+    ));
+    expect(events.status).toBe(200);
+    expect((await events.json()).data).toHaveLength(200);
   });
 
   it('response time is under 500ms', async () => {

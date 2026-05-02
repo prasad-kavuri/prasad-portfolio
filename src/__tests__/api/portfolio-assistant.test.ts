@@ -118,6 +118,40 @@ describe('POST /api/portfolio-assistant', () => {
     expect(body.error).toMatch(/messages are required/i);
   });
 
+  it('returns 400 for invalid useRAG and approvalState values', async () => {
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+
+    const invalidRag = await POST(makeRequest({
+      messages: [{ role: 'user', content: 'hello' }],
+      useRAG: 'yes',
+    }));
+    expect(invalidRag.status).toBe(400);
+    expect((await invalidRag.json()).error).toBe('Invalid input');
+
+    const invalidApproval = await POST(makeRequest({
+      messages: [{ role: 'user', content: 'hello' }],
+      approvalState: 'done',
+    }));
+    expect(invalidApproval.status).toBe(400);
+    expect((await invalidApproval.json()).error).toBe('Invalid approval state');
+  });
+
+  it('returns 400 for malformed conversation messages', async () => {
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+
+    const tooMany = await POST(makeRequest({
+      messages: Array.from({ length: 21 }, () => ({ role: 'user', content: 'hello' })),
+      useRAG: false,
+    }));
+    expect(tooMany.status).toBe(400);
+
+    const invalidRole = await POST(makeRequest({
+      messages: [{ role: 'system', content: 'hello' }],
+      useRAG: false,
+    }));
+    expect(invalidRole.status).toBe(400);
+  });
+
   it('returns 500 when Groq API returns non-200', async () => {
     mockFetch.mockResolvedValueOnce(new Response('Unauthorized', { status: 401 }));
 

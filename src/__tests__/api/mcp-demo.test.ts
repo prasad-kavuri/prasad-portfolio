@@ -116,6 +116,29 @@ describe('POST /api/mcp-demo', () => {
     expect(body.error).toBe('Invalid input');
   });
 
+  it('returns 500 when GROQ_API_KEY is not configured', async () => {
+    delete process.env.GROQ_API_KEY;
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Tell me about Prasad' }));
+    expect(res.status).toBe(500);
+    expect((await res.json()).error).toBe('GROQ_API_KEY not configured');
+  });
+
+  it('falls back when no tool calls and no content are returned', async () => {
+    mockCreate.mockResolvedValueOnce({
+      choices: [{ message: { content: '', tool_calls: [] } }],
+    });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Tell me about Prasad' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.finalAnswer).toBe('I could not find relevant information.');
+    expect(body.toolCallLog).toEqual([]);
+  });
+
   it('executes tools and returns structured response when tools are called', async () => {
     const toolCall = {
       id: 'call_1',
@@ -350,5 +373,35 @@ describe('POST /api/mcp-demo', () => {
     expect(res.status).toBe(200);
     // parseToolArgs returns {} for invalid JSON; get_experience with empty company → 'Company not found'
     expect(body.toolCallLog[0].result).toBe('Company not found');
+  });
+
+  it('uses fallback answer when final Groq response has no content', async () => {
+    mockCreate
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: null, tool_calls: [
+          { id: 'call_1', function: { name: 'search_skills', arguments: JSON.stringify({ category: 'leadership' }) } },
+        ] } }],
+      })
+      .mockResolvedValueOnce({
+        choices: [{ message: { content: '' } }],
+      });
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Show leadership skills' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.finalAnswer).toBe('No response generated');
+  });
+
+  it('returns timeout status for upstream timeout errors', async () => {
+    const timeout = new Error('deadline exceeded');
+    timeout.name = 'TimeoutError';
+    mockCreate.mockRejectedValueOnce(timeout);
+
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Tell me about Prasad' }));
+    expect(res.status).toBe(504);
+    expect((await res.json()).error).toBe('Upstream timeout');
   });
 });

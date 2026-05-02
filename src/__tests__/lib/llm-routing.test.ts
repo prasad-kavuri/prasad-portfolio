@@ -19,4 +19,12 @@ describe('getRoutingRecommendation', () => {
     expect(rec.model).toBe('llama-3.3-70b-versatile');
     expect(rec.executiveTradeoff).toMatch(/reasoning quality/i);
   });
+
+  it('routes medium-complexity prompts to the balanced tier', () => {
+    const rec = getRoutingRecommendation(
+      'Draft a thoughtful portfolio assistant response for a recruiter exploring platform leadership examples.'
+    );
+    expect(rec.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
+    expect(rec.rationale).toMatch(/medium-complexity/i);
+  });
 });

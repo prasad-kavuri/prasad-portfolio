@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getHostBlockReason, isBlockedOutboundUrl } from '@/lib/url-security';
+import { classifyIpAddress, getHostBlockReason, isBlockedOutboundUrl } from '@/lib/url-security';
 
 describe('url-security host classification', () => {
   it('allows public hostnames', () => {
@@ -29,6 +29,15 @@ describe('url-security host classification', () => {
     expect(getHostBlockReason('127.0.1')).toBe('ipv4_loopback'); // 3-part shorthand (line 57)
   });
 
+  it('ignores malformed flexible IPv4 hostnames', () => {
+    expect(getHostBlockReason('')).toBe('empty_host');
+    expect(getHostBlockReason('.127.0.0.1')).toBeNull();
+    expect(getHostBlockReason('127..1')).toBeNull();
+    expect(getHostBlockReason('0xgg')).toBeNull();
+    expect(getHostBlockReason('99999999999')).toBeNull();
+    expect(getHostBlockReason('1.2.3.4.5')).toBeNull();
+  });
+
   it('returns null for out-of-range IPv4 byte (not classified as private)', () => {
     // 256.1.2.3 fails parseFlexibleIpv4 range check (line 48) — not a valid IP, not blocked
     expect(getHostBlockReason('256.1.2.3')).toBeNull();
@@ -53,6 +62,17 @@ describe('url-security host classification', () => {
     expect(getHostBlockReason('2606:4700:4700::1111')).toBeNull();
   });
 
+  it('classifies direct IP inputs without blocking non-IP strings', () => {
+    expect(classifyIpAddress('not-an-ip')).toEqual({ blocked: false });
+    expect(classifyIpAddress('0.1.2.3')).toEqual({ blocked: true, reason: 'ipv4_unspecified' });
+    expect(classifyIpAddress('100.64.0.1')).toEqual({ blocked: true, reason: 'ipv4_carrier_grade_nat' });
+    expect(classifyIpAddress('192.0.2.1')).toEqual({ blocked: true, reason: 'ipv4_documentation' });
+    expect(classifyIpAddress('198.18.0.1')).toEqual({ blocked: true, reason: 'ipv4_benchmark' });
+    expect(classifyIpAddress('224.0.0.1')).toEqual({ blocked: true, reason: 'ipv4_multicast' });
+    expect(classifyIpAddress('240.0.0.1')).toEqual({ blocked: true, reason: 'ipv4_reserved' });
+    expect(classifyIpAddress('::ffff:8.8.8.8')).toEqual({ blocked: false });
+  });
+
   it('blocks empty host', () => {
     expect(getHostBlockReason('')).toBe('empty_host');
   });
@@ -74,4 +94,3 @@ describe('isBlockedOutboundUrl', () => {
     expect(result.blocked).toBe(false);
   });
 });
-

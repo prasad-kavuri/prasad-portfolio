@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, ArrowRight, Download, ExternalLink, Calendar } from 'lucide-react';
 import { EXECUTIVE_METRICS } from '@/lib/executive-metrics';
+import { CALENDLY_URLS } from '@/lib/tracking';
 
 export const metadata: Metadata = {
   title: 'For Recruiters',
@@ -160,7 +161,7 @@ export default function ForRecruitersPage() {
               vbkpkavuri@gmail.com
             </a>
             <a
-              href="https://calendly.com/vbkpkavuri"
+              href={CALENDLY_URLS.recruiters}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted/40 transition-colors"
@@ -266,7 +267,7 @@ export default function ForRecruitersPage() {
               heading="Book a conversation"
               time="30 sec"
               description="30 minutes — I'll walk you through any part of the platform you want to explore"
-              href="https://calendly.com/vbkpkavuri"
+              href={CALENDLY_URLS.recruiters}
               external
             />
           </div>

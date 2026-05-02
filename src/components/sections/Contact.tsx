@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import profile from "@/data/profile.json";
 import { Mail, ExternalLink, CalendarDays } from "lucide-react";
-import { trackEvent } from "@/lib/analytics";
+import { trackCalendlyClick, trackEmailClick } from "@/lib/analytics";
+import { CALENDLY_URLS } from "@/lib/tracking";
 import { LinkedInCta } from "@/components/ui/linkedin-cta";
 
 export function Contact() {
@@ -24,7 +25,7 @@ export function Contact() {
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <LinkedInCta href={profile.personal.linkedin} />
 
-          <Link href={`mailto:${profile.personal.email}`} onClick={() => trackEvent('contact_email_clicked')}>
+          <Link href={`mailto:${profile.personal.email}`} onClick={() => trackEmailClick()}>
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">
                 <Mail className="size-5 text-red-600" />
@@ -43,10 +44,10 @@ export function Contact() {
           </Link>
 
           <Link
-            href="https://calendly.com/vbkpkavuri"
+            href={CALENDLY_URLS.footer}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => trackEvent('calendly_clicked')}
+            onClick={() => trackCalendlyClick('footer')}
           >
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="flex items-center gap-2 p-4">

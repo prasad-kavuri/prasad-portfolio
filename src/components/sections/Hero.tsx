@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { AnimatedCounter } from "@/components/ui/counter";
 import { GovernancePillars } from "@/components/ui/governance-pillars";
 import profile from "@/data/profile.json";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, trackResumeDownload, trackLinkedInClick, trackCalendlyClick, trackEmailClick } from "@/lib/analytics";
+import { CALENDLY_URLS } from "@/lib/tracking";
 import { CopyForAI } from "@/components/CopyForAI";
 import { PORTFOLIO_FACTS } from "@/data/site-config";
 import { EXECUTIVE_METRICS_DISPLAY } from "@/lib/executive-metrics";
@@ -146,7 +147,7 @@ export function Hero() {
               href={profile.personal.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackEvent('linkedin_clicked')}
+              onClick={() => trackLinkedInClick('hero')}
               className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
             >
                 View LinkedIn
@@ -155,13 +156,14 @@ export function Hero() {
               href="/api/resume-download"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackEvent('resume_downloaded')}
+              onClick={() => trackResumeDownload()}
               className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
             >
               Download Resume
             </a>
             <a
               href="mailto:vbkpkavuri@gmail.com"
+              onClick={() => trackEmailClick()}
               className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
             >
               vbkpkavuri@gmail.com
@@ -221,9 +223,10 @@ export function Hero() {
                 </Link>
                 {', then review '} 
                 <a
-                  href="https://calendly.com/vbkpkavuri"
+                  href={CALENDLY_URLS.hero}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackCalendlyClick('hero')}
                   className="underline underline-offset-2 hover:no-underline"
                   style={{ color: 'var(--accent-brand)' }}
                 >
@@ -239,22 +242,24 @@ export function Hero() {
                 href="https://linkedin.com/in/pkavuri"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackLinkedInClick('hero')}
                 className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
               >
                 View LinkedIn
               </a>
               <a
                 href="mailto:vbkpkavuri@gmail.com"
+                onClick={() => trackEmailClick()}
                 style={brandStyle}
                 className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium"
               >
                 Start a Conversation
               </a>
               <a
-                href="https://calendly.com/vbkpkavuri"
+                href={CALENDLY_URLS.hero}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackEvent('calendly_clicked')}
+                onClick={() => trackCalendlyClick('hero')}
                 className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
               >
                 Book a Call

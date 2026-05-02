@@ -4,6 +4,10 @@ import React from 'react';
 
 vi.mock('@/lib/analytics', () => ({
   trackEvent: vi.fn(),
+  trackResumeDownload: vi.fn(),
+  trackCalendlyClick: vi.fn(),
+  trackLinkedInClick: vi.fn(),
+  trackEmailClick: vi.fn(),
 }));
 
 // next/image does not work outside Next.js; replace with a plain <img>
@@ -25,7 +29,7 @@ vi.mock('framer-motion', () => ({
 }));
 
 import { Hero } from '@/components/sections/Hero';
-import { trackEvent } from '@/lib/analytics';
+import { trackResumeDownload, trackLinkedInClick } from '@/lib/analytics';
 
 describe('Hero', () => {
   beforeEach(() => {
@@ -147,22 +151,22 @@ describe('Hero', () => {
     expect(disclosureLink.getAttribute('href')).toBe('/.well-known/security.txt');
   });
 
-  it('fires trackEvent(linkedin_clicked) when View LinkedIn is clicked', () => {
+  it('fires trackLinkedInClick(hero) when View LinkedIn is clicked', () => {
     render(<Hero />);
     const links = screen.getAllByRole('link', { name: /View LinkedIn/i });
     // Remove href to prevent happy-dom from navigating; React onClick still fires
     links[0].removeAttribute('href');
     fireEvent.click(links[0]);
-    expect(trackEvent).toHaveBeenCalledWith('linkedin_clicked');
+    expect(trackLinkedInClick).toHaveBeenCalledWith('hero');
   });
 
-  it('fires trackEvent(resume_downloaded) when Download Resume is clicked', () => {
+  it('fires trackResumeDownload when Download Resume is clicked', () => {
     render(<Hero />);
     const link = screen.getByRole('link', { name: /Download Resume/i });
     // Remove href to prevent happy-dom from navigating; React onClick still fires
     link.removeAttribute('href');
     fireEvent.click(link);
-    expect(trackEvent).toHaveBeenCalledWith('resume_downloaded');
+    expect(trackResumeDownload).toHaveBeenCalled();
   });
 
   it('renders compressed bio as primary visible text (not inside details)', () => {

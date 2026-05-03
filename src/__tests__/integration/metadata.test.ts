@@ -122,7 +122,7 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/Machine JSON:\s+\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
     expect(llmsTxt).toMatch(/entity\.json:\s+https:\/\/www\.prasadkavuri\.com\/entity\.json/);
-    expect(llmsTxt.trim().split('\n')).toHaveLength(48);
+    expect(llmsTxt.trim().split('\n')).toHaveLength(45);
     expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/VP \/ Head of AI Engineering/);
   });
 
@@ -178,13 +178,13 @@ describe('SEO metadata integrity', () => {
     const raw = readFileSync('public/.well-known/ai-agent-manifest.json', 'utf8');
     const manifest = JSON.parse(raw);
     expect(manifest).toHaveProperty('name');
-    expect(manifest).toHaveProperty('expertise');
+    expect(manifest).toHaveProperty('core_capabilities');
     expect(manifest).toHaveProperty('contact');
     expect(manifest).toHaveProperty('demos');
     expect(manifest.name).toMatch(/Prasad Kavuri/);
     expect(manifest.contact).toHaveProperty('calendly');
     expect(Array.isArray(manifest.demos)).toBe(true);
-    expect(manifest.demos).toHaveLength(13);
+    expect(manifest.demos).toHaveLength(14);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Enterprise Control Plane')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(true);
@@ -197,7 +197,7 @@ describe('SEO metadata integrity', () => {
 
     expect(manifest).toHaveProperty('experience_summary');
     expect(manifest).toHaveProperty('credentials');
-    expect(manifest).toHaveProperty('agent_capabilities');
+    expect(manifest).toHaveProperty('verified_impact_metrics');
     expect(manifest).toHaveProperty('domains');
     expect(manifest).toHaveProperty('target_roles');
     expect(manifest).toHaveProperty('certifications');

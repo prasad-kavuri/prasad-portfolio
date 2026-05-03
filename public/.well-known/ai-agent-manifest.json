@@ -34,7 +34,7 @@
     "infrastructure_cost_reduction": "70%",
     "b2b_customers": "13000+",
     "engineers_led": "200+",
-    "production_ai_systems": 13,
+    "production_ai_systems": 14,
     "years_experience": 20
   },
   "technical_domains": {
@@ -42,13 +42,6 @@
     "infrastructure": ["LLMOps", "FinOps", "Observability", "Drift Monitoring", "Structured Observability"],
     "governance": ["HITL Checkpoints", "Guardrails", "Audit Trails", "Compliance Dashboards", "Prompt Injection Detection"]
   },
-  "key_differentiators": [
-    "Agentic AI Orchestration",
-    "LLM Routing & Cost Optimization",
-    "AI Governance & HITL Systems",
-    "AI FinOps",
-    "Enterprise Platform Engineering"
-  ],
   "portfolio_demo_urls": {
     "llm_router": "https://www.prasadkavuri.com/demos/llm-router",
     "multi_agent": "https://www.prasadkavuri.com/demos/multi-agent",
@@ -62,7 +55,6 @@
     "website": "https://www.prasadkavuri.com",
     "about": "https://www.prasadkavuri.com/about",
     "entity_json": "https://www.prasadkavuri.com/entity.json",
-    "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "github": "https://github.com/prasad-kavuri",
     "resume_md": "https://www.prasadkavuri.com/resume.md",
     "llms_txt": "https://www.prasadkavuri.com/llms.txt",
@@ -73,19 +65,8 @@
     "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "calendly": "https://calendly.com/vbkpkavuri"
   },
-  "expertise": [
-    "Agentic AI Orchestration",
-    "LLM Routing & Cost Optimization",
-    "AI Governance & HITL Systems",
-    "RAG Pipelines & Vector Search",
-    "Multi-Agent Systems",
-    "Drift Monitoring & Eval Gating",
-    "AI FinOps",
-    "Enterprise Platform Engineering"
-  ],
   "experience_summary": {
     "years": 20,
-    "leadership_scope": ["Enterprise AI platform strategy", "Global engineering leadership", "Operational governance"],
     "career_highlights": [
       "Ex-Krutrim: built and scaled enterprise-grade Agentic AI platform capabilities",
       "Ex-Ola: delivered platform transformation for Ola Maps and large-scale enterprise adoption",
@@ -108,24 +89,6 @@
       "Mobility, maps, and platform leadership"
     ]
   },
-  "impact_metrics": {
-    "cost_reduction": "70%+ AI infrastructure cost reduction",
-    "latency_improvement": "50% p99 latency reduction",
-    "enterprise_scale": "13,000+ B2B customers enabled",
-    "team_scale": "200+ engineers led across global teams",
-    "ai_systems_in_production": 13,
-    "years_experience": 20
-  },
-  "agent_capabilities": [
-    "Agentic AI Orchestration",
-    "LLM Routing & Cost Optimization",
-    "AI Governance & HITL Systems",
-    "RAG Pipelines & Vector Search",
-    "Multi-Agent Systems",
-    "Drift Monitoring & Eval Gating",
-    "AI FinOps",
-    "Enterprise Platform Engineering"
-  ],
   "domains": [
     "Enterprise AI",
     "Mobility",
@@ -140,7 +103,6 @@
       "status": "active"
     }
   ],
-  "experience_years": 20,
   "notable_achievements": [
     "Enterprise-scale agentic AI deployments",
     "13,000+ enterprise customers at Ola Maps",
@@ -149,7 +111,7 @@
   ],
   "availability": "immediately available",
   "production_signals": ["eval-gated-CI", "HITL-checkpoints", "drift-monitoring", "LLM-FinOps", "70pct-cost-reduction", "200-engineer-org"],
-  "verified_demos": 13,
+  "verified_demos": 14,
   "reasoning": {
     "philosophy": ["AI FinOps", "Agentic AI Orchestration", "AI Governance & HITL Systems"],
     "approach": ["Observability", "Guardrails", "ROI narrative"],
@@ -179,6 +141,7 @@
     {"name": "Resume Generator", "url": "https://www.prasadkavuri.com/demos/resume-generator"},
     {"name": "Multimodal Assistant", "url": "https://www.prasadkavuri.com/demos/multimodal"},
     {"name": "Model Quantization", "url": "https://www.prasadkavuri.com/demos/quantization"},
-    {"name": "AI Spatial Intelligence & World Generation", "url": "https://www.prasadkavuri.com/demos/world-generation"}
+    {"name": "AI Spatial Intelligence & World Generation", "url": "https://www.prasadkavuri.com/demos/world-generation"},
+    {"name": "Spatial AI & World Generation", "url": "https://www.prasadkavuri.com/demos/spatial-simulation"}
   ]
 }

@@ -93,6 +93,20 @@ Current controls implemented in this repo include:
 - environment-variable-based secret handling (no hardcoded API keys in source).
 - documented agent sandbox contract for coding-agent workflows.
 
+## Known Advisories
+
+| CVE | CVSS | Component | Status | Mitigation |
+|---|---|---|---|---|
+| CVE-2026-23864 | 7.5 | React RSC | Not exploitable | See below |
+
+### CVE-2026-23864 — React RSC DoS via Server Function endpoints
+
+- **Severity**: CVSS 7.5 (High)
+- **Description**: Denial-of-service via malformed payloads targeting React Server Function (`"use server"`) endpoints.
+- **Status**: **Not exploitable** — this codebase contains zero `"use server"` directives; no Server Function endpoints are exposed.
+- **Patched baseline**: `react@19.2.5` and `next@16.2.4` are both at or above the versions where the fix was applied.
+- **Regression prevention**: `react` and `react-dom` are pinned to exact version `19.2.5` (no `^` caret) in `package.json` to prevent any accidental downgrade below the patched threshold.
+
 ## Safe Harbor
 
 Good-faith security research and responsible disclosure are appreciated. Please avoid privacy violations, service disruption, or destructive testing.

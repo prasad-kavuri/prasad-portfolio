@@ -10,8 +10,7 @@ export function Experience() {
       <div className="mx-auto max-w-5xl px-4">
         <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Experience Highlights</h2>
         <p className="mb-10 text-muted-foreground">
-          20+ years building AI platforms, leading global engineering teams,
-          and driving transformative technology strategies.
+          VP / Head of AI Engineering with 20+ years building production AI platforms at enterprise scale. Led 200+ engineers across Krutrim, Ola, and HERE Technologies. Delivered 70% infrastructure cost reduction, $10M+ revenue launched, and India&apos;s first agentic AI platform.
         </p>
         <div className="space-y-4">
           {displayedExperiences.map((exp) => (

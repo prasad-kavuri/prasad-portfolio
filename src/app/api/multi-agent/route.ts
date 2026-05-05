@@ -12,7 +12,7 @@ import {
 } from '@/lib/api';
 import { trackModelOutput } from '@/lib/drift-monitor';
 import { isBlockedOutboundUrl } from '@/lib/url-security';
-import { safeServerFetch } from '@/lib/safe-fetch';
+import { assertSafeFetchTarget, safeServerFetch } from '@/lib/safe-fetch';
 
 const HF_SPACE_URL = 'https://prasadkavuri-multi-agent-demo.hf.space';
 const ROUTE = '/api/multi-agent';
@@ -72,6 +72,20 @@ export async function POST(req: NextRequest) {
       route: ROUTE,
       traceId: context.traceId,
       reason: urlSafety.reason ?? 'blocked_outbound_url',
+      protocol: parsedUrl.protocol,
+      hostname: parsedUrl.hostname,
+      status: 400,
+    });
+    return finalizeApiResponse(jsonError('URL not allowed', 400, { context }), context);
+  }
+
+  try {
+    await assertSafeFetchTarget(parsedUrl);
+  } catch (error) {
+    logApiWarning('api.abnormal_usage', {
+      route: ROUTE,
+      traceId: context.traceId,
+      reason: error instanceof Error ? error.message : 'unsafe_outbound_url',
       protocol: parsedUrl.protocol,
       hostname: parsedUrl.hostname,
       status: 400,

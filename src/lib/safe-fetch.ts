@@ -66,7 +66,7 @@ async function assertDnsSafeTarget(url: URL, code: SafeFetchErrorCode = 'blocked
   }
 }
 
-async function assertSafeFetchTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): Promise<void> {
+export async function assertSafeFetchTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): Promise<void> {
   assertSafeTarget(url, code);
   await assertDnsSafeTarget(url, code);
 }

@@ -9,6 +9,12 @@ import {
 
 const ROUTE = 'api.skill-invocations';
 
+function parseLimit(value: string | null): number {
+  const parsed = Number(value ?? '10');
+  if (!Number.isFinite(parsed)) return 10;
+  return Math.min(Math.max(Math.trunc(parsed), 1), 50);
+}
+
 export async function GET(request: Request) {
   // Next.js passes NextRequest at runtime; cast for api.ts helpers
   const req = request as unknown as NextRequest;
@@ -17,7 +23,7 @@ export async function GET(request: Request) {
   if (rateLimited) return rateLimited;
 
   const { searchParams } = new URL(request.url);
-  const limit = Math.min(Number(searchParams.get('limit') ?? '10'), 50);
+  const limit = parseLimit(searchParams.get('limit'));
   const invocations = getRecentSkillInvocations(limit);
 
   logApiEvent('api.request_completed', {

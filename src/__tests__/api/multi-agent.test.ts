@@ -1,8 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { lookup } from 'node:dns/promises';
 import { _resetStore } from '@/lib/rate-limit';
+
+vi.mock('node:dns/promises', () => ({
+  lookup: vi.fn(),
+  default: {
+    lookup: vi.fn(),
+  },
+}));
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
+const mockLookup = vi.mocked(lookup);
 
 function makeRequest(body: object, ip = '127.0.0.1') {
   return new Request('http://localhost/api/multi-agent', {
@@ -30,6 +39,7 @@ describe('POST /api/multi-agent', () => {
   beforeEach(() => {
     _resetStore();
     vi.clearAllMocks();
+    mockLookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ agents: [], total_duration_ms: 100 }),
@@ -178,6 +188,18 @@ describe('POST /api/multi-agent', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toBe('URL not allowed');
+  });
+
+  it('returns 400 for public hostnames resolving to private addresses', async () => {
+    mockLookup.mockResolvedValueOnce([{ address: '192.168.1.10', family: 4 }]);
+
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://public.example.com/admin' }) as any);
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('URL not allowed');
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('returns 429 after rate limit exceeded', async () => {

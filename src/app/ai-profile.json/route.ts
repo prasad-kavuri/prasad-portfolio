@@ -1,7 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { demos } from '@/data/demos';
+import {
+  createRequestContext,
+  enforceRateLimit,
+  finalizeApiResponse,
+  logApiEvent,
+} from '@/lib/api';
 
 const BASE_URL = 'https://www.prasadkavuri.com';
+const ROUTE = '/ai-profile.json';
 
 function buildPayload() {
   return {
@@ -131,6 +138,10 @@ const HTML_TEMPLATE = (json: string) => `<!DOCTYPE html>
 </html>`;
 
 export async function GET(request: NextRequest) {
+  const context = createRequestContext(request, ROUTE);
+  const rateLimited = await enforceRateLimit(request, 'anonymous', { context });
+  if (rateLimited) return rateLimited;
+
   const accept = request.headers.get('accept') ?? '';
   const ua = request.headers.get('user-agent') ?? '';
 
@@ -142,14 +153,28 @@ export async function GET(request: NextRequest) {
 
   if (isBrowser) {
     const pretty = JSON.stringify(payload, null, 2);
-    return new NextResponse(HTML_TEMPLATE(pretty), {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    logApiEvent('api.request_completed', {
+      route: ROUTE,
+      traceId: context.traceId,
+      status: 200,
+      durationMs: Date.now() - context.startedAt,
+      format: 'html',
     });
+    return finalizeApiResponse(new NextResponse(HTML_TEMPLATE(pretty), {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    }), context);
   }
 
-  return NextResponse.json(payload, {
+  logApiEvent('api.request_completed', {
+    route: ROUTE,
+    traceId: context.traceId,
+    status: 200,
+    durationMs: Date.now() - context.startedAt,
+    format: 'json',
+  });
+  return finalizeApiResponse(NextResponse.json(payload, {
     headers: {
       'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
     },
-  });
+  }), context);
 }

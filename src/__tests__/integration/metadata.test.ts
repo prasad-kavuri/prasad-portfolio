@@ -110,6 +110,13 @@ describe('SEO metadata integrity', () => {
     expect(robots).toMatch(/sitemap\.xml/);
   });
 
+  it('robots.txt explicitly allows current AI agent fetchers', () => {
+    const robots = readFileSync('public/robots.txt', 'utf8');
+    expect(robots).toMatch(/User-agent: ChatGPT-User/);
+    expect(robots).toMatch(/User-agent: Claude-User/);
+    expect(robots).toMatch(/User-agent: Claude-SearchBot/);
+  });
+
   it('llms.txt exists with correct identity and availability', () => {
     const llmsTxt = readFileSync('public/llms.txt', 'utf8');
     expect(llmsTxt).toMatch(/Prasad Kavuri/);
@@ -188,7 +195,9 @@ describe('SEO metadata integrity', () => {
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Enterprise Control Plane')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(true);
+    expect(manifest.demos.some((d: { name: string }) => d.name === 'Edge-Agent Collaboration')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Spatial Intelligence & World Generation')).toBe(true);
+    expect(manifest.demos.some((d: { url: string }) => d.url.includes('/demos/spatial-simulation'))).toBe(false);
   });
 
   it('ai-agent-manifest.json includes indexing-friendly enrichment fields', () => {
@@ -272,10 +281,11 @@ describe('SEO metadata integrity', () => {
     expect(globalStyles).toMatch(/outline:\s*2px/);
   });
 
-  it('entity.json canonical_urls includes resume_download field', () => {
+  it('entity.json canonical_urls includes crawler-friendly resume PDF field', () => {
     const entity = JSON.parse(readFileSync('public/entity.json', 'utf8'));
-    expect(entity.canonical_urls).toHaveProperty('resume_download');
-    expect(entity.canonical_urls.resume_download).toBe('https://www.prasadkavuri.com/api/resume-download');
+    expect(entity.canonical_urls).toHaveProperty('resume_pdf');
+    expect(entity.canonical_urls.resume_pdf).toBe('https://www.prasadkavuri.com/prasad-kavuri-vp-ai-engineering-2026.pdf');
+    expect(entity.canonical_urls).not.toHaveProperty('resume_download');
   });
 
   it('entity.json target_roles contains no IC/Staff/Principal/Lead roles', () => {

@@ -49,6 +49,8 @@
     "evaluation_showcase": "https://www.prasadkavuri.com/demos/evaluation-showcase",
     "enterprise_control_plane": "https://www.prasadkavuri.com/demos/enterprise-control-plane",
     "mcp_demo": "https://www.prasadkavuri.com/demos/mcp-demo",
+    "edge_agent_collaboration": "https://www.prasadkavuri.com/demos/edge-agent-collaboration",
+    "world_generation": "https://www.prasadkavuri.com/demos/world-generation",
     "governance": "https://www.prasadkavuri.com/governance"
   },
   "links": {
@@ -141,7 +143,7 @@
     {"name": "Resume Generator", "url": "https://www.prasadkavuri.com/demos/resume-generator"},
     {"name": "Multimodal Assistant", "url": "https://www.prasadkavuri.com/demos/multimodal"},
     {"name": "Model Quantization", "url": "https://www.prasadkavuri.com/demos/quantization"},
-    {"name": "AI Spatial Intelligence & World Generation", "url": "https://www.prasadkavuri.com/demos/world-generation"},
-    {"name": "Spatial AI & World Generation", "url": "https://www.prasadkavuri.com/demos/spatial-simulation"}
+    {"name": "Edge-Agent Collaboration", "url": "https://www.prasadkavuri.com/demos/edge-agent-collaboration"},
+    {"name": "AI Spatial Intelligence & World Generation", "url": "https://www.prasadkavuri.com/demos/world-generation"}
   ]
 }

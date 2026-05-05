@@ -65,7 +65,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 
 ---
 
-## Portfolio Demos (13 Live Systems)
+## Portfolio Demos (14 Live Systems)
 
 | Demo | What It Shows | Engine |
 |------|---------------|--------|
@@ -81,6 +81,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 | Multimodal Assistant | Florence-2 image captioning via WebGPU | Browser WebGPU |
 | Model Quantization | FP32 vs INT8 ONNX benchmark with latency comparison | Browser WASM |
 | Browser-Native AI Skill | Client-side WASM inference, no server required | Browser WASM |
+| Edge-Agent Collaboration | Browser-side redaction with HITL-gated cloud handoff | Browser + Server |
 | AI World Generation | Spatial intelligence + governed world generation | Groq API |
 
 All demos: https://www.prasadkavuri.com/demos

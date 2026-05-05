@@ -17,7 +17,7 @@
     "llms_txt": "https://www.prasadkavuri.com/llms.txt",
     "llms_full_txt": "https://www.prasadkavuri.com/llms-full.txt",
     "ai_agent_manifest": "https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json",
-    "resume_download": "https://www.prasadkavuri.com/api/resume-download"
+    "resume_pdf": "https://www.prasadkavuri.com/prasad-kavuri-vp-ai-engineering-2026.pdf"
   },
   "same_as": [
     "https://www.linkedin.com/in/pkavuri/",

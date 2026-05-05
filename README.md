@@ -67,6 +67,8 @@ Vercel · Upstash Redis · Groq · CrewAI · ChromaDB · Playwright · Vitest
 
 ## Architecture
 
+![Architecture Diagram](public/architecture-diagram.svg)
+
 Full architecture: [ARCHITECTURE.md](./ARCHITECTURE.md) · Security: [SECURITY.md](./SECURITY.md)
 
 ---

@@ -98,6 +98,49 @@ const proofPoints = [
   '14 production AI demos / platform patterns',
 ];
 
+const testimonials = [
+  {
+    quote:
+      "Prasad is a strategic, technically astute, and highly influential leader who I would gladly work for or with again. His leadership is defined by exceptional attention to detail, crucial for managing complex engineering platform initiatives.",
+    name: "Josh Lynn",
+    title: "Senior Engineering Leader",
+    company: "Krutrim",
+    relationship: "Direct report",
+    date: "2025-12-06",
+    dateDisplay: "December 2025",
+  },
+  {
+    quote:
+      "Prasad's ability to assemble high-performing teams that are always aligned towards delivering tangible business value is remarkable. His commitment is evident in his deep involvement in shaping architecture, refining processes, and meticulously tracking KPIs.",
+    name: "Anoop Kabra",
+    title: "Director of Engineering",
+    company: "HERE Technologies",
+    relationship: "Peer · 15+ year colleague",
+    date: "2023-08-09",
+    dateDisplay: "August 2023",
+  },
+  {
+    quote:
+      "A fantastic team player and a great mentor, Prasad has helped in shaping the career of hundreds of people who have worked with him. He adapts quickly to new challenges — be it technology or domain.",
+    name: "Subhendu Roy",
+    title: "Sr. Director of Engineering",
+    company: "HERE Technologies",
+    relationship: "Cross-team peer",
+    date: "2021-01-14",
+    dateDisplay: "January 2021",
+  },
+  {
+    quote:
+      "With his strongest desire to drive teams efficiently, he pays attention to each team member's strengths and delegates work accordingly. I highly recommend Prasad as a strong leader of people and technology to any organization.",
+    name: "Syamkumar Abburi",
+    title: "Senior Engineering Manager",
+    company: "HERE Technologies",
+    relationship: "Direct report",
+    date: "2020-11-17",
+    dateDisplay: "November 2020",
+  },
+];
+
 const canonicalLinks = [
   { href: '/for-recruiters', label: 'For Recruiters' },
   { href: '/capabilities', label: 'Capabilities' },
@@ -162,6 +205,30 @@ export default function AboutPage() {
           </section>
         </div>
 
+        <section className="mt-10">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Recommendations</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {testimonials.map((t) => (
+              <figure key={t.name + t.date} className="rounded-lg border border-border bg-muted/20 p-4">
+                <blockquote className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <figcaption>
+                  <p className="text-sm font-semibold text-foreground">{t.name}</p>
+                  <p className="text-xs text-muted-foreground">{t.title} · {t.company}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t.relationship} · {t.dateDisplay}</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Full recommendations on{' '}
+            <a href="https://www.linkedin.com/in/pkavuri/" target="_blank" rel="noopener noreferrer" className="underline">
+              LinkedIn
+            </a>
+          </p>
+        </section>
+
         <section className="mt-8">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Canonical Links</h2>
           <div className="mt-3 flex flex-wrap gap-2 text-sm">
@@ -172,6 +239,36 @@ export default function AboutPage() {
             ))}
           </div>
         </section>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              "name": "LinkedIn Recommendations for Prasad Kavuri",
+              "itemListElement": testimonials.map((t, i) => ({
+                "@type": "ListItem",
+                "position": i + 1,
+                "item": {
+                  "@type": "Review",
+                  "reviewBody": t.quote,
+                  "datePublished": t.date,
+                  "author": {
+                    "@type": "Person",
+                    "name": t.name,
+                    "jobTitle": t.title,
+                  },
+                  "itemReviewed": {
+                    "@type": "Person",
+                    "@id": "https://www.prasadkavuri.com/#person",
+                    "name": "Prasad Kavuri",
+                  },
+                },
+              })),
+            }).replace(/</g, '\\u003c'),
+          }}
+        />
 
         <p className="mt-8 max-w-3xl text-xs leading-5 text-muted-foreground">
           Structured data and entity files support disambiguation for recruiter and AI-agent discovery.

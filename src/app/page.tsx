@@ -8,6 +8,7 @@ import { Expertise } from "@/components/sections/Expertise";
 import { Experience } from "@/components/sections/Experience";
 import { CaseStudies } from "@/components/sections/CaseStudies";
 import { Perspectives } from "@/components/sections/Perspectives";
+import { Testimonials } from "@/components/sections/Testimonials";
 import { Contact } from "@/components/sections/Contact";
 import { SectionBridge } from "@/components/sections/SectionBridge";
 import { AgentContext } from "@/components/AgentContext";
@@ -84,6 +85,8 @@ export default function Home() {
         <CaseStudies />
         <SectionBridge text="These experiences shaped how I think about AI — and what I've learned along the way." />
         <Perspectives />
+        <SectionBridge text="The people I've worked with put it better than I can." />
+        <Testimonials />
         <Contact />
       </main>
       <Footer />

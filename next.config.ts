@@ -24,6 +24,13 @@ const nextConfig: NextConfig = {
         headers: [{ key: "X-Robots-Tag", value: "noindex" }],
       },
       {
+        // Advertise llms.txt to AI crawlers that discover it via HTTP Link headers
+        source: "/",
+        headers: [
+          { key: "Link", value: '<https://www.prasadkavuri.com/llms.txt>; rel="ai-content"' },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           {

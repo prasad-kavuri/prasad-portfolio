@@ -19,14 +19,12 @@ export const metadata: Metadata = {
     description:
       'Production AI demos with enterprise framing: cost-aware routing, grounded retrieval, governance controls, and resilient platform operations.',
     url: demosUrl,
-    images: [{ url: `${SITE_URL}/og-image.jpg`, width: 1200, height: 630, alt: 'Prasad Kavuri AI demos' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `AI Demos (${PORTFOLIO_FACTS.productionDemoCount}) — ${SITE_NAME}`,
     description:
       'Enterprise AI demo index across routing, retrieval, governance, and multi-agent operational patterns.',
-    images: [`${SITE_URL}/og-image.jpg`],
   },
 };
 

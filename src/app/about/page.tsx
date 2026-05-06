@@ -72,7 +72,6 @@ export const metadata: Metadata = {
     description:
       'Canonical executive profile for production AI platform leadership, agentic AI, governance, and enterprise adoption.',
     url: aboutUrl,
-    images: [{ url: `${SITE_URL}/og-image.jpg`, width: 1200, height: 630, alt: 'Prasad Kavuri AI engineering profile' }],
   },
 };
 

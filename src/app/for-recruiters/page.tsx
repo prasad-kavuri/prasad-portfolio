@@ -17,13 +17,11 @@ export const metadata: Metadata = {
     description:
       'Executive summary and guided review path for VP / Head / Senior Director AI Platform conversations.',
     url: 'https://www.prasadkavuri.com/for-recruiters',
-    images: [{ url: 'https://www.prasadkavuri.com/og-image.jpg', width: 1200, height: 630, alt: 'Prasad Kavuri recruiter page' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'For Recruiters — Prasad Kavuri',
     description: 'Recruiter path across capabilities, demos, governance, and certifications.',
-    images: ['https://www.prasadkavuri.com/og-image.jpg'],
   },
 };
 

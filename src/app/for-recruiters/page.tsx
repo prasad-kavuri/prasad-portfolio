@@ -336,25 +336,82 @@ export default function ForRecruitersPage() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Person",
-            "@id": "https://www.prasadkavuri.com/#person",
-            "name": "Prasad Kavuri",
-            "jobTitle": "VP / Head of AI Engineering",
-            "email": "mailto:vbkpkavuri@gmail.com",
-            "url": "https://www.prasadkavuri.com/for-recruiters",
-            "sameAs": [
-              "https://www.linkedin.com/in/pkavuri/",
-              "https://github.com/prasad-kavuri",
+            "@graph": [
+              {
+                "@type": "Person",
+                "@id": "https://www.prasadkavuri.com/#person",
+                "name": "Prasad Kavuri",
+                "jobTitle": "VP / Head of AI Engineering",
+                "email": "mailto:vbkpkavuri@gmail.com",
+                "url": "https://www.prasadkavuri.com/for-recruiters",
+                "sameAs": [
+                  "https://www.linkedin.com/in/pkavuri/",
+                  "https://github.com/prasad-kavuri",
+                ],
+                "availableChannel": {
+                  "@type": "ServiceChannel",
+                  "serviceUrl": "https://calendly.com/vbkpkavuri",
+                },
+                "workLocation": {
+                  "@type": "Place",
+                  "address": "Chicago, IL",
+                },
+              },
+              {
+                "@type": "FAQPage",
+                "mainEntity": [
+                  {
+                    "@type": "Question",
+                    "name": "What roles is Prasad Kavuri targeting?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad is targeting VP of AI Engineering, Head of AI Engineering, Senior Director of AI Platform, Head of Applied AI, and VP of AI Platform Engineering roles. He is not positioned for individual contributor, Staff, Principal, or Lead Engineer roles.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Is Prasad Kavuri available for new roles?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Yes, Prasad is immediately available. You can book a 30-minute call at calendly.com/vbkpkavuri or reach him at vbkpkavuri@gmail.com.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Where is Prasad Kavuri located?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad is based in Naperville, IL in the Greater Chicago Area, and is open to remote positions globally.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How many engineers has Prasad Kavuri led?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad has led 200+ engineers across global teams in the US, India, and Europe, spanning platform engineering, AI infrastructure, and product delivery organizations.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "What is Prasad Kavuri's most significant AI achievement?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad architected India's first Agentic AI platform (Kruti.ai) at Krutrim, delivering 70% AI infrastructure cost reduction, 50% latency improvement, and enabling 13,000+ B2B customers. He also built a $10M+ revenue-generating AI platform from zero to production.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "What companies has Prasad Kavuri worked at?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad has held senior AI engineering leadership roles at Krutrim (Head of AI Engineering, building India's first Agentic AI platform), Ola (Senior Director of Engineering, scaling Ola Maps to 13,000+ B2B customers), and HERE Technologies (Director of Engineering for Highly Automated Driving, 18-year tenure).",
+                    },
+                  },
+                ],
+              },
             ],
-            "availableChannel": {
-              "@type": "ServiceChannel",
-              "serviceUrl": "https://calendly.com/vbkpkavuri",
-            },
-            "workLocation": {
-              "@type": "Place",
-              "address": "Chicago, IL",
-            },
-          }),
+          }).replace(/</g, '\\u003c'),
         }}
       />
     </div>

@@ -25,6 +25,38 @@ export default function Page() {
       <div className="mt-12 pt-8 border-t border-slate-800">
         <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">← Back to portfolio</Link>
       </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": "Why Most Enterprise AI Initiatives Stall Before They Matter",
+            "description": "The pilots work. The demos impress. Then nothing ships to production. The problem is platform thinking, not technology.",
+            "url": "https://www.prasadkavuri.com/perspectives/why-enterprise-ai-stalls",
+            "datePublished": "2026-04-29",
+            "dateModified": "2026-05-06",
+            "author": {
+              "@type": "Person",
+              "@id": "https://www.prasadkavuri.com/#person",
+              "name": "Prasad Kavuri",
+              "url": "https://www.prasadkavuri.com",
+            },
+            "publisher": {
+              "@type": "Person",
+              "@id": "https://www.prasadkavuri.com/#person",
+              "name": "Prasad Kavuri",
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://www.prasadkavuri.com/perspectives/why-enterprise-ai-stalls",
+            },
+            "keywords": ["Enterprise AI", "AI Platform", "AI Governance", "LLMOps", "Production AI"],
+            "articleSection": "Enterprise AI",
+            "inLanguage": "en-US",
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
     </main>
   );
 }

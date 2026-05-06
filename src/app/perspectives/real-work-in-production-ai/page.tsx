@@ -25,6 +25,38 @@ export default function Page() {
       <div className="mt-12 pt-8 border-t border-slate-800">
         <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">← Back to portfolio</Link>
       </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": "The Real Work in Production AI Is Managing Tradeoffs, Not Selecting Models",
+            "description": "When running AI at scale, model selection is maybe 20% of the problem. The other 80% is system design.",
+            "url": "https://www.prasadkavuri.com/perspectives/real-work-in-production-ai",
+            "datePublished": "2026-04-29",
+            "dateModified": "2026-05-06",
+            "author": {
+              "@type": "Person",
+              "@id": "https://www.prasadkavuri.com/#person",
+              "name": "Prasad Kavuri",
+              "url": "https://www.prasadkavuri.com",
+            },
+            "publisher": {
+              "@type": "Person",
+              "@id": "https://www.prasadkavuri.com/#person",
+              "name": "Prasad Kavuri",
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://www.prasadkavuri.com/perspectives/real-work-in-production-ai",
+            },
+            "keywords": ["Production AI", "LLM Routing", "AI FinOps", "AI Cost Optimization", "LLMOps"],
+            "articleSection": "Production AI",
+            "inLanguage": "en-US",
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
     </main>
   );
 }

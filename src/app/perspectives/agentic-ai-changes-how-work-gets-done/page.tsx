@@ -25,6 +25,38 @@ export default function Page() {
       <div className="mt-12 pt-8 border-t border-slate-800">
         <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">← Back to portfolio</Link>
       </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": "Agentic AI Changes More Than Your Tech Stack — It Changes How Work Gets Done",
+            "description": "Most of the conversation around agentic AI is still focused on the model layer. The more important shift is operational.",
+            "url": "https://www.prasadkavuri.com/perspectives/agentic-ai-changes-how-work-gets-done",
+            "datePublished": "2026-04-29",
+            "dateModified": "2026-05-06",
+            "author": {
+              "@type": "Person",
+              "@id": "https://www.prasadkavuri.com/#person",
+              "name": "Prasad Kavuri",
+              "url": "https://www.prasadkavuri.com",
+            },
+            "publisher": {
+              "@type": "Person",
+              "@id": "https://www.prasadkavuri.com/#person",
+              "name": "Prasad Kavuri",
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://www.prasadkavuri.com/perspectives/agentic-ai-changes-how-work-gets-done",
+            },
+            "keywords": ["Agentic AI", "Multi-Agent Systems", "HITL", "AI Operations", "Production AI"],
+            "articleSection": "Agentic AI",
+            "inLanguage": "en-US",
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
     </main>
   );
 }

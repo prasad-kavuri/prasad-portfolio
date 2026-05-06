@@ -194,6 +194,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <head>
+        {/* AI crawler discovery — HTML equivalent of the HTTP Link header on key pages */}
+        <link rel="ai-content" href="https://www.prasadkavuri.com/llms.txt" />
+      </head>
       <body className="antialiased overflow-x-hidden">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <script

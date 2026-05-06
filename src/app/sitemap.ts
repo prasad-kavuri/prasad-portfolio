@@ -47,12 +47,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: demo.id === FLAGSHIP_DEMO_ID ? 0.9 : 0.8,
     })),
 
-    // Tier 5 — perspectives / long-form content
+    // Tier 5 — perspectives / long-form thought leadership content
     ...perspectives.map((slug) => ({
       url: `${SITE_URL}/perspectives/${slug}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
-      priority: 0.6,
+      priority: 0.75,
     })),
 
     // Tier 6 — utility

@@ -15,13 +15,11 @@ export const metadata: Metadata = {
     description:
       'Recency-weighted certification view for AI platform leadership: featured AI credentials, LLMOps depth, and preserved legacy foundations.',
     url: 'https://www.prasadkavuri.com/certifications',
-    images: [{ url: 'https://www.prasadkavuri.com/og-image.jpg', width: 1200, height: 630, alt: 'Prasad Kavuri certifications' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AI Certifications and Validation — Prasad Kavuri',
     description: 'Featured recent AI certifications with clear signal hierarchy for recruiters and search agents.',
-    images: ['https://www.prasadkavuri.com/og-image.jpg'],
   },
 };
 

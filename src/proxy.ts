@@ -57,6 +57,13 @@ async function applyApiRateLimit(request: NextRequest): Promise<NextResponse | n
   bucket.count += 1;
   apiBuckets.set(key, bucket);
 
+  // Evict expired buckets to prevent unbounded Map growth under sustained traffic
+  if (apiBuckets.size > 10_000) {
+    for (const [k, v] of apiBuckets.entries()) {
+      if (v.resetAt < now) apiBuckets.delete(k);
+    }
+  }
+
   const retryAfter = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
   const headers = {
     'RateLimit-Limit': String(MAX_API_REQUESTS),

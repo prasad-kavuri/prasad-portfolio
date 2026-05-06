@@ -4,6 +4,7 @@ Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/ |
 Positioning: AI Engineering Executive — not an individual contributor profile
 Location: Chicago, IL (open to remote)
 GitHub: https://github.com/prasad-kavuri/prasad-portfolio
+Last-Updated: 2026-05-06
 
 ## TARGET ROLES
 VP of AI Engineering | Head of AI Engineering |
@@ -38,6 +39,11 @@ Governance:     /governance
 Agent entry:    /agent
 Machine JSON:   /ai-profile.json
 Full context:   /llms-full.txt
+
+## THOUGHT LEADERSHIP
+- /perspectives/why-enterprise-ai-stalls
+- /perspectives/agentic-ai-changes-how-work-gets-done
+- /perspectives/real-work-in-production-ai
 
 ## MACHINE-READABLE
 entity.json:            https://www.prasadkavuri.com/entity.json

@@ -29,7 +29,10 @@ async function hashClient(value: string): Promise<string> {
 function applySecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
+  // X-XSS-Protection: disabled per modern security guidance; CSP covers XSS
+  response.headers.set('X-XSS-Protection', '0');
+  // HSTS: enforce HTTPS for 2 years, include subdomains, eligible for preload list
+  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   response.headers.set(

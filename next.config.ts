@@ -25,7 +25,20 @@ const nextConfig: NextConfig = {
       },
       {
         // Advertise llms.txt to AI crawlers that discover it via HTTP Link headers
+        // Applied to homepage, canonical profile, and recruiter entry point
         source: "/",
+        headers: [
+          { key: "Link", value: '<https://www.prasadkavuri.com/llms.txt>; rel="ai-content"' },
+        ],
+      },
+      {
+        source: "/about",
+        headers: [
+          { key: "Link", value: '<https://www.prasadkavuri.com/llms.txt>; rel="ai-content"' },
+        ],
+      },
+      {
+        source: "/for-recruiters",
         headers: [
           { key: "Link", value: '<https://www.prasadkavuri.com/llms.txt>; rel="ai-content"' },
         ],

@@ -49,3 +49,4 @@ next-env.d.ts
 
 # Codex skills lockfile (auto-generated)
 skills-lock.json
+.env*.local

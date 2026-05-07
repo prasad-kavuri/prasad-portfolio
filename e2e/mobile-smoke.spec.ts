@@ -47,8 +47,8 @@ test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
     // The page heading is visible (use role to avoid strict-mode violation from nav/footer duplicates)
     await expect(page.getByRole('heading', { name: 'Prasad Kavuri' })).toBeVisible({ timeout: 10_000 });
 
-    // No horizontal scroll (body width should not exceed viewport)
-    const scrollWidth = await page.evaluate(() => document.body.scrollWidth);
+    // No horizontal scroll at the viewport root.
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     const viewportWidth = page.viewportSize()?.width ?? 430;
     expect(scrollWidth).toBeLessThanOrEqual(viewportWidth + 10); // 10px tolerance for sub-pixel rendering
   });

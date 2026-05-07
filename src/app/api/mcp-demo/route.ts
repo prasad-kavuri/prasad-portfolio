@@ -83,6 +83,10 @@ const MCP_TOOLS = [
   },
 ];
 
+// Security boundaries for tool-call execution
+const ALLOWED_TOOL_NAMES = new Set(MCP_TOOLS.map((t) => t.name));
+const MAX_TOOL_CALLS = 5; // cap per request to prevent runaway loops
+
 const GROQ_TOOLS = MCP_TOOLS.map(tool => ({
   type: "function" as const,
   function: {
@@ -96,7 +100,6 @@ type ToolArgs = Record<string, unknown>;
 
 interface ToolCallLogEntry {
   tool: string;
-  args: ToolArgs;
   result: string;
   duration_ms: number;
 }
@@ -288,6 +291,16 @@ export async function POST(request: NextRequest) {
     ) {
       for (const toolCall of toolSelectionResponse.choices[0].message
         .tool_calls) {
+        // Cap: prevent runaway tool-call loops from a confused model response
+        if (toolCallLog.length >= MAX_TOOL_CALLS) {
+          logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'tool_call_cap_exceeded', status: 200 });
+          break;
+        }
+        // Allowlist: skip tool names the model invented that aren't in our defined set
+        if (!ALLOWED_TOOL_NAMES.has(toolCall.function.name)) {
+          logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'unknown_tool_name', tool: toolCall.function.name, status: 200 });
+          continue;
+        }
         const toolStartTime = Date.now();
         const toolArgs = parseToolArgs(toolCall.function.arguments);
         const result = executeTool(toolCall.function.name, toolArgs);
@@ -295,7 +308,6 @@ export async function POST(request: NextRequest) {
 
         toolCallLog.push({
           tool: toolCall.function.name,
-          args: toolArgs,
           result,
           duration_ms: duration,
         });

@@ -2,9 +2,9 @@
   "schema_version": "1.0",
   "owner": "Prasad Kavuri",
   "contact": "vbkpkavuri@gmail.com",
-  "last_reviewed": "2026-04-26",
+  "last_reviewed": "2026-05-06",
   "controls": {
-    "csp": "Allowlisted Content-Security-Policy in next.config.ts and src/proxy.ts",
+    "csp": "Allowlisted Content-Security-Policy in next.config.ts and src/proxy.ts; hardened with base-uri, form-action, object-src, and upgrade-insecure-requests directives",
     "isolation_headers": "COOP/COEP configured for browser WASM/WebGPU requirements",
     "rate_limiting": "Proxy-level API rate limiting plus route-level limits",
     "ssrf": "safeServerFetch validates URLs, DNS resolution, private IP ranges, and redirects",
@@ -12,7 +12,11 @@
     "log_redaction": "query-log.ts redacts emails, phone numbers, bearer tokens, API-key-like strings, and env assignments",
     "env_hygiene": ".env files are gitignored and secrets load from environment variables",
     "ci": "npm audit, lint, coverage tests, build, and E2E checks",
-    "agent_sandbox": "AGENTS.md, CLAUDE.md, SECURITY.md, and repo skill define coding-agent boundaries"
+    "agent_sandbox": "AGENTS.md, CLAUDE.md, SECURITY.md, and repo skill define coding-agent boundaries",
+    "qwen_moe_gate": "Local vllm endpoint gated behind ENABLE_LOCAL_QWEN env flag; returns safe fallback in production to prevent serverless timeout and loopback exposure",
+    "html_json_escaping": "Internally generated JSON inserted into HTML pre blocks is escaped (&, <, >, U+2028, U+2029) to prevent script-injection via future content changes",
+    "mcp_tool_call_controls": "Tool-calling routes enforce allowlist (ALLOWED_TOOL_NAMES) and per-request cap (MAX_TOOL_CALLS=5); raw model-selected args are stripped from client responses",
+    "dev_deps_hygiene": "Build-only packages (shadcn) moved to devDependencies; prod install surface reduced"
   },
   "residual_risks": [
     "Third-party agent runtimes may vary in policy enforcement",
@@ -23,6 +27,7 @@
   ],
   "validation_commands": [
     "npm audit --audit-level=high",
+    "npm audit --omit=dev --audit-level=moderate",
     "npm run lint",
     "npm run test:coverage",
     "npm run build",

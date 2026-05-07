@@ -5,7 +5,7 @@
  * iPhone 15 Pro Max. Uses test.use() to override the project device for this
  * file without modifying the global playwright.config.ts.
  *
- * Run: npx playwright test e2e/mobile-smoke.spec.ts --project=webkit
+ * Run: npx playwright test e2e/mobile-smoke.spec.ts --project=mobile
  */
 import { test, expect, devices } from '@playwright/test';
 
@@ -13,9 +13,7 @@ test.use({ ...devices['iPhone 15 Pro Max'] });
 
 test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
   test.beforeEach(({}, testInfo) => {
-    // Strictly target the 'webkit' project defined in playwright.config.ts
-    // Other mobile projects (Mobile-iOS, etc.) use different device emulations.
-    test.skip(testInfo.project.name !== 'webkit', 'Mobile smoke test specifically targets the webkit project');
+    test.skip(!testInfo.project.name.includes('Mobile') && testInfo.project.name !== 'mobile', 'Mobile smoke test targets mobile device projects');
   });
 
   test('AI Evaluation Showcase loads and shows key headings', async ({ page }) => {

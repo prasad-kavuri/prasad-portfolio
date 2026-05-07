@@ -15,30 +15,37 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: ['**/mobile-*.spec.ts', '**/webkit-smoke.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'firefox',
+      testIgnore: ['**/mobile-*.spec.ts', '**/webkit-smoke.spec.ts'],
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'webkit',
+      testMatch: ['**/webkit-smoke.spec.ts'],
       use: { ...devices['Desktop Safari'] },
     },
     {
       name: 'mobile',
+      testMatch: ['**/mobile-*.spec.ts'],
       use: { ...devices['iPhone 13'] },
     },
     {
       name: 'Mobile-iOS',
+      testMatch: ['**/mobile-*.spec.ts'],
       use: { ...devices['iPhone 15 Pro'] },
     },
     {
       name: 'Mobile-Android',
+      testMatch: ['**/mobile-*.spec.ts'],
       use: { ...devices['Pixel 7'] },
     },
     {
       name: 'Mobile-Android-LowEnd',
+      testMatch: ['**/mobile-*.spec.ts'],
       use: {
         ...devices['Pixel 5'],
         launchOptions: {

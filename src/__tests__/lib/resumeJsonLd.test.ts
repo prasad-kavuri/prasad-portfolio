@@ -42,6 +42,11 @@ describe('generateResumeJsonLd', () => {
     expect(result.email).toBe('jane@example.com');
   });
 
+  it('phone maps to telephone when provided', () => {
+    const result = generateResumeJsonLd({ name: 'Jane', phone: '+1-555-0100' });
+    expect(result.telephone).toBe('+1-555-0100');
+  });
+
   it('email is absent when not provided', () => {
     const result = generateResumeJsonLd({ name: 'Jane' });
     expect(result.email).toBeUndefined();
@@ -50,6 +55,12 @@ describe('generateResumeJsonLd', () => {
   it('skills map to knowsAbout array', () => {
     const result = generateResumeJsonLd(baseData);
     expect(result.knowsAbout).toEqual(['Python', 'TypeScript', 'LangChain']);
+  });
+
+  it('uses headline as description when summary is absent', () => {
+    const result = generateResumeJsonLd({ name: 'Jane', headline: 'AI Platform Leader' });
+    expect(result.description).toBe('AI Platform Leader');
+    expect(result.jobTitle).toBe('AI Platform Leader');
   });
 
   it('empty skills array results in omitted knowsAbout key', () => {
@@ -88,6 +99,28 @@ describe('generateResumeJsonLd', () => {
     expect(result.alumniOf![0].name).toBe('State University');
   });
 
+  it('education description uses degree alone when field of study is absent', () => {
+    const result = generateResumeJsonLd({
+      name: 'Jane',
+      education: [{ degree: 'MBA', institution: 'Business School' }],
+    });
+
+    expect(result.alumniOf).toEqual([
+      { '@type': 'EducationalOrganization', name: 'Business School', description: 'MBA' },
+    ]);
+  });
+
+  it('education description is omitted when degree is empty', () => {
+    const result = generateResumeJsonLd({
+      name: 'Jane',
+      education: [{ degree: '', institution: 'State University' }],
+    });
+
+    expect(result.alumniOf).toEqual([
+      { '@type': 'EducationalOrganization', name: 'State University' },
+    ]);
+  });
+
   it('certifications map to hasCredential array', () => {
     const result = generateResumeJsonLd(baseData);
     expect(result.hasCredential).toHaveLength(1);
@@ -103,6 +136,16 @@ describe('generateResumeJsonLd', () => {
     const result = generateResumeJsonLd(baseData);
     expect(result.sameAs).toContain('https://linkedin.com/in/janedoe');
     expect(result.sameAs).toContain('https://github.com/janedoe');
+  });
+
+  it('website URL contributes to sameAs and canonical url fallback', () => {
+    const result = generateResumeJsonLd({
+      name: 'Jane',
+      urls: { website: 'https://jane.example' },
+    });
+
+    expect(result.sameAs).toEqual(['https://jane.example']);
+    expect(result.url).toBe('https://jane.example');
   });
 
   it('all sameAs entries start with https://', () => {

@@ -133,6 +133,19 @@ describe('maybeCompact — at/above threshold', () => {
     expect(result.messages[0]).toEqual(sysMsg);
   });
 
+  it('summarizes only older conversation messages', async () => {
+    const compactFn = vi.fn().mockResolvedValue('older summary');
+    const msgs = buildMessages(COMPACTION_TURN_THRESHOLD);
+
+    await maybeCompact(msgs, compactFn);
+
+    const prompt = compactFn.mock.calls[0][0];
+    expect(prompt).toContain('question 0');
+    expect(prompt).toContain('answer 5');
+    expect(prompt).not.toContain('question 6');
+    expect(prompt).not.toContain('answer 7');
+  });
+
   it('reports the correct turnCount in the result', async () => {
     const compactFn = vi.fn().mockResolvedValue('summary');
     const msgs = buildMessages(COMPACTION_TURN_THRESHOLD + 2);
@@ -144,10 +157,6 @@ describe('maybeCompact — at/above threshold', () => {
     // Exactly COMPACTION_TURN_THRESHOLD user turns but only 4 total conversation messages
     // → toCompress is empty → wasCompacted=false
     const compactFn = vi.fn().mockResolvedValue('summary');
-    const msgs: Message[] = Array.from({ length: COMPACTION_TURN_THRESHOLD }, (_, i) => ({
-      role: 'user' as const,
-      content: `q${i}`,
-    }));
     // Only 8 messages, all user — slice(-4) covers half, slice(0,-4) covers other half
     // toCompress.length = 4 so compaction should run
     // Instead use exactly 4 total messages with threshold=8 turns - won't hit empty case

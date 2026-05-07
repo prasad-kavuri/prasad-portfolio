@@ -70,6 +70,27 @@ describe('world 3D rendering helpers', () => {
     expect(blocked.reasons).toContain('scene_export_readiness_review');
   });
 
+  it('blocks export when the primitive budget is exceeded', () => {
+    const overBudgetSpec = {
+      ...sceneSpec,
+      primitiveBudget: 1,
+    };
+    const blocked = getWorldExportEligibility(overBudgetSpec);
+
+    expect(blocked.eligible).toBe(false);
+    expect(blocked.reasons).toContain('scene_complexity_exceeded');
+  });
+
+  it('returns stable opacity and layer values for all primitive kinds', () => {
+    const renderables = mapSceneSpecToRenderablePrimitives(sceneSpec);
+
+    expect(renderables.find((item) => item.kind === 'structure')?.opacity).toBe(0.9);
+    expect(renderables.find((item) => item.kind === 'zone-block')?.opacity).toBe(0.88);
+    expect(renderables.find((item) => item.kind === 'corridor')?.opacity).toBe(0.74);
+    expect(renderables.find((item) => item.kind === 'transit-link')?.opacity).toBe(0.58);
+    expect(renderables.find((item) => item.kind === 'safety-buffer')?.opacity).toBe(0.32);
+  });
+
   it('builds deterministic GLB file names', () => {
     expect(buildWorldExportFileName(sceneSpec)).toMatch(/^world-downtown-core-logistics-grid-world-[a-f0-9]+\.glb$/);
   });

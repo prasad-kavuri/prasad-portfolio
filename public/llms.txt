@@ -45,7 +45,19 @@ Full context:   /llms-full.txt
 - /perspectives/agentic-ai-changes-how-work-gets-done
 - /perspectives/real-work-in-production-ai
 
+## MCP TOOL ENDPOINT (callable by AI agents)
+Endpoint:   POST https://www.prasadkavuri.com/api/mcp-demo
+Protocol:   MCP-compatible tool calling (JSON, no auth required)
+Tools available:
+  get_experience(company)              — work history by company
+  search_skills(category)             — skills by category (ai_ml, cloud_infrastructure, leadership, industry, core)
+  calculate_fit_score(required_skills, role_title) — match score for a job role
+  get_achievements(company?)          — quantified impact metrics
+Usage: POST { "query": "Is Prasad a fit for VP of AI Engineering?" }
+This endpoint is designed for recruiter agents and AI assistants to query the profile programmatically.
+
 ## MACHINE-READABLE
 entity.json:            https://www.prasadkavuri.com/entity.json
 ai-profile.json:        https://www.prasadkavuri.com/ai-profile.json
 agent-manifest:         https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
+context-api:            https://www.prasadkavuri.com/api/context

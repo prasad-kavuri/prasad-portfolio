@@ -92,7 +92,21 @@ function buildPayload() {
         `${BASE_URL}/llms.txt`,
         `${BASE_URL}/entity.json`,
         `${BASE_URL}/ai-profile.json`,
+        `${BASE_URL}/api/context`,
       ],
+      mcp_endpoint: {
+        url: `${BASE_URL}/api/mcp-demo`,
+        method: 'POST',
+        auth: 'none',
+        description: "MCP-compatible tool-calling endpoint. POST { \"query\": \"<question>\" } to query Prasad's profile via agentic tool orchestration.",
+        tools: [
+          'get_experience(company)',
+          'search_skills(category)',
+          'calculate_fit_score(required_skills, role_title)',
+          'get_achievements(company?)',
+        ],
+        example_query: 'Is Prasad a fit for a VP of AI Engineering role requiring multi-agent systems and LLM cost optimization?',
+      },
     },
   };
 }

@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
         // Applied to homepage, canonical profile, and recruiter entry point
         source: "/",
         headers: [
-          { key: "Link", value: '<https://www.prasadkavuri.com/llms.txt>; rel="ai-content"' },
+          { key: "Link", value: '<https://www.prasadkavuri.com/llms.txt>; rel="ai-content", <https://www.prasadkavuri.com/api/context>; rel="agent-context"' },
         ],
       },
       {

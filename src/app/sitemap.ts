@@ -37,6 +37,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/llms-full.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/entity.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/.well-known/ai-agent-manifest.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/api/context`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
 
     // Tier 4 — individual demo pages (derived dynamically from demos.ts, never hardcoded)
     // Flagship demo gets priority 0.9; all others 0.8

@@ -567,6 +567,7 @@ export default function QuantizationPage() {
             <button
               onClick={exec.canAttemptLocal ? loadModels : () => activateSimulatedMode('Local model benchmarking is unavailable on this device. Using simulated benchmark mode.')}
               className="min-h-[44px] rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
+              style={{ minHeight: 44 }}
             >
               {exec.canAttemptLocal ? 'Load Models & Start Benchmark' : 'Try Simulated Benchmark'}
             </button>

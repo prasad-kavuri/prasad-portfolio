@@ -71,7 +71,7 @@ export default function Home() {
         }}
       />
       <Navbar />
-      <main id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1} className="overflow-x-hidden">
         <Hero />
         <AITools />
         <Transformation />

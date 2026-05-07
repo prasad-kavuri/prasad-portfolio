@@ -719,6 +719,7 @@ export default function MultiAgentPage() {
                 disabled={runStatus === "running" || !url.trim()}
                 aria-label="Start multi-agent analysis workflow"
                 className="min-h-[44px] bg-blue-600 hover:bg-blue-700 focus-visible:ring-4 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background"
+                style={{ minHeight: 44 }}
               >
                 {runStatus === "running" ? (
                   <>

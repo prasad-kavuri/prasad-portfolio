@@ -566,6 +566,7 @@ export default function MultimodalPage() {
             <button
               onClick={loadModels}
               className="min-h-[44px] rounded-lg bg-blue-600 px-8 py-3 font-medium text-white hover:bg-blue-700"
+              style={{ minHeight: 44 }}
             >
               {exec.canAttemptLocal ? 'Load Models & Start' : 'Try Simulated Demo'}
             </button>

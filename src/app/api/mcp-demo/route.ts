@@ -296,9 +296,22 @@ export async function POST(request: NextRequest) {
           logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'tool_call_cap_exceeded', status: 200 });
           break;
         }
-        // Allowlist: skip tool names the model invented that aren't in our defined set
+        // Allowlist: do not execute invented tool names. Preserve a sanitized
+        // result entry so clients never see raw args, and the model still
+        // receives a bounded tool result instead of getting a silent gap.
         if (!ALLOWED_TOOL_NAMES.has(toolCall.function.name)) {
           logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'unknown_tool_name', tool: toolCall.function.name, status: 200 });
+          const result = "Tool not found";
+          toolCallLog.push({
+            tool: toolCall.function.name,
+            result,
+            duration_ms: 0,
+          });
+          toolResultMessages.push({
+            role: "tool",
+            tool_call_id: toolCall.id,
+            content: result,
+          });
           continue;
         }
         const toolStartTime = Date.now();

@@ -111,7 +111,7 @@ export function Architecture() {
   }, [isInView]);
 
   return (
-    <section id="architecture" className="bg-slate-900 py-20">
+    <section id="architecture" className="bg-slate-900 py-20 overflow-x-hidden">
       <div className="mx-auto max-w-5xl px-4">
         {/* Header */}
         <FadeUp>
@@ -140,7 +140,7 @@ export function Architecture() {
               width={1200}
               height={760}
               priority={false}
-              className="h-auto w-full"
+              className="h-auto w-full max-w-full"
             />
             <figcaption className="border-t border-slate-700/70 px-4 py-3 text-xs leading-relaxed text-slate-400">
               System-level view of the portfolio: Next.js UI, API reliability

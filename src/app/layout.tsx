@@ -194,7 +194,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable} overflow-x-hidden`}>
       <head>
         {/* AI crawler discovery — HTML equivalent of the HTTP Link header on key pages */}
         <link rel="ai-content" href="https://www.prasadkavuri.com/llms.txt" />

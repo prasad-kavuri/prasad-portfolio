@@ -97,6 +97,18 @@ function buildPayload() {
   };
 }
 
+// Escape characters that could break out of a <pre> block or form script injection:
+// <, >, &, U+2028 (line separator), U+2029 (paragraph separator).
+// Data is internally generated today, but this guards against future content changes.
+function escapeHtmlJson(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
 const HTML_TEMPLATE = (json: string) => `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,7 +164,7 @@ export async function GET(request: NextRequest) {
   const payload = buildPayload();
 
   if (isBrowser) {
-    const pretty = JSON.stringify(payload, null, 2);
+    const pretty = escapeHtmlJson(JSON.stringify(payload, null, 2));
     logApiEvent('api.request_completed', {
       route: ROUTE,
       traceId: context.traceId,

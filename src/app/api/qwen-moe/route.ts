@@ -18,6 +18,11 @@ const FALLBACK_MESSAGE =
   'Qwen MoE local inference unavailable — requires local vllm server. ' +
   'This demo shows the routing architecture; switch to Llama or Mixtral for live output.';
 
+// Safety gate: only attempt localhost fetch when a server-side env flag is
+// explicitly set. Default is disabled so production deployments never make
+// loopback requests or hold connections for 20 s waiting on a non-existent server.
+const LOCAL_QWEN_ENABLED = process.env.ENABLE_LOCAL_QWEN === 'true';
+
 export async function POST(req: NextRequest) {
   const context = createRequestContext(req, ROUTE);
   const rateLimited = await enforceRateLimit(req, 'unknown', { context });
@@ -39,6 +44,24 @@ export async function POST(req: NextRequest) {
   if (isPromptInjection(prompt)) {
     logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', status: 400 });
     return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
+  }
+
+  // Return fallback immediately if local vllm is not explicitly enabled.
+  // Prevents 20 s timeout on every production request and avoids unnecessary
+  // loopback traffic on Vercel/serverless where localhost:8000 never exists.
+  if (!LOCAL_QWEN_ENABLED) {
+    return finalizeApiResponse(NextResponse.json({
+      model: 'qwen-moe-local',
+      modelName: 'Qwen 3.6 MoE (int4) — Edge Efficient',
+      provider: 'Local vllm · localhost:8000',
+      response: '',
+      latency_ms: 0,
+      input_tokens: 0,
+      output_tokens: 0,
+      cost_usd: 0,
+      isFallback: true,
+      error: FALLBACK_MESSAGE,
+    }), context);
   }
 
   try {

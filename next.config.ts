@@ -62,6 +62,11 @@ const nextConfig: NextConfig = {
               "connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://cdn-lfs-us-1.huggingface.co https://xethub.hf.co https://*.xethub.hf.co https://cdn.jsdelivr.net https://unpkg.com https://va.vercel-scripts.com blob:",
               "font-src 'self' data:",
               "frame-ancestors 'none'",
+              // Additional hardening directives
+              "base-uri 'self'",
+              "form-action 'self'",
+              "object-src 'none'",
+              "upgrade-insecure-requests",
             ].join("; "),
           },
           // Required for SharedArrayBuffer (used by WASM multi-threading)

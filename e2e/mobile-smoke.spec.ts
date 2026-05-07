@@ -47,9 +47,11 @@ test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
     // The page heading is visible (use role to avoid strict-mode violation from nav/footer duplicates)
     await expect(page.getByRole('heading', { name: 'Prasad Kavuri' })).toBeVisible({ timeout: 10_000 });
 
-    // No horizontal scroll at the viewport root.
-    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-    const viewportWidth = page.viewportSize()?.width ?? 430;
-    expect(scrollWidth).toBeLessThanOrEqual(viewportWidth + 10); // 10px tolerance for sub-pixel rendering
+    // No user-visible horizontal scroll.
+    const scrollX = await page.evaluate(() => {
+      window.scrollTo(10_000, window.scrollY);
+      return window.scrollX;
+    });
+    expect(scrollX).toBe(0);
   });
 });

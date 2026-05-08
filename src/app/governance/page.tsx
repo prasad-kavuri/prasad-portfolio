@@ -212,7 +212,7 @@ export default function GovernancePage() {
           </h2>
           <Card className="border border-border bg-card p-5">
             <div className="grid gap-3 text-sm text-muted-foreground md:grid-cols-2">
-              <p><span className="font-medium text-foreground">Evaluation Discipline:</span> Offline eval suites and CI regression thresholds block unsafe quality drift before release.</p>
+              <p><span className="font-medium text-foreground">Automated Outcome Grading:</span> LLM-as-Judge grader agents score every response against ground-truth eval cases. CI blocks any merge where quality regresses below threshold — the same pattern as Anthropic&apos;s Outcomes primitive.</p>
               <p><span className="font-medium text-foreground">Guardrail Boundary:</span> Prompt-injection checks and output sanitization are enforced centrally at API trust boundaries.</p>
               <p><span className="font-medium text-foreground">Human Oversight:</span> High-stakes multi-agent transitions require explicit HITL checkpoint approval before strategist output continues.</p>
               <p><span className="font-medium text-foreground">Traceable Operations:</span> Structured logs plus trace IDs make request, model, and policy decisions auditable end-to-end.</p>
@@ -438,7 +438,7 @@ export default function GovernancePage() {
             </div>
             <div>
               <p className="font-medium text-foreground mb-1">CTO perspective</p>
-              <p>Guardrails, eval gating, and HITL checkpoints are code — not policy docs. They ship with the system and fail CI if broken.</p>
+              <p>Guardrails, automated outcome grading, and HITL checkpoints are code — not policy docs. Grader agents fail CI on quality regression before any merge reaches production.</p>
             </div>
             <div>
               <p className="font-medium text-foreground mb-1">CISO perspective</p>

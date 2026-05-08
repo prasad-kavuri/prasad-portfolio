@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'For Recruiters — Prasad Kavuri | AI Platform Leader';
+export const alt = 'AI Agent Entry Point — Prasad Kavuri | AI Platform Leader';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -13,10 +13,10 @@ const CARD_BG = '#18181b';
 const CARD_BORDER = '#27272a';
 
 const metrics = [
-  { value: '200+', label: 'Engineers Led' },
-  { value: '70%+', label: 'Cost Reduction' },
-  { value: '13K+', label: 'B2B Customers' },
-  { value: '$10M+', label: 'Revenue Impact' },
+  { value: 'JSON', label: 'Machine Readable' },
+  { value: 'llms.txt', label: 'Agent Optimized' },
+  { value: 'MCP', label: 'Tool Enabled' },
+  { value: '2026', label: 'Context Freshness' },
 ];
 
 export default function Image() {
@@ -42,7 +42,7 @@ export default function Image() {
             fontSize: 12, color: ACCENT, letterSpacing: '0.1em',
             border: `1px solid ${ACCENT}`, padding: '4px 14px', borderRadius: 4,
           }}>
-            RECRUITER BRIEF
+            AGENT ENTRY POINT
           </span>
         </div>
 
@@ -51,21 +51,21 @@ export default function Image() {
           {/* Left: identity + pillars */}
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div style={{ fontSize: 54, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1.05, marginBottom: 14 }}>
-              Executive
-              <br />Recruiter Brief
+              AI Agent
+              <br />Entry Point
             </div>
             <div style={{ fontSize: 20, color: ACCENT, marginBottom: 10 }}>
-              Prasad Kavuri — VP / Head of AI Engineering
+              Prasad Kavuri — Machine-Readable Profile
             </div>
             <div style={{ fontSize: 15, color: TEXT_MUTED, marginBottom: 28, lineHeight: 1.5 }}>
-              60-second summary, capability map, and production evidence for AI leadership evaluation.
+              Optimized context for LLMs, Perplexity, and Agentic SEO. Includes entity.json, llms.txt, and MCP tool definitions.
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
                <div style={{ fontSize: 13, color: TEXT_PRIMARY, backgroundColor: ACCENT, padding: '8px 16px', borderRadius: 6 }}>
-                  Immediately Available
+                  rel="ai-content"
                </div>
                <div style={{ fontSize: 13, color: TEXT_MUTED, border: `1px solid ${CARD_BORDER}`, padding: '8px 16px', borderRadius: 6 }}>
-                  Chicago / Remote
+                  JSON-LD Person
                </div>
             </div>
           </div>

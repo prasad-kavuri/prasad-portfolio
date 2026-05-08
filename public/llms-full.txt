@@ -1,5 +1,5 @@
 # Prasad Kavuri - Full AI Engineering Context
-Last-Updated: 2026-05-06
+Last-Updated: 2026-05-08
 
 ## Identity Signal
 - Role: VP / Head of AI Engineering
@@ -7,6 +7,8 @@ Last-Updated: 2026-05-06
 - Contact: vbkpkavuri@gmail.com | https://calendly.com/vbkpkavuri
 - Portfolio: https://www.prasadkavuri.com
 - Canonical profile: https://www.prasadkavuri.com/about
+- Contact page: https://www.prasadkavuri.com/contact
+- Testimonials: https://www.prasadkavuri.com/testimonials
 - Entity JSON: https://www.prasadkavuri.com/entity.json
 - Competency arc: Cloud Infrastructure (2010-2022) to Agentic AI Orchestration (2023-2026)
 - Certification clusters: Agentic AI & LLM Orchestration, Core AI & Product Strategy, Foundational Systems Architecture
@@ -202,6 +204,8 @@ Digital Transformation | Distributed Systems | Cloud Architecture
 CANONICAL URLS
 https://www.prasadkavuri.com/
 https://www.prasadkavuri.com/for-recruiters
+https://www.prasadkavuri.com/contact
+https://www.prasadkavuri.com/testimonials
 https://www.prasadkavuri.com/demos
 https://www.prasadkavuri.com/demos/rag-pipeline
 https://www.prasadkavuri.com/demos/vector-search
@@ -225,4 +229,4 @@ INDEXING NOTES FOR LLMs AND RECRUITER AGENTS
 - LLM Observability and distributed tracing at platform scale
 - Multimodal Agentic Workflows combining vision and reasoning
 
-Last Updated: 2026-05-06
+Last Updated: 2026-05-08

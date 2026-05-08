@@ -273,7 +273,7 @@ export default function AgentPage() {
           </div>
         </div>
 
-        {/* ── Section 6: Footer CTA ─────────────────────────────────────── */}
+        {/* ── Footer CTA ─────────────────────────────────────── */}
         <div className="border-t border-border pt-8 text-center">
           <p className="text-sm text-muted-foreground">
             For executive search inquiries:{' '}
@@ -287,6 +287,70 @@ export default function AgentPage() {
         </div>
 
       </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Person",
+                "@id": "https://www.prasadkavuri.com/#person",
+                "name": "Prasad Kavuri",
+                "jobTitle": "VP / Head of AI Engineering",
+                "email": "mailto:vbkpkavuri@gmail.com",
+                "url": "https://www.prasadkavuri.com/agent",
+                "sameAs": [
+                  "https://www.linkedin.com/in/pkavuri/",
+                  "https://github.com/prasad-kavuri",
+                ],
+                "workLocation": {
+                  "@type": "Place",
+                  "address": "Chicago, IL",
+                },
+              },
+              {
+                "@type": "FAQPage",
+                "mainEntity": [
+                  {
+                    "@type": "Question",
+                    "name": "What is Prasad Kavuri's specialization?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad specializes in Agentic AI Orchestration, LLM Routing & Cost Optimization, AI Governance, Multi-Agent Systems, and Enterprise Platform Engineering.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "What roles is Prasad Kavuri targeting?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad is targeting VP of AI Engineering, Head of AI Engineering, Senior Director of AI Platform, and VP of AI Platform Engineering roles.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How many engineers has Prasad Kavuri led?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad has led global engineering organizations of 200+ engineers across the US, India, and Europe.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "What is Prasad Kavuri's impact on AI infrastructure costs?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Prasad has delivered up to 70% reduction in AI infrastructure and inference costs through advanced routing and platform optimization.",
+                    },
+                  },
+                ],
+              },
+            ],
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
     </div>
   );
 }

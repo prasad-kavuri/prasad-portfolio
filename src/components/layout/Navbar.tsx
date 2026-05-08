@@ -2,15 +2,11 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
-  { href: "#tools", label: "AI Tools" },
-  { href: "#expertise", label: "Expertise" },
-  { href: "#experience", label: "Experience" },
-  { href: "#contact", label: "Contact" },
-  { href: "/skills", label: "Skills" },
+  { href: "/for-recruiters", label: "For Recruiters" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/governance", label: "Governance" },
-  { href: "/certifications", label: "Certifications" },
-  { href: "/for-recruiters", label: "For Recruiters" },
+  { href: "/testimonials", label: "Testimonials" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Navbar() {

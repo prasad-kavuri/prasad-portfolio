@@ -867,9 +867,16 @@ function PlatformImpact() {
 export default function EvaluationShowcasePage() {
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'CreativeWork',
+    '@type': 'SoftwareApplication',
     name: 'AI Evaluation Showcase',
     description: 'Closed-loop LLM evaluation pipeline — semantic fidelity, hallucination detection, guardrails, and CI gating in action. Production-derived eval thresholds — calibrated from real Krutrim deployment patterns.',
+    applicationCategory: 'BusinessApplication, DeveloperApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
     keywords: 'LLM-as-Judge, Semantic Fidelity, Guardrails, CI Gating',
     url: 'https://www.prasadkavuri.com/demos/evaluation-showcase',
     author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },

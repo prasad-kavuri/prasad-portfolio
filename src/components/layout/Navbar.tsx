@@ -3,6 +3,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
   { href: "/for-recruiters", label: "For Recruiters" },
+  { href: "#tools", label: "AI Tools" },
+  { href: "#experience", label: "Experience" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/governance", label: "Governance" },
   { href: "/testimonials", label: "Testimonials" },

@@ -42,7 +42,7 @@ at enterprise scale. Specializes in agentic orchestration, LLM FinOps, and produ
 
 ## Open To
 
-VP AI, Head of AI Engineering, CTO - AI Transformation, Chief AI Officer
+VP of AI Engineering | Head of AI Engineering | Senior Director, AI Platform | Head of Applied AI | VP, AI Platform Engineering
 
 ## Live Portfolio Demos
 

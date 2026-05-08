@@ -1,23 +1,22 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Enterprise Control Plane',
+  title: 'Enterprise AI Control Plane — RBAC, FinOps & Observability | Prasad Kavuri',
   description:
-    'Enterprise AI governance control plane with RBAC, spend analytics, token observability, and OTEL event stream simulation.',
+    'Enterprise-grade AI governance dashboard: RBAC access controls, spend analytics, token observability, and OTEL event streams. Shows how production AI platforms are operated and governed at scale.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/demos/enterprise-control-plane',
   },
   openGraph: {
-    title: 'Enterprise Control Plane — Prasad Kavuri',
+    title: 'Enterprise AI Control Plane — RBAC, FinOps & Observability | Prasad Kavuri',
     description:
-      'Review enterprise-grade AI controls for access, spend, auditability, and observability in one operating dashboard.',
+      'RBAC, spend controls, token analytics, and observability for enterprise AI operations — the governance layer that makes AI platforms audit-ready.',
     url: 'https://www.prasadkavuri.com/demos/enterprise-control-plane',
-    images: [{ url: 'https://www.prasadkavuri.com/og-image.jpg', width: 1200, height: 630, alt: 'Enterprise Control Plane demo' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Enterprise Control Plane — Prasad Kavuri',
-    description: 'RBAC, spend controls, token analytics, and observability for enterprise AI operations.',
-    images: ['https://www.prasadkavuri.com/og-image.jpg'],
+    title: 'Enterprise AI Control Plane — RBAC, FinOps & Observability',
+    description:
+      'Enterprise AI governance in action: access controls, spend analytics, and observability by VP of AI Engineering Prasad Kavuri.',
   },
 };

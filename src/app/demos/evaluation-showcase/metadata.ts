@@ -1,23 +1,22 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'AI Evaluation Showcase',
+  title: 'AI Evaluation Showcase — LLM-as-Judge & Outcome Grading | Prasad Kavuri',
   description:
-    'Closed-loop AI quality system with offline evals, live drift signals, hallucination indicators, and CI regression gating.',
+    'Production-grade AI quality system: LLM-as-Judge grader agents score every response, CI regression gates block quality drift, and drift monitoring catches model degradation. Built by VP of AI Engineering Prasad Kavuri.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/demos/evaluation-showcase',
   },
   openGraph: {
-    title: 'AI Evaluation Showcase — Prasad Kavuri',
+    title: 'AI Evaluation Showcase — LLM-as-Judge & Outcome Grading | Prasad Kavuri',
     description:
-      'See regression-aware AI quality controls in action: LLM-as-Judge, drift monitoring, HITL checkpoints, and release gates.',
+      'See automated outcome grading in action: grader agents, drift signals, HITL checkpoints, and CI release gates for production AI systems.',
     url: 'https://www.prasadkavuri.com/demos/evaluation-showcase',
-    images: [{ url: 'https://www.prasadkavuri.com/og-image.jpg', width: 1200, height: 630, alt: 'AI Evaluation Showcase' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Evaluation Showcase — Prasad Kavuri',
-    description: 'Production-style AI quality loop: offline evals, drift signals, and regression gates.',
-    images: ['https://www.prasadkavuri.com/og-image.jpg'],
+    title: 'AI Evaluation Showcase — LLM-as-Judge & Outcome Grading',
+    description:
+      'Grader agents, drift monitoring, and CI regression gates — production AI quality controls by VP of AI Engineering Prasad Kavuri.',
   },
 };

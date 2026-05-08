@@ -3,65 +3,127 @@ Allow: /
 Disallow: /api/
 Disallow: /*.html
 
-# Explicitly allow major AI crawlers (override /api/ disallow above)
+# AI crawlers — pages and machine-readable files allowed; only designated API endpoints open
+# /api/context: agent memory endpoint (structured profile injection)
+# /api/mcp-demo: MCP tool-calling endpoint (programmatic profile queries)
 User-agent: GPTBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: OAI-SearchBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: ChatGPT-User
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: ClaudeBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Claude-User
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Claude-SearchBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: anthropic-ai
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: PerplexityBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Google-Extended
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Amazonbot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: cohere-ai
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Applebot-Extended
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: meta-externalagent
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Meta-ExternalFetcher
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Bytespider
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: YouBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: CCBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Diffbot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: LinkedInBot
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 User-agent: Slurp
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
 Allow: /
 
 Sitemap: https://www.prasadkavuri.com/sitemap.xml

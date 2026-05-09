@@ -1,18 +1,11 @@
-import type { Metadata } from 'next';
+'use client';
+
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Mail, ExternalLink, CalendarDays, ArrowLeft } from 'lucide-react';
-import { SITE_URL } from '@/data/site-config';
 import profile from '@/data/profile.json';
 import { CALENDLY_URLS } from '@/lib/tracking';
-
-export const metadata: Metadata = {
-  title: 'Contact Prasad Kavuri',
-  description: 'Get in touch with Prasad Kavuri for VP / Head of AI Engineering roles, AI strategy, and platform leadership conversations.',
-  alternates: {
-    canonical: `${SITE_URL}/contact`,
-  },
-};
+import { trackCalendlyClick, trackEmailClick, trackLinkedInClick, trackEvent } from '@/lib/analytics';
 
 export default function ContactPage() {
   return (
@@ -36,6 +29,7 @@ export default function ContactPage() {
             target="_blank"
             rel="noopener noreferrer"
             className="block group"
+            onClick={() => trackCalendlyClick('contact_page')}
           >
             <Card className="h-full border-indigo-500/20 bg-indigo-500/5 group-hover:border-indigo-500/40 transition-colors">
               <CardContent className="p-6">
@@ -48,7 +42,11 @@ export default function ContactPage() {
             </Card>
           </a>
 
-          <a href={`mailto:${profile.personal.email}`} className="block group">
+          <a
+            href={`mailto:${profile.personal.email}`}
+            className="block group"
+            onClick={() => trackEmailClick()}
+          >
             <Card className="h-full border-border bg-card group-hover:border-foreground/20 transition-colors">
               <CardContent className="p-6">
                 <Mail className="w-8 h-8 text-red-500 mb-4" />
@@ -65,6 +63,7 @@ export default function ContactPage() {
             target="_blank"
             rel="noopener noreferrer"
             className="block group"
+            onClick={() => trackLinkedInClick('contact_page')}
           >
             <Card className="h-full border-border bg-card group-hover:border-foreground/20 transition-colors">
               <CardContent className="p-6">
@@ -82,6 +81,7 @@ export default function ContactPage() {
             target="_blank"
             rel="noopener noreferrer"
             className="block group"
+            onClick={() => trackEvent('github_click', { placement: 'contact_page' })}
           >
             <Card className="h-full border-border bg-card group-hover:border-foreground/20 transition-colors">
               <CardContent className="p-6">
@@ -120,24 +120,6 @@ export default function ContactPage() {
         </footer>
       </div>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ContactPage",
-            "name": "Contact Prasad Kavuri",
-            "description": "Get in touch with Prasad Kavuri for VP / Head of AI Engineering roles.",
-            "url": `${SITE_URL}/contact`,
-            "mainEntity": {
-              "@type": "Person",
-              "@id": `${SITE_URL}/#person`,
-              "name": "Prasad Kavuri",
-              "jobTitle": "VP / Head of AI Engineering",
-            }
-          }).replace(/</g, '\\u003c'),
-        }}
-      />
     </div>
   );
 }

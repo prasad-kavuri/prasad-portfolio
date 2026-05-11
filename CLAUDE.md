@@ -1,5 +1,15 @@
 @AGENTS.md
 
+## Document Hierarchy
+
+When instructions conflict, apply this priority order:
+
+`AGENTS.md` → `CLAUDE.md` → `docs/ARCHITECTURE.md` → `docs/SECURITY_THREAT_MODEL.md` → source code comments
+
+`AGENTS.md` is the universal agent contract (all tools). `CLAUDE.md` is the Claude Code-specific layer; it adds portfolio-specific rules on top of `AGENTS.md`. Docs are reference. Source code comments are lowest authority.
+
+---
+
 # Claude Code Context — prasad-portfolio
 
 ## Project Overview
@@ -34,6 +44,7 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 
 ## Critical Rules (NEVER violate these)
 
+- **NEVER assume standard Next.js/React/Tailwind patterns** — verify actual behavior in `node_modules/next/dist/` before writing any code. APIs, middleware, and config differ from training data for these pinned versions.
 - **NEVER touch server-side demos** when fixing browser-WASM/mobile issues. They are independent.
 - **ALWAYS use `useBrowserAI` hook** (`src/hooks/useBrowserAI.ts`) for any demo that loads WASM or WebGPU. Never load models unconditionally.
 - **NEVER modify** `vercel.json` headers or the CSP in `next.config.ts` unless that is the explicit task. These are fragile — wrong changes break all 4 browser demos.
@@ -197,7 +208,7 @@ add simulated fallback path for mobile/low-memory devices.
 **Components**: `src/components/enterprise/`
 
 All data is simulated via `src/lib/enterpriseMockData.ts` — deterministic seeded generation, no external API calls.
-Token pricing: Input $3/MTok | Output $15/MTok | Cache read $0.30/MTok | Cache write $3.75/MTok (Anthropic API, April 2026).
+Token pricing: Input $3/MTok | Output $15/MTok | Cache read $0.30/MTok | Cache write $3.75/MTok (Anthropic API, April 2026 — verify current pricing at https://www.anthropic.com/pricing before using for cost projections).
 To add new teams: edit `src/lib/enterpriseMockData.ts`. Types in `src/components/enterprise/types.ts`.
 
 ---

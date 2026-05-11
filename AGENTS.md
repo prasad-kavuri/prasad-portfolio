@@ -1,5 +1,15 @@
 # AI Agent Context — prasad-portfolio
 
+## Document Hierarchy
+
+When instructions conflict, apply this priority order:
+
+`AGENTS.md` → `CLAUDE.md` → `docs/ARCHITECTURE.md` → `docs/SECURITY_THREAT_MODEL.md` → source code comments
+
+`AGENTS.md` is the universal agent contract (all tools). `CLAUDE.md` adds Claude Code-specific and portfolio-specific rules on top of this file. If you are not Claude Code, `CLAUDE.md` still applies — it contains the demo execution modes table, WASM/CSP critical rules, and learned "What Not To Do" lessons that are not duplicated here.
+
+---
+
 ## What This Project Is
 Production-grade AI engineering portfolio. Next.js 16.2.4 App Router + Turbopack.
 **Do NOT assume standard Next.js patterns** — verify in `node_modules/next/dist/docs/`

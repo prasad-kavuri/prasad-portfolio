@@ -104,6 +104,18 @@ const siteStructuredData = {
         },
         skills: ['AI platform architecture', 'LLM orchestration', 'RAG pipelines', 'Global engineering leadership'],
       },
+      hasCredential: [
+        { '@type': 'EducationalOccupationalCredential', name: 'Introduction to subagents', recognizedBy: { '@type': 'Organization', name: 'Anthropic' }, dateCreated: 'Mar 2026' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Building with the Claude API', recognizedBy: { '@type': 'Organization', name: 'Anthropic' }, dateCreated: 'Mar 2026' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Claude Code in Action', recognizedBy: { '@type': 'Organization', name: 'Anthropic' }, dateCreated: 'Mar 2026' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Introduction to Model Context Protocol', recognizedBy: { '@type': 'Organization', name: 'Anthropic' }, dateCreated: 'Feb 2026' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Claude 101', recognizedBy: { '@type': 'Organization', name: 'Anthropic' }, dateCreated: 'Feb 2026' },
+        { '@type': 'EducationalOccupationalCredential', name: 'AI Fluency Framework & Foundations', recognizedBy: { '@type': 'Organization', name: 'Anthropic' }, dateCreated: 'Feb 2026' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Agentic AI', recognizedBy: { '@type': 'Organization', name: 'DeepLearning.AI' }, dateCreated: 'Nov 2025' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Event-Driven Agentic Document Workflows', recognizedBy: { '@type': 'Organization', name: 'DeepLearning.AI' }, dateCreated: 'Jul 2025' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Generative AI Leader Certification', recognizedBy: { '@type': 'Organization', name: 'Google' }, dateCreated: 'Mar 2026' },
+        { '@type': 'EducationalOccupationalCredential', name: 'Agentic AI and AI Agents: A Primer for Leaders', recognizedBy: { '@type': 'Organization', name: 'Vanderbilt University' }, dateCreated: 'Feb 2025' },
+      ],
     },
     {
       '@type': 'Organization',

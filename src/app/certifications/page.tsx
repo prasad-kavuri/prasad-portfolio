@@ -23,6 +23,24 @@ export const metadata: Metadata = {
   },
 };
 
+const certificationsJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Prasad Kavuri',
+  url: 'https://www.prasadkavuri.com',
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': 'https://www.prasadkavuri.com/certifications',
+  },
+  hasCredential: certifications.map((c) => ({
+    '@type': 'EducationalOccupationalCredential',
+    name: c.name,
+    recognizedBy: { '@type': 'Organization', name: c.issuer },
+    dateCreated: c.date,
+    description: c.value_add,
+  })),
+};
+
 export default function CertificationsPage() {
   const tier1Count = certifications.filter((c) => c.tier === 1).length;
   const tier2Count = certifications.filter((c) => c.tier === 2).length;
@@ -30,6 +48,12 @@ export default function CertificationsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(certificationsJsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}

@@ -25,10 +25,12 @@ export const EXECUTIVE_METRICS = {
 // Display array for rendering stats grids on homepage and /for-recruiters.
 // costReductionDisplay is used here so AnimatedCounter can animate 0→70%.
 // The "Up to" qualifier appears in the context line.
+// Order: highest-impact business metrics first so mobile row-1 (2-col grid)
+// shows org scale + cost savings above the fold before scrolling.
 export const EXECUTIVE_METRICS_DISPLAY = [
-  { value: EXECUTIVE_METRICS.yearsExperience,      label: 'Years Experience',         context: '' },
   { value: EXECUTIVE_METRICS.engineersLed,         label: 'Engineers Led',            context: 'across Krutrim, Ola \u0026 HERE' },
-  { value: EXECUTIVE_METRICS.b2bCustomersEnabled,  label: 'B2B Customers Enabled',    context: '' },
   { value: EXECUTIVE_METRICS.costReductionDisplay, label: 'Cost Reduction Delivered', context: 'Up to \u00b7 AI inference at scale' },
+  { value: EXECUTIVE_METRICS.yearsExperience,      label: 'Years Experience',         context: '' },
+  { value: EXECUTIVE_METRICS.b2bCustomersEnabled,  label: 'B2B Customers Enabled',    context: '' },
   { value: EXECUTIVE_METRICS.revenueLaunched,      label: 'Revenue Launched',         context: 'Krutrim AI, 0\u2192production' },
 ] as const;

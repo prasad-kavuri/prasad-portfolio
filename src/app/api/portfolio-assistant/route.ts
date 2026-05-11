@@ -227,7 +227,7 @@ ${fullContext}`;
 
     // Prepare messages for Groq API
     const effectiveSystemPrompt = compactionMemory
-      ? `${systemPrompt}\n\n${compactionMemory.content}`
+      ? `${systemPrompt}\n\n${sanitizeLLMOutput(compactionMemory.content)}`
       : systemPrompt;
 
     const groqMessages = [

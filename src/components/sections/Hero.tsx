@@ -66,7 +66,7 @@ export function Hero() {
           </div>
 
           <p id="profile-summary" className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            20 years building AI platforms at enterprise scale — from Krutrim&apos;s agentic AI ($10M+ revenue impact, India&apos;s first) to Ola Maps at 13,000+ B2B customers with 70% cost reduction. I specialize in the gap most teams skip: taking AI from demo to production with governance, cost discipline, and measurable outcomes.
+            20 years building AI platforms — from Krutrim&apos;s agentic AI ($10M+ revenue impact) to Ola Maps at 13,000+ B2B customers with 70% cost reduction. I take AI from demo to production with governance, cost discipline, and measurable outcomes.
           </p>
           <details className="mt-2 max-w-3xl">
             <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">Full background →</summary>

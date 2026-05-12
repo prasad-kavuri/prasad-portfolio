@@ -13,12 +13,12 @@ When instructions conflict, apply this priority order:
 # Claude Code Context — prasad-portfolio
 
 ## Project Overview
-Production AI engineering portfolio at prasadkavuri.com. Next.js 16.2.4 / React 19.2.5 / TypeScript 5.9.3 / Tailwind CSS 4.2.4 / Vercel.
+Production AI engineering portfolio at prasadkavuri.com. Next.js 16.2.6 / React 19.2.6 / TypeScript 6.0.3 / Tailwind CSS 4.2.4 / Vercel.
 Full architecture: see `docs/ARCHITECTURE.md`.
 
 ## Tech Stack
-- Next.js 16.2.4 (App Router + Turbopack) — pinned exact, no `^`
-- React 19.2.5, TypeScript 5.9.3, Tailwind CSS 4.2.4
+- Next.js 16.2.6 (App Router + Turbopack) — pinned exact, no `^`
+- React 19.2.6, TypeScript 6.0.3, Tailwind CSS 4.2.4
 - Groq SDK for LLM inference (server-side only)
 - @huggingface/transformers v4 for browser WASM inference
 - Upstash Redis for rate limiting

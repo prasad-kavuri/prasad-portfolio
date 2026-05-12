@@ -38,8 +38,7 @@ const INJECTION_SIGNATURES = [
   /pretend\s+(you\s+are|to\s+be)/i,
   /new\s+personality/i,
   /jailbreak|DAN mode/i,
-  /act as (an? )?(different|unrestricted|jailbroken)/i,
-  /act\s+as\s+(a|an)\s+/i,
+  /act\s+as\s+(a|an)?\s*(?:different|unrestricted|jailbroken|unfiltered|evil|unconstrained|liberated|unaligned|free\s+ai)\b/i,
 ];
 
 export function detectPromptInjection(input: string): string[] {

@@ -69,6 +69,16 @@ export function sanitizeLLMOutput(text: string): string {
 
 export function checkInput(input: string): GuardrailResult {
   const issues = detectPromptInjection(input);
+  if (issues.length > 0) {
+    logAPIEvent({
+      event: 'guardrails.injection_detected',
+      route: 'checkInput',
+      severity: 'warn',
+      traceId: createTraceId(),
+      issueCount: issues.length,
+      issues: issues.join(','),
+    });
+  }
   return {
     isSafe: issues.length === 0,
     score: issues.length === 0 ? 1 : 0,

@@ -11,7 +11,7 @@ When instructions conflict, apply this priority order:
 ---
 
 ## What This Project Is
-Production-grade AI engineering portfolio. Next.js 16.2.4 App Router + Turbopack.
+Production-grade AI engineering portfolio. Next.js 16.2.6 App Router + Turbopack.
 **Do NOT assume standard Next.js patterns** — verify in `node_modules/next/dist/docs/`
 before writing any code. APIs, middleware, and config differ from training data.
 
@@ -92,6 +92,7 @@ skills.sh, and any coding-agent workflow used with this repository.
 - Human approval is required before changes touching security headers, auth,
   env handling, rate limits, SSRF, logging, or deployment config.
 - Skill execution is scoped to documentation and source code understanding only.
+- All skill and API route execution runs inside Vercel's serverless sandbox — non-root, network-isolated, ephemeral. No persistent shell access, no host filesystem access outside the repo.
 
 ## File Structure
 - API routes: `src/app/api/[name]/route.ts`
@@ -128,7 +129,7 @@ Coverage gates: API routes ≥90% statements / ≥85% branches; lib ≥95% funct
 Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/patch updates
 
 ## Key Invariants
-- `next` is pinned to exact `16.2.4` (no caret) — do not add `^`
+- `next` is pinned to exact `16.2.6` (no caret) — do not add `^`
 - `profile.personal.title` = "VP / Head of AI Engineering" — do not change without updating layout.tsx
 - All URLs use `https://www.prasadkavuri.com` (with www) — be consistent
 - New demos need entries in BOTH `src/data/demos.ts` AND `src/components/sections/AITools.tsx` (DEMO_GROUPS ids array)

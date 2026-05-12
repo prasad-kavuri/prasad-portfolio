@@ -54,6 +54,12 @@ Allow: /api/mcp-demo
 Disallow: /api/
 Allow: /
 
+User-agent: Perplexity-User
+Allow: /api/context
+Allow: /api/mcp-demo
+Disallow: /api/
+Allow: /
+
 User-agent: Google-Extended
 Allow: /api/context
 Allow: /api/mcp-demo

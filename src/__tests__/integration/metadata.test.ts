@@ -129,7 +129,10 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/Machine JSON:\s+\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
     expect(llmsTxt).toMatch(/entity\.json:\s+https:\/\/www\.prasadkavuri\.com\/entity\.json/);
-    expect(llmsTxt.trim().split('\n')).toHaveLength(63);
+    expect(llmsTxt).toMatch(/open to remote globally — US, APAC, EMEA/);
+    expect(llmsTxt).toMatch(/## GEOGRAPHIC REACH/);
+    expect(llmsTxt).toMatch(/APAC: Built India's first agentic AI platform at Krutrim/);
+    expect(llmsTxt.trim().split('\n')).toHaveLength(70);
     expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/VP \/ Head of AI Engineering/);
   });
 

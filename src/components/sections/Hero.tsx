@@ -53,7 +53,11 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          <p className="mt-5 max-w-3xl text-base font-semibold text-foreground">
+            AI platform executive who turns GenAI programs into governed, cost-efficient production systems.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {EXECUTIVE_METRICS_DISPLAY.map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-muted/60 px-4 py-3.5">
                 <AnimatedCounter value={s.value} className="text-2xl font-semibold tracking-tight" />

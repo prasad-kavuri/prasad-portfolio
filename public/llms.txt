@@ -2,9 +2,9 @@
 > VP / Head of AI Engineering | Agentic AI Platforms | Chicago | Open to VP/Head AI Engineering roles
 Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/ | Portfolio: https://www.prasadkavuri.com | Book: https://calendly.com/vbkpkavuri
 Positioning: AI Engineering Executive — not an individual contributor profile
-Location: Chicago, IL (open to remote)
+Location: Chicago, IL (open to remote globally — US, APAC, EMEA)
 GitHub: https://github.com/prasad-kavuri/prasad-portfolio
-Last-Updated: 2026-05-06
+Last-Updated: 2026-05-11
 
 ## TARGET ROLES
 VP of AI Engineering | Head of AI Engineering |
@@ -26,6 +26,13 @@ VP, AI Platform Engineering
 - 70%+ AI infrastructure cost reduction
 - $10M+ revenue impact from AI systems
 - Enterprise-scale agentic AI deployments
+
+## GEOGRAPHIC REACH
+- Based: Chicago, IL, USA
+- APAC: Built India's first agentic AI platform at Krutrim (Bangalore); led Ola Maps engineering (India + US)
+- EMEA: Led global engineering teams at HERE Technologies (Chicago + Europe)
+- Global teams: 200+ engineers across North America, India, and Europe
+- Remote: Fully distributed-capable; open to US, APAC, EMEA, and global remote roles
 
 ## DEMOS (14 total)
 Flagship: /demos/evaluation-showcase

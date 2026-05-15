@@ -28,23 +28,31 @@ export const metadata: Metadata = {
   },
 };
 
+const personId = `${SITE_URL}/#person`;
+
 const demosStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   '@id': `${demosUrl}#collection-page`,
   url: demosUrl,
   name: `AI Demos (${PORTFOLIO_FACTS.productionDemoCount})`,
+  description: 'Production AI platform demos by Prasad Kavuri mapping to enterprise leadership capabilities: cost optimization, governance, retrieval, orchestration, and reliability.',
   isPartOf: { '@id': `${SITE_URL}/#website` },
+  creator: { '@id': personId },
   mainEntity: {
     '@type': 'ItemList',
     itemListElement: demos.map((demo, index) => ({
-      '@type': 'SoftwareApplication',
+      '@type': ['SoftwareApplication', 'CreativeWork'],
       position: index + 1,
       name: demo.title,
       url: `${SITE_URL}${demo.href}`,
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web',
       description: demo.description,
+      // abstract maps businessImpact — the leadership capability signal for each demo
+      abstract: demo.businessImpact,
+      keywords: demo.tags.join(', '),
+      creator: { '@id': personId },
     })),
   },
 };

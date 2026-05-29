@@ -153,6 +153,15 @@ export default function ForRecruitersPage() {
               LinkedIn
             </a>
             <a
+              href="https://github.com/prasad-kavuri"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted/40 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+              GitHub
+            </a>
+            <a
               href="mailto:vbkpkavuri@gmail.com"
               className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted/40 transition-colors"
             >

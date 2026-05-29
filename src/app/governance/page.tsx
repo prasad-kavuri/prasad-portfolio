@@ -255,6 +255,24 @@ export default function GovernancePage() {
                 </Link>
               </div>
             </div>
+            <div className="mt-4 border-t border-border pt-4 space-y-2 text-xs text-muted-foreground">
+              <p>
+                <span className="font-semibold text-foreground">CSP note:</span>{" "}
+                The Content Security Policy intentionally permits{" "}
+                <code className="rounded bg-muted px-1 py-0.5">unsafe-inline</code>,{" "}
+                <code className="rounded bg-muted px-1 py-0.5">unsafe-eval</code>, and WASM execution.
+                These exceptions exist solely to support the four browser-native AI demos (RAG Pipeline,
+                Vector Search, Multimodal, Quantization) which run ONNX/Transformers.js models via
+                WebAssembly and WebGPU directly in the browser — no server inference. All other routes
+                operate under a strict baseline policy.
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">Secrets posture:</span>{" "}
+                No production secrets are stored in the repository. API keys, Redis tokens, and
+                service credentials are managed exclusively via Vercel environment variables and are
+                never committed to source control or exposed to client-side code.
+              </p>
+            </div>
           </Card>
         </section>
 

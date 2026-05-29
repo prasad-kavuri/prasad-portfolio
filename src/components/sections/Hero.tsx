@@ -79,6 +79,14 @@ export function Hero() {
             </p>
           </details>
 
+          {/* AI search-fit signal — crawlable by LLMs/ATS matching recruiter queries */}
+          <div className="mt-4 max-w-3xl rounded-lg border border-border/60 bg-muted/10 px-4 py-3 text-xs text-muted-foreground/80" aria-label="Role and search fit summary">
+            <span className="font-semibold text-muted-foreground">Search fit:</span>{" "}
+            AI Engineering Leadership · System Design · Agentic Orchestration · LLMOps · AI FinOps ·
+            Chicago · APAC AI Leadership · Krutrim · Ola · Global AI Platform Leader ·
+            VP of AI Engineering · Head of AI Engineering · Senior Director AI Platform
+          </div>
+
           <p className="mt-4 max-w-3xl rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm font-medium text-foreground">
             Most AI programs fail in production because governance, orchestration, reliability, and cost ownership are bolted on too late.
           </p>
@@ -156,6 +164,15 @@ export function Hero() {
             >
                 View LinkedIn
               </a>
+            <a
+              href="https://github.com/prasad-kavuri"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('github_clicked_hero')}
+              className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"
+            >
+              GitHub
+            </a>
             <a
               href="/api/resume-download"
               target="_blank"

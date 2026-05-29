@@ -57,6 +57,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: lint-and-unit
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: 0
     strategy:
       fail-fast: false
       matrix:

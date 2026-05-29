@@ -26,6 +26,9 @@ export function Footer() {
           <Link href="/governance" className="hover:text-foreground">
             Governance
           </Link>
+          <Link href="https://github.com/prasad-kavuri/prasad-portfolio/blob/main/SECURITY.md" target="_blank" className="hover:text-foreground">
+            Security Policy
+          </Link>
           <Link href="/about" className="hover:text-foreground">
             About / Entity Profile
           </Link>

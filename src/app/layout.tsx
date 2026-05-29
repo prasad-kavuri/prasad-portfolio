@@ -94,6 +94,14 @@ const siteStructuredData = {
         'Drift Monitoring',
         'HITL Checkpoints',
         'Global Engineering Leadership',
+        // Exact parity with ai-agent-manifest.json core_capabilities
+        'Agentic AI Orchestration',
+        'LLM Routing & Cost Optimization',
+        'AI Governance & HITL Systems',
+        'RAG Pipelines & Vector Search',
+        'Drift Monitoring & Eval Gating',
+        'AI FinOps',
+        'Enterprise Platform Engineering',
       ],
       hasOccupation: {
         '@type': 'Occupation',

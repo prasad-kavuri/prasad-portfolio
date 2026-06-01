@@ -28,7 +28,7 @@ export function Hero() {
               width={120}
               height={120}
               className="rounded-full object-cover ring-2 ring-border"
-              alt="Profile"
+              alt="Prasad Kavuri, VP / Head of AI Engineering"
             />
             <div>
               <h1 id="profile-name" className="text-3xl font-semibold">

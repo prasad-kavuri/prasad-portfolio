@@ -267,6 +267,15 @@ export default function GovernancePage() {
                 operate under a strict baseline policy.
               </p>
               <p>
+                <span className="font-semibold text-foreground">CORS posture:</span>{" "}
+                The{" "}
+                <code className="rounded bg-muted px-1 py-0.5">Access-Control-Allow-Origin: *</code>{" "}
+                header on HTML responses is inherited from Vercel&apos;s default static-asset behavior and is intentional
+                for a fully public portfolio site. No authenticated endpoints or private data are served
+                under this policy. All API routes that handle user input enforce rate limiting and input validation
+                regardless of origin.
+              </p>
+              <p>
                 <span className="font-semibold text-foreground">Secrets posture:</span>{" "}
                 No production secrets are stored in the repository. API keys, Redis tokens, and
                 service credentials are managed exclusively via Vercel environment variables and are

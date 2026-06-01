@@ -11,6 +11,7 @@ const links = [
   { href: "/capabilities", label: "Capabilities" },
   { href: "/governance", label: "Governance" },
   { href: "/testimonials", label: "Testimonials" },
+  { href: "/prasad-kavuri-vp-ai-engineering-2026.pdf", label: "Resume" },
   { href: "/contact", label: "Contact" },
 ];
 

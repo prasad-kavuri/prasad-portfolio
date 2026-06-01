@@ -1,119 +1,191 @@
 ---
 name: prasad-portfolio
-description: "Architecture context, governance rules, file map, and dev conventions for the prasadkavuri.com AI engineering portfolio. Use when adding demos, modifying governance/observability code, touching llms.txt or certifications, or writing Claude Code prompts for this Next.js 16.2.4 + React 19.2.5 TypeScript codebase."
+description: >
+  Use this skill when working on the prasad-portfolio codebase at prasadkavuri.com.
+  Enforces the project's security invariants, demo execution modes, CSP/WASM rules,
+  coding conventions, and agent operating contract. Activate for any code change,
+  new demo, API route, test, or configuration edit in this repository.
 ---
 
-# Prasad Kavuri AI Portfolio — Architecture & Development Skill
+# Prasad Portfolio — Agent Skill
 
-This skill provides full context for developing, extending, and auditing the
-prasadkavuri.com AI engineering portfolio — a production-grade Next.js 16.2.4 +
-React 19.2.5 TypeScript platform demonstrating VP/Head-level AI engineering competency.
+This skill governs all AI-assisted work on the prasad-portfolio Next.js codebase.
+It encodes the project's non-negotiable invariants, security rules, and coding conventions
+so they are enforced consistently across Claude Code, Cowork, Cursor, Copilot, and any
+other coding-agent workflow.
 
-## When to Use This Skill
+---
 
-Use when:
-- Adding, modifying, or auditing any demo in this repo
-- Writing Claude Code prompts for this codebase
-- Touching llms.txt, llms-full.txt, certifications data, or GEO files
-- Generating governance, observability, or eval-related code
-- Evaluating new AI capabilities for portfolio integration
+## Tech Stack (pinned — do not upgrade without explicit instruction)
 
-## Stack Identity
+- Next.js **16.2.6** (App Router + Turbopack) — no `^`, exact pin
+- React 19.2.6 · TypeScript 6.0.3 · Tailwind CSS 4.2.4
+- Groq SDK (server-side LLM) · @huggingface/transformers v4 (browser WASM)
+- Upstash Redis (rate limiting) · Vitest + Playwright (testing)
 
-- Framework: Next.js 16.2.4 + React 19.2.5 + TypeScript 5.9.3 (NOT static HTML)
-- Deployment: Vercel (serverless API routes + static assets)
-- Styling: Tailwind CSS
-- Rate limiting: Upstash Redis
-- Local inference: vllm at localhost:8000 (Qwen MoE only — fallback expected in prod)
-- External models: Groq API (Llama 3.1 8B, 70B, Llama 3.3, Mixtral)
-- In-browser inference: Transformers.js 4.2.0 (RAG, Vector Search, Multimodal, Quantization)
+**Never assume standard Next.js/React/Tailwind patterns.** Verify actual behavior in
+`node_modules/next/dist/` before writing any code — these pinned versions differ from
+LLM training data.
 
-## Key Source Files
+---
+
+## Demo Execution Modes
+
+| Demo | Engine | Mode |
+|------|--------|------|
+| RAG Pipeline | Transformers.js all-MiniLM-L6-v2 | Browser WASM |
+| Vector Search | Transformers.js + PCA + Canvas | Browser WASM |
+| Multimodal | Florence-2, WebGPU + Transformers.js | Browser WebGPU |
+| Quantization | ONNX Runtime FP32 vs INT8 | Browser WASM |
+| LLM Router | Groq API | Server |
+| Portfolio Assistant | Groq + RAG, Vercel AI SDK | Server |
+| Resume Generator | Groq Llama 3.3 70B | Server |
+| Multi-Agent | Groq, Analyzer+Researcher+Strategist | Server |
+| MCP Demo | MCP protocol + Groq tool calling | Server |
+
+**Never touch server-side demos when fixing browser-WASM/mobile issues — they are independent.**
+
+---
+
+## Critical Rules (never violate)
+
+1. **useBrowserAI hook** — always use `src/hooks/useBrowserAI.ts` for any demo loading WASM or WebGPU. Pass `true` for WebGPU-required demos (Multimodal). Never load models unconditionally.
+2. **CSP / security headers** — never modify `vercel.json` headers or the CSP in `next.config.ts` unless that is the explicit task. Wrong changes break all 4 browser demos.
+3. **TypeScript strict** — run `npx tsc --noEmit` after every change. Zero errors required.
+4. **No secrets in client code** — no API keys, Redis connection strings, or tokens in client-side code or public files.
+5. **Surgical changes only** — do not refactor working code unless explicitly asked.
+6. **Mobile fallback** — when fixing mobile issues, add simulated fallback paths; never remove the real desktop inference path.
+7. **Rate limiting** — always add rate limiting to new API routes via `enforceRateLimit` from `src/lib/api.ts`.
+8. **Observability** — always add `startTimer` + `logAPIEvent` from `src/lib/observability.ts` to API routes.
+9. **Input validation** — always validate input (length + type checks) at route entry before any LLM call.
+10. **Guardrails** — always run input through `enforceGuardrails` (or `checkInput`) from `src/lib/guardrails.ts`.
+11. **Sanitize LLM output** — always sanitize with the guardrail sanitizer before rendering. Never use `dangerouslySetInnerHTML` on LLM output without a vetted HTML sanitizer.
+12. **Build gate** — run `npm run build` before committing. Never commit broken builds.
+13. **Test gate** — run `npm run test`. All tests must pass before every commit.
+14. **Audit gate** — run `npm audit --audit-level=high`. Zero high/critical vulnerabilities required.
+
+---
+
+## Agent Operating Contract
+
+For every non-trivial coding task, state before editing:
+
+- **Assumptions**: what you believe is true, and what remains unknown.
+- **Scope boundaries**: what is intentionally in and out of scope.
+- **Files expected to change**: the smallest expected file set.
+- **Verification commands**: exact commands that will prove the change.
+- **Rollback notes**: for risky changes only — simplest way back.
+
+### Anti-patterns (never do these)
+- No drive-by refactors.
+- No broad rewrites.
+- No speculative abstractions.
+- No touching CSP, security headers, auth, env handling, SSRF, rate limits, logging, or deployment config unless explicitly requested.
+- No changing executive positioning, profile title, signature system, metadata, JSON-LD, llms files, entity files, or demo registry entries unless requested.
+
+### Definition of Done
+- `npm run lint` passes.
+- `npm run test` passes.
+- `npm run build` passes.
+- `npm audit --audit-level=high` passes with 0 high/critical vulnerabilities.
+- Every changed line directly maps to the user's request.
+
+---
+
+## Architecture Rules
+
+1. Rate-limit ALL new API routes using `enforceRateLimit` from `src/lib/api.ts`
+2. Log ALL API requests using `startTimer` + `logAPIEvent` from `src/lib/observability.ts`
+3. Validate ALL inputs at route entry (length, type, schema) — reject before LLM call
+4. Run user input through `enforceGuardrails` from `src/lib/guardrails.ts`
+5. Never add `output: 'export'` to `next.config.ts` — breaks API routes
+6. Security headers live in BOTH `next.config.ts` AND `src/proxy.ts` — update both if needed
+7. Middleware export is named `proxy` in `src/proxy.ts` (non-standard)
+
+---
+
+## Key Shared Utilities
 
 | File | Purpose |
 |------|---------|
-| src/data/demos.ts | Demo registry — source of truth for all 13 demos |
-| src/data/certifications.ts | Cert data with featured:true + cluster field taxonomy |
-| src/lib/guardrails.ts | Centralized prompt injection + output safety |
-| src/lib/observability.ts | Trace-ID propagation + structured logging |
-| src/lib/eval-engine.ts | LLM-as-Judge scoring + regression gating |
-| src/lib/drift-monitor.ts | Online drift detection + hallucination heuristics |
-| src/app/governance/page.tsx | Live governance dashboard (dynamic timestamp) |
-| src/app/for-recruiters/page.tsx | Executive recruiter landing page |
-| src/app/api/qwen-moe/route.ts | Qwen MoE proxy (HTTP 200 + isFallback:true on failure) |
-| public/llms.txt | GEO agent summary + active focus + cert clusters |
-| public/llms-full.txt | Full professional context for LLM ingestion |
-| docs/ARCHITECTURE.md | Platform coherence + control plane diagram |
+| `src/hooks/useBrowserAI.ts` | Mobile/memory detection for all browser-WASM demos |
+| `src/components/BrowserAIWarning.tsx` | Warning banner for all 4 browser demos |
+| `src/data/profile.json` | Single source of truth for all profile data |
+| `src/lib/api.ts` | `enforceRateLimit`, `jsonError`, `createRequestContext`, `finalizeApiResponse` |
+| `src/lib/observability.ts` | `logAPIEvent`, `startTimer`, `detectAnomaly`, `generateClientTraceId` |
+| `src/lib/guardrails.ts` | `enforceGuardrails`, `checkInput`, `checkOutput`, `sanitizeLLMOutput` |
+| `src/lib/rate-limit.ts` | Upstash-backed rate limiting + SHA-256 IP hashing |
+| `src/lib/eval-engine.ts` | `scoreResponse`, `runEvals` — LLM-as-Judge scoring |
+| `src/lib/drift-monitor.ts` | `trackModelOutput`, `getDriftSnapshot` |
+| `src/lib/cost-control.ts` | Per-route token cost tracking |
+| `src/lib/hitl.ts` | Human-in-the-loop checkpoint utilities |
 
-## Platform Architecture (6 Layers)
+---
 
-1. Users & Channels — Web/Chat/Mobile
-2. AI Experience Layer — 13 demos
-3. Agentic Orchestration — Multi-agent (CrewAI), HITL checkpoint, guardrails
-4. Intelligence Layer — LLM Router, RAG, Vector Search, MCP Tools
-5. Shared Infrastructure — guardrails.ts, observability.ts, eval-engine.ts, drift-monitor.ts
-6. Business Outcomes — 70% cost reduction, $10M+ revenue, 13K+ customers
+## File Structure
 
-## Governance Rules (Non-Negotiable)
+```
+src/app/api/[name]/route.ts     — API routes
+src/app/demos/[name]/page.tsx   — Demo pages ('use client' required)
+src/data/profile.json           — Profile data (do not duplicate)
+src/data/demos.ts               — Demo registry
+src/components/sections/AITools.tsx — DEMO_GROUPS ids array (keep in sync with demos.ts)
+src/__tests__/                  — Unit, integration, fuzz, evals, resilience
+e2e/*.spec.ts                   — Playwright E2E tests
+```
 
-- Every new API route MUST call guardrails.ts input validation
-- Every new API route MUST emit a trace-ID via observability.ts
-- Rate limiting (Upstash) must apply on all user-facing routes
-- Fallback responses return HTTP 200 with isFallback:true — never 5xx
-- No raw IPs stored — SHA-256 hash only
-- All LLM output must pass the existing guardrail sanitizer before render
-- Governance dashboard timestamp must be dynamic, never hardcoded
+---
 
-## Agent Sandbox Contract
+## Adding a New Demo
 
-- Do not read, print, copy, summarize, commit, or expose `.env*`, Vercel secrets, API keys, tokens, private logs, or local machine files.
-- Stay limited to repo-scoped source files only.
+1. Create `src/app/demos/[name]/page.tsx` with `'use client'`
+2. Create `src/app/api/[name]/route.ts` with rate-limit + observability + guardrails + input validation
+3. Add entry to `src/data/demos.ts`
+4. Add the demo `id` to `DEMO_GROUPS` in `src/components/sections/AITools.tsx`
+5. For browser-WASM demos: wire `useBrowserAI` hook + `BrowserAIWarning`, add simulated fallback for mobile
+6. Write unit tests + E2E smoke test
+
+---
+
+## Coding Conventions
+
+- TypeScript strict mode — no `any`, no `ts-ignore` without an explanatory comment
+- All demo pages must have `'use client'` at top
+- Functional components only, no class components
+- Named exports everywhere — no default exports
+- State management: `useState`/`useEffect` only — no Redux, no Zustand
+- Tailwind utilities only — no custom CSS files, no styled-components
+- All LLM outputs rendered as React text nodes `{text}` — never `dangerouslySetInnerHTML` on raw LLM output
+
+---
+
+## Key Invariants
+
+- `next` pinned to exact `16.2.6` — never add `^`
+- `profile.personal.title` = "VP / Head of AI Engineering" — do not change without updating `layout.tsx`
+- All URLs use `https://www.prasadkavuri.com` (with www) — be consistent
+- New demos need entries in BOTH `src/data/demos.ts` AND `src/components/sections/AITools.tsx`
+- SHA-256-hash IPs before storing in Redis — never store raw IPs
+- `public/.well-known/ai-agent-manifest.json` must remain valid JSON after any edit
+- No `.html` files in `public/` — Next.js serves them verbatim, breaking routing
+
+---
+
+## What Not To Do (learned from past incidents)
+
+- Do not re-introduce `blob:` CSP errors by overwriting `vercel.json` — broke all 4 WASM demos
+- Do not raise Redis rate-limit keys with raw IPs — always SHA-256 hash before storage
+- Do not set `dangerouslySetInnerHTML` on LLM output without an explicit vetted sanitizer
+- Do not add `.html` files to `public/` — they get indexed as separate pages
+- Do not change the copyright year manually — it is dynamic
+- Do not use `getByText(regex)` in Playwright without `.first()` — strict-mode violations
+- Do not skip the `useBrowserAI` hook on new browser-WASM demos — mobile will silently hang
+
+---
+
+## Security Scope
+
+- Agents must not read, print, copy, summarize, commit, or expose `.env*`, Vercel secrets, API keys, tokens, private logs, or local machine files.
+- Agents are limited to repo-scoped source files only.
 - Default to read-only mode unless the user explicitly requests a code change.
-- Do not write outside this repository.
-- Do not run shell commands that exfiltrate secrets or copy sensitive files.
-- Do not make network calls except approved package installs, GitHub, npm registry access, and documented public model/source URLs.
-- Do not run destructive commands such as `rm -rf`, force pushes, credential changes, chmod/chown outside the repo, or global config mutations.
-- Preserve `.gitignore` secret exclusions in any file-system touching workflow.
-- Require human approval before changes touching security headers, auth, env handling, rate limits, SSRF, logging, or deployment config.
-
-## Demo Registry — Exactly 13 Demos
-
-Do not change this count without updating: src/data/demos.ts + homepage stat card + README.md
-
-RAG Pipeline · LLM Router · Vector Search · AI Evaluation Showcase ·
-Browser Native AI Skill · Multi-Agent System · MCP Tool Demo ·
-Enterprise Control Plane · Spatial AI + World Modeling ·
-Portfolio Assistant · AI Hiring Intelligence · Multimodal Assistant ·
-Model Quantization
-
-## LLM Router — 5 Parallel Model Routes
-
-1. Llama 3.1 8B (Groq)
-2. Llama 3.1 70B (Groq)
-3. Llama 3.3 (Groq)
-4. Mixtral (Groq)
-5. Qwen3.6-35B-A3B-int4 MoE — via localhost:8000, amber fallback card in prod
-
-## Development Conventions
-
-- Read every target file before editing — no blind writes
-- Verify with: npx tsc --noEmit (type check only, no build needed)
-- One concern per commit, precise scoped message
-- Never touch unrelated files — scope is strict
-- Claude Code prompts follow read-first-then-change structure
-
-## Differentiating Signals — Preserve These
-
-- Governance layer: HITL checkpoint, drift monitoring, eval gating
-- Shared infra lib: guardrails/observability/eval-engine wired across ALL demos
-- Business numbers: 200+ engineers, $10M+ revenue, 70% cost reduction
-- Evaluation Showcase: flagship — offline + online eval + CI regression gate
-- GEO layer: llms.txt Agent Summary + llms-full.txt 3-cluster taxonomy + Active Focus section
-
-## What NOT To Do
-
-- Do not convert llms-full.txt to a table (hurts LLM summarization)
-- Do not add fake SLA numbers anywhere
-- Do not replace Groq-backed demos with Qwen — orchestrate, don't replace
-- Do not create new demos without updating demos.ts + homepage + README
-- Do not use 5xx responses for expected fallback states
+- Human approval required before changes touching security headers, auth, env handling, rate limits, SSRF, logging, or deployment config.

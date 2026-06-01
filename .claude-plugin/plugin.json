@@ -1,0 +1,11 @@
+{
+  "name": "prasad-portfolio",
+  "version": "1.0.0",
+  "description": "Agent skill for the prasad-portfolio codebase. Enforces security invariants, demo execution modes, CSP/WASM rules, and coding conventions for prasadkavuri.com.",
+  "skills": [
+    {
+      "name": "prasad-portfolio",
+      "path": "skills/prasad-portfolio"
+    }
+  ]
+}

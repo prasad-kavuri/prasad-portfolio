@@ -4,6 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'fs';
+import robots from '@/app/robots';
 
 function expectParsedObjectsHaveUniqueKeys(value: unknown) {
   if (!value || typeof value !== 'object') return;
@@ -115,6 +116,18 @@ describe('SEO metadata integrity', () => {
     expect(robots).toMatch(/User-agent: ChatGPT-User/);
     expect(robots).toMatch(/User-agent: Claude-User/);
     expect(robots).toMatch(/User-agent: Claude-SearchBot/);
+  });
+
+  it('dynamic robots route preserves AI crawler API allowances', () => {
+    const generated = robots();
+    const rules = Array.isArray(generated.rules) ? generated.rules : [generated.rules];
+    const claudeRule = rules.find((rule) => rule.userAgent === 'ClaudeBot');
+    const defaultRule = rules.find((rule) => rule.userAgent === '*');
+
+    expect(defaultRule?.disallow).toEqual(expect.arrayContaining(['/api/', '/*.html']));
+    expect(claudeRule?.allow).toEqual(expect.arrayContaining(['/', '/api/context', '/api/mcp-demo']));
+    expect(claudeRule?.disallow).toEqual(['/api/']);
+    expect(generated.sitemap).toBe('https://www.prasadkavuri.com/sitemap.xml');
   });
 
   it('llms.txt exists with correct identity and availability', () => {
@@ -340,5 +353,12 @@ describe('SEO metadata integrity', () => {
       expect(content).toMatch(/alternates/);
       expect(content).toMatch(/canonical/);
     });
+  });
+
+  it('audit report does not preserve unverified secret-exposure claims', () => {
+    const report = readFileSync('AI_Portfolio_Audit_Report.md', 'utf8');
+    expect(report).not.toMatch(/\[CRITICAL\] Exposed Secrets/);
+    expect(report).not.toMatch(/Immediately rotate.*found in `\.env\.local`/);
+    expect(report).toMatch(/no repository exposure was verified/i);
   });
 });

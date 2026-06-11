@@ -93,92 +93,18 @@ function buildPayload() {
   };
 }
 
-// Escape characters that could break out of a <pre> block or form script injection:
-// <, >, &, U+2028 (line separator), U+2029 (paragraph separator).
-// Data is internally generated today, but this guards against future content changes.
-function escapeHtmlJson(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\u2028/g, '\\u2028')
-    .replace(/\u2029/g, '\\u2029');
-}
-
-const HTML_TEMPLATE = (json: string) => `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prasad Kavuri — AI Profile</title>
-  <style>
-    :root { color-scheme: light dark; }
-    body {
-      font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
-      background: var(--bg, #0f172a);
-      color: var(--fg, #e2e8f0);
-      margin: 0;
-      padding: 2rem;
-    }
-    @media (prefers-color-scheme: light) {
-      body { --bg: #f8fafc; --fg: #0f172a; }
-    }
-    h1 { font-size: 1.1rem; margin: 0 0 1rem; color: #60a5fa; }
-    pre {
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 8px;
-      padding: 1.5rem;
-      overflow: auto;
-      font-size: .85rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-    a { color: #60a5fa; }
-  </style>
-</head>
-<body>
-  <h1>Prasad Kavuri — machine-readable AI profile</h1>
-  <p>This file is intended for AI agents and crawlers.
-     <a href="/">Return to portfolio</a></p>
-  <pre>${json}</pre>
-</body>
-</html>`;
-
 export async function GET(request: NextRequest) {
   const context = createRequestContext(request, ROUTE);
   const rateLimited = await enforceRateLimit(request, 'anonymous', { context });
   if (rateLimited) return rateLimited;
 
-  const accept = request.headers.get('accept') ?? '';
-  const ua = request.headers.get('user-agent') ?? '';
-
-  const isBrowser =
-    !accept.includes('application/json') &&
-    (ua.includes('Mozilla') || ua.includes('Chrome') || ua.includes('Safari'));
-
   const payload = buildPayload();
-
-  if (isBrowser) {
-    const pretty = escapeHtmlJson(JSON.stringify(payload, null, 2));
-    logApiEvent('api.request_completed', {
-      route: ROUTE,
-      traceId: context.traceId,
-      status: 200,
-      durationMs: Date.now() - context.startedAt,
-      format: 'html',
-    });
-    return finalizeApiResponse(new NextResponse(HTML_TEMPLATE(pretty), {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
-    }), context);
-  }
 
   logApiEvent('api.request_completed', {
     route: ROUTE,
     traceId: context.traceId,
     status: 200,
     durationMs: Date.now() - context.startedAt,
-    format: 'json',
   });
   return finalizeApiResponse(NextResponse.json(payload, {
     headers: {

@@ -21,6 +21,15 @@ describe('GET /ai-profile.json', () => {
     });
   }
 
+  function makeBrowserLikeRequest() {
+    return new NextRequest('http://localhost:3000/ai-profile.json', {
+      headers: {
+        accept: 'text/html,application/xhtml+xml',
+        'user-agent': 'Mozilla/5.0 Chrome/120',
+      },
+    });
+  }
+
   it('returns 200 with Content-Type application/json', async () => {
     const res = await GET(makeRequest());
     expect(res.status).toBe(200);
@@ -32,6 +41,15 @@ describe('GET /ai-profile.json', () => {
     const body = await res.json();
     expect(body).toBeTruthy();
     expect(typeof body).toBe('object');
+  });
+
+  it('returns JSON even for browser-like user agents', async () => {
+    const res = await GET(makeBrowserLikeRequest());
+    const body = await res.json();
+
+    expect(res.headers.get('content-type')).toContain('application/json');
+    expect(body.schema).toBe('ai-profile');
+    expect(body.identity.name).toBe('Prasad Kavuri');
   });
 
   it('demos array has length > 0', async () => {

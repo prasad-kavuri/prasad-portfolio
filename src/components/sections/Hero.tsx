@@ -80,11 +80,23 @@ export function Hero() {
           </details>
 
           {/* AI search-fit signal — crawlable by LLMs/ATS matching recruiter queries */}
-          <div className="mt-4 max-w-3xl rounded-lg border border-border/60 bg-muted/10 px-4 py-3 text-xs text-muted-foreground/80" aria-label="Role and search fit summary">
-            <span className="font-semibold text-muted-foreground">Search fit:</span>{" "}
-            AI Engineering Leadership · System Design · Agentic Orchestration · LLMOps · AI FinOps ·
-            Chicago · APAC AI Leadership · Krutrim · Ola · Global AI Platform Leader ·
-            VP of AI Engineering · Head of AI Engineering · Senior Director AI Platform
+          <div className="mt-6" aria-label="Search fit and core capabilities">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">
+              Core Capabilities & Search Fit
+            </p>
+            <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground/80">
+              {[
+                "AI Engineering Leadership", "System Design", "Agentic Orchestration", 
+                "LLMOps", "AI FinOps", "Chicago", "APAC AI Leadership", "Krutrim", 
+                "Ola", "Global AI Platform Leader", "VP of AI Engineering", 
+                "Head of AI Engineering", "Senior Director AI Platform"
+              ].map((term) => (
+                <span key={term} className="inline-flex items-center hover:text-foreground transition-colors cursor-default">
+                  <span className="mr-1.5 size-1 rounded-full bg-border" />
+                  {term}
+                </span>
+              ))}
+            </div>
           </div>
 
           <p className="mt-4 max-w-3xl rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm font-medium text-foreground">

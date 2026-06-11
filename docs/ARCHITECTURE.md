@@ -8,7 +8,7 @@ This document describes the real system architecture implemented in this reposit
 
 | Layer | Repo implementation | Purpose |
 |---|---|---|
-| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 14 production demos |
+| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 15 production demos |
 | Skills Layer | `src/data/skills.ts`, `src/app/skills/` | Reusable capability modules (guardrails, observability, eval, drift, HITL, planning) wired to demos |
 | Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
@@ -81,6 +81,7 @@ The AI services layer contains both server-side and browser-side demos:
 | AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |
 | Multi-Agent System | `/demos/multi-agent` | Server route plus external agent backend |
 | MCP Tool Demo | `/demos/mcp-demo` | Server route calling Groq tool use |
+| Agent Auth Demo | `/demos/agent-auth` | auth.md discovery, anonymous/claimed agent tokens, and MCP auth context |
 | AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming full-context grounding and retrieval cues |
 | AI Hiring Intelligence | `/demos/resume-generator` | Server route calling Groq |
 | Multimodal Assistant | `/demos/multimodal` | Browser model execution |

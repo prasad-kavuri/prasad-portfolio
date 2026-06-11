@@ -320,9 +320,57 @@ export default function ForRecruitersPage() {
             </li>
             <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
-              Chicago-area or remote-first VP / Head of AI Engineering searches
+              Chicago-area, APAC, EMEA, or remote-first VP / Head of AI Engineering searches
             </li>
           </ul>
+        </div>
+
+        {/* ── Section 7: Best fit / Not a fit ──────────────────────────── */}
+        <div className="mb-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+            Best Fit / Not a Fit
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-border bg-card p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--accent-brand)' }}>
+                Strong fit
+              </p>
+              <ul className="space-y-2">
+                {[
+                  "VP / Head of AI Engineering — global or regional",
+                  "Senior Director, AI Platform or Applied AI",
+                  "Head of AI for enterprise SaaS, mobility, fintech, or deep-tech orgs",
+                  "Remote-first or Chicago-based; open to US, APAC, EMEA",
+                  "Orgs scaling from PoC to governed production AI",
+                  "Roles requiring both technical depth and executive org leadership",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="mt-2 size-1.5 rounded-full shrink-0 bg-green-500" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
+                Not a fit
+              </p>
+              <ul className="space-y-2">
+                {[
+                  "IC / individual contributor engineering roles",
+                  "Staff Engineer or Principal Engineer tracks",
+                  "Pure ML research or data science roles",
+                  "Lead Engineer or tech-lead-only roles",
+                  "Roles without organizational leadership scope",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="mt-2 size-1.5 rounded-full shrink-0 bg-muted-foreground/40" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
 
         {/* ── Footer ───────────────────────────────────────────────────── */}

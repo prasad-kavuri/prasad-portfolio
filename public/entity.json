@@ -60,5 +60,30 @@
     "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "github": "https://github.com/prasad-kavuri"
   },
-  "last_updated": "2026-05-08"
+  "last_updated": "2026-05-31",
+  "recruiter_query_match": [
+    "AI Engineering leader Chicago",
+    "VP of AI Engineering Chicago",
+    "Head of AI Engineering remote",
+    "APAC AI leadership",
+    "Krutrim agentic AI",
+    "Ola Maps AI platform",
+    "Head of Applied AI",
+    "AI platform executive global",
+    "LLMOps leader",
+    "AI FinOps executive",
+    "agentic AI orchestration leader",
+    "enterprise AI governance executive",
+    "multi-agent systems architect",
+    "production AI platform VP",
+    "AI Engineering executive EMEA"
+  ],
+  "not_a_match_for": [
+    "IC engineering roles",
+    "Staff Engineer",
+    "Principal Engineer",
+    "Lead Engineer",
+    "pure ML research",
+    "data science IC roles"
+  ]
 }

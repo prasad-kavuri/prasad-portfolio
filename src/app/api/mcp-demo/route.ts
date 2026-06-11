@@ -14,6 +14,7 @@ import {
   readJsonObject,
 } from "@/lib/api";
 import { detectAnomaly, logAPIEvent, startTimer } from "@/lib/observability";
+import { verifyToken, type TokenPayload } from "@/lib/agent-auth";
 
 const ROUTE = "/api/mcp-demo";
 
@@ -213,8 +214,23 @@ function executeTool(name: string, args: ToolArgs): string {
   return "Tool not found";
 }
 
+async function resolveAuthContext(request: NextRequest): Promise<{ authContext: TokenPayload | null }> {
+  const authHeader = request.headers.get('authorization') ?? '';
+  if (!authHeader.startsWith('Bearer ')) return { authContext: null };
+  const token = authHeader.slice(7).trim();
+  if (!token) return { authContext: null };
+  const payload = await verifyToken(token);
+  return { authContext: payload };
+}
+
 export async function POST(request: NextRequest) {
   const context = createRequestContext(request, ROUTE);
+
+  // Optional Bearer auth — resolve before rate limiting so authenticated
+  // agents could get a higher limit tier in future. For now both tiers share
+  // the same limit; auth context is included in the response for visibility.
+  const { authContext } = await resolveAuthContext(request);
+
   const rateLimited = await enforceRateLimit(request, "anonymous", { context });
   if (rateLimited) return rateLimited;
 
@@ -278,6 +294,9 @@ export async function POST(request: NextRequest) {
         toolCallLog: [],
         finalAnswer: sanitizeLLMOutput(message.content || "I could not find relevant information."),
         totalDuration_ms: Date.now() - startTime,
+        auth_context: authContext
+          ? { type: authContext.type, scopes: authContext.scopes, email: authContext.email ?? null }
+          : null,
       }), context);
     }
 
@@ -393,6 +412,9 @@ export async function POST(request: NextRequest) {
       toolCallLog,
       finalAnswer,
       totalDuration_ms: totalDuration,
+      auth_context: authContext
+        ? { type: authContext.type, scopes: authContext.scopes, email: authContext.email ?? null }
+        : null,
     }), context);
   } catch (error) {
     const totalDuration = elapsed();

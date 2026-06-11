@@ -64,7 +64,7 @@ describe('ForRecruitersPage', () => {
     render(React.createElement(ForRecruitersPage));
     expect(screen.getByText(/Who This Portfolio Is Built For/i)).toBeInTheDocument();
     expect(screen.getByText(/platform thinking, not just model tuning/i)).toBeInTheDocument();
-    expect(screen.getByText(/Chicago-area or remote-first/i)).toBeInTheDocument();
+    expect(screen.getByText(/Chicago-area, APAC, EMEA, or remote-first/i)).toBeInTheDocument();
   });
 
   it('CTA row has 4 elements: Download Resume, LinkedIn, email, Book Call', () => {

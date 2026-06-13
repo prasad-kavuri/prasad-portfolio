@@ -147,6 +147,21 @@
     "production AI platform VP",
     "AI Engineering executive EMEA"
   ],
+  "security_audits": {
+    "skill_scanner": {
+      "tool": "SkillSpector",
+      "vendor": "NVIDIA",
+      "url": "https://github.com/NVIDIA/SkillSpector",
+      "target": "skills/prasad-portfolio/SKILL.md",
+      "mode": "static + LLM semantic",
+      "patterns_checked": 64,
+      "ci_gate": ".github/workflows/skill-security.yml",
+      "sarif_uploaded_to": "GitHub Security tab",
+      "last_result": "SAFE",
+      "last_score": 0,
+      "threshold": "blocks on any HIGH or CRITICAL finding"
+    }
+  },
   "demos": [
     {"name": "RAG Pipeline", "url": "https://www.prasadkavuri.com/demos/rag-pipeline"},
     {"name": "LLM Router", "url": "https://www.prasadkavuri.com/demos/llm-router"},

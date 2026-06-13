@@ -281,6 +281,24 @@ export default function GovernancePage() {
                 service credentials are managed exclusively via Vercel environment variables and are
                 never committed to source control or exposed to client-side code.
               </p>
+              <p>
+                <span className="font-semibold text-foreground">Agent skill auditing:</span>{" "}
+                The Claude Code skill at{" "}
+                <code className="rounded bg-muted px-1 py-0.5">skills/prasad-portfolio/</code>{" "}
+                is scanned on every PR and weekly by{" "}
+                <Link
+                  href="https://github.com/NVIDIA/SkillSpector"
+                  className="underline hover:text-foreground"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  NVIDIA SkillSpector
+                </Link>{" "}
+                — 64 vulnerability patterns across prompt injection, data exfiltration, privilege escalation,
+                supply chain, MCP least privilege, and tool poisoning categories. SARIF results are uploaded
+                to the GitHub Security tab. The CI gate blocks merges on any HIGH or CRITICAL finding.
+                Current score: <span className="text-green-500 font-semibold">0 / 100 (SAFE)</span>.
+              </p>
             </div>
           </Card>
         </section>

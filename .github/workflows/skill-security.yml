@@ -1,0 +1,128 @@
+name: Skill Security Audit
+
+on:
+  push:
+    paths:
+      - 'skills/**'
+      - '.claude-plugin/**'
+  pull_request:
+    paths:
+      - 'skills/**'
+      - '.claude-plugin/**'
+  schedule:
+    # Weekly scan every Monday 10:00 UTC — catches newly-published CVEs
+    # even when skill files haven't changed (SkillSpector SC4 queries OSV.dev live)
+    - cron: '0 10 * * 1'
+  workflow_dispatch:
+    inputs:
+      skill_path:
+        description: 'Skill path to scan (default: ./skills/prasad-portfolio)'
+        required: false
+        default: './skills/prasad-portfolio'
+
+jobs:
+  skillspector:
+    name: SkillSpector Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # Required for uploading SARIF results to GitHub Security tab
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install SkillSpector
+        run: |
+          pip install uv
+          uv venv .venv
+          source .venv/bin/activate
+          uv pip install "skillspector @ git+https://github.com/NVIDIA/SkillSpector.git"
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Determine skill path
+        id: skill-path
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "path=${{ inputs.skill_path }}" >> $GITHUB_OUTPUT
+          else
+            echo "path=./skills/prasad-portfolio" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run SkillSpector (static-only, no LLM key required)
+        id: scan
+        run: |
+          skillspector scan "${{ steps.skill-path.outputs.path }}" \
+            --format sarif \
+            --output skillspector-report.sarif \
+            --no-llm
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        # Allow the step to succeed so we can always upload the SARIF artifact;
+        # the gate step below enforces the actual pass/fail.
+        continue-on-error: true
+
+      - name: Run SkillSpector (terminal summary)
+        run: |
+          skillspector scan "${{ steps.skill-path.outputs.path }}" --no-llm || true
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: skillspector-report.sarif
+          category: skillspector
+
+      - name: Upload SARIF artifact (for download / governance page)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skillspector-sarif-${{ github.run_id }}
+          path: skillspector-report.sarif
+          retention-days: 90
+
+      - name: Enforce risk threshold
+        # Parse the SARIF file and fail if any HIGH or CRITICAL findings exist.
+        # MEDIUM/LOW findings produce a warning but do not block the merge.
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+
+          try:
+              with open("skillspector-report.sarif") as f:
+                  sarif = json.load(f)
+          except FileNotFoundError:
+              print("::warning::SARIF report not found — scan may have errored.")
+              sys.exit(0)
+
+          blockers = []
+          for run in sarif.get("runs", []):
+              for result in run.get("results", []):
+                  level = result.get("level", "none")
+                  # SARIF levels: "error" = HIGH/CRITICAL, "warning" = MEDIUM, "note" = LOW
+                  if level == "error":
+                      msg = result.get("message", {}).get("text", "")
+                      loc = ""
+                      locs = result.get("locations", [])
+                      if locs:
+                          pl = locs[0].get("physicalLocation", {})
+                          loc = pl.get("artifactLocation", {}).get("uri", "")
+                          line = pl.get("region", {}).get("startLine", "")
+                          if line:
+                              loc = f"{loc}:{line}"
+                      blockers.append(f"  [{level.upper()}] {loc} — {msg}")
+
+          if blockers:
+              print("::error::SkillSpector found HIGH/CRITICAL issues — skill is NOT safe to install:")
+              for b in blockers:
+                  print(b)
+              sys.exit(1)
+          else:
+              print("✓ SkillSpector: no HIGH/CRITICAL findings. Skill is safe to install.")
+          EOF

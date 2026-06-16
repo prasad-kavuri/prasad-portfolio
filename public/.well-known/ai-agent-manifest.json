@@ -148,7 +148,10 @@
     "agentic AI orchestration leader",
     "enterprise AI governance executive",
     "production AI platform VP",
-    "AI Engineering executive EMEA"
+    "AI Engineering executive EMEA",
+    "Chief AI Officer Chicago",
+    "CAIO enterprise AI",
+    "VP Enterprise AI transformation"
   ],
   "security_audits": {
     "skill_scanner": {
@@ -179,6 +182,7 @@
     {"name": "Multimodal Assistant", "url": "https://www.prasadkavuri.com/demos/multimodal"},
     {"name": "Model Quantization", "url": "https://www.prasadkavuri.com/demos/quantization"},
     {"name": "AI Spatial Intelligence & World Generation", "url": "https://www.prasadkavuri.com/demos/world-generation"},
-    {"name": "Edge-Agent Collaboration", "url": "https://www.prasadkavuri.com/demos/edge-agent-collaboration"}
+    {"name": "Edge-Agent Collaboration", "url": "https://www.prasadkavuri.com/demos/edge-agent-collaboration"},
+    {"name": "Agent Auth", "url": "https://www.prasadkavuri.com/demos/agent-auth"}
   ]
 }

@@ -16,7 +16,7 @@ const proofPoints = [
   { icon: '▸', text: '200+ engineers led across AI platform orgs' },
   { icon: '▸', text: '70%+ AI infrastructure cost reduction' },
   { icon: '▸', text: '13,000+ B2B customers enabled' },
-  { icon: '▸', text: '14 production AI demos / platform patterns' },
+  { icon: '▸', text: '15 production AI demos / platform patterns' },
 ];
 
 export default function Image() {

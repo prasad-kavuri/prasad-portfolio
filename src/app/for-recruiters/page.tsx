@@ -268,13 +268,20 @@ export default function ForRecruitersPage() {
             />
             <StepCard
               number="3"
+              heading="Review operating model"
+              time="45 sec"
+              description="Scan board-facing AI governance, budget discipline, operating cadence, and ROI signals"
+              href="/enterprise-ai-operating-model"
+            />
+            <StepCard
+              number="4"
               heading="Review governance controls"
               time="45 sec"
               description="Validate trust controls, traceability, and operational rigor before reviewing credentials"
               href="/governance"
             />
             <StepCard
-              number="4"
+              number="5"
               heading="Book a conversation"
               time="30 sec"
               description="30 minutes — I'll walk you through any part of the platform you want to explore"

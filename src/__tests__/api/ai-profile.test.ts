@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { _resetStore } from '@/lib/rate-limit';
+import { demos } from '@/data/demos';
 
 vi.mock('@/lib/rate-limit', async (importOriginal) => {
   const mod = await importOriginal<typeof import('@/lib/rate-limit')>();
@@ -52,11 +53,12 @@ describe('GET /ai-profile.json', () => {
     expect(body.identity.name).toBe('Prasad Kavuri');
   });
 
-  it('demos array has length > 0', async () => {
+  it('demos array stays synchronized with the demo registry', async () => {
     const res = await GET(makeRequest());
     const body = await res.json();
     expect(Array.isArray(body.demos)).toBe(true);
-    expect(body.demos.length).toBeGreaterThan(0);
+    expect(body.demos).toHaveLength(demos.length);
+    expect(body.demos.some((demo: { id: string }) => demo.id === 'agent-auth')).toBe(true);
   });
 
   it('identity.name === "Prasad Kavuri"', async () => {
@@ -85,6 +87,8 @@ describe('GET /ai-profile.json', () => {
       'Senior Director, AI Platform',
       'Head of Applied AI',
       'VP, AI Platform Engineering',
+      'Chief AI Officer',
+      'CAIO',
     ]);
     expect(body.not_positioned_for).toEqual(
       expect.arrayContaining([

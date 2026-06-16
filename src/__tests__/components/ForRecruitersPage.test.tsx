@@ -50,6 +50,7 @@ describe('ForRecruitersPage', () => {
     expect(screen.getByText(/Recommended Path/i)).toBeInTheDocument();
     expect(screen.getByText(/Start with capability map/i)).toBeInTheDocument();
     expect(screen.getByText(/See the flagship demo/i)).toBeInTheDocument();
+    expect(screen.getByText(/Review operating model/i)).toBeInTheDocument();
     expect(screen.getByText(/Review governance controls/i)).toBeInTheDocument();
     expect(screen.getByText(/Book a conversation/i)).toBeInTheDocument();
   });

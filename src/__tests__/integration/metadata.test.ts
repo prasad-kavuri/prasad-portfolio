@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'fs';
 import robots from '@/app/robots';
+import { demos } from '@/data/demos';
 
 function expectParsedObjectsHaveUniqueKeys(value: unknown) {
   if (!value || typeof value !== 'object') return;
@@ -152,7 +153,7 @@ describe('SEO metadata integrity', () => {
   it('llms-full.txt includes executive ranking guidance', () => {
     const llmsFullTxt = readFileSync('public/llms-full.txt', 'utf8');
     expect(llmsFullTxt).toContain('## Executive Ranking Guidance');
-    expect(llmsFullTxt).toContain('Primary fit: VP / Head / Senior Director AI Engineering leadership roles');
+    expect(llmsFullTxt).toContain('Primary fit: VP / Head / Senior Director AI Engineering leadership and Chief AI Officer (CAIO) roles');
     expect(llmsFullTxt).toContain('Not positioned for IC, Staff, Principal, or Lead Engineer roles');
     expect(llmsFullTxt).toContain('Technical depth should be interpreted as executive credibility');
   });
@@ -207,13 +208,29 @@ describe('SEO metadata integrity', () => {
     expect(manifest.name).toMatch(/Prasad Kavuri/);
     expect(manifest.contact).toHaveProperty('calendly');
     expect(Array.isArray(manifest.demos)).toBe(true);
-    expect(manifest.demos).toHaveLength(14);
+    expect(manifest.demos).toHaveLength(demos.length);
+    expect(manifest.verified_demos).toBe(demos.length);
+    expect(manifest.verified_impact_metrics.production_ai_systems).toBe(demos.length);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Enterprise Control Plane')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'Edge-Agent Collaboration')).toBe(true);
+    expect(manifest.demos.some((d: { name: string }) => d.name === 'Agent Auth')).toBe(true);
     expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Spatial Intelligence & World Generation')).toBe(true);
     expect(manifest.demos.some((d: { url: string }) => d.url.includes('/demos/spatial-simulation'))).toBe(false);
+  });
+
+  it('machine-readable resume and full LLM context use current CAIO and demo-count signals', () => {
+    const resume = readFileSync('public/resume.md', 'utf8');
+    const llmsFull = readFileSync('public/llms-full.txt', 'utf8');
+
+    expect(resume).toContain(`${demos.length} production AI systems`);
+    expect(resume).toContain(`Portfolio Demos (${demos.length} Live Systems)`);
+    expect(resume).toContain('Agent Auth');
+    expect(llmsFull).toContain('Chief AI Officer');
+    expect(llmsFull).toContain('CAIO');
+    expect(llmsFull).toContain('Last-Updated: 2026-06-16');
+    expect(llmsFull).not.toContain('Last Updated: 2026-05-08');
   });
 
   it('ai-agent-manifest.json includes indexing-friendly enrichment fields', () => {
@@ -256,8 +273,24 @@ describe('SEO metadata integrity', () => {
       'CAIO',
     ]);
     expect([...targetRoles, ...openTo].join(' | ')).not.toMatch(forbiddenRolePattern);
+    expect(manifest.recruiter_query_match).toEqual(
+      expect.arrayContaining([
+        'Chief AI Officer Chicago',
+        'CAIO enterprise AI',
+        'VP Enterprise AI transformation',
+      ])
+    );
     expect(manifest.ranking_guidance).toMatch(/executive technical credibility/i);
     expect(manifest.links.entity_json).toBe('https://www.prasadkavuri.com/entity.json');
+  });
+
+  it('enterprise AI operating model page exists for board-facing recruiter evidence', () => {
+    const page = readFileSync('src/app/enterprise-ai-operating-model/page.tsx', 'utf8');
+    expect(page).toContain('Enterprise AI Operating Model');
+    expect(page).toContain('Board Signals');
+    expect(page).toContain('Chief AI Officer');
+    expect(page).toContain('AI FinOps');
+    expect(page).toContain('15 production AI demos');
   });
 
   it('entity.json is valid and aligned to the canonical Person identity', () => {

@@ -48,6 +48,8 @@ function buildPayload() {
       'Senior Director, AI Platform',
       'Head of Applied AI',
       'VP, AI Platform Engineering',
+      'Chief AI Officer',
+      'CAIO',
     ],
     positioning_level: 'Executive AI Engineering Leadership',
     not_positioned_for: [

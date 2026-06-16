@@ -26,6 +26,13 @@ describe('sitemap()', () => {
     expect(entry?.priority).toBe(0.95);
   });
 
+  it('includes enterprise AI operating model for board-facing recruiter discovery', () => {
+    const result = sitemap();
+    const entry = result.find((e) => e.url.endsWith('/enterprise-ai-operating-model'));
+    expect(entry).toBeDefined();
+    expect(entry?.priority).toBe(0.85);
+  });
+
   it('includes canonical entity profile and machine-readable entity resources', () => {
     const result = sitemap();
     const urls = result.map((entry) => entry.url);

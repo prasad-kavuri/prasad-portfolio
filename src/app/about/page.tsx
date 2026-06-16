@@ -81,6 +81,8 @@ const targetRoles = [
   'Senior Director, AI Platform',
   'Head of Applied AI',
   'VP, AI Platform Engineering',
+  'Chief AI Officer',
+  'CAIO',
 ];
 
 const notPositionedFor = [
@@ -94,7 +96,7 @@ const proofPoints = [
   '200+ engineers led',
   '70%+ AI infrastructure cost reduction',
   '13,000+ B2B customers enabled',
-  '14 production AI demos / platform patterns',
+  '15 production AI demos / platform patterns',
 ];
 
 const testimonials = [

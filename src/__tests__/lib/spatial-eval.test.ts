@@ -174,7 +174,9 @@ describe('world generation eval', () => {
       },
     };
 
-    expect(validateWorldOutputShape(broken)).toEqual(expect.arrayContaining([
+    const malformedOutput = broken as unknown as Parameters<typeof validateWorldOutputShape>[0];
+
+    expect(validateWorldOutputShape(malformedOutput)).toEqual(expect.arrayContaining([
       'missing_trace_id',
       'missing_prompt',
       'workflow_incomplete',
@@ -188,7 +190,7 @@ describe('world generation eval', () => {
       'missing_constraints',
     ]));
 
-    const evalResult = evaluateWorldOutput(broken);
+    const evalResult = evaluateWorldOutput(malformedOutput);
     const byId = Object.fromEntries(evalResult.checks.map((check) => [check.id, check]));
 
     expect(byId.provider_disclosure_present.passed).toBe(false);

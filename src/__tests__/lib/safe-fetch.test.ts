@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { lookup } from 'node:dns/promises';
-import { SafeFetchError, safeServerFetch } from '@/lib/safe-fetch';
+import { safeServerFetch } from '@/lib/safe-fetch';
 
 vi.mock('node:dns/promises', () => ({
   lookup: vi.fn(),
@@ -11,7 +11,9 @@ vi.mock('node:dns/promises', () => ({
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
-const mockLookup = vi.mocked(lookup);
+const mockLookup = vi.mocked(
+  lookup as unknown as (hostname: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: 4 | 6 }>>
+);
 
 describe('safeServerFetch', () => {
   beforeEach(() => {
@@ -28,7 +30,7 @@ describe('safeServerFetch', () => {
     ['IPv6 private', 'http://[fc00::1234]/admin', 'ipv6_unique_local'],
     ['IPv6 link-local', 'http://[fe80::1]/admin', 'ipv6_link_local'],
   ])('rejects blocked outbound target: %s', async (_label, url, reason) => {
-    await expect(safeServerFetch(url)).rejects.toMatchObject<Partial<SafeFetchError>>({
+    await expect(safeServerFetch(url)).rejects.toMatchObject({
       name: 'SafeFetchError',
       code: 'blocked_url',
       reason,
@@ -39,7 +41,7 @@ describe('safeServerFetch', () => {
   it('blocks public hostnames that resolve to private addresses', async () => {
     mockLookup.mockResolvedValueOnce([{ address: '192.168.1.10', family: 4 }]);
 
-    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject<Partial<SafeFetchError>>({
+    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject({
       name: 'SafeFetchError',
       code: 'blocked_url',
       reason: 'ipv4_private',
@@ -76,7 +78,7 @@ describe('safeServerFetch', () => {
       headers: new Headers({ location: 'https://metadata.example/latest/meta-data' }),
     });
 
-    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject<Partial<SafeFetchError>>({
+    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject({
       name: 'SafeFetchError',
       code: 'blocked_redirect_target',
       reason: 'ipv4_link_local',
@@ -89,20 +91,20 @@ describe('safeServerFetch', () => {
       headers: new Headers({ location: 'https://example.com/next' }),
     });
 
-    await expect(safeServerFetch('https://example.com/start', {}, { maxRedirects: 1 })).rejects.toMatchObject<Partial<SafeFetchError>>({
+    await expect(safeServerFetch('https://example.com/start', {}, { maxRedirects: 1 })).rejects.toMatchObject({
       name: 'SafeFetchError',
       code: 'redirect_limit_exceeded',
     });
   });
 
   it('rejects invalid URLs and DNS failures before fetching', async () => {
-    await expect(safeServerFetch('not a url')).rejects.toMatchObject<Partial<SafeFetchError>>({
+    await expect(safeServerFetch('not a url')).rejects.toMatchObject({
       name: 'SafeFetchError',
       code: 'invalid_url',
     });
 
     mockLookup.mockRejectedValueOnce(new Error('lookup failed'));
-    await expect(safeServerFetch(new URL('https://example.com/start'))).rejects.toMatchObject<Partial<SafeFetchError>>({
+    await expect(safeServerFetch(new URL('https://example.com/start'))).rejects.toMatchObject({
       name: 'SafeFetchError',
       code: 'dns_resolution_failed',
     });
@@ -116,7 +118,7 @@ describe('safeServerFetch', () => {
       headers: new Headers(),
     });
 
-    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject<Partial<SafeFetchError>>({
+    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject({
       name: 'SafeFetchError',
       code: 'redirect_without_location',
     });

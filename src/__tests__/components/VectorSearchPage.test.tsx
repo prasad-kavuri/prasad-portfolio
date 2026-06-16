@@ -167,8 +167,8 @@ describe('VectorSearchPage', () => {
   });
 
   it('does not emit setState-on-unmounted warnings for in-flight init', async () => {
-    let resolvePipeline: ((value: any) => void) | null = null;
-    const deferred = new Promise((resolve) => {
+    let resolvePipeline!: (value: unknown) => void;
+    const deferred = new Promise<unknown>((resolve) => {
       resolvePipeline = resolve;
     });
 
@@ -182,11 +182,11 @@ describe('VectorSearchPage', () => {
     });
 
     unmount();
-    resolvePipeline?.(async () => ({ data: new Float32Array([0.1, 0.2, 0.3]) }));
+    resolvePipeline(async () => ({ data: new Float32Array([0.1, 0.2, 0.3]) }));
     await Promise.resolve();
 
     const warningCalls = consoleErrorSpy.mock.calls.filter(
-      (call) =>
+      (call: unknown[]) =>
         typeof call[0] === 'string' &&
         call[0].includes("Can't perform a React state update on an unmounted component"),
     );

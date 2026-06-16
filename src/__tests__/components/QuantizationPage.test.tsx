@@ -210,8 +210,8 @@ describe('QuantizationPage', () => {
   });
 
   it('does not emit setState-after-unmount warnings during in-flight init', async () => {
-    let resolvePipeline: ((value: any) => void) | null = null;
-    const deferred = new Promise((resolve) => {
+    let resolvePipeline!: (value: unknown) => void;
+    const deferred = new Promise<unknown>((resolve) => {
       resolvePipeline = resolve;
     });
 
@@ -225,11 +225,11 @@ describe('QuantizationPage', () => {
     });
 
     unmount();
-    resolvePipeline?.(async () => [{ label: 'POSITIVE', score: 0.93 }]);
+    resolvePipeline(async () => [{ label: 'POSITIVE', score: 0.93 }]);
     await Promise.resolve();
 
     const warningCalls = consoleErrorSpy.mock.calls.filter(
-      (call) =>
+      (call: unknown[]) =>
         typeof call[0] === 'string' &&
         call[0].includes("Can't perform a React state update on an unmounted component"),
     );

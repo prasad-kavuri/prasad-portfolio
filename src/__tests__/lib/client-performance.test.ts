@@ -25,8 +25,7 @@ describe('client performance utilities', () => {
       if (originalDescriptor) {
         Object.defineProperty(globalThis, 'window', originalDescriptor);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        delete (globalThis as any).window;
+        Reflect.deleteProperty(globalThis, 'window');
       }
     }
   });
@@ -34,7 +33,7 @@ describe('client performance utilities', () => {
   it('falls back to setTimeout when requestIdleCallback is unavailable', () => {
     vi.useFakeTimers();
     const original = (window as Window & { requestIdleCallback?: unknown }).requestIdleCallback;
-    delete (window as Window & { requestIdleCallback?: unknown }).requestIdleCallback;
+    Reflect.deleteProperty(window, 'requestIdleCallback');
 
     const task = vi.fn();
     scheduleIdleTask(task);
@@ -69,7 +68,7 @@ describe('client performance utilities', () => {
       return 7;
     });
     (window as Window & { requestIdleCallback?: unknown; cancelIdleCallback?: unknown }).requestIdleCallback = idleSpy;
-    delete (window as Window & { requestIdleCallback?: unknown; cancelIdleCallback?: unknown }).cancelIdleCallback;
+    Reflect.deleteProperty(window, 'cancelIdleCallback');
 
     const task = vi.fn();
     const cancel = scheduleIdleTask(task);

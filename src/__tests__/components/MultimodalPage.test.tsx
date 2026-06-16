@@ -183,8 +183,8 @@ describe('MultimodalPage', () => {
   });
 
   it('avoids setState-on-unmounted warnings during in-flight initialization', async () => {
-    let resolvePipeline: ((value: any) => void) | null = null;
-    const deferred = new Promise((resolve) => {
+    let resolvePipeline!: (value: unknown) => void;
+    const deferred = new Promise<unknown>((resolve) => {
       resolvePipeline = resolve;
     });
     mockPipeline.mockImplementationOnce(() => deferred as any);
@@ -196,11 +196,11 @@ describe('MultimodalPage', () => {
       expect(mockPipeline).toHaveBeenCalledTimes(1);
     });
     unmount();
-    resolvePipeline?.(async () => [{ label: 'cat', score: 0.92 }]);
+    resolvePipeline(async () => [{ label: 'cat', score: 0.92 }]);
     await Promise.resolve();
 
     const warningCalls = consoleErrorSpy.mock.calls.filter(
-      (call) =>
+      (call: unknown[]) =>
         typeof call[0] === 'string' &&
         call[0].includes("Can't perform a React state update on an unmounted component"),
     );

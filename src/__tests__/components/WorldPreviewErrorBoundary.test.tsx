@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { WorldPreviewErrorBoundary } from '@/components/demos/world/WorldPreviewErrorBoundary';
 
-function ThrowingPreview() {
+function ThrowingPreview(): React.ReactNode {
   throw new Error('preview failed');
 }
 

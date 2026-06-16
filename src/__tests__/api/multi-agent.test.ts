@@ -11,7 +11,9 @@ vi.mock('node:dns/promises', () => ({
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
-const mockLookup = vi.mocked(lookup);
+const mockLookup = vi.mocked(
+  lookup as unknown as (hostname: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: 4 | 6 }>>
+);
 
 function makeRequest(body: object, ip = '127.0.0.1') {
   return new Request('http://localhost/api/multi-agent', {

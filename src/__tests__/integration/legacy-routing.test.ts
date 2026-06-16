@@ -47,14 +47,14 @@ describe('Legacy routing policy', () => {
     expect(resolveLegacyHtmlPath('/legacy-unknown-demo.html')).toBe('/demos');
   });
 
-  it('proxy issues permanent redirects for known legacy .html routes', () => {
-    const response = proxy(makeProxyRequest('/portfolio-assistant.html'));
+  it('proxy issues permanent redirects for known legacy .html routes', async () => {
+    const response = await proxy(makeProxyRequest('/portfolio-assistant.html'));
     expect(response.status).toBe(301);
     expect(response.headers.get('location')).toBe('https://www.prasadkavuri.com/demos/portfolio-assistant');
   });
 
-  it('proxy routes unknown .html requests to canonical demos index', () => {
-    const response = proxy(makeProxyRequest('/something-legacy.html'));
+  it('proxy routes unknown .html requests to canonical demos index', async () => {
+    const response = await proxy(makeProxyRequest('/something-legacy.html'));
     expect(response.status).toBe(301);
     expect(response.headers.get('location')).toBe('https://www.prasadkavuri.com/demos');
   });

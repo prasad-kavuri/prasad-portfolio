@@ -6,7 +6,7 @@ describe('HITL review mode', () => {
     const checkpoint = resolveReviewCheckpoint({ content: 'Reviewed answer' }, true);
 
     expect(checkpoint.status).toBe('pending');
-    expect(checkpoint.pending.content).toBe('Reviewed answer');
+    expect(checkpoint.pending?.content).toBe('Reviewed answer');
     expect(checkpoint.approved).toBeNull();
   });
 
@@ -15,6 +15,6 @@ describe('HITL review mode', () => {
 
     expect(checkpoint.status).toBe('approved');
     expect(checkpoint.pending).toBeNull();
-    expect(checkpoint.approved.content).toBe('Final answer');
+    expect(checkpoint.approved?.content).toBe('Final answer');
   });
 });

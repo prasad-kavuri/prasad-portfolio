@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { CALENDLY_URLS, CALENDLY_BASE } from '../tracking';
 
 describe('CALENDLY_URLS', () => {

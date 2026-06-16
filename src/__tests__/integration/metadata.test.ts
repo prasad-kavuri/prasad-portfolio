@@ -329,7 +329,7 @@ describe('SEO metadata integrity', () => {
 
   it('layout.tsx sameAs includes the canonical portfolio URL', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
-    expect(layout).toMatch(/sameAs.*\[/s);
+    expect(layout).toMatch(/sameAs[\s\S]*\[/);
     expect(layout).toContain('SITE_URL');
     expect(layout).toContain('linkedin.com/in/pkavuri');
     expect(layout).toContain('github.com/prasad-kavuri');

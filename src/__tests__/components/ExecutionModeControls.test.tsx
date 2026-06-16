@@ -51,7 +51,7 @@ describe('execution mode controls', () => {
 
   it('toggles from dark to light theme', () => {
     const setTheme = vi.fn();
-    vi.mocked(useTheme).mockReturnValue({ resolvedTheme: 'dark', setTheme } as ReturnType<typeof useTheme>);
+    vi.mocked(useTheme).mockReturnValue({ resolvedTheme: 'dark', setTheme } as unknown as ReturnType<typeof useTheme>);
 
     render(<ThemeToggle />);
     fireEvent.click(screen.getByRole('button', { name: /toggle theme/i }));
@@ -61,7 +61,7 @@ describe('execution mode controls', () => {
 
   it('toggles from light to dark theme', () => {
     const setTheme = vi.fn();
-    vi.mocked(useTheme).mockReturnValue({ resolvedTheme: 'light', setTheme } as ReturnType<typeof useTheme>);
+    vi.mocked(useTheme).mockReturnValue({ resolvedTheme: 'light', setTheme } as unknown as ReturnType<typeof useTheme>);
 
     render(<ThemeToggle />);
     fireEvent.click(screen.getByRole('button', { name: /toggle theme/i }));

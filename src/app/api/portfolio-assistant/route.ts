@@ -17,6 +17,7 @@ import { enforceCostControls } from '@/lib/cost-control';
 import { trackModelOutput } from '@/lib/drift-monitor';
 import { checkOutput, detectPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
 import { logQueryForEval } from '@/lib/query-log';
+import { makeCacheKey, getResponseCache, setResponseCache } from '@/lib/response-cache';
 
 const ROUTE = '/api/portfolio-assistant';
 
@@ -235,6 +236,43 @@ ${fullContext}`;
       ...recentMessages,
     ];
 
+    // ── Response cache check ─────────────────────────────────────────────────
+    // Only cache single-turn queries: multi-turn conversations are unique per
+    // session and must always hit the model. Cache key = SHA-256(query|useRAG).
+    const isSingleTurn = messages.length === 1 && lastUserMessage !== undefined;
+    const cacheKey = isSingleTurn && lastUserMessage
+      ? await makeCacheKey(lastUserMessage.content, useRetrievalGrounding)
+      : null;
+
+    if (cacheKey) {
+      const cached = await getResponseCache(cacheKey);
+      if (cached) {
+        logApiEvent('api.cache_hit', { route: ROUTE, traceId: context.traceId, status: 200, durationMs: elapsed() });
+        // Replay the cached text as a minimal SSE stream so the client path is identical
+        const enc = new TextEncoder();
+        const cachedStream = new ReadableStream({
+          start(controller) {
+            const chunk = `data: ${JSON.stringify({ choices: [{ delta: { content: cached }, finish_reason: null }] })}\n\n`;
+            controller.enqueue(enc.encode(chunk));
+            controller.enqueue(enc.encode('data: [DONE]\n\n'));
+            controller.close();
+          },
+        });
+        return finalizeApiResponse(
+          new NextResponse(cachedStream, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'X-Cache': 'HIT',
+            },
+          }),
+          context,
+        );
+      }
+    }
+    // ── end cache check ──────────────────────────────────────────────────────
+
     // Call Groq API with streaming
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -339,6 +377,11 @@ ${fullContext}`;
             // Runtime eval loop — log anonymized query+response for live scoring
             if (lastUserMessage) {
               logQueryForEval(ROUTE, lastUserMessage.content, streamedOutput, context.traceId);
+            }
+
+            // Cache write-back — store single-turn responses for 24h
+            if (cacheKey) {
+              void setResponseCache(cacheKey, streamedOutput);
             }
           }
           reader.releaseLock();

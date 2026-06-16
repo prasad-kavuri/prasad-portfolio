@@ -57,7 +57,7 @@ export default defineConfig({
   // In CI the server is started explicitly in the workflow (npm run start & wait-on).
   // webServer is only used for local dev where no server is running yet.
   webServer: process.env.CI ? undefined : {
-    command: 'npm run build && npm run start',
+    command: 'UPSTASH_REDIS_REST_URL= UPSTASH_REDIS_REST_TOKEN= npm run build && UPSTASH_REDIS_REST_URL= UPSTASH_REDIS_REST_TOKEN= npm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
     timeout: 120000,

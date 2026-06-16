@@ -39,7 +39,7 @@ describe('ForRecruitersPage', () => {
 
   it('renders recruiter header and CTAs', () => {
     render(React.createElement(ForRecruitersPage));
-    expect(screen.getByText(/Everything you need to evaluate Prasad/i)).toBeInTheDocument();
+    expect(screen.getByText(/I build production AI platforms/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Download Resume/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /LinkedIn/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Book 30-min Call/i })).toBeInTheDocument();
@@ -63,8 +63,8 @@ describe('ForRecruitersPage', () => {
   it('renders "Who this portfolio is built for" qualifier section', () => {
     render(React.createElement(ForRecruitersPage));
     expect(screen.getByText(/Who This Portfolio Is Built For/i)).toBeInTheDocument();
-    expect(screen.getByText(/platform thinking, not just model tuning/i)).toBeInTheDocument();
-    expect(screen.getByText(/Chicago-area, APAC, EMEA, or remote-first/i)).toBeInTheDocument();
+    expect(screen.getByText(/platform thinking and operating model discipline/i)).toBeInTheDocument();
+    expect(screen.getByText(/Chief AI Officer \(CAIO\) searches — Chicago, APAC, EMEA, or global remote/i)).toBeInTheDocument();
   });
 
   it('CTA row has 4 elements: Download Resume, LinkedIn, email, Book Call', () => {

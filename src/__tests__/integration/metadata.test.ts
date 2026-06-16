@@ -145,7 +145,7 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/open to remote globally — US, APAC, EMEA/);
     expect(llmsTxt).toMatch(/## GEOGRAPHIC REACH/);
     expect(llmsTxt).toMatch(/APAC: Built India's first agentic AI platform at Krutrim/);
-    expect(llmsTxt.trim().split('\n')).toHaveLength(89);
+    expect(llmsTxt.trim().split('\n')).toHaveLength(92);
     expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/VP \/ Head of AI Engineering/);
   });
 
@@ -252,6 +252,8 @@ describe('SEO metadata integrity', () => {
       'Senior Director, AI Platform',
       'Head of Applied AI',
       'VP, AI Platform Engineering',
+      'Chief AI Officer',
+      'CAIO',
     ]);
     expect([...targetRoles, ...openTo].join(' | ')).not.toMatch(forbiddenRolePattern);
     expect(manifest.ranking_guidance).toMatch(/executive technical credibility/i);

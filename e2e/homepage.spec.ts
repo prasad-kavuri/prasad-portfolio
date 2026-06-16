@@ -75,10 +75,11 @@ test.describe('Homepage', () => {
   });
 
   test('case studies section shows all 3 companies', async ({ page }) => {
-    await expect(page.getByText('Where Strategy Met Execution').first()).toBeVisible();
-    await expect(page.getByText('Krutrim').first()).toBeVisible();
-    await expect(page.getByText('Ola').first()).toBeVisible();
-    await expect(page.getByText('HERE Technologies').first()).toBeVisible();
+    const caseStudies = page.locator('#case-studies');
+    await expect(caseStudies.getByText('Where Strategy Met Execution')).toBeVisible();
+    await expect(caseStudies.getByText('Krutrim').first()).toBeVisible();
+    await expect(caseStudies.getByText('Ola').first()).toBeVisible();
+    await expect(caseStudies.getByText('HERE Technologies').first()).toBeVisible();
   });
 
   test('perspectives section shows 3 articles', async ({ page }) => {
@@ -90,8 +91,9 @@ test.describe('Homepage', () => {
   });
 
   test('contact section shows role targeting', async ({ page }) => {
-    await expect(page.getByText(/Open to VP \/ Head of AI Engineering/i)).toBeVisible();
-    await expect(page.getByRole('link', { name: /Connect on LinkedIn/i }).first()).toBeVisible();
+    const contact = page.locator('#contact');
+    await expect(contact.getByText(/Open to VP \/ Head of AI Engineering/i)).toBeVisible();
+    await expect(contact.getByRole('link', { name: /Connect on LinkedIn/i }).first()).toBeVisible();
   });
 
   test('recruiter strip is visible with all 3 buttons', async ({ page }) => {

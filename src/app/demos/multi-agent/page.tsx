@@ -213,6 +213,21 @@ function getLatestHandoff(handoffs: HandoffEvent[], fromAgent: AgentId, toAgent:
   return null;
 }
 
+async function waitForLatestHandoff(
+  stateRef: { current: { handoffs: HandoffEvent[] } },
+  fromAgent: AgentId,
+  toAgent: AgentId,
+  timeoutMs = 500
+) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const handoff = getLatestHandoff(stateRef.current.handoffs, fromAgent, toAgent);
+    if (handoff) return handoff;
+    await sleep(20);
+  }
+  return getLatestHandoff(stateRef.current.handoffs, fromAgent, toAgent);
+}
+
 export default function MultiAgentPage() {
   const [traceId, setTraceId] = useState<string>("");
   const tracedFetch = useRef(createTracedFetch(""));
@@ -402,7 +417,7 @@ export default function MultiAgentPage() {
     if (!destinationCheck.valid) {
       dispatch({ type: "REQUEST_HANDOFF", from, to, reason, contextSummary });
       await sleep(20);
-      const blocked = getLatestHandoff(orchStateRef.current.handoffs, from, to);
+      const blocked = await waitForLatestHandoff(orchStateRef, from, to);
       if (blocked) {
         dispatch({ type: "BLOCK_HANDOFF", handoffId: blocked.id, reason: destinationCheck.reason ?? "Policy blocked handoff" });
       }
@@ -414,7 +429,7 @@ export default function MultiAgentPage() {
     if (!contextCheck.safe) {
       dispatch({ type: "REQUEST_HANDOFF", from, to, reason, contextSummary });
       await sleep(20);
-      const blocked = getLatestHandoff(orchStateRef.current.handoffs, from, to);
+      const blocked = await waitForLatestHandoff(orchStateRef, from, to);
       if (blocked) {
         dispatch({ type: "BLOCK_HANDOFF", handoffId: blocked.id, reason: contextCheck.reason ?? "Context blocked" });
       }
@@ -426,7 +441,7 @@ export default function MultiAgentPage() {
     await sleep(40);
     if (!mountedRef.current || activeRunRef.current !== runId) return null;
 
-    const handoff = getLatestHandoff(orchStateRef.current.handoffs, from, to);
+    const handoff = await waitForLatestHandoff(orchStateRef, from, to);
     if (!handoff || handoff.status === "blocked") {
       dispatch({ type: "FAIL_WORKFLOW", reason: "Handoff request failed" });
       return null;

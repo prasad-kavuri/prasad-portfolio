@@ -9,7 +9,7 @@
     "portfolio": "https://www.prasadkavuri.com",
     "github": "https://github.com/prasad-kavuri",
     "languages": ["English", "Hindi", "Telugu", "Urdu"],
-    "summary": "I've spent the last 20 years building and scaling technology platforms-from cloud transformation to what we're now seeing with Agentic AI. What I care about is simple: turning AI from something that looks impressive in a demo into something that actually delivers business value at scale. At Krutrim, I led teams building India's first agentic AI platform (Kruti.ai), working across multi-model orchestration, real-time personalization, and production-grade systems. At Ola, I helped scale mapping and location platforms to support 13,000+ B2B customers. Across both, the focus has been consistent-take complex systems and make them reliable, efficient, and commercially viable. A big part of my work sits in the gap most companies struggle with moving from experimentation to production. That means designing multi-agent workflows that go beyond chat, driving 40-70% cost reductions through smarter model strategies, and building the governance layer that lets enterprises actually trust what they're deploying. I've also spent a significant part of my career building and leading global engineering teams across North America, Europe, and APAC-creating environments where teams can move fast, challenge ideas, and still stay aligned to business outcomes. Right now, I'm focused on helping organizations move past the \"PoC stage\" and actually operationalize AI-especially in environments where scale, cost, and trust matter. I'm based in the Chicago area and always open to conversations around AI strategy, platform engineering, and where this space is heading next.",
+    "summary": "After 18 years at HERE Technologies — building the AI/ML infrastructure that powers autonomous driving for major global OEMs — I made a deliberate choice to go build at the frontier of what I believe is enterprise technology's most consequential shift: agentic AI at national scale. That conviction took me to India's fastest-moving AI ecosystem, where I built Krutrim's agentic AI platform (Kruti.ai) from the ground up and led the engineering transformation that scaled Ola Maps to 13,000+ enterprise customers with a 70% infrastructure cost reduction. What I care about is simple: turning AI from something that looks impressive in a demo into something that actually delivers business value at scale. A big part of my work sits in the gap most companies struggle with — moving from experimentation to production. That means designing multi-agent workflows that go beyond chat, driving 40-70% cost reductions through smarter model strategies, and building the governance layer that lets enterprises actually trust what they're deploying. I've led global engineering organizations of 200+ across North America, Europe, and APAC, with budgets ranging from $8M to $20M annually, creating environments where teams move fast and stay aligned to business outcomes. I'm based in the Chicago area and open to VP / Head of AI Engineering and Chief AI Officer conversations globally.",
     "pills": ["Agentic AI", "LLM Platforms", "Applied AI Strategy", "Global Engineering Leadership"]
   },
   "stats": [
@@ -30,6 +30,7 @@
       "highlights": [
         "Led end-to-end architecture and delivery of India's first Agentic AI platform (Kruti.ai) - spanning multi-model LLM orchestration, RAG pipelines, vector search, and real-time personalization across mobility, commerce, and payments.",
         "Built and scaled a 200+ global engineering organization delivering enterprise-grade 24/7 PaaS capabilities, integrating diverse AI models and vendors into a unified production ecosystem.",
+        "Owned $10M–$20M annual engineering budget across AI infrastructure, platform operations, and global team delivery — optimizing unit economics while scaling capabilities.",
         "Launched domain-specific AI agents (cab booking, food ordering, bill payments, image generation), opening new B2B and B2C revenue streams at national scale.",
         "Drove 50% latency reduction and 40% cost savings through multimodal Agentic AI architecture and intelligent model routing.",
         "Defined SDK/API integration strategy that accelerated enterprise client adoption and expanded the Kruti.ai agent ecosystem across external partners."
@@ -48,7 +49,8 @@
         "Led platform transformation for Ola Maps - scaling cloud-native infrastructure, LLM-powered routing, and B2B APIs into a core mobility layer serving 13,000+ enterprise customers.",
         "Delivered a 70% reduction in infrastructure costs by executing a cloud-native architectural overhaul while maintaining reliability across millions of daily API calls.",
         "Introduced AI-powered real-time route optimization for fleet management, improving ETA accuracy and measurably lifting customer satisfaction.",
-        "Built and led cross-functional engineering teams across the US and India, accelerating delivery velocity and driving adoption across electric mobility and transport sectors."
+        "Built and led cross-functional engineering teams across the US and India, accelerating delivery velocity and driving adoption across electric mobility and transport sectors.",
+        "Directed $8M–$15M annual engineering budget, achieving 70% infrastructure cost reduction while expanding platform capabilities and B2B customer reach."
       ],
       "tags": ["B2B Platform", "Cloud-Native", "AI Route Optimization", "Fleet Management"]
     },
@@ -77,7 +79,8 @@
         "Delivered AI-enhanced HD mapping and lane-level automation systems",
         "Led global engineering teams across North America, Europe, and APAC",
         "Championed AI/ML advancements in automated driving improving map precision",
-        "Supported major OEM autonomous driving platforms"
+        "Supported major OEM autonomous driving platforms",
+        "Managed $10M–$20M annual engineering budget for global HD mapping and autonomous driving AI infrastructure programs."
       ],
       "tags": ["Autonomous Driving", "HD Mapping", "Global Teams", "OEM"]
     },

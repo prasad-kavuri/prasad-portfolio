@@ -8,14 +8,14 @@ import { CALENDLY_URLS } from '@/lib/tracking';
 export const metadata: Metadata = {
   title: 'For Recruiters',
   description:
-    'Executive recruiter brief for VP/Head AI Platform and AI Engineering role matching, with capability map, demos, governance, and certification evidence.',
+    'Executive recruiter brief for VP/Head AI Engineering and Chief AI Officer (CAIO) role matching. 200+ engineers led, $10M+ revenue launched, 70% cost reduction delivered. With capability map, demos, governance evidence, and budget context.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/for-recruiters',
   },
   openGraph: {
     title: 'For Recruiters — Prasad Kavuri',
     description:
-      'Executive summary and guided review path for VP / Head / Senior Director AI Platform conversations.',
+      'Executive summary and guided review path for VP / Head of AI Engineering and Chief AI Officer (CAIO) conversations. Budget context, transition narrative, and live governance evidence included.',
     url: 'https://www.prasadkavuri.com/for-recruiters',
   },
   twitter: {
@@ -126,10 +126,10 @@ export default function ForRecruitersPage() {
             For Recruiters &amp; Hiring Managers
           </p>
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Everything you need to evaluate Prasad
+            I build production AI platforms. Here&apos;s the evidence.
           </h1>
           <p className="text-muted-foreground mb-6">
-            VP / Head / Senior Director AI Platform candidate — in 60 seconds.
+            VP / Head of AI Engineering · Chief AI Officer (CAIO) · Senior Director AI Platform — 20 years, 200+ engineers, $10M+ revenue launched.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -221,23 +221,27 @@ export default function ForRecruitersPage() {
           <div className="grid gap-3 sm:grid-cols-3">
             <SignalCell
               title="Production AI Platform Leadership"
-              detail="Scaled from 0 to $10M+ ARR"
+              detail="Scaled from 0 to $10M+ ARR at Krutrim — built India's first commercial agentic AI platform"
             />
             <SignalCell
-              title="India's First Sovereign LLM"
-              detail="Led Krutrim AI — Kruti.ai built from scratch"
+              title="Engineering Budget Ownership"
+              detail="$8M–$20M annual P&amp;L across Krutrim, Ola, and HERE — consistently delivered cost reduction alongside scale"
             />
             <SignalCell
               title="Cost &amp; Scale Discipline"
-              detail="70% inference cost reduction"
+              detail="70% infrastructure cost reduction at Ola · 40% AI inference savings at Krutrim"
             />
             <SignalCell
               title="Global Org Leadership"
-              detail="200+ engineers across 3 continents"
+              detail="200+ engineers across US, India, and Europe — built orgs from 40 to 200"
             />
             <SignalCell
-              title="Enterprise AI Team Building"
-              detail="Built HERE Technologies AI team from scratch"
+              title="AI Governance at Enterprise Scale"
+              detail="HITL checkpoints, eval-gated CI, drift monitoring — the controls Fortune 500 AI programs require"
+            />
+            <SignalCell
+              title="Career Arc: Infra → Autonomous AI → Agentic AI"
+              detail="18 yrs HERE (OEM autonomous driving) → Ola (13K B2B) → Krutrim (India's first agentic AI platform)"
             />
           </div>
         </div>
@@ -287,19 +291,19 @@ export default function ForRecruitersPage() {
           </p>
           <div className="grid gap-4 sm:grid-cols-3">
             <WhyCard
-              badge="I've done it"
-              headline="Led 200+ engineers, shipped production AI at scale"
-              detail="Built sovereign LLM infrastructure from zero. Scaled AI orgs from 40 to 200 engineers. Delivered measurable outcomes at Krutrim, Ola, and HERE Technologies."
+              badge="Track record"
+              headline="Built production AI at scale — twice"
+              detail="India's first commercial agentic AI platform at Krutrim. 13,000+ B2B enterprise customers at Ola. 18 years building global infrastructure at HERE. This isn't a first attempt — it's a pattern."
             />
             <WhyCard
-              badge="I build for business outcomes"
-              headline="Every architecture decision has a number attached"
-              detail="70% cost reduction. 50% latency improvement. $10M+ revenue. I connect engineering depth to the metrics boards care about."
+              badge="Business outcomes"
+              headline="Every decision has a number. Here are mine."
+              detail="$10M+ revenue launched. 70% cost reduction. 50% latency improvement. $8M–$20M budgets managed. I speak CFO and CTO in the same conversation."
             />
             <WhyCard
-              badge="I govern, not just build"
-              headline="Evaluation pipelines, HITL, drift monitoring"
-              detail="I've implemented the controls that let AI run safely at enterprise scale — the layer most teams skip until something breaks in production."
+              badge="Governance-first"
+              headline="I build the controls most teams skip"
+              detail="Eval-gated CI, HITL checkpoints, drift monitoring, prompt injection detection — live in production, not in a slide deck. This is what makes AI enterprise-safe."
             />
           </div>
         </div>
@@ -312,15 +316,19 @@ export default function ForRecruitersPage() {
           <ul className="space-y-2">
             <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
-              Orgs moving from AI experimentation to production — where governance, cost, and reliability matter
+              Companies moving from AI experimentation to production — where governance, cost, and reliability are non-negotiable
             </li>
             <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
-              Teams that need platform thinking, not just model tuning
+              Organizations that need platform thinking and operating model discipline, not just model selection
             </li>
             <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
-              Chicago-area, APAC, EMEA, or remote-first VP / Head of AI Engineering searches
+              Boards and executive teams who want AI governance built in — not bolted on after an incident
+            </li>
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
+              VP / Head of AI Engineering and Chief AI Officer (CAIO) searches — Chicago, APAC, EMEA, or global remote
             </li>
           </ul>
         </div>
@@ -338,10 +346,11 @@ export default function ForRecruitersPage() {
               <ul className="space-y-2">
                 {[
                   "VP / Head of AI Engineering — global or regional",
+                  "Chief AI Officer (CAIO) — building or scaling enterprise AI strategy",
                   "Senior Director, AI Platform or Applied AI",
-                  "Head of AI for enterprise SaaS, mobility, fintech, or deep-tech orgs",
+                  "Head of AI for enterprise SaaS, fintech, mobility, healthcare, or deep-tech orgs",
                   "Remote-first or Chicago-based; open to US, APAC, EMEA",
-                  "Orgs scaling from PoC to governed production AI",
+                  "Orgs scaling from PoC to governed production AI with real budget accountability",
                   "Roles requiring both technical depth and executive org leadership",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -420,7 +429,7 @@ export default function ForRecruitersPage() {
                     "name": "What roles is Prasad Kavuri targeting?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad is targeting VP of AI Engineering, Head of AI Engineering, Senior Director of AI Platform, Head of Applied AI, and VP of AI Platform Engineering roles. He is not positioned for individual contributor, Staff, Principal, or Lead Engineer roles.",
+                      "text": "Prasad is targeting VP of AI Engineering, Head of AI Engineering, Chief AI Officer (CAIO), Senior Director of AI Platform, Head of Applied AI, and VP of AI Platform Engineering roles. He is not positioned for individual contributor, Staff, Principal, or Lead Engineer roles.",
                     },
                   },
                   {
@@ -452,7 +461,15 @@ export default function ForRecruitersPage() {
                     "name": "What is Prasad Kavuri's most significant AI achievement?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad architected India's first Agentic AI platform (Kruti.ai) at Krutrim, delivering 70% AI infrastructure cost reduction, 50% latency improvement, and enabling 13,000+ B2B customers. He also built a $10M+ revenue-generating AI platform from zero to production.",
+                      "text": "Prasad architected India's first Agentic AI platform (Kruti.ai) at Krutrim, delivering 70% AI infrastructure cost reduction, 50% latency improvement, and enabling 13,000+ B2B customers. He managed $8M–$20M engineering budgets annually and built a $10M+ revenue-generating AI platform from zero to production.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Is Prasad Kavuri qualified for a Chief AI Officer (CAIO) role?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Yes. Prasad has built and governed enterprise-scale AI platforms from strategy through production, including eval-gated CI, HITL checkpoints, drift monitoring, and AI FinOps discipline. He has led global engineering organizations of 200+ with $8M–$20M budgets, and has driven measurable business outcomes — 70% cost reduction, $10M+ revenue, 13,000+ enterprise customers — making him a strong candidate for CAIO and VP of AI Engineering roles at enterprise organizations.",
                     },
                   },
                   {

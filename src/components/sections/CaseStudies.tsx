@@ -25,6 +25,7 @@ const caseStudies: CaseStudy[] = [
     whatILed: [
       "End-to-end architecture and delivery for Kruti.ai across orchestration, RAG, vector search, and real-time personalization",
       "Scaled a 200+ global engineering organization delivering 24/7 enterprise PaaS capabilities",
+      "Owned $10M–$20M annual engineering budget across AI infrastructure and global platform operations",
       "Launched domain-specific AI agents for cab booking, food ordering, bill payments, and image generation",
       "Defined SDK/API integration strategy to accelerate partner and enterprise adoption",
     ],
@@ -51,6 +52,7 @@ const caseStudies: CaseStudy[] = [
       "Scale Ola Maps into a core cloud-native mobility platform serving enterprise customers at high reliability while materially reducing infrastructure spend.",
     whatILed: [
       "Platform transformation across cloud-native infrastructure, LLM-powered routing, and B2B APIs",
+      "Directed $8M–$15M annual engineering budget — cut infrastructure costs 70% while expanding platform scope",
       "AI-powered real-time route optimization for fleet management",
       "Cross-functional engineering leadership across the US and India",
       "Delivery acceleration across electric mobility and transport sectors",
@@ -79,6 +81,7 @@ const caseStudies: CaseStudy[] = [
     whatILed: [
       "HD mapping and lane-level automation systems",
       "Global engineering teams across NA, Europe, APAC — part of 200+ total org",
+      "Managed $10M–$20M annual engineering budget for AI infrastructure across safety-critical regulated programs",
       "AI/ML infrastructure for ADAS platforms",
       "18-year progression from Sr Engineer to Director at HERE Technologies",
     ],
@@ -124,7 +127,7 @@ export function CaseStudies() {
             Where Strategy Met Execution
           </h2>
           <p className="text-muted-foreground">
-            Three flagship transformations — the challenge, the decisions, and the outcome.
+            Three flagship transformations — the challenge, the decisions, and the outcome. Each represents a deliberate step in a 20-year arc: from building the infrastructure behind autonomous driving at global OEM scale, to leading India&apos;s AI platform frontier at Krutrim and Ola.
           </p>
         </div>
 

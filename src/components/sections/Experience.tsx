@@ -9,8 +9,11 @@ export function Experience() {
     <section id="experience" className="py-20">
       <div className="mx-auto max-w-5xl px-4">
         <h2 className="mb-2 text-2xl font-semibold" style={{ color: 'var(--accent-brand)' }}>Experience Highlights</h2>
+        <p className="mb-4 text-muted-foreground">
+          VP / Head of AI Engineering with 20+ years building production AI platforms at enterprise scale. After 18 years at HERE Technologies building AI infrastructure for autonomous driving at global OEM scale, I made a deliberate pivot to the frontier of agentic AI — leading engineering at Krutrim and Ola across India and the US.
+        </p>
         <p className="mb-10 text-muted-foreground">
-          VP / Head of AI Engineering with 20+ years building production AI platforms at enterprise scale. Led 200+ engineers across Krutrim, Ola, and HERE Technologies. Delivered 70% infrastructure cost reduction, $10M+ revenue launched, and India&apos;s first agentic AI platform.
+          Led 200+ engineers and $8M–$20M annual budgets. Delivered 70% infrastructure cost reduction, $10M+ revenue launched, and India&apos;s first agentic AI platform.
         </p>
         <div className="space-y-4">
           {displayedExperiences.map((exp) => (

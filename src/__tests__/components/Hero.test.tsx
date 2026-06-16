@@ -124,10 +124,9 @@ describe('Hero', () => {
     expect(screen.getByText('Revenue Launched')).toBeDefined();
   });
 
-  it('renders Currently Exploring section', () => {
+  it('renders Available Now section', () => {
     render(<Hero />);
-    // Use exact match to target the section header, not the role clarity paragraph
-    expect(screen.getByText('Currently Exploring')).toBeDefined();
+    expect(screen.getByText(/Available Now/i)).toBeDefined();
     expect(screen.getByText(/Small Language Models/i)).toBeDefined();
     expect(screen.getByText(/Agent-to-Agent/i)).toBeDefined();
   });

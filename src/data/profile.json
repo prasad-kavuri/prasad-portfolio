@@ -22,6 +22,7 @@
     {
       "id": "krutrim",
       "company": "Krutrim",
+      "companyContext": "India's sovereign AI computing company (Ola Group) — built India's first national-scale agentic AI platform",
       "title": "Head of AI Engineering",
       "period": "March 2025 - Present",
       "location": "Naperville, IL",
@@ -38,6 +39,7 @@
     {
       "id": "ola",
       "company": "Ola",
+      "companyContext": "India's leading mobility & maps platform — comparable in scale to Uber, serving South & Southeast Asia",
       "title": "Senior Director of Engineering",
       "period": "September 2023 - February 2025",
       "location": "Naperville, IL",

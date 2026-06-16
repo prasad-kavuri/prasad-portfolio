@@ -30,6 +30,9 @@ export function Experience() {
                   <p className="text-sm font-medium text-foreground">
                     {exp.company}
                   </p>
+                  {'companyContext' in exp && exp.companyContext && (
+                    <p className="text-xs text-muted-foreground/70 italic">{exp.companyContext}</p>
+                  )}
                   <p className="text-xs text-muted-foreground">{exp.location}</p>
                 </div>
               </CardHeader>

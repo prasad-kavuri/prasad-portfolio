@@ -206,7 +206,7 @@ export function Hero() {
 
           <div className="mt-8 border-t border-border pt-7">
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Currently Exploring
+              Available Now · Actively Evaluating Opportunities
             </p>
             <div className="flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
@@ -242,15 +242,15 @@ export function Hero() {
               </p>
               {/* Role clarity — reduces recruiter ambiguity, increases inbound relevance */}
               <p className="mt-1 text-sm text-muted-foreground">
-                Currently exploring{' '}
+                Open to select{' '}
                 <span className="font-medium text-foreground">
                   VP / Head of AI Engineering
                 </span>
                 {' '}and{' '}
                 <span className="font-medium text-foreground">
-                  AI Platform Leadership
+                  Chief AI Officer (CAIO)
                 </span>
-                {' '}roles — Chicago area &amp; remote. Start with{' '}
+                {' '}conversations — Chicago area &amp; remote. Start with{' '}
                 <Link href="/capabilities" className="underline underline-offset-2 hover:no-underline">
                   Platform Capabilities
                 </Link>

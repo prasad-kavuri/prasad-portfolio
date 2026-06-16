@@ -6,6 +6,9 @@ import type {
   OtelEvent,
   OtelEventType,
   OrgSummary,
+  KvCacheMetrics,
+  KvCacheModelMetrics,
+  KvCacheDailyMetrics,
 } from '@/components/enterprise/types';
 
 // Captured once on module load — anchors all event/chart timestamps to the current session
@@ -277,6 +280,92 @@ export function getRecentOtelEvents(limit = 50): OtelEvent[] {
 
   // Sort newest first
   return events.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+
+export function getKvCacheMetrics(period: '7d' | '30d' | '90d'): KvCacheMetrics {
+  const days = period === '7d' ? 7 : period === '30d' ? 30 : 90;
+  const rand = seededRand(0xc4c4e);
+
+  // Per-model stats — representative of a multi-model serving fleet
+  const modelDefs = [
+    { model: 'claude-sonnet-4',  baseHit: 0.79, ttftBase: 2800, ttftCached: 380 },
+    { model: 'claude-haiku-4',   baseHit: 0.86, ttftBase: 1100, ttftCached: 160 },
+    { model: 'llama-3.3-70b',    baseHit: 0.63, ttftBase: 3400, ttftCached: 520 },
+    { model: 'llama-3.1-8b',     baseHit: 0.71, ttftBase: 900,  ttftCached: 120 },
+    { model: 'mixtral-8x7b',     baseHit: 0.58, ttftBase: 2200, ttftCached: 340 },
+  ];
+
+  const byModel: KvCacheModelMetrics[] = modelDefs.map(m => {
+    const jitter = (rand() - 0.5) * 0.04;
+    const hitRate = Math.min(0.95, Math.max(0.40, m.baseHit + jitter));
+    const requestsPerDay = Math.round(200 + rand() * 800);
+    const totalRequests = requestsPerDay * days;
+    const tokensFromCache = Math.round(totalRequests * hitRate * (1200 + rand() * 800));
+    // GPU hour savings: each cache hit avoids ~0.0002 GPU-hours of prefill compute
+    const gpuHoursSaved = Math.round(totalRequests * hitRate * 0.00022 * 10) / 10;
+    // Cost saved: cache reads are $0.30/MTok vs $3/MTok input
+    const costSaved = Math.round(tokensFromCache * (3 - 0.30) / 1_000_000 * 100) / 100;
+    return {
+      model: m.model,
+      cacheHitRate: Math.round(hitRate * 1000) / 1000,
+      ttftWithCacheMs: m.ttftCached,
+      ttftWithoutCacheMs: m.ttftBase,
+      tokensFromCache,
+      estimatedGpuHoursSaved: gpuHoursSaved,
+      estimatedCostSavedUSD: costSaved,
+    };
+  });
+
+  // Daily trend
+  const now = MODULE_INIT_TIME;
+  const dailyTrend: KvCacheDailyMetrics[] = Array.from({ length: Math.min(days, 30) }, (_, i) => {
+    const d = new Date(now - (Math.min(days, 30) - 1 - i) * 86_400_000);
+    const dateStr = d.toISOString().slice(0, 10);
+    const baseHit = 0.68 + i * 0.003; // gradual improvement as cache warms
+    const jitter = (rand() - 0.5) * 0.06;
+    const hitRate = Math.min(0.92, Math.max(0.50, baseHit + jitter));
+    const requests = Math.round(1800 + rand() * 1200);
+    return {
+      date: dateStr,
+      cacheHitRate: Math.round(hitRate * 1000) / 1000,
+      requestsServed: requests,
+      tokensFromCache: Math.round(requests * hitRate * 1400),
+      ttftP50Ms: Math.round(380 + rand() * 200),
+      ttftP99Ms: Math.round(900 + rand() * 600),
+    };
+  });
+
+  const overallHitRate = byModel.reduce((s, m) => s + m.cacheHitRate, 0) / byModel.length;
+  const totalRequests = dailyTrend.reduce((s, day) => s + day.requestsServed, 0);
+
+  return {
+    period,
+    overallCacheHitRate: Math.round(overallHitRate * 1000) / 1000,
+    totalRequestsServed: totalRequests,
+    totalTokensFromCache: byModel.reduce((s, m) => s + m.tokensFromCache, 0),
+    totalGpuHoursSaved: Math.round(byModel.reduce((s, m) => s + m.estimatedGpuHoursSaved, 0) * 10) / 10,
+    totalCostSavedUSD: Math.round(byModel.reduce((s, m) => s + m.estimatedCostSavedUSD, 0) * 100) / 100,
+    avgTtftWithCacheMs: 304,
+    avgTtftWithoutCacheMs: 2080,
+    ttftImprovementPct: 85,
+    byModel,
+    byUseCase: [
+      { useCase: 'RAG / retrieval',       cacheHitRate: 0.88, requestCount: Math.round(totalRequests * 0.35) },
+      { useCase: 'Multi-turn chat',        cacheHitRate: 0.82, requestCount: Math.round(totalRequests * 0.28) },
+      { useCase: 'Code generation',        cacheHitRate: 0.61, requestCount: Math.round(totalRequests * 0.20) },
+      { useCase: 'Document summarisation', cacheHitRate: 0.74, requestCount: Math.round(totalRequests * 0.12) },
+      { useCase: 'One-shot tasks',         cacheHitRate: 0.31, requestCount: Math.round(totalRequests * 0.05) },
+    ],
+    dailyTrend,
+    storageUtilization: {
+      gpuMemoryUsedGB:   38,
+      gpuMemoryTotalGB:  80,
+      cpuMemoryUsedGB:   142,
+      cpuMemoryTotalGB:  256,
+      diskUsedGB:        680,
+      diskTotalGB:       2000,
+    },
+  };
 }
 
 export function getOrgSummary(period: '7d' | '30d' | '90d'): OrgSummary {

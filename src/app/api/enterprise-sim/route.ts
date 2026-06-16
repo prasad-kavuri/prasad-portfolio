@@ -16,10 +16,11 @@ import {
   getDailyTokenUsage,
   getRecentOtelEvents,
   getOrgSummary,
+  getKvCacheMetrics,
 } from '@/lib/enterpriseMockData';
 
 const ROUTE = '/api/enterprise-sim';
-const VALID_RESOURCES = ['permissions', 'spend', 'usage', 'tokens', 'events', 'summary'] as const;
+const VALID_RESOURCES = ['permissions', 'spend', 'usage', 'tokens', 'events', 'summary', 'kv-cache'] as const;
 const VALID_PERIODS = ['7d', '30d', '90d'] as const;
 
 type ValidPeriod = typeof VALID_PERIODS[number];
@@ -115,6 +116,12 @@ export async function GET(req: NextRequest) {
       case 'summary': {
         const summary = getOrgSummary(period);
         data = summary;
+        totalRecords = 1;
+        break;
+      }
+      case 'kv-cache': {
+        const kvCache = getKvCacheMetrics(period);
+        data = kvCache;
         totalRecords = 1;
         break;
       }

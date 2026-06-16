@@ -79,6 +79,49 @@ export interface OtelEvent {
   metadata: Record<string, string | number | boolean>;
 }
 
+// KV Cache inference efficiency metrics
+export interface KvCacheModelMetrics {
+  model: string;
+  cacheHitRate: number;          // 0–1
+  ttftWithCacheMs: number;
+  ttftWithoutCacheMs: number;
+  tokensFromCache: number;
+  estimatedGpuHoursSaved: number;
+  estimatedCostSavedUSD: number;
+}
+
+export interface KvCacheDailyMetrics {
+  date: string;                  // "YYYY-MM-DD"
+  cacheHitRate: number;          // 0–1
+  requestsServed: number;
+  tokensFromCache: number;
+  ttftP50Ms: number;
+  ttftP99Ms: number;
+}
+
+export interface KvCacheMetrics {
+  period: '7d' | '30d' | '90d';
+  overallCacheHitRate: number;
+  totalRequestsServed: number;
+  totalTokensFromCache: number;
+  totalGpuHoursSaved: number;
+  totalCostSavedUSD: number;
+  avgTtftWithCacheMs: number;
+  avgTtftWithoutCacheMs: number;
+  ttftImprovementPct: number;
+  byModel: KvCacheModelMetrics[];
+  byUseCase: { useCase: string; cacheHitRate: number; requestCount: number }[];
+  dailyTrend: KvCacheDailyMetrics[];
+  storageUtilization: {
+    gpuMemoryUsedGB: number;
+    gpuMemoryTotalGB: number;
+    cpuMemoryUsedGB: number;
+    cpuMemoryTotalGB: number;
+    diskUsedGB: number;
+    diskTotalGB: number;
+  };
+}
+
 // Aggregated org-level summary
 export interface OrgSummary {
   totalTeams: number;

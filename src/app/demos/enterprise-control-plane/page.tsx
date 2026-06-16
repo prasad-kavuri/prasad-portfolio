@@ -34,9 +34,10 @@ import { SpendAnalyticsPanel } from "@/components/enterprise/SpendAnalyticsPanel
 import { ObservabilityFeed } from "@/components/enterprise/ObservabilityFeed";
 import { TokenUsageChart } from "@/components/enterprise/TokenUsageChart";
 import { ToolRegistryPanel } from "@/components/enterprise/ToolRegistryPanel";
-import type { TeamPermissions, TeamSpendConfig, UsageMetrics, DailyTokenUsage, OtelEvent, OrgSummary } from "@/components/enterprise/types";
+import { KvCachePanel } from "@/components/enterprise/KvCachePanel";
+import type { TeamPermissions, TeamSpendConfig, UsageMetrics, DailyTokenUsage, OtelEvent, OrgSummary, KvCacheMetrics } from "@/components/enterprise/types";
 
-type TabId = 'registry' | 'rbac' | 'spend' | 'observability';
+type TabId = 'registry' | 'rbac' | 'spend' | 'observability' | 'kv-cache';
 
 // Seed constants — render immediately, no loading state needed
 const SEED = {
@@ -71,7 +72,6 @@ function useFetch<T>(url: string): LoadState<T> & { reload: () => void } {
 
   useEffect(() => {
     let cancelled = false;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState(prev => ({ ...prev, loading: true, error: null }));
     fetch(url)
       .then(res => {
@@ -103,7 +103,6 @@ export default function EnterpriseControlPlanePage() {
   const [activeTab, setActiveTab] = useState<TabId>('registry');
   const [archOpen, setArchOpen] = useState(false);
   const [snapshotTs, setSnapshotTs] = useState('');
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setSnapshotTs(new Date().toISOString()); }, []);
 
   // Data fetches
@@ -113,12 +112,14 @@ export default function EnterpriseControlPlanePage() {
   const tokens      = useFetch<DailyTokenUsage[]>('/api/enterprise-sim?resource=tokens&days=30');
   const events      = useFetch<OtelEvent[]>('/api/enterprise-sim?resource=events&limit=50');
   const summary     = useFetch<OrgSummary>('/api/enterprise-sim?resource=summary&period=30d');
+  const kvCache     = useFetch<KvCacheMetrics>('/api/enterprise-sim?resource=kv-cache&period=30d');
 
   const TABS: { id: TabId; label: string }[] = [
     { id: 'registry',      label: 'Tool Registry' },
     { id: 'rbac',          label: 'Access Control' },
     { id: 'spend',         label: 'Spend & Tokens' },
     { id: 'observability', label: 'Observability' },
+    { id: 'kv-cache',      label: 'Inference Efficiency' },
   ];
 
   const jsonLd = {
@@ -334,6 +335,19 @@ export default function EnterpriseControlPlanePage() {
             )}
             {events.error && <ErrorCard message={events.error} onRetry={events.reload} />}
             {events.data && <ObservabilityFeed events={events.data} />}
+          </div>
+        )}
+
+        {/* Tab: Inference Efficiency (KV Cache) */}
+        {activeTab === 'kv-cache' && (
+          <div role="tabpanel">
+            {kvCache.loading && (
+              <div className="flex items-center gap-2 text-muted-foreground py-8">
+                <Loader2 className="w-4 h-4 animate-spin" /> Loading inference metrics...
+              </div>
+            )}
+            {kvCache.error && <ErrorCard message={kvCache.error} onRetry={kvCache.reload} />}
+            {kvCache.data && <KvCachePanel metrics={kvCache.data} />}
           </div>
         )}
 

@@ -19,10 +19,10 @@ test.describe('Homepage', () => {
     await expect(page.getByText(/cost, latency, and scalability/i)).toBeVisible();
   });
 
-  test('Browse All Demos CTA navigates to canonical demos index', async ({ page }) => {
-    await page.getByRole('link', { name: /Browse All 15 Demos/i }).first().click();
-    await expect(page).toHaveURL(/\/demos\/?$/);
-    await expect(page.getByRole('heading', { name: /All Production Demos/i })).toBeVisible();
+  test('AI Platform Demos CTA navigates to agent marketplace', async ({ page }) => {
+    await page.getByRole('link', { name: /Explore AI Platform Demos/i }).click();
+    await expect(page).toHaveURL(/\/agent-marketplace\/?$/);
+    await expect(page.getByRole('heading', { name: /15 Production AI Agents/i })).toBeVisible();
   });
 
   test('all 3 demo group headers are visible', async ({ page }) => {
@@ -97,8 +97,10 @@ test.describe('Homepage', () => {
   });
 
   test('recruiter strip is visible with all 3 buttons', async ({ page }) => {
-    await expect(page.getByText('For Recruiters and Hiring Managers', { exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Download Resume/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Start a Conversation/i })).toBeVisible();
+    const recruiterStrip = page.getByText('For Recruiters and Hiring Managers', { exact: true }).locator('../..');
+    await expect(recruiterStrip).toBeVisible();
+    await expect(recruiterStrip.getByRole('link', { name: /View LinkedIn/i })).toBeVisible();
+    await expect(recruiterStrip.getByRole('link', { name: /Start a Conversation/i })).toBeVisible();
+    await expect(recruiterStrip.getByRole('link', { name: /Book a Call/i })).toBeVisible();
   });
 });

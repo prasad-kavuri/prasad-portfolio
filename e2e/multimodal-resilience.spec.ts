@@ -32,11 +32,19 @@ test.describe('Multimodal demo resilience', () => {
       name: /Load Models & Start|Try Simulated Demo/i,
     }).first();
     await expect(primaryCta).toBeVisible({ timeout: 10_000 });
-    await primaryCta.click();
 
     const degradedCard = page.getByText('Local Inference Assets Unavailable');
     const retryButton = page.getByRole('button', { name: /Retry Initialization/i });
     const simulateButton = page.getByRole('button', { name: /Switch to Simulated Demo/i });
+
+    // The server-rendered button can appear before React's delegated events are
+    // attached when all browser projects run concurrently.
+    await page.waitForFunction(
+      () => Object.keys(document).some((key) => key.startsWith('_reactListening')),
+      undefined,
+      { timeout: 20_000 },
+    );
+    await primaryCta.click();
 
     await expect(degradedCard).toBeVisible({ timeout: 20_000 });
     await expect(retryButton).toBeVisible();

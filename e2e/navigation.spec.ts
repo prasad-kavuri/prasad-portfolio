@@ -18,8 +18,7 @@ test.describe('Navigation', () => {
     if (isMobile) {
       await page.goto('/#experience');
     } else {
-      // Use href selector to avoid strict mode violation (multiple links contain "Experience")
-      await page.locator('a[href="#experience"]').click();
+      await page.getByRole('link', { name: 'Experience', exact: true }).click();
     }
     await expect(page.locator('#experience')).toBeInViewport({ timeout: 10000 });
   });

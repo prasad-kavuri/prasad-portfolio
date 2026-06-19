@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { AITools } from '@/components/sections/AITools';
+import { DemosGallery } from '@/components/sections/DemosGallery';
 import { demos } from '@/data/demos';
 import { PORTFOLIO_FACTS, SITE_NAME, SITE_URL } from '@/data/site-config';
 
@@ -70,14 +70,18 @@ export default function DemosIndexPage() {
       <main id="main-content" tabIndex={-1}>
         <section className="border-b border-border/60 bg-muted/20 py-10">
           <div className="mx-auto max-w-5xl px-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">AI Demo Index</p>
-            <h1 className="mt-2 text-3xl font-semibold">All Production Demos</h1>
-            <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-              {PORTFOLIO_FACTS.productionDemoCount} production demos on a shared governance foundation, each tied to an enterprise platform concern: quality, reliability, cost, retrieval, orchestration, or oversight.
+            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--accent-brand)' }}>
+              AI Platform Modules
+            </p>
+            <h1 className="text-3xl font-semibold text-foreground mb-2">
+              {PORTFOLIO_FACTS.productionDemoCount} Production AI Modules
+            </h1>
+            <p className="max-w-3xl text-sm text-muted-foreground">
+              Every module runs on a shared governance foundation — guardrails, rate limiting, observability, eval-gated CI, and drift monitoring. Each is tied to a real enterprise platform concern: quality, reliability, cost, retrieval, orchestration, or oversight.
             </p>
           </div>
         </section>
-        <AITools />
+        <DemosGallery />
       </main>
       <Footer />
     </>

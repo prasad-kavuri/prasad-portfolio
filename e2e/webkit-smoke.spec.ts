@@ -11,7 +11,7 @@ test.describe('WebKit smoke', () => {
   test('demos index renders production demo catalogue', async ({ page }) => {
     await page.goto('/demos');
 
-    await expect(page.getByRole('heading', { name: /All Production Demos/i })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: /15 Production AI Modules/i })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
   });
 });

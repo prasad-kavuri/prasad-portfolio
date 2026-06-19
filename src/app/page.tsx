@@ -4,6 +4,7 @@ import { Hero } from "@/components/sections/Hero";
 import { AITools } from "@/components/sections/AITools";
 import { Transformation } from "@/components/sections/Transformation";
 import { Architecture } from "@/components/sections/Architecture";
+import { AIArchitecture } from "@/components/sections/AIArchitecture";
 import { Expertise } from "@/components/sections/Expertise";
 import { Experience } from "@/components/sections/Experience";
 import { CaseStudies } from "@/components/sections/CaseStudies";
@@ -77,6 +78,7 @@ export default function Home() {
         <Transformation />
         <SectionBridge text="These principles are reflected in how I architect real enterprise AI systems." />
         <Architecture />
+        <AIArchitecture />
         <SectionBridge text="These systems represent that architecture in action — production implementations, not prototypes." />
         <Expertise />
         <SectionBridge text="Building these systems draws on five high-signal areas where I consistently create value." />

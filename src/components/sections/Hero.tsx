@@ -9,8 +9,7 @@ import profile from "@/data/profile.json";
 import { trackEvent, trackResumeDownload, trackLinkedInClick, trackCalendlyClick, trackEmailClick } from "@/lib/analytics";
 import { CALENDLY_URLS } from "@/lib/tracking";
 import { CopyForAI } from "@/components/CopyForAI";
-import { PORTFOLIO_FACTS } from "@/data/site-config";
-import { EXECUTIVE_METRICS_DISPLAY } from "@/lib/executive-metrics";
+import { EXECUTIVE_METRICS_EXTENDED } from "@/lib/executive-metrics";
 
 const brandStyle = {
   background: "var(--accent-brand)",
@@ -31,17 +30,17 @@ export function Hero() {
               alt="Prasad Kavuri, VP / Head of AI Engineering"
             />
             <div>
-              <h1 id="profile-name" className="text-3xl font-semibold">
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--accent-brand)' }}>
+                AI Engineering Executive · Agentic AI Platforms · Enterprise Transformation
+              </p>
+              <h1 id="profile-name" className="text-3xl font-bold">
                 {profile.personal.name}
               </h1>
               <p className="mt-1 max-w-3xl text-lg text-muted-foreground">
                 {profile.personal.subtitle}
               </p>
               <p className="mt-1 text-sm font-medium text-muted-foreground">
-                Enterprise AI, Built for Day&nbsp;2
-              </p>
-              <p className="mt-1 text-sm font-medium text-foreground">
-                Production AI platform reference architecture for VP / Head-level evaluation.
+                Enterprise AI, Built for Day&nbsp;2 · Production-grade platforms with governance built in.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {profile.personal.pills.map((pill) => (
@@ -54,11 +53,12 @@ export function Hero() {
           </div>
 
           <p className="mt-5 max-w-3xl text-base font-semibold text-foreground">
-            AI platform executive who turns GenAI programs into governed, cost-efficient production systems.
+            AI platform executive who takes GenAI programs from demo to production — with governance, cost discipline, and measurable business outcomes built in.
           </p>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {EXECUTIVE_METRICS_DISPLAY.map((s) => (
+          {/* 6-metric proof grid — extended set from EXECUTIVE_METRICS_EXTENDED */}
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-3">
+            {EXECUTIVE_METRICS_EXTENDED.map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-muted/60 px-4 py-3.5">
                 <AnimatedCounter value={s.value} className="text-2xl font-semibold tracking-tight" />
                 <p className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</p>
@@ -136,33 +136,58 @@ export function Hero() {
             </a>
           </div>
 
+          {/* Platform capability chips — product-style signal */}
+          <div className="mt-5 flex flex-wrap gap-2">
+            {[
+              { label: 'Agentic Platforms', dot: 'bg-indigo-500' },
+              { label: 'AI Governance', dot: 'bg-green-500' },
+              { label: 'LLM FinOps', dot: 'bg-blue-400' },
+              { label: 'Model Routing', dot: 'bg-purple-400' },
+              { label: 'Enterprise Eval', dot: 'bg-orange-400' },
+              { label: 'Org Leadership', dot: 'bg-pink-400' },
+            ].map(({ label, dot }) => (
+              <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
+                <span className={`size-1.5 rounded-full shrink-0 ${dot}`} />
+                {label}
+              </span>
+            ))}
+          </div>
+
+          {/* Primary CTA row — recruiter-first hierarchy */}
           <div className="mt-5 flex flex-wrap gap-2.5 sm:gap-3">
             <Link
-              href="/for-recruiters"
+              href="/recruiter-dashboard"
               className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
               style={{ background: 'var(--accent-brand)' }}
+              onClick={() => trackEvent('recruiter_dashboard_clicked_hero')}
             >
-              Recruiter Fast-Track
+              View Recruiter Brief
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
+            </Link>
+            <Link
+              href="/agent-marketplace"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-semibold"
+              onClick={() => trackEvent('demos_clicked_hero')}
+            >
+              Explore AI Platform Demos
             </Link>
             <a
-              href="/demos/evaluation-showcase"
-              style={brandStyle}
-              onClick={() => trackEvent('signature_system_clicked')}
-              className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium"
+              href="/api/resume-download"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackResumeDownload()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium"
             >
-              Explore Signature System
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
+              Download Resume
             </a>
-            <Link href="/demos" className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium">
-              Browse All {PORTFOLIO_FACTS.productionDemoCount} Demos
-            </Link>
-            <Link href="/capabilities" className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium">
-              Platform Capabilities
+            <Link
+              href="#experience"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium"
+              onClick={() => trackEvent('leadership_story_clicked_hero')}
+            >
+              Leadership Story
             </Link>
           </div>
 

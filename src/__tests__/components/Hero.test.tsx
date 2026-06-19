@@ -57,7 +57,7 @@ describe('Hero', () => {
 
   it('renders summary paragraph', () => {
     render(<Hero />);
-    expect(screen.getByText(/AI platform executive who turns GenAI programs into governed, cost-efficient production systems/i)).toBeDefined();
+    expect(screen.getByText(/AI platform executive who takes GenAI programs from demo to production/i)).toBeDefined();
   });
 
   it('renders all 4 differentiator bullets', () => {
@@ -82,10 +82,10 @@ describe('Hero', () => {
     expect(links[0].getAttribute('href')).toBe('/demos/evaluation-showcase');
   });
 
-  it('renders Browse All Demos CTA linking to /demos', () => {
+  it('renders AI Platform Demos CTA linking to agent marketplace', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /Browse All 15 Demos/i });
-    expect(link.getAttribute('href')).toBe('/demos');
+    const link = screen.getByRole('link', { name: /Explore AI Platform Demos/i });
+    expect(link.getAttribute('href')).toBe('/agent-marketplace');
   });
 
   it('renders Explore Signature System CTA linking to evaluation showcase', () => {
@@ -95,10 +95,10 @@ describe('Hero', () => {
     expect(links[0].getAttribute('href')).toBe('/demos/evaluation-showcase');
   });
 
-  it('renders Recruiter Fast-Track CTA linking to recruiter page', () => {
+  it('renders recruiter brief CTA linking to recruiter dashboard', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /Recruiter Fast-Track/i });
-    expect(link.getAttribute('href')).toBe('/for-recruiters');
+    const link = screen.getByRole('link', { name: /View Recruiter Brief/i });
+    expect(link.getAttribute('href')).toBe('/recruiter-dashboard');
   });
 
   it('renders View LinkedIn CTA', () => {
@@ -111,16 +111,19 @@ describe('Hero', () => {
 
   it('renders Download Resume linking to resume download API', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /Download Resume/i });
-    expect(link.getAttribute('href')).toContain('resume');
+    const link = screen.getAllByRole('link', { name: /Download Resume/i })
+      .find((candidate) => candidate.getAttribute('href') === '/api/resume-download');
+    expect(link).toBeDefined();
+    expect(link!.getAttribute('href')).toContain('resume');
   });
 
-  it('renders all 5 KPI stat labels', () => {
+  it('renders all 6 KPI stat labels', () => {
     render(<Hero />);
-    expect(screen.getByText('Years Experience')).toBeDefined();
     expect(screen.getByText('Engineers Led')).toBeDefined();
-    expect(screen.getByText('B2B Customers Enabled')).toBeDefined();
-    expect(screen.getByText('Cost Reduction Delivered')).toBeDefined();
+    expect(screen.getByText('AI Cost Reduction')).toBeDefined();
+    expect(screen.getByText('Call Center Automated')).toBeDefined();
+    expect(screen.getByText('POIs Indexed')).toBeDefined();
+    expect(screen.getByText('Languages — AI')).toBeDefined();
     expect(screen.getByText('Revenue Launched')).toBeDefined();
   });
 
@@ -161,7 +164,8 @@ describe('Hero', () => {
 
   it('fires trackResumeDownload when Download Resume is clicked', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /Download Resume/i });
+    const link = screen.getAllByRole('link', { name: /Download Resume/i })
+      .find((candidate) => candidate.getAttribute('href') === '/api/resume-download')!;
     // Remove href to prevent happy-dom from navigating; React onClick still fires
     link.removeAttribute('href');
     fireEvent.click(link);
@@ -180,7 +184,7 @@ describe('Hero', () => {
   it('renders stat bar before bio in DOM order', () => {
     render(<Hero />);
     const summary = document.getElementById('profile-summary');
-    const statLabels = screen.getAllByText('Years Experience');
+    const statLabels = screen.getAllByText('Engineers Led');
     const statEl = statLabels[0].closest('.rounded-xl') as HTMLElement | null;
     expect(summary).not.toBeNull();
     expect(statEl).not.toBeNull();

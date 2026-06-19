@@ -156,7 +156,6 @@ export default function GovernancePage() {
     }
   }
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadMetrics(); }, []);
 
   const refresh = () => { loadMetrics(); };
@@ -205,6 +204,73 @@ export default function GovernancePage() {
         <GovernanceSummaryBand />
 
         <TelemetryLegend />
+
+        {/* ── Governance Key ──────────────────────────────────────────── */}
+        <section className="mb-8" aria-labelledby="governance-key-heading">
+          <h2 id="governance-key-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            Governance Key — How to Read This Dashboard
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Status indicators */}
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Status Indicators</p>
+              <div className="space-y-2 text-xs">
+                {[
+                  { dot: 'bg-green-500', label: 'Live signal', desc: 'Real-time metric from instrumented route' },
+                  { dot: 'bg-blue-400', label: 'Info', desc: 'Informational or policy reference value' },
+                  { dot: 'bg-yellow-400', label: 'Warning', desc: 'Metric approaching threshold — monitor' },
+                  { dot: 'bg-muted-foreground/30 ring-1 ring-muted-foreground/20', label: 'Representative', desc: 'Illustrative baseline — not real-time' },
+                ].map(({ dot, label, desc }) => (
+                  <div key={label} className="flex items-start gap-2">
+                    <span className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${dot}`} />
+                    <div>
+                      <span className="font-semibold text-foreground">{label}</span>
+                      <span className="text-muted-foreground"> — {desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Metric thresholds */}
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Metric Thresholds</p>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                {[
+                  { metric: 'Eval pass rate', threshold: '≥ 85%', status: 'green' },
+                  { metric: 'Guardrail block rate', threshold: '< 5%', status: 'green' },
+                  { metric: 'Avg latency (p50)', threshold: '< 800ms', status: 'green' },
+                  { metric: 'Cost per 1K tokens', threshold: '< $0.01', status: 'green' },
+                  { metric: 'HITL approval rate', threshold: '> 80%', status: 'green' },
+                  { metric: 'Drift score', threshold: '< 0.25', status: 'green' },
+                ].map(({ metric, threshold }) => (
+                  <div key={metric} className="flex items-center justify-between">
+                    <span>{metric}</span>
+                    <span className="font-mono text-green-400">{threshold}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Control hierarchy */}
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Control Hierarchy</p>
+              <div className="space-y-2 text-xs">
+                {[
+                  { layer: 'L1 · Platform', controls: 'Rate limiting, CSP, SSRF protection, IP hashing' },
+                  { layer: 'L2 · API Route', controls: 'Input validation, guardrails, observability logging' },
+                  { layer: 'L3 · LLM Output', controls: 'Guardrail sanitizer, injection detection, output schema' },
+                  { layer: 'L4 · Agent', controls: 'HITL checkpoints, eval-gated CI, drift monitoring' },
+                ].map(({ layer, controls }) => (
+                  <div key={layer} className="rounded-lg bg-muted/40 px-3 py-2">
+                    <p className="font-semibold text-foreground text-[11px]">{layer}</p>
+                    <p className="text-muted-foreground text-[10px] mt-0.5">{controls}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section className="mb-8" aria-labelledby="governance-model-heading">
           <h2 id="governance-model-heading" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">

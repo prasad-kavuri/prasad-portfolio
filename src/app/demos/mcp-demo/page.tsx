@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronRight, Loader2, Network, Plug, Server, Terminal, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,26 +23,155 @@ interface MCPResponse {
   totalDuration_ms: number;
 }
 
+// ---------------------------------------------------------------------------
+// Protocol flow visualizer
+// ---------------------------------------------------------------------------
+
+const PROTOCOL_STEPS = [
+  {
+    id: 'discover',
+    label: 'Discover',
+    icon: Network,
+    desc: 'Client → Server: tools/list request',
+    payload: '{"jsonrpc":"2.0","method":"tools/list","id":1}',
+  },
+  {
+    id: 'select',
+    label: 'Select',
+    icon: Zap,
+    desc: 'LLM selects tool(s) from schema',
+    payload: '{"tool":"get_experience","reason":"query requires work history"}',
+  },
+  {
+    id: 'execute',
+    label: 'Execute',
+    icon: Terminal,
+    desc: 'Server runs tool · returns result',
+    payload: '{"jsonrpc":"2.0","result":{"content":[{"type":"text","text":"..."}]},"id":2}',
+  },
+  {
+    id: 'synthesize',
+    label: 'Synthesize',
+    icon: Server,
+    desc: 'LLM forms final answer from results',
+    payload: '{"finalAnswer":"Based on the tools called, Prasad is a strong fit..."}',
+  },
+] as const;
+
+function ProtocolFlowCard({ activeStep }: { activeStep: number }) {
+  return (
+    <div className="flex flex-col sm:flex-row gap-2 sm:gap-1 items-start sm:items-center mb-6 rounded-xl border border-border bg-muted/20 p-4">
+      {PROTOCOL_STEPS.map((step, idx) => {
+        const Icon = step.icon;
+        const isActive = idx === activeStep;
+        const isDone = idx < activeStep;
+        return (
+          <div key={step.id} className="flex sm:flex-col items-center sm:flex-1 gap-3 sm:gap-1">
+            <div className={`flex items-center justify-center rounded-lg w-9 h-9 shrink-0 transition-all duration-300 ${
+              isActive ? 'text-white shadow-md' :
+              isDone   ? 'bg-green-500/20 text-green-400' :
+                         'bg-muted text-muted-foreground'
+            }`} style={isActive ? { background: 'var(--accent-brand)' } : {}}>
+              {isDone
+                ? <CheckCircle2 className="w-4 h-4" />
+                : <Icon className="w-4 h-4" />
+              }
+            </div>
+            <div className="flex-1 sm:text-center">
+              <p className={`text-xs font-semibold ${isActive ? 'text-foreground' : isDone ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
+                {step.label}
+              </p>
+              <p className="text-[10px] text-muted-foreground/60 hidden sm:block leading-tight mt-0.5">{step.desc}</p>
+            </div>
+            {idx < PROTOCOL_STEPS.length - 1 && (
+              <ChevronRight className="w-3 h-3 text-border shrink-0 sm:hidden" />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tool execution card
+// ---------------------------------------------------------------------------
+
+function ToolCard({ call, expanded, onToggle }: {
+  call: ToolCall;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/30 transition-colors"
+      >
+        <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+        <code className="text-sm font-mono" style={{ color: 'var(--accent-brand)' }}>{call.tool}</code>
+        <span className="ml-auto text-xs text-muted-foreground font-mono">{call.duration_ms}ms</span>
+        <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${expanded ? 'rotate-90' : ''}`} />
+      </button>
+      {expanded && (
+        <div className="border-t border-border/50 px-4 pb-4 pt-3 space-y-2">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Input args</p>
+            <pre className="text-xs font-mono bg-muted/40 rounded p-2 overflow-auto max-h-24 text-foreground/80">
+              {JSON.stringify(call.args, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Result (truncated)</p>
+            <pre className="text-xs font-mono bg-muted/40 rounded p-2 overflow-auto max-h-32 text-foreground/80">
+              {call.result.substring(0, 300)}{call.result.length > 300 ? '…' : ''}
+            </pre>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+const EXAMPLE_QUERIES = [
+  "Is Prasad a good fit for VP of AI Engineering?",
+  "What are Prasad's cloud infrastructure skills?",
+  "Show Krutrim achievements and metrics",
+  "Compare Prasad's skills to a CTO role requiring: strategy, AI, cloud, leadership",
+];
+
+const TOOLS_REGISTRY = [
+  { name: 'get_experience', desc: 'Retrieves work history, roles, and tenure context', schema: '(query?: string) → ExperienceRecord[]' },
+  { name: 'search_skills', desc: 'Semantic search over skills and technology stack', schema: '(skill: string, minLevel?: number) → SkillRecord[]' },
+  { name: 'calculate_fit_score', desc: 'Scores candidate fit against a role description', schema: '(role: string, requirements: string[]) → FitScore' },
+  { name: 'get_achievements', desc: 'Returns quantified business outcomes by context', schema: '(context?: string) → Achievement[]' },
+];
+
 export default function MCPDemoPage() {
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<MCPResponse | null>(null);
   const [mcpError, setMcpError] = useState<string | null>(null);
-  const [expandedToolIndex, setExpandedToolIndex] = useState<number | null>(null);
-
-  const exampleQueries = [
-    "Is Prasad a good fit for VP of AI Engineering?",
-    "What are Prasad's cloud infrastructure skills?",
-    "Show Krutrim achievements and metrics",
-    "Compare Prasad's skills to a CTO role requiring: strategy, AI, cloud, leadership",
-  ];
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const [activeProtocolStep, setActiveProtocolStep] = useState(0);
 
   const handleRunDemo = async () => {
     if (!query.trim()) return;
-
     setLoading(true);
     setResponse(null);
     setMcpError(null);
+    setExpandedIdx(null);
+    setActiveProtocolStep(0);
+
+    const stepTimers = [
+      setTimeout(() => setActiveProtocolStep(1), 600),
+      setTimeout(() => setActiveProtocolStep(2), 1200),
+      setTimeout(() => setActiveProtocolStep(3), 1800),
+    ];
 
     try {
       const res = await fetch("/api/mcp-demo", {
@@ -50,16 +179,17 @@ export default function MCPDemoPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
       });
-
       if (!res.ok) throw new Error("Failed to run MCP demo");
-
       const data = (await res.json()) as MCPResponse;
       setResponse(data);
+      setActiveProtocolStep(3);
     } catch (error) {
       console.error("[mcp-demo] fetch error:", error);
       setMcpError(error instanceof Error ? error.message : "Failed to run demo");
+      setActiveProtocolStep(0);
     } finally {
       setLoading(false);
+      stepTimers.forEach(clearTimeout);
     }
   };
 
@@ -67,8 +197,8 @@ export default function MCPDemoPage() {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: 'MCP Tool Demo',
-    description: 'Model Context Protocol in action — watch an LLM discover and call tools to answer questions about Prasad\'s background.',
-    keywords: 'MCP, Tool Use, Groq API',
+    description: "Model Context Protocol — watch an LLM discover and call tools to answer questions about Prasad's background.",
+    keywords: 'MCP, Tool Use, Groq API, JSON-RPC',
     url: 'https://www.prasadkavuri.com/demos/mcp-demo',
     author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
@@ -77,253 +207,203 @@ export default function MCPDemoPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {/* Header */}
-      <div className="border-b border-border bg-background sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-              </Link>
-            </div>
+
+      {/* Sticky header */}
+      <div className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link href="/demos" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              All Demos
+            </Link>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">MCP Tool Demo</h1>
-            <p className="text-muted-foreground mt-1">
-              Model Context Protocol — watch an AI agent discover and call tools in real time
-            </p>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-[10px]">MCP</Badge>
+            <Badge variant="secondary" className="text-[10px]">JSON-RPC 2.0</Badge>
+            <Badge variant="secondary" className="text-[10px]">Groq</Badge>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Protocol Overview Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
-          <Card className="bg-card border-border p-6">
-            <div className="text-muted-foreground text-sm font-medium mb-2">Tools</div>
-            <div className="text-2xl font-bold">4 Available</div>
-            <div className="text-muted-foreground text-xs mt-3 space-y-1">
-              <div>• get_experience</div>
-              <div>• search_skills</div>
-              <div>• calculate_fit_score</div>
-              <div>• get_achievements</div>
+      <div className="max-w-5xl mx-auto px-4 py-8">
+
+        {/* Page header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl border border-border bg-muted">
+              <Plug className="w-5 h-5" style={{ color: 'var(--accent-brand)' }} />
             </div>
-          </Card>
+            <div>
+              <h1 className="text-2xl font-bold">MCP Tool Demo</h1>
+              <p className="text-sm text-muted-foreground">Model Context Protocol — real-time tool discovery, selection, and execution</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground max-w-2xl mt-3">
+            MCP standardizes how AI agents discover and call tools. Watch the full JSON-RPC 2.0 lifecycle: tool schema negotiation, LLM selection, server-side execution, and answer synthesis — all transparent and traceable.
+          </p>
+        </div>
 
-          <Card className="bg-card border-border p-6">
-            <div className="text-muted-foreground text-sm font-medium mb-2">Transport</div>
-            <div className="text-2xl font-bold">HTTP</div>
-            <div className="text-muted-foreground text-xs mt-3">JSON-RPC 2.0</div>
+        {/* Protocol overview stats */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <Card className="bg-card border-border p-4">
+            <p className="text-xs text-muted-foreground font-medium mb-1">Tools Available</p>
+            <p className="text-2xl font-bold">4</p>
+            <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">get_experience · search_skills · calculate_fit_score · get_achievements</p>
           </Card>
-
-          <Card className="bg-card border-border p-6">
-            <div className="text-muted-foreground text-sm font-medium mb-2">Standard</div>
-            <div className="text-2xl font-bold">MCP</div>
-            <div className="text-muted-foreground text-xs mt-3">Linux Foundation</div>
+          <Card className="bg-card border-border p-4">
+            <p className="text-xs text-muted-foreground font-medium mb-1">Transport</p>
+            <p className="text-2xl font-bold">HTTP</p>
+            <p className="text-[11px] text-muted-foreground/70 mt-1">JSON-RPC 2.0 over HTTPS</p>
+          </Card>
+          <Card className="bg-card border-border p-4">
+            <p className="text-xs text-muted-foreground font-medium mb-1">Standard</p>
+            <p className="text-2xl font-bold">MCP</p>
+            <p className="text-[11px] text-muted-foreground/70 mt-1">Linux Foundation · open spec</p>
           </Card>
         </div>
 
-        {/* Query Input Section */}
-        <Card className="bg-card border-border p-6 mb-12">
-          <label className="block text-sm font-medium text-muted-foreground mb-4">
-            Ask anything about Prasad's fit for a role...
-          </label>
+        {/* Protocol flow */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Protocol Lifecycle</p>
+          <ProtocolFlowCard activeStep={loading ? activeProtocolStep : (response ? 3 : 0)} />
+        </div>
+
+        {/* Tool registry */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Tool Registry</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {TOOLS_REGISTRY.map(tool => (
+              <div key={tool.name} className="rounded-lg border border-border bg-card p-3">
+                <div className="flex items-start gap-2">
+                  <Terminal className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: 'var(--accent-brand)' }} />
+                  <div className="min-w-0">
+                    <code className="text-xs font-mono font-semibold text-foreground">{tool.name}</code>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{tool.desc}</p>
+                    <p className="text-[10px] font-mono text-muted-foreground/50 mt-1">{tool.schema}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Query input */}
+        <Card className="bg-card border-border p-5 mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Run a Query</p>
           <textarea
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="E.g., Is Prasad a good fit for VP of AI Engineering?"
-            className="w-full bg-background border border-border rounded px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:border-blue-500 resize-none"
-            rows={3}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.ctrlKey) {
-                handleRunDemo();
-              }
-            }}
+            className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 resize-none transition-all"
+            rows={2}
+            onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) handleRunDemo(); }}
           />
-
-          {/* Example Chips */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {exampleQueries.map((example, idx) => (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {EXAMPLE_QUERIES.map((q) => (
               <button
-                key={idx}
-                onClick={() => setQuery(example)}
-                className="px-3 py-1 bg-muted hover:bg-muted border border-border rounded text-xs text-muted-foreground transition-colors"
+                key={q}
+                onClick={() => setQuery(q)}
+                className="px-2.5 py-1 bg-muted/60 hover:bg-muted border border-border rounded-md text-[11px] text-muted-foreground hover:text-foreground transition-colors"
               >
-                {example.substring(0, 30)}...
+                {q.substring(0, 34)}…
               </button>
             ))}
           </div>
-
-          <Button
-            onClick={handleRunDemo}
-            disabled={loading || !query.trim()}
-            className="mt-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Running...
-              </>
-            ) : (
-              "Run with MCP Tools"
-            )}
-          </Button>
+          <div className="mt-4 flex items-center gap-3">
+            <Button
+              onClick={handleRunDemo}
+              disabled={loading || !query.trim()}
+              className="text-white disabled:opacity-50"
+              style={{ background: 'var(--accent-brand)' }}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Calling MCP tools…
+                </>
+              ) : (
+                <>
+                  <Plug className="w-4 h-4 mr-2" />
+                  Run with MCP
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-muted-foreground">Ctrl+Enter to run</p>
+          </div>
         </Card>
 
-        {/* Groq error banner */}
+        {/* Error banner */}
         {mcpError && (
-          <div className="rounded border border-yellow-400 bg-yellow-50 text-yellow-900 px-4 py-3 text-sm mb-6">
-            ⚠️ Live model unavailable — Groq API may be rate-limited or temporarily down.
-            The demo architecture and governance layer remain fully functional.
-            <a href="/governance" className="underline ml-1">View platform status →</a>
+          <div className="rounded-xl border border-yellow-400/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 px-4 py-3 text-sm mb-6">
+            ⚠️ Live model unavailable — Groq API may be rate-limited. The protocol visualization and tool registry above remain fully functional.{' '}
+            <Link href="/governance" className="underline hover:no-underline">View platform status →</Link>
           </div>
         )}
 
-        {/* Results Section */}
+        {/* Results */}
         {response && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-            {/* Tool Execution Log */}
-            <Card className="bg-card border-border p-6">
-              <h2 className="text-lg font-semibold mb-4">MCP Tool Execution Log</h2>
+          <div className="space-y-6 mb-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                Tool Execution Log — {response.toolCallLog.length} tool{response.toolCallLog.length !== 1 ? 's' : ''} called
+              </p>
               {response.toolCallLog.length === 0 ? (
-                <div className="text-muted-foreground text-sm py-8 text-center">
+                <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
                   No tools were called for this query
                 </div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="space-y-2">
                   {response.toolCallLog.map((call, idx) => (
-                    <div
+                    <ToolCard
                       key={idx}
-                      className="bg-muted border border-border rounded p-4 animate-fade-in"
-                      style={{
-                        animationDelay: `${idx * 100}ms`,
-                      }}
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                          <code className="text-sm font-mono text-blue-400">
-                            {call.tool}
-                          </code>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {call.duration_ms}ms
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={() =>
-                          setExpandedToolIndex(
-                            expandedToolIndex === idx ? null : idx
-                          )
-                        }
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {expandedToolIndex === idx ? "Hide" : "Show"} args &
-                        result
-                      </button>
-
-                      {expandedToolIndex === idx && (
-                        <div className="mt-3 space-y-2 text-xs">
-                          <div className="bg-background rounded p-2 overflow-auto max-h-32">
-                            <div className="text-foreground font-mono">
-                              <strong>Input:</strong>
-                              <pre>{JSON.stringify(call.args, null, 2)}</pre>
-                            </div>
-                          </div>
-                          <div className="bg-background rounded p-2 overflow-auto max-h-32">
-                            <div className="text-foreground font-mono">
-                              <strong>Result:</strong>
-                              <pre>{call.result.substring(0, 200)}...</pre>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                      call={call}
+                      expanded={expandedIdx === idx}
+                      onToggle={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+                    />
                   ))}
                 </div>
               )}
-            </Card>
+            </div>
 
-            {/* Final Answer */}
-            <Card className="bg-card border-border p-6">
-              <h2 className="text-lg font-semibold mb-4">Final Answer</h2>
-              <div className="bg-muted rounded p-4 mb-6 max-h-96 overflow-y-auto">
-                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                  {response.finalAnswer}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  {response.toolCallLog.length} tools called
-                </span>
-                <Badge variant="outline" className="bg-muted text-muted-foreground">
-                  {response.totalDuration_ms}ms
-                </Badge>
-              </div>
-            </Card>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Synthesized Answer</p>
+              <Card className="bg-card border-border p-5">
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{response.finalAnswer}</p>
+                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{response.toolCallLog.length} tools · {response.toolsDiscovered} discovered</span>
+                  <span className="font-mono">{response.totalDuration_ms}ms total</span>
+                </div>
+              </Card>
+            </div>
           </div>
         )}
 
-        {/* How MCP Works Section */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-8">How MCP Works</h2>
-          <div className="flex flex-col md:flex-row items-start gap-4">
-            {/* Step 1 */}
-            <Card className="flex-1 p-5">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-sm font-medium">1</span>
-                <h3 className="font-semibold">Discover</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">Client requests tool list from MCP server. Agent learns what capabilities are available.</p>
-            </Card>
-
-            <div className="hidden md:flex items-center pt-5 text-muted-foreground">→</div>
-
-            {/* Step 2 */}
-            <Card className="flex-1 p-5">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-sm font-medium">2</span>
-                <h3 className="font-semibold">Select</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">LLM chooses which tools to call based on the user query and tool descriptions.</p>
-            </Card>
-
-            <div className="hidden md:flex items-center pt-5 text-muted-foreground">→</div>
-
-            {/* Step 3 */}
-            <Card className="flex-1 p-5">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-sm font-medium">3</span>
-                <h3 className="font-semibold">Execute</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">Tools run, results fed back to LLM for synthesis into a coherent final answer.</p>
-            </Card>
+        {/* Business context */}
+        <Card className="bg-card border-border p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Why MCP matters for enterprise AI</p>
+          <div className="grid sm:grid-cols-3 gap-4 text-sm text-muted-foreground">
+            <div>
+              <p className="font-semibold text-foreground mb-1">Standardization</p>
+              <p>One protocol for all tool integrations — no bespoke adapters per agent or model provider.</p>
+            </div>
+            <div>
+              <p className="font-semibold text-foreground mb-1">Auditability</p>
+              <p>Every tool call is a traceable JSON-RPC message with explicit input/output — no black-box side effects.</p>
+            </div>
+            <div>
+              <p className="font-semibold text-foreground mb-1">Governance</p>
+              <p>Tool schemas enforce capability contracts. Rate limiting and guardrails layer on top of the protocol.</p>
+            </div>
           </div>
-        </div>
-      </div>
+          <div className="mt-4 pt-3 border-t border-border/50">
+            <Link href="/agent-marketplace" className="inline-flex items-center gap-1 text-xs font-medium hover:underline" style={{ color: 'var(--accent-brand)' }}>
+              Browse all MCP-enabled demos in the Agent Marketplace →
+            </Link>
+          </div>
+        </Card>
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-4px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.3s ease-out forwards;
-          opacity: 0;
-        }
-      `}</style>
+      </div>
     </div>
   );
 }

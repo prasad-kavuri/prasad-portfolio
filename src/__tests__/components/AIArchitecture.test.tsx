@@ -153,7 +153,7 @@ describe('AIArchitecture', () => {
     render(<AIArchitecture />);
     expect(screen.getByText('All 14 layers are live in this portfolio')).toBeInTheDocument();
     const link = screen.getByRole('link', { name: /Explore Demos/i });
-    expect(link.getAttribute('href')).toBe('/agent-marketplace');
+    expect(link.getAttribute('href')).toBe('/demos');
   });
 
   it('section has id="ai-architecture"', () => {

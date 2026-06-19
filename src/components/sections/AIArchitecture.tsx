@@ -364,7 +364,7 @@ export function AIArchitecture() {
               </p>
             </div>
             <a
-              href="/agent-marketplace"
+              href="/demos"
               className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white shrink-0"
               style={{ background: 'var(--accent-brand)' }}
             >

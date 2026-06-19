@@ -5,13 +5,13 @@ test.describe('Navigation', () => {
     await page.goto('/');
   });
 
-  test('navbar links scroll to correct sections', async ({ page, isMobile }) => {
+  test('Demos navbar link opens the demos page', async ({ page, isMobile }) => {
     if (isMobile) {
-      await page.goto('/#tools');
+      await page.goto('/demos');
     } else {
-      await page.getByRole('link', { name: 'AI Tools' }).click();
+      await page.getByRole('link', { name: 'Demos', exact: true }).click();
     }
-    await expect(page.locator('#tools')).toBeInViewport({ timeout: 10000 });
+    await expect(page).toHaveURL(/\/demos$/);
   });
 
   test('clicking Experience nav scrolls to experience section', async ({ page, isMobile }) => {

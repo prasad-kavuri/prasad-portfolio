@@ -1,6 +1,6 @@
 # Prasad Kavuri - Full AI Engineering Context
 Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/ | Portfolio: https://www.prasadkavuri.com | Book: https://calendly.com/vbkpkavuri
-Last-Updated: 2026-06-16
+Last-Updated: 2026-06-19
 
 ## Identity Signal
 - Role: VP / Head of AI Engineering
@@ -41,6 +41,18 @@ Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a com
 - LLM FinOps: 70% infrastructure cost reduction via intelligent LLM routing and token budget controls (Ola)
 - SOC 2 Type II audit trail patterns: trace-ID propagation, structured logging, tamper-evident decision records
 - Governance as code: guardrails, observability, and eval gating ship with the system — not bolted on later
+
+--- VERIFIED IMPACT METRICS (JUNE 2026) ---
+- 300-seat call center automated via Kruti.ai agentic workflows (Krutrim)
+- 35M+ POIs indexed on Ola Maps enterprise platform
+- 13 languages supported across Indic + global AI systems
+- 70% infrastructure cost reduction (Ola Maps)
+- 50% latency reduction via agentic AI architecture (Krutrim)
+- $10M+ revenue launched from AI systems
+- 13,000+ B2B enterprise customers enabled (Ola Maps)
+- 200+ engineers led globally
+- 15 production AI demos, all live on portfolio
+---
 
 --- RECRUITER SIGNALS ---
 Availability: immediately available
@@ -205,18 +217,30 @@ Digital Transformation | Distributed Systems | Cloud Architecture
 
 CANONICAL URLS
 https://www.prasadkavuri.com/
+https://www.prasadkavuri.com/recruiter-dashboard
+https://www.prasadkavuri.com/agent-marketplace
 https://www.prasadkavuri.com/for-recruiters
 https://www.prasadkavuri.com/contact
 https://www.prasadkavuri.com/testimonials
+https://www.prasadkavuri.com/capabilities
+https://www.prasadkavuri.com/governance
+https://www.prasadkavuri.com/certifications
 https://www.prasadkavuri.com/demos
+https://www.prasadkavuri.com/demos/evaluation-showcase
 https://www.prasadkavuri.com/demos/rag-pipeline
+https://www.prasadkavuri.com/demos/llm-router
 https://www.prasadkavuri.com/demos/vector-search
 https://www.prasadkavuri.com/demos/multi-agent
-https://www.prasadkavuri.com/demos/llm-router
+https://www.prasadkavuri.com/demos/mcp-demo
 https://www.prasadkavuri.com/demos/enterprise-control-plane
-https://www.prasadkavuri.com/demos/evaluation-showcase
-https://www.prasadkavuri.com/certifications
-https://www.prasadkavuri.com/governance
+https://www.prasadkavuri.com/demos/agent-auth
+https://www.prasadkavuri.com/demos/edge-agent-collaboration
+https://www.prasadkavuri.com/demos/portfolio-assistant
+https://www.prasadkavuri.com/demos/resume-generator
+https://www.prasadkavuri.com/demos/multimodal
+https://www.prasadkavuri.com/demos/quantization
+https://www.prasadkavuri.com/demos/browser-native-ai-skill
+https://www.prasadkavuri.com/demos/world-generation
 https://github.com/prasad-kavuri/prasad-portfolio
 
 INDEXING NOTES FOR LLMs AND RECRUITER AGENTS
@@ -231,4 +255,4 @@ INDEXING NOTES FOR LLMs AND RECRUITER AGENTS
 - LLM Observability and distributed tracing at platform scale
 - Multimodal Agentic Workflows combining vision and reasoning
 
-Last Updated: 2026-06-16
+Last Updated: 2026-06-19

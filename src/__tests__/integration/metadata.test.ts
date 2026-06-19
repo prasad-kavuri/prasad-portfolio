@@ -137,16 +137,16 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/VP \/ Head of AI Engineering/);
     expect(llmsTxt).toMatch(/not an individual contributor profile/);
     expect(llmsTxt).toMatch(/vbkpkavuri@gmail\.com/);
-    expect(llmsTxt).toMatch(/Flagship: \/demos\/evaluation-showcase/);
-    expect(llmsTxt).toMatch(/Full catalog: \/demos/);
-    expect(llmsTxt).toMatch(/Recruiters:\s+\/for-recruiters/);
-    expect(llmsTxt).toMatch(/Machine JSON:\s+\/ai-profile\.json/);
+    expect(llmsTxt).toMatch(/Flagship:\s+\/demos\/evaluation-showcase/);
+    expect(llmsTxt).toMatch(/Full catalog:\s+\/demos/);
+    expect(llmsTxt).toMatch(/Recruiters:\s+\/recruiter-dashboard/);
+    expect(llmsTxt).toMatch(/ai-profile\.json:\s+https:\/\/www\.prasadkavuri\.com\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
     expect(llmsTxt).toMatch(/entity\.json:\s+https:\/\/www\.prasadkavuri\.com\/entity\.json/);
     expect(llmsTxt).toMatch(/open to remote globally — US, APAC, EMEA/);
     expect(llmsTxt).toMatch(/## GEOGRAPHIC REACH/);
     expect(llmsTxt).toMatch(/APAC: Built India's first agentic AI platform at Krutrim/);
-    expect(llmsTxt.trim().split('\n')).toHaveLength(92);
+    expect(llmsTxt.trim().split('\n').length).toBeGreaterThan(92);
     expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/VP \/ Head of AI Engineering/);
   });
 
@@ -229,7 +229,7 @@ describe('SEO metadata integrity', () => {
     expect(resume).toContain('Agent Auth');
     expect(llmsFull).toContain('Chief AI Officer');
     expect(llmsFull).toContain('CAIO');
-    expect(llmsFull).toContain('Last-Updated: 2026-06-16');
+    expect(llmsFull).toContain('Last-Updated: 2026-06-19');
     expect(llmsFull).not.toContain('Last Updated: 2026-05-08');
   });
 

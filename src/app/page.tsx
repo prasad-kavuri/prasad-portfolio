@@ -48,7 +48,14 @@ const homePageStructuredData = {
       breadcrumb: { "@id": `${siteUrl}/#breadcrumb` },
       speakable: {
         "@type": "SpeakableSpecification",
-        cssSelector: ["#profile-name", "#profile-summary"],
+        cssSelector: [
+          "#profile-name",
+          "#profile-summary",
+          "#ai-architecture",
+          "#experience",
+          "#tools",
+          "#architecture",
+        ],
       },
       inLanguage: "en-US",
     },

@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "last_updated": "2026-06-16",
+  "schema_version": "1.1",
+  "last_updated": "2026-06-19",
   "name": "Prasad Kavuri",
   "current_role": "VP / Head of AI Engineering",
   "positioning_level": "Executive AI Engineering Leadership",
@@ -39,7 +39,11 @@
     "b2b_customers": "13000+",
     "engineers_led": "200+",
     "production_ai_systems": 15,
-    "years_experience": 20
+    "years_experience": 20,
+    "call_center_seats_automated": "300",
+    "pois_indexed": "35M+",
+    "languages_ai_supported": "13",
+    "llm_cost_reduction": "70%"
   },
   "technical_domains": {
     "ai_platform": ["Multi-Agent Orchestration", "RAG Pipelines", "LLM Routing", "Eval Frameworks", "Browser WASM Inference", "WebGPU"],
@@ -60,10 +64,16 @@
   "links": {
     "website": "https://www.prasadkavuri.com",
     "about": "https://www.prasadkavuri.com/about",
+    "recruiter_dashboard": "https://www.prasadkavuri.com/recruiter-dashboard",
+    "agent_marketplace": "https://www.prasadkavuri.com/agent-marketplace",
+    "demos_gallery": "https://www.prasadkavuri.com/demos",
+    "governance_dashboard": "https://www.prasadkavuri.com/governance",
+    "capabilities": "https://www.prasadkavuri.com/capabilities",
     "entity_json": "https://www.prasadkavuri.com/entity.json",
     "github": "https://github.com/prasad-kavuri",
     "resume_md": "https://www.prasadkavuri.com/resume.md",
     "llms_txt": "https://www.prasadkavuri.com/llms.txt",
+    "llms_full_txt": "https://www.prasadkavuri.com/llms-full.txt",
     "calendar": "https://calendly.com/vbkpkavuri"
   },
   "contact": {
@@ -110,11 +120,27 @@
     }
   ],
   "notable_achievements": [
-    "Enterprise-scale agentic AI deployments",
+    "Built India's first sovereign agentic AI platform (Kruti.ai) from zero to national production scale",
+    "300-seat call center automation via agentic workflows at Krutrim",
     "13,000+ enterprise customers at Ola Maps",
-    "50% latency reduction",
-    "70%+ AI infrastructure cost reduction"
+    "35M+ POIs indexed on Ola Maps enterprise platform",
+    "13 languages supported across Indic + global AI systems",
+    "50% latency reduction via multimodal agentic AI architecture",
+    "70%+ AI infrastructure cost reduction",
+    "$10M+ revenue launched from AI systems"
   ],
+  "portfolio_architecture": {
+    "layers_documented": 14,
+    "description": "Interactive 14-layer AI platform architecture: user intent → agent orchestration → memory → tool/MCP → model router → inference → eval → guardrails → observability → drift → FinOps → audit → human approval → business outcome",
+    "url": "https://www.prasadkavuri.com/#ai-architecture"
+  },
+  "new_in_june_2026": {
+    "recruiter_dashboard": "Tabbed recruiter brief with role fit, skills map, evidence, and review path",
+    "agent_marketplace": "15 production AI agents filterable by capability tier",
+    "ai_architecture_section": "Interactive 14-layer platform execution flow on homepage",
+    "mcp_demo_redesign": "Protocol flow visualizer with tool registry and JSON-RPC inspector",
+    "hero_upgrade": "Updated KPIs: 300-seat automation, 35M+ POIs, 13 languages AI"
+  },
   "availability": "immediately available",
   "production_signals": ["eval-gated-CI", "HITL-checkpoints", "drift-monitoring", "LLM-FinOps", "70pct-cost-reduction", "200-engineer-org"],
   "verified_demos": 15,

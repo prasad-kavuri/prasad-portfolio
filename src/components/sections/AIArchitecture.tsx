@@ -205,6 +205,7 @@ function LayerRow({
         onClick={onToggle}
         className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/30 transition-colors rounded-xl"
         aria-expanded={isActive}
+        aria-label={`${layer.name}: ${layer.tagline}`}
       >
         {/* Layer number */}
         <span className="text-[10px] font-mono text-muted-foreground/40 w-5 shrink-0 tabular-nums">
@@ -215,7 +216,7 @@ function LayerRow({
         <span className={`w-2 h-2 rounded-full shrink-0 ${cat.dot}`} aria-hidden />
 
         {/* Layer name */}
-        <span className="text-sm font-semibold text-foreground leading-tight w-44 shrink-0">
+        <span className="text-sm font-semibold text-foreground leading-tight w-36 sm:w-44 shrink-0">
           {layer.name}
         </span>
 

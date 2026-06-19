@@ -66,6 +66,12 @@ export default function DemosIndexPage() {
           __html: JSON.stringify(demosStructuredData).replace(/</g, '\\u003c'),
         }}
       />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:shadow-md"
+      >
+        Skip to main content
+      </a>
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         <section className="border-b border-border/60 bg-muted/20 py-10">

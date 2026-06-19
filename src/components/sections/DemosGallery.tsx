@@ -207,6 +207,7 @@ export function DemosGallery() {
           <button
             key={id}
             onClick={() => setActiveGroup(id)}
+            aria-pressed={activeGroup === id}
             className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
               activeGroup === id
                 ? 'text-white'

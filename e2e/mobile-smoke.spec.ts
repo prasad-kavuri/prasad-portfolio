@@ -12,8 +12,18 @@ import { test, expect, devices } from '@playwright/test';
 test.use({ ...devices['iPhone 15 Pro Max'] });
 
 test.describe('Mobile smoke — iPhone 15 Pro Max', () => {
-  test.beforeEach(({}, testInfo) => {
+  test.beforeEach(async ({ page }, testInfo) => {
     test.skip(!testInfo.project.name.includes('Mobile') && testInfo.project.name !== 'mobile', 'Mobile smoke test targets mobile device projects');
+
+    // Production CSP upgrades localhost subresources to HTTPS, while the CI
+    // test server intentionally serves HTTP. Proxy upgraded asset requests
+    // back to that server so mobile checks exercise the fully styled app.
+    await page.route('https://localhost:3000/**', async (route) => {
+      const response = await page.request.fetch(
+        route.request().url().replace('https://localhost:3000', 'http://localhost:3000'),
+      );
+      await route.fulfill({ response });
+    });
   });
 
   test('AI Evaluation Showcase loads and shows key headings', async ({ page }) => {

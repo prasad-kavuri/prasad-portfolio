@@ -203,7 +203,7 @@ function LayerRow({
       {/* Collapsed header */}
       <button
         onClick={onToggle}
-        className="w-full min-w-0 flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 text-left hover:bg-muted/30 transition-colors rounded-xl"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/30 transition-colors rounded-xl"
         aria-expanded={isActive}
       >
         {/* Layer number */}
@@ -215,7 +215,7 @@ function LayerRow({
         <span className={`w-2 h-2 rounded-full shrink-0 ${cat.dot}`} aria-hidden />
 
         {/* Layer name */}
-        <span className="min-w-0 flex-1 text-sm font-semibold text-foreground leading-tight sm:w-44 sm:flex-none sm:shrink-0">
+        <span className="text-sm font-semibold text-foreground leading-tight w-44 shrink-0">
           {layer.name}
         </span>
 
@@ -287,7 +287,7 @@ export function AIArchitecture() {
 
   return (
     <section id="ai-architecture" className="py-20 bg-background border-t border-border overflow-x-hidden">
-      <div className="mx-auto min-w-0 max-w-5xl px-4">
+      <div className="mx-auto max-w-5xl px-4">
 
         {/* Header */}
         <FadeUp>

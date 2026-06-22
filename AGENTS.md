@@ -10,6 +10,22 @@ When instructions conflict, apply this priority order:
 
 ---
 
+## Domain Language
+
+Read `CONTEXT.md` at the repo root before any coding session. It defines the canonical vocabulary for this codebase — **browser demo**, **server demo**, **layer**, **signature demo**, **module card**, **exec model**, **featured role**, **HITL gate**, **accent brand**, and more. Using these terms precisely reduces ambiguity and token usage.
+
+Key ADRs in `docs/adr/` explain the three most surprising architectural decisions:
+- `0001` — LLM calls are server-only (never from the browser)
+- `0002` — Named exports only (no `export default` except page files)
+- `0003` — CSP/WASM headers live in both `next.config.ts` AND `src/proxy.ts`
+- `0004` — `useBrowserAI` hook is mandatory for all browser demos
+
+## Portfolio Skills
+
+`skills/add-demo/SKILL.md` — step-by-step checklist for adding a new demo. Run it when the user asks to add a demo.
+
+---
+
 ## What This Project Is
 Production-grade AI engineering portfolio. Next.js 16.2.6 App Router + Turbopack.
 **Do NOT assume standard Next.js patterns** — verify in `node_modules/next/dist/docs/`

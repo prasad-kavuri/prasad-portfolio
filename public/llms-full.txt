@@ -1,6 +1,8 @@
-# Prasad Kavuri - Full AI Engineering Context
+# Prasad Kavuri — Full AI Engineering Context
+# Long-form companion to https://www.prasadkavuri.com/llms.txt
+# Updated: 2026-06-22 | Short form: /llms.txt | Agent manifest: /.well-known/ai-agent-manifest.json
 Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/ | Portfolio: https://www.prasadkavuri.com | Book: https://calendly.com/vbkpkavuri
-Last-Updated: 2026-06-19
+Last-Updated: 2026-06-22
 
 ## Identity Signal
 - Role: VP / Head of AI Engineering
@@ -255,4 +257,297 @@ INDEXING NOTES FOR LLMs AND RECRUITER AGENTS
 - LLM Observability and distributed tracing at platform scale
 - Multimodal Agentic Workflows combining vision and reasoning
 
-Last Updated: 2026-06-19
+---
+
+## FULL EXPERIENCE NARRATIVES
+
+### Krutrim (Ola Electric AI Division) — VP / Head of AI Engineering
+Period: 2023–2024 | Location: Bengaluru, India | Team size: 35 engineers built from 0
+
+THE SITUATION:
+Krutrim was Ola Electric's AI division, tasked with building India's first enterprise-grade
+agentic AI platform. The call center problem was acute: 300 human agents handling
+tens of thousands of daily contacts with high handle times, inconsistent CSAT, and
+no automation layer. The technical challenge was multilingual (5 Indic + English),
+high-stakes (customer billing, vehicle service, escalations), and latency-sensitive.
+
+WHAT I BUILT:
+- End-to-end agentic call center pipeline: speech input → NER extraction → intent
+  classification → multi-step agent decision tree → Groq LLM reasoning → structured
+  output → CRM integration and ticket creation
+- Real-time HITL (human-in-the-loop) escalation gates for edge cases and low-confidence
+  classifications
+- LLM-as-Judge evaluation suite with production-derived quality thresholds — calibrated
+  against real call outcomes, not synthetic benchmarks
+- Drift monitoring to detect model degradation post-deployment without full re-evaluation
+- Multilingual NLP: Hindi, Tamil, Telugu, Kannada, English at launch; architecture
+  designed to extend to 13 languages
+- AI FinOps: intelligent model routing reduced per-call inference cost by 50%
+- Recruited and built the AI engineering org from 0 to 35 engineers in < 6 months
+
+OUTCOMES:
+- 300 call center seats automated — largest agentic deployment in India at launch time
+- 50% reduction in average call handle time
+- 50% improvement in CSAT scores post-deployment
+- $10M+ revenue attributable to AI-driven upsell and workflow automation
+- PoC to 300-seat production in < 9 months
+
+---
+
+### Ola Electric — Head of AI Engineering (Ola Maps)
+Period: 2022–2023 | Location: Bengaluru + Chicago | Team size: 80+ engineers
+
+THE SITUATION:
+Ola Maps served 35M+ monthly active users as India's largest consumer mapping product.
+The AI platform was fragmented: separate models for different languages, no unified
+inference layer, high per-query cost, and no systematic approach to Indic language quality.
+The B2B API business (13,000+ enterprise customers) needed AI enrichment at POI scale.
+
+WHAT I BUILT:
+- Unified AI-powered recommendation engine serving 35M+ users with personalized POI
+  suggestions, route optimization, and ETA prediction
+- 13-language NLP pipeline: 9 Indic languages (Hindi, Tamil, Bengali, Marathi, Telugu,
+  Kannada, Malayalam, Gujarati, Punjabi, Odia) + English, French, Arabic
+- Real-time geospatial anomaly detection for map data quality
+- AI inference cost optimization: intelligent model routing and response caching
+  reduced per-query cost by 70% without quality degradation
+- 35M+ POIs indexed, enriched, and served through the AI recommendation layer
+- Location intelligence APIs enabling 13,000+ B2B enterprise customers
+
+OUTCOMES:
+- 70% reduction in AI infrastructure cost per query
+- 35M+ users receiving personalized AI recommendations
+- 13 languages running in simultaneous production
+- 13,000+ B2B API enterprise customers enabled
+
+---
+
+### HERE Technologies — Head of AI Engineering
+Period: 2019–2022 | Location: Chicago + Europe | Team size: 40+ engineers globally
+
+THE SITUATION:
+HERE Technologies (owned by BMW, Audi, Daimler, Bosch, Continental, Intel, Pioneer)
+operates a global location intelligence platform. Map data quality was validated
+manually — slow, expensive, and not scalable across 200+ countries. The AI platform
+was nascent; individual teams had their own models with no shared infrastructure.
+
+WHAT I BUILT:
+- ML platform for map data quality: automated validation of road segments, address
+  disambiguation, and geocoding at global scale using computer vision and NLP
+- Traffic sign detection and classification pipeline using computer vision
+- Geospatial feature stores for training and serving ML models at HERE's global scale
+- MLOps platform with drift monitoring, eval gating, and automated retraining triggers
+- Unified AI infrastructure shared across HERE's US, Berlin, Amsterdam, and Bangalore teams
+- Established AI engineering practice from individual team models → centralized platform
+
+OUTCOMES:
+- 40+ engineers managed globally across 4 cities
+- Map coverage quality improvements across 200+ countries
+- 50% reduction in manual map curation cost through AI automation
+- First shared ML infrastructure enabling cross-team model reuse
+
+---
+
+### HERE Technologies — Director, AI Engineering
+Period: 2017–2019 | Location: Chicago
+
+THE SITUATION:
+HERE's first AI engineering leadership role. No existing ML platform; individual
+teams running ad-hoc models with no shared infrastructure or quality controls.
+
+WHAT I BUILT:
+- First production ML models for HERE's mapping platform
+- Automated road network analysis at continent scale
+- Geospatial feature stores for training and serving
+- Data labeling pipelines and QA workflows
+- Established the AI engineering practice that scaled into the Head of AI role
+
+---
+
+## THE 14-LAYER AI PLATFORM ARCHITECTURE
+
+I designed and documented a 14-layer AI platform execution model showing how each
+layer maps to a distinct engineering concern, team ownership, and quality gate.
+Interactive version: https://www.prasadkavuri.com/#ai-architecture
+
+Layer 01 — USER INTENT
+Natural language input, context signals, session state. The entry point.
+Engineering concern: input validation, context extraction, session management.
+
+Layer 02 — AGENT ORCHESTRATION
+CrewAI / LangChain / custom orchestrators. Multi-agent role assignment, handoff contracts.
+Engineering concern: agent topology, role isolation, handoff authentication.
+
+Layer 03 — MEMORY & CONTEXT
+Short-term (Redis/in-memory), long-term (vector DB), episodic (session replay).
+Engineering concern: context window management, retrieval relevance, memory decay.
+
+Layer 04 — TOOL / MCP
+Tool registry, JSON-RPC dispatch, auth.md identity, permission scoping.
+Engineering concern: tool contract versioning, auth, sandboxing, SSRF prevention.
+
+Layer 05 — MODEL ROUTER
+Complexity scoring, cost/latency/quality trade-off, FinOps enforcement.
+Engineering concern: routing logic, model capability mapping, cost attribution.
+
+Layer 06 — INFERENCE
+WASM (browser), ONNX, vLLM, Groq API, WebGPU. The compute layer.
+Engineering concern: provider failover, latency SLAs, quantization trade-offs.
+
+Layer 07 — EVALUATION
+LLM-as-Judge, semantic fidelity scoring, CI regression gating.
+Engineering concern: eval suite calibration, threshold drift, judge bias detection.
+
+Layer 08 — GUARDRAILS
+Injection detection, competitor filtering, hallucination heuristics, output sanitization.
+Engineering concern: false positive rate, latency budget, bypass detection.
+
+Layer 09 — OBSERVABILITY
+OTel spans, latency histograms, token cost tracking, trace propagation.
+Engineering concern: cardinality, sampling, alert thresholds, correlation IDs.
+
+Layer 10 — DRIFT MONITOR
+Output distribution tracking, anomaly scoring, alert thresholds.
+Engineering concern: baseline establishment, seasonal adjustment, alert fatigue.
+
+Layer 11 — FINOPS
+Per-route token budgets, cache read/write pricing, cost attribution per team.
+Engineering concern: budget enforcement, cache hit rate optimization, chargeback.
+
+Layer 12 — AUDIT TRAIL
+Immutable decision log, HITL approval records, compliance export.
+Engineering concern: tamper evidence, retention policy, GDPR scope, SOC 2 alignment.
+
+Layer 13 — HUMAN APPROVAL (HITL)
+Checkpoint gates, escalation routing, resolution logging, timeout handling.
+Engineering concern: UX for approvers, approval latency SLA, override logging.
+
+Layer 14 — BUSINESS OUTCOME
+Revenue signals, CSAT, deflection rate, SLA compliance, ROI attribution.
+Engineering concern: outcome → feature causality, A/B test isolation, metric drift.
+
+---
+
+## 15 PRODUCTION DEMOS — FULL DESCRIPTIONS
+
+1. AI EVALUATION SHOWCASE (Signature)
+   URL: /demos/evaluation-showcase | Engine: Groq (server)
+   Full closed-loop LLM evaluation: semantic fidelity scoring, hallucination detection,
+   guardrail validation, CI quality gating. Thresholds calibrated from Krutrim production.
+   What this proves: The governance layer that separates AI experiments from AI platforms.
+
+2. RAG PIPELINE
+   URL: /demos/rag-pipeline | Engine: Transformers.js WASM (browser)
+   Full retrieval-augmented generation in browser. Embeds documents with all-MiniLM-L6-v2,
+   stores in ChromaDB, retrieves by cosine similarity, generates grounded answers.
+   What this proves: Enterprise knowledge retrieval with source traceability and citation.
+
+3. LLM ROUTER
+   URL: /demos/llm-router | Engine: Groq (server)
+   Complexity classifier routes queries to optimal Groq model (Llama 3.1 8B/70B, Mixtral).
+   Shows live latency, cost, and quality per model tier. Deterministic routing.
+   What this proves: LLM FinOps — matching task complexity to model capability to reduce cost.
+
+4. VECTOR SEARCH
+   URL: /demos/vector-search | Engine: sentence-BERT WASM + Three.js
+   Semantic search with real embeddings. UMAP 3D visualization of embedding space.
+   Real-time cosine similarity ranking.
+   What this proves: The retrieval layer for any serious AI product — meaning over keywords.
+
+5. MULTI-AGENT SYSTEM
+   URL: /demos/multi-agent | Engine: CrewAI + Groq (server)
+   Three-agent pipeline (Analyzer → Researcher → Strategist) with real Groq LLM calls,
+   HITL gate between stages, and live audit trail. Human approval before Strategist executes.
+   What this proves: Governed agentic workflows with audit trails safe for enterprise deployment.
+
+6. MCP DEMO
+   URL: /demos/mcp-demo | Engine: Groq tool calling (server)
+   Live Model Context Protocol. JSON-RPC tool registration, dispatch, structured response.
+   Protocol flow visualizer + tool registry UI.
+   What this proves: Production-grade MCP implementation — the emerging standard for AI tools.
+
+7. AGENT AUTH DEMO
+   URL: /demos/agent-auth | Engine: Server API
+   auth.md protocol: anon registration → email + OTP claim → Bearer-authenticated MCP calls.
+   Full identity upgrade flow for AI agents.
+   What this proves: Agent identity — the primitive every enterprise agentic platform needs.
+
+8. EDGE AGENT + CLOUD AGENT COLLABORATION
+   URL: /demos/edge-agent-collaboration | Engine: BERT NER WASM + Groq (server)
+   Three-tier privacy-first pipeline. Browser BERT NER redacts PII, HITL governs handoff,
+   Groq produces executive summary from sanitized payload only.
+   What this proves: Data residency at the device boundary — governance-first agentic handoff.
+
+9. ENTERPRISE CONTROL PLANE
+   URL: /demos/enterprise-control-plane | Engine: Deterministic simulation
+   Org-wide AI governance: RBAC, group spend limits, token-cost tracking, observability feed.
+   Simulated Anthropic usage_metadata — no external API calls.
+   What this proves: FinOps and policy enforcement for enterprise AI platforms at scale.
+
+10. AI PORTFOLIO ASSISTANT
+    URL: /demos/portfolio-assistant | Engine: Groq + RAG (server)
+    Streaming RAG-grounded chat trained on portfolio content. Cited sources, guardrailed output.
+    What this proves: Production RAG pattern — streaming, grounded, hallucination-guarded.
+
+11. AI HIRING INTELLIGENCE
+    URL: /demos/resume-generator | Engine: Groq Llama 3.3 70B (server)
+    JD parsing, multi-dimension fit scoring, HITL-gated tailoring, ATS-optimized output.
+    What this proves: LLM orchestration applied to a high-frequency, measurable business workflow.
+
+12. MULTIMODAL ASSISTANT
+    URL: /demos/multimodal | Engine: Florence-2 WebGPU (browser)
+    Florence-2 image captioning and OCR entirely in-browser. No server, no API key.
+    What this proves: Edge-deployed vision AI — privacy-sensitive document workflows at zero cost.
+
+13. MODEL QUANTIZATION
+    URL: /demos/quantization | Engine: ONNX Runtime WASM (browser)
+    Live benchmark: INT8 vs FP32 ONNX inference. Real file sizes, latency, quality comparison.
+    What this proves: 70%+ memory reduction from quantization — the cost lever most teams miss.
+
+14. NATIVE BROWSER AI SKILL
+    URL: /demos/browser-native-ai-skill | Engine: Chrome Prompt API / Gemini Nano
+    Accessibility auditor using on-device Gemini Nano. Zero latency, 100% private.
+    What this proves: On-device AI with zero server dependency for compliance-sensitive workflows.
+
+15. REAL-TIME SPATIAL AI + WORLD MODELING ENGINE
+    URL: /demos/world-generation | Engine: Three.js + Groq (server)
+    3D spatial scene generation with LLM-driven natural-language instructions. Parametric
+    editing, diff visualization, GLB export, drift correction.
+    What this proves: LLM reasoning in spatial planning — auditable, diffable, simulation-ready.
+
+---
+
+## THIS PORTFOLIO AS A REFERENCE IMPLEMENTATION (2026)
+
+The codebase at https://github.com/prasad-kavuri/prasad-portfolio is itself a
+reference implementation of agent-native engineering practices — not just a portfolio site.
+
+WHAT MAKES IT AGENT-NATIVE:
+- CONTEXT.md: 42-term domain ontology (canonical vocabulary for all agents)
+- docs/adr/: 10 Architecture Decision Records — decisions another engineer cannot
+  infer from reading the code alone (server-only LLMs, dual CSP locations,
+  useBrowserAI mandatory, named exports, no shadcn, etc.)
+- skills/: 8 reusable agent skill files (add-demo, redesign-portfolio, testing,
+  security-review, agentic-seo, recruiter-review, executive-review, self-heal)
+- profiles/: 5 context-switching agent profiles (recruiter, testing, security,
+  executive, design) — controls which skills are active and what tools are permitted
+- evaluations/: 6 YAML files with machine-readable quality gates (62 individual
+  checks with gate values, commands, and remediation steps)
+- runs/: execution traceability directory — every significant skill run leaves a
+  summary.yaml with inputs, outputs, token costs, gates passed/failed
+- EVALUATIONS.md: human-readable quality scorecard, sprint history, 8 dimensions
+
+CURRENT SCORES (June 2026):
+- Recruiter Experience: 8.5/10
+- Agentic SEO: 8.0/10
+- Security: 9.2/10
+- Testing: 9.0/10
+- Accessibility: 9.5/10
+- Performance: 8.5/10
+- Documentation: 9.0/10
+- Executive Readiness: 8.8/10
+- Overall: 9.0/10 (target: 9.8/10)
+
+This is what an agent-first engineering repository looks like in 2026.
+
+Last Updated: 2026-06-22

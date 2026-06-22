@@ -46,6 +46,25 @@ jobs:
       - name: Security audit
         run: npm audit --audit-level=high
 
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITLEAKS_LICENSE is required for private repos (free for public repos)
+          # Set in repo Settings → Secrets → Actions if this repo becomes private
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+      - name: Static analysis (semgrep)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/javascript
+            p/nextjs
+        env:
+          # SEMGREP_APP_TOKEN enables dashboard reporting (optional — omit for offline scan)
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
       - name: Lint
         run: npm run lint
 

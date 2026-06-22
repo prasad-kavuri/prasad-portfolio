@@ -80,10 +80,10 @@ checks:
 
   - id: llms_full_txt_exists
     description: public/llms-full.txt exists with full experience narratives
-    gate: file present
-    status: missing
-    priority: high
-    note: Create llms-full.txt — currently only llms.txt exists
+    gate: file present with OUTCOMES narratives, 14-layer arch, 15 demo descriptions
+    status: pass
+    completed: 2026-06-22
+    note: Enhanced in Sprint 2 — added full Krutrim/Ola/HERE narratives, all 15 demo descriptions, portfolio-as-reference section
 
 remediation_on_fail:
   llms_txt_demo_count: Update public/llms.txt AI DEMOS section to match demos.ts

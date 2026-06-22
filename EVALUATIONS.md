@@ -195,6 +195,8 @@ This document is the living scorecard for the portfolio. Update after every spri
 | PR4-PR10 | 2026-06 | UI overhaul, SEO, a11y, tests | 7.8 | 8.8 |
 | Matt Pocock skills | 2026-06 | CONTEXT.md, ADRs 1-4, add-demo skill | 8.8 | 8.9 |
 | ChatGPT gap sprint | 2026-06 | CONTEXT.md expanded, ADRs 5-10, 6 skills, EVALUATIONS.md | 8.9 | ~9.2 (estimated) |
+| Agent-Native Sprint 1 | 2026-06 | profiles/, evaluations/ YAML, runs/, self-heal skill, AGENTS.md | ~9.2 | ~9.4 (estimated) |
+| Sprint 2 — Gap closure | 2026-06 | llms-full.txt enhanced, CI semgrep+gitleaks, E2E demos-pages, runs/ first record | ~9.4 | ~9.5 (estimated) |
 
 ---
 

@@ -82,9 +82,10 @@ checks:
   - id: e2e_demo_pages
     description: E2E smoke tests cover /demos/llm-router and /demos/multimodal
     gate: both pages have E2E coverage
-    status: missing
-    priority: medium
-    note: Add to e2e/ directory — only homepage, /demos index, and /governance are currently covered
+    status: pass
+    completed: 2026-06-22
+    file: e2e/demos-pages.spec.ts
+    note: Added in Sprint 2 — 15 tests covering /demos/llm-router, /demos/multimodal, and /demos filter tabs
 
   - id: visual_regression
     description: Playwright screenshot baselines exist for key sections

@@ -91,6 +91,7 @@ remediation_on_fail:
   csp_in_both_files: Update BOTH next.config.ts AND src/proxy.ts simultaneously — never one without the other
 
 ci_automation_gaps:
-  - semgrep is not yet in .github/workflows/ci.yml
-  - gitleaks is not yet in .github/workflows/ci.yml
-  next_action: Add both to ci.yml lint-and-unit job after npm audit step
+  - semgrep: added to ci.yml in Sprint 2 (semgrep/semgrep-action@v1) — pending SEMGREP_APP_TOKEN secret setup
+  - gitleaks: added to ci.yml in Sprint 2 (gitleaks/gitleaks-action@v2) — pending GITLEAKS_LICENSE secret (optional for public repos)
+  status: in_progress
+  next_action: Configure secrets in GitHub repo Settings → Secrets → Actions, then merge ci.yml PR

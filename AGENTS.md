@@ -12,17 +12,37 @@ When instructions conflict, apply this priority order:
 
 ## Domain Language
 
-Read `CONTEXT.md` at the repo root before any coding session. It defines the canonical vocabulary for this codebase — **browser demo**, **server demo**, **layer**, **signature demo**, **module card**, **exec model**, **featured role**, **HITL gate**, **accent brand**, and more. Using these terms precisely reduces ambiguity and token usage.
+Read `CONTEXT.md` at the repo root before any coding session. It defines the canonical vocabulary for this codebase — **browser demo**, **server demo**, **layer**, **signature demo**, **module card**, **exec model**, **featured role**, **HITL gate**, **accent brand**, **llms-txt**, **agentic-seo**, **krutrim**, **ola**, **here**, **playwright**, **vitest**, and more (45+ terms). Using these terms precisely reduces ambiguity and token usage.
 
-Key ADRs in `docs/adr/` explain the three most surprising architectural decisions:
+Key ADRs in `docs/adr/` explain the most surprising architectural decisions:
 - `0001` — LLM calls are server-only (never from the browser)
 - `0002` — Named exports only (no `export default` except page files)
 - `0003` — CSP/WASM headers live in both `next.config.ts` AND `src/proxy.ts`
 - `0004` — `useBrowserAI` hook is mandatory for all browser demos
+- `0005` — LLM Router dispatches to Groq only (no multi-provider fan-out)
+- `0006` — `llms.txt` is the canonical plain-text portfolio for LLM crawlers
+- `0007` — JSON-LD uses a single `@graph` with all entity types
+- `0008` — Playwright is E2E; Vitest is unit — no overlap
+- `0009` — CSP uses hash/mime-type allowlisting, not nonces (Vercel constraint)
+- `0010` — No shadcn/ui — Tailwind utilities only, ARIA manually implemented
 
 ## Portfolio Skills
 
 `skills/add-demo/SKILL.md` — step-by-step checklist for adding a new demo. Run it when the user asks to add a demo.
+
+`skills/redesign-portfolio/SKILL.md` — full workflow for redesigning or adding a UI section: component → a11y → tests → SEO → llms.txt → PR summary.
+
+`skills/testing/SKILL.md` — run the full test suite (lint, typecheck, unit, E2E, coverage, Lighthouse) and generate `docs/testing.md`.
+
+`skills/security-review/SKILL.md` — security audit: npm audit, semgrep, gitleaks, CSP headers, rate limiting, guardrails, SSRF. Generates `docs/security.md`.
+
+`skills/agentic-seo/SKILL.md` — AI crawler discoverability audit: llms.txt, ai-agent-manifest.json, JSON-LD, sitemap, LLM compatibility test. Generates `docs/discoverability.md`.
+
+`skills/recruiter-review/SKILL.md` — persona simulation for a target company (CTO, VP Eng, Executive Recruiter). Outputs strengths, concerns, missing keywords, interview readiness score.
+
+`skills/executive-review/SKILL.md` — named executive persona simulation (Dario Amodei, Sam Altman, Patrick Collison, Thomas Dohmke, Satya Nadella, Joe Heck, Jensen Huang). Outputs first impression, confidence, concerns, board readiness, and "schedule a call" probability.
+
+See `EVALUATIONS.md` at the repo root for the current quality gate scorecard (8.8/10 → target 9.8/10).
 
 ---
 

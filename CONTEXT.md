@@ -90,8 +90,113 @@ _Avoid_: "safety check", "input check"
 - A **featured role** always has an **outcome narrative**; a **compact strip** role never does.
 - **Profile facts** are the single source of truth — never hardcode a count or metric that has a matching `PORTFOLIO_FACTS` key.
 
+**spatial demo**:
+A browser demo that uses Three.js or WebGL for 3D / spatial visualization alongside an API call — e.g. Vector Search. Exec model: `Three.js + API`.
+_Avoid_: "3D demo", "WebGL demo"
+
+**mcp-demo**:
+The `/demos/mcp-demo` page demonstrating the Model Context Protocol with Groq tool-calling. Server demo — no browser ML.
+_Avoid_: "MCP page", "tools demo"
+
+**multi-agent-demo**:
+The `/demos/multi-agent` page — three Groq agents (Analyzer, Researcher, Strategist) coordinated in sequence with a HITL gate. Server demo.
+_Avoid_: "multi-agent page", "agent pipeline demo"
+
+**governance-demo**:
+The `/governance` special page and its live `/api/enterprise-sim` feed — shows observability charts, cost control, audit trail, and drift monitoring.
+_Avoid_: "governance page" (use this term but with the understanding it is a full demo, not just marketing)
+
+**evaluation-demo**:
+The `/demos/evaluation-showcase` signature demo — LLM-as-Judge eval suite, regression CI gate, scorecard UI. This is the signature demo.
+_Avoid_: "eval demo", "judging demo"
+
+**finops-demo**:
+The `/demos/enterprise-control-plane` demo — simulates a multi-team Anthropic API cost/usage control plane with deterministic seeded data.
+_Avoid_: "cost demo", "enterprise demo"
+
+**control-plane-demo**:
+Synonym for **finops-demo** (`/demos/enterprise-control-plane`). Prefer `finops-demo` in code comments; use `control-plane-demo` in documentation and copy.
+
+**recruiter experience**:
+The curated path from recruiter landing → capabilities → governance → signature demo → contact — optimized for a hiring manager who has 5 minutes. Starts at `/for-recruiters`.
+_Avoid_: "recruiter flow", "candidate path"
+
+**executive summary**:
+The above-the-fold profile section (Hero) plus the AIArchitecture 14-layer section together — the two sections a VP or CTO sees first.
+_Avoid_: "hero section" (too narrow), "summary section"
+
+**leadership timeline**:
+The Experience section rewritten as a vertical timeline with featured roles and compact strip. The section heading text in the UI.
+_Avoid_: "experience section" (use when referring to the React component), "career timeline"
+
+**krutrim**:
+Ola Electric's AI division where Prasad built the 300-seat, 50%-CSAT-lift call center AI platform. Context: first major AI leadership role, $10M+ revenue attributable. Founded 2023, Bengaluru.
+_Avoid_: "Krutrim AI" (full name in copy), abbreviating as "K"
+
+**ola**:
+Ola Electric (OLA brand) — Prasad built the AI recommendation engine for 35M+ users, 13 languages, 70% support deflection. Different from Krutrim (Krutrim is a subsidiary).
+_Avoid_: "Ola Electric" and "Ola" used interchangeably — prefer "Ola Electric" in copy, "ola" in code keys
+
+**here**:
+HERE Technologies (maps/location intelligence) — two roles: `here-head` (Head of AI Engineering, managed 40 engineers) and `here-director` (Director AI Engineering). Compact strip roles below them.
+_Avoid_: "HERE Maps" (outdated name), just "here" in isolation without clarifying head vs. director
+
+**anthropic-style**:
+Design and communication pattern inspired by Anthropic: detailed technical prose, safety emphasis, honest uncertainty, long-form explanation. Referenced in executive-review skill personas.
+_Avoid_: "Anthropic aesthetic"
+
+**stripe-style**:
+Design and communication pattern inspired by Stripe: pixel-precise, dense technical docs, trust signals everywhere, developer-first. Referenced in recruiter-review and executive-review skills.
+_Avoid_: "Stripe aesthetic"
+
+**vercel-style**:
+Design pattern inspired by Vercel: minimal, fast, dark mode first, monospace accents, deployment-focused. Applies to this portfolio's visual identity.
+_Avoid_: "Vercel theme"
+
+**llms-txt**:
+The `/public/llms.txt` file — plain-text portfolio summary for LLM crawlers (ChatGPT, Claude, Gemini, Perplexity). Part of the agentic SEO system.
+_Avoid_: "llm text file", "crawler file"
+
+**agentic-seo**:
+The collection of AI-crawler discoverability assets: `llms.txt`, `llms-full.txt`, `ai-agent-manifest.json`, JSON-LD `@graph`, `sitemap.xml`, speakable spec, and the recruiter query phrases in llms.txt.
+_Avoid_: "AI SEO", "LLM SEO"
+
+**playwright**:
+The E2E test framework — `e2e/*.spec.ts`. Runs across chromium/firefox/webkit and mobile viewports. Separate from Vitest unit tests.
+_Avoid_: "E2E tests" (too generic when Playwright is the tool)
+
+**semgrep**:
+Static analysis tool used in the security-review skill to scan for OWASP patterns, SSRF vectors, and injection risks. Not currently in CI — recommended addition.
+_Avoid_: "static analysis", "SAST tool"
+
+**gitleaks**:
+Secret scanning tool (checks for leaked API keys, tokens) used in the security-review skill.
+_Avoid_: "secret scanner"
+
+**vitest**:
+The unit test runner — `src/__tests__/**/*.test.tsx`. Uses happy-dom environment. Not to be confused with Playwright.
+_Avoid_: "unit tests" (too generic when Vitest is the tool)
+
+**storybook**:
+Component development and documentation tool — not yet installed, referenced in the redesign-portfolio skill as a recommended addition.
+_Avoid_: using it as if it is currently live (it is not)
+
+## Relationships
+
+- A **browser demo** must use the **useBrowserAI** hook and the **browser AI warning** component.
+- A **server demo** must call `enforceRateLimit`, `enforceGuardrails`, `startTimer`, and `logAPIEvent` in its route handler.
+- Every demo has exactly one **exec model** badge and belongs to exactly one **demo group**.
+- The **signature demo** (`evaluation-showcase`) always renders outside any **demo group** grid, above all groups.
+- A **featured role** always has an **outcome narrative**; a **compact strip** role never does.
+- **Profile facts** are the single source of truth — never hardcode a count or metric that has a matching `PORTFOLIO_FACTS` key.
+- **krutrim**, **ola**, and **here** map directly to the `OUTCOMES` record keys in `Experience.tsx`.
+- **llms-txt** + `ai-agent-manifest.json` + JSON-LD `@graph` together form the **agentic-seo** system.
+- **playwright** tests are E2E; **vitest** tests are unit/integration. Both must pass before every commit.
+
 ## Flagged ambiguities
 
 - "demo" alone is ambiguous — it can mean the page (`/demos/rag-pipeline`), the data object (`demos[n]`), or the live running experience. Prefer **module card** for the UI element, **demo entry** for the data object, and **demo page** for the route.
 - "featured" is overloaded: the signature demo is "featured" in DemosGallery; the top 4 Experience entries are "featured roles". Use the specific terms.
 - "layer" in AIArchitecture and "layer" in Tailwind/CSS are different things. Context resolves which is meant.
+- "governance" refers to both the `/governance` page and the platform governance practices generally. Distinguish with **governance-demo** vs. "governance principles".
+- **storybook** is aspirational (not installed) — do not treat it as available unless a PR explicitly adds it.

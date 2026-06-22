@@ -81,7 +81,7 @@ The AI services layer contains both server-side and browser-side demos:
 | AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |
 | Multi-Agent System | `/demos/multi-agent` | Server route plus external agent backend |
 | MCP Tool Demo | `/demos/mcp-demo` | Server route calling Groq tool use |
-| Agent Auth Demo | `/demos/agent-auth` | auth.md discovery, anonymous/claimed agent tokens, and MCP auth context |
+| Agent Auth Demo | `/demos/agent-auth` | auth.md discovery, anonymous and claimed agent authentication flows, and MCP auth context |
 | AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming full-context grounding and retrieval cues |
 | AI Hiring Intelligence | `/demos/resume-generator` | Server route calling Groq |
 | Multimodal Assistant | `/demos/multimodal` | Browser model execution |

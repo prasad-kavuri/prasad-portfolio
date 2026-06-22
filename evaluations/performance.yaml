@@ -1,0 +1,70 @@
+# evaluations/performance.yaml
+# Machine-readable quality gates for performance dimension.
+# Run via: skills/testing Phase 5 (Lighthouse)
+# Human reviewer: update after every major UI change.
+
+dimension: performance
+passing_score: 9.0
+current_score: 8.5
+target_score: 9.0
+last_reviewed: 2026-06-22
+
+checks:
+  - id: lighthouse_performance_desktop
+    description: Lighthouse performance score >= 90 on desktop
+    gate: ">= 90"
+    current: untested
+    status: untested
+    command: "npx lighthouse http://localhost:3000 --preset=desktop --only-categories=performance --output json"
+
+  - id: lighthouse_performance_mobile
+    description: Lighthouse performance score >= 80 on mobile
+    gate: ">= 80"
+    current: untested
+    status: untested
+    command: "npx lighthouse http://localhost:3000 --only-categories=performance --output json"
+
+  - id: cls
+    description: Cumulative Layout Shift < 0.1
+    gate: "< 0.1"
+    status: untested
+    note: FadeUp animations must not cause CLS — check transform-based animation only
+
+  - id: lcp
+    description: Largest Contentful Paint < 2.5s on desktop
+    gate: "< 2.5s"
+    status: untested
+
+  - id: fid_inp
+    description: Interaction to Next Paint < 200ms
+    gate: "< 200ms"
+    status: untested
+
+  - id: wasm_mobile_warning
+    description: All 4 browser demos render BrowserAIWarning on mobile (no WASM load)
+    gate: BrowserAIWarning shown on iPhone 12 viewport
+    status: pass
+    note: Confirmed via Playwright mobile E2E
+
+  - id: image_optimization
+    description: All images use Next.js Image component or are SVG
+    gate: no unoptimized <img> tags with large payloads
+    command: "grep -rn '<img' src/ --include='*.tsx'"
+    status: untested
+
+  - id: bundle_size_homepage
+    description: Homepage JS bundle < 250KB gzipped
+    gate: "< 250KB gzipped"
+    status: untested
+    command: "npm run build 2>&1 | grep 'First Load JS'"
+
+remediation_on_fail:
+  lighthouse_performance_desktop: Run Lighthouse, address top opportunities (usually image sizing, render-blocking JS, unused CSS)
+  cls: Check FadeUp animations — ensure transform-only (no layout-triggering properties)
+  lcp: Lazy-load below-fold sections (AIArchitecture 14 layers is the most likely culprit)
+  bundle_size_homepage: Analyze with next-bundle-analyzer, lazy-load heavy components
+
+known_risks:
+  - AIArchitecture adds 14 DOM nodes with detail text — may increase parse time
+  - Transformers.js WASM models are not loaded on desktop/server; mobile shows warning
+  - Three.js (vector-search demo) is lazy-loaded per-demo page only

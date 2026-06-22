@@ -1,0 +1,100 @@
+# evaluations/testing.yaml
+# Machine-readable quality gates for test suite health dimension.
+# Run via: skills/testing
+# Human reviewer: update scores after every sprint.
+
+dimension: testing
+passing_score: 9.0
+current_score: 9.0
+target_score: 9.5
+last_reviewed: 2026-06-22
+
+checks:
+  - id: vitest_passes
+    description: npm run test — all Vitest unit/integration/fuzz/eval tests pass
+    gate: 0 failures
+    command: npm run test
+    status: pass
+
+  - id: tsc_clean
+    description: npx tsc --noEmit — zero TypeScript errors
+    gate: 0 errors
+    command: npx tsc --noEmit
+    status: pass
+
+  - id: lint_clean
+    description: npm run lint — zero ESLint errors
+    gate: 0 errors
+    command: npm run lint
+    status: pass
+
+  - id: build_passes
+    description: npm run build — production build succeeds
+    gate: exit code 0
+    command: npm run build
+    status: pass
+
+  - id: e2e_passes
+    description: npm run test:e2e — Playwright across chromium/firefox/webkit/mobile
+    gate: 0 failures across all browsers
+    command: npm run test:e2e
+    status: pass
+
+  - id: coverage_global_statements
+    description: Global statement coverage >= 80%
+    gate: ">= 80%"
+    current: ~92%
+    status: pass
+
+  - id: coverage_global_branches
+    description: Global branch coverage >= 80%
+    gate: ">= 80%"
+    current: ~88%
+    status: pass
+
+  - id: coverage_api_statements
+    description: src/app/api/** statement coverage >= 90%
+    gate: ">= 90%"
+    current: ~91%
+    status: pass
+
+  - id: coverage_api_branches
+    description: src/app/api/** branch coverage >= 85%
+    gate: ">= 85%"
+    current: ~87%
+    status: pass
+
+  - id: coverage_lib_functions
+    description: src/lib/** function coverage >= 95%
+    gate: ">= 95%"
+    current: ~100%
+    status: pass
+
+  - id: component_tests_exist
+    description: Unit tests exist for all new components (AIArchitecture, DemosGallery, Experience)
+    gate: test files present and passing
+    files:
+      - src/__tests__/components/AIArchitecture.test.tsx
+      - src/__tests__/components/DemosGallery.test.tsx
+      - src/__tests__/components/Experience.test.tsx
+    status: pass
+
+  - id: e2e_demo_pages
+    description: E2E smoke tests cover /demos/llm-router and /demos/multimodal
+    gate: both pages have E2E coverage
+    status: missing
+    priority: medium
+    note: Add to e2e/ directory — only homepage, /demos index, and /governance are currently covered
+
+  - id: visual_regression
+    description: Playwright screenshot baselines exist for key sections
+    gate: screenshots present in e2e/screenshots/
+    status: missing
+    priority: low
+    note: Optional — add after E2E demo page coverage
+
+remediation_on_fail:
+  vitest_passes: Run npm run test, identify failing test, fix the test (not the source unless it is a genuine bug)
+  tsc_clean: Run npx tsc --noEmit, fix each error — never use ts-ignore without a comment explaining why
+  coverage_below_gate: Run npm run test:coverage, open coverage/index.html, identify uncovered branches, add targeted test cases
+  e2e_demo_pages: Create e2e/demos-pages.spec.ts with smoke tests for /demos/llm-router and /demos/multimodal

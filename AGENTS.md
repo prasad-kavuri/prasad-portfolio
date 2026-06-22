@@ -42,7 +42,44 @@ Key ADRs in `docs/adr/` explain the most surprising architectural decisions:
 
 `skills/executive-review/SKILL.md` — named executive persona simulation (Dario Amodei, Sam Altman, Patrick Collison, Thomas Dohmke, Satya Nadella, Joe Heck, Jensen Huang). Outputs first impression, confidence, concerns, board readiness, and "schedule a call" probability.
 
-See `EVALUATIONS.md` at the repo root for the current quality gate scorecard (8.8/10 → target 9.8/10).
+`skills/self-heal/SKILL.md` — autonomous repair loop: test failure → diagnose → minimal fix → retest → document → commit. Invoke when CI is red.
+
+## Agent Profiles
+
+`profiles/` — context-switching YAML files that declare which skills are active, tool permissions, and focus area for a given session type. Load the appropriate profile at the start of a session.
+
+| Profile | File | Skills activated | Tools |
+|---------|------|-----------------|-------|
+| Recruiter evaluation | `profiles/recruiter.yaml` | recruiter-review, executive-review, agentic-seo | read-only |
+| Test suite execution | `profiles/testing.yaml` | testing, security-review | terminal, playwright |
+| Security audit | `profiles/security.yaml` | security-review | terminal, read-only writes to docs/ |
+| Executive narrative | `profiles/executive.yaml` | executive-review, recruiter-review, agentic-seo | read-only |
+| UI/UX redesign | `profiles/design.yaml` | redesign-portfolio, add-demo, testing, agentic-seo | terminal, file write to src/ |
+
+Usage: "Use the recruiter profile and review for Anthropic" or "Switch to the testing profile and run the full suite."
+
+## Evaluations
+
+`evaluations/` — machine-readable YAML quality gates for each portfolio dimension. Each file declares passing score, current score, individual checks with gates and commands, and remediation steps.
+
+| File | Dimension | Passing score | Current |
+|------|-----------|--------------|---------|
+| `evaluations/recruiter.yaml` | Recruiter experience | 9.0 | 8.5 |
+| `evaluations/security.yaml` | Security posture | 9.5 | 9.2 |
+| `evaluations/seo.yaml` | Agentic SEO | 9.0 | 8.0 |
+| `evaluations/testing.yaml` | Test suite health | 9.0 | 9.0 |
+| `evaluations/accessibility.yaml` | Accessibility | 9.5 | 9.5 |
+| `evaluations/performance.yaml` | Performance | 9.0 | 8.5 |
+
+See `EVALUATIONS.md` at the repo root for the human-readable summary and sprint history.
+
+## Traceability
+
+`runs/` — execution trace directory. After every significant skill run, create a directory:
+`runs/<YYYY-MM-DD>-<skill>-<target>/` containing `summary.yaml`, `inputs/`, and `outputs/`.
+
+This enables measuring agent reliability, regression rate, and cost trends over time.
+See `runs/README.md` for the `summary.yaml` schema and naming convention.
 
 ---
 

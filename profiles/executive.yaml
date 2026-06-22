@@ -1,0 +1,74 @@
+# profiles/executive.yaml
+# Agent profile for board-level and executive narrative sessions.
+# Load this profile when: preparing for a C-suite conversation, stress-testing
+# the portfolio narrative against a named executive persona, evaluating board
+# readiness, or identifying missing narratives for a specific company.
+#
+# Usage: "Use the executive profile" or "Review as Dario Amodei"
+
+name: executive
+description: >
+  Executive and board-level narrative evaluation mode. Activates executive-review
+  and recruiter-review skills. Pure read-only — no code or content changes.
+  Output is a structured assessment with first impression, confidence, concerns,
+  and schedule-a-call probability.
+
+skills:
+  enabled:
+    - executive-review      # 8 named executive personas
+    - recruiter-review      # complements executive review with ATS/keyword lens
+    - agentic-seo           # validate what LLM assistants surface about Prasad
+  disabled:
+    - testing               # not relevant
+    - security-review       # not relevant
+    - redesign-portfolio    # read-only mode
+    - add-demo              # read-only mode
+
+tools:
+  read_only: true
+  disabled:
+    - terminal
+    - browser
+  enabled:
+    - file_read
+
+context:
+  focus: >
+    Board readiness, executive confidence, narrative coherence, missing signal
+    for specific company/persona. Output should read like a candid peer-to-peer
+    assessment, not a promotional summary.
+  personas:
+    - name: Dario Amodei
+      company: Anthropic
+      frame: Safety-first AI, responsible scaling, interpretability
+    - name: Sam Altman
+      company: OpenAI
+      frame: Deployment velocity, consumer scale, product intuition
+    - name: Patrick Collison
+      company: Stripe
+      frame: Engineering discipline, documentation, trust signals
+    - name: Thomas Dohmke
+      company: GitHub
+      frame: Developer tooling, Copilot-adjacent, open source
+    - name: Satya Nadella
+      company: Microsoft
+      frame: Enterprise scale, Azure AI, responsible AI
+    - name: Joe Heck
+      company: Board / PE
+      frame: ROI clarity, team scale, revenue attribution, risk management
+    - name: Jensen Huang
+      company: NVIDIA
+      frame: GPU-aware AI, inference optimization, enterprise platform
+    - name: Ali Ghodsi
+      company: Databricks
+      frame: Open LLMs, data + AI convergence, MLOps
+
+output_format:
+  - first_impression (60-second read)
+  - confidence_level (High / Medium / Low with rationale)
+  - strengths (with evidence from portfolio)
+  - concerns (with suggested fix)
+  - missing_narratives
+  - board_readiness (would they recommend to peers?)
+  - schedule_a_call_probability (X%)
+  - top_2_actions (highest signal for this persona)

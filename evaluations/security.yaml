@@ -1,0 +1,96 @@
+# evaluations/security.yaml
+# Machine-readable quality gates for security posture dimension.
+# Run via: skills/security-review
+# Human reviewer: update status and score after each audit.
+
+dimension: security
+passing_score: 9.5
+current_score: 9.2
+target_score: 9.8
+last_reviewed: 2026-06-22
+
+checks:
+  - id: npm_audit
+    description: npm audit --audit-level=high returns 0 findings
+    gate: 0 high/critical vulnerabilities
+    command: npm audit --audit-level=high
+    status: pass
+
+  - id: rate_limiting_coverage
+    description: Every API route calls enforceRateLimit from src/lib/api.ts
+    gate: 100% of route.ts files
+    command: "diff <(grep -rl 'enforceRateLimit' src/app/api/) <(find src/app/api -name 'route.ts' | sort)"
+    status: pass
+
+  - id: guardrails_coverage
+    description: Every user-input API route calls enforceGuardrails or checkInput
+    gate: 100% of routes accepting user text
+    command: "grep -rl 'enforceGuardrails\\|checkInput' src/app/api/"
+    status: pass
+
+  - id: ip_hashing
+    description: Redis rate-limit keys use SHA-256 hashed IPs, not raw IPs
+    gate: SHA-256 hash operation confirmed in src/lib/rate-limit.ts
+    command: "grep -c 'sha256\\|createHash' src/lib/rate-limit.ts"
+    status: pass
+
+  - id: no_secrets_in_public
+    description: No API keys, tokens, or connection strings in public/ directory
+    gate: 0 secret patterns found in public/
+    command: "grep -r 'api_key\\|secret\\|password\\|token\\|redis://' public/"
+    status: pass
+
+  - id: csp_in_both_files
+    description: CSP and WASM headers present in both next.config.ts AND src/proxy.ts
+    gate: both files contain COOP/COEP/CSP directives
+    status: pass
+    note: See ADR-0003
+
+  - id: x_frame_options
+    description: X-Frame-Options header present on live site
+    gate: "DENY or SAMEORIGIN"
+    command: "curl -sI https://www.prasadkavuri.com | grep -i x-frame-options"
+    status: untested
+
+  - id: strict_transport_security
+    description: HSTS header present on live site
+    gate: "max-age >= 31536000"
+    command: "curl -sI https://www.prasadkavuri.com | grep -i strict-transport"
+    status: untested
+
+  - id: semgrep_owasp
+    description: semgrep OWASP Top 10 scan returns 0 medium/high findings
+    gate: 0 findings at MEDIUM severity or above
+    command: semgrep --config=p/owasp-top-ten src/
+    status: untested
+    note: Not yet automated in CI — run manually via security-review skill
+
+  - id: gitleaks
+    description: gitleaks secret scan returns 0 detected secrets
+    gate: 0 secrets detected
+    command: gitleaks detect --source . --verbose
+    status: untested
+    note: Not yet automated in CI — run manually via security-review skill
+
+  - id: no_dangerous_inner_html
+    description: dangerouslySetInnerHTML only used with explicit sanitizer
+    gate: every instance paired with sanitizeLLMOutput or equivalent
+    command: "grep -rn 'dangerouslySetInnerHTML' src/"
+    status: pass
+
+  - id: ssrf_fetch_allowlist
+    description: All outbound fetch() calls go to known-safe URLs only
+    gate: all fetch targets are api.groq.com or *.upstash.io
+    command: "grep -rn 'fetch(' src/app/api/ --include='*.ts'"
+    status: pass
+
+remediation_on_fail:
+  npm_audit: Run npm audit fix; for breaking changes pin to last safe version
+  semgrep_owasp: Review each finding, fix or document suppression with justification in docs/security.md
+  gitleaks: Rotate the leaked credential immediately; use git filter-repo to remove from history
+  csp_in_both_files: Update BOTH next.config.ts AND src/proxy.ts simultaneously — never one without the other
+
+ci_automation_gaps:
+  - semgrep is not yet in .github/workflows/ci.yml
+  - gitleaks is not yet in .github/workflows/ci.yml
+  next_action: Add both to ci.yml lint-and-unit job after npm audit step

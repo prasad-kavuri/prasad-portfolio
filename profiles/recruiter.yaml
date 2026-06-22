@@ -1,0 +1,66 @@
+# profiles/recruiter.yaml
+# Agent profile for recruiter-facing evaluation sessions.
+# Load this profile when: reviewing the portfolio from a hiring manager's perspective,
+# running keyword gap analysis, simulating executive personas, or preparing for
+# a specific target company outreach.
+#
+# Usage: "Use the recruiter profile" or "Review as if you're hiring for OpenAI"
+
+name: recruiter
+description: >
+  Recruiter and executive hiring evaluation mode. Activates recruiter-review and
+  executive-review skills. Disables terminal/build tools — no source code changes
+  in this mode.
+
+skills:
+  enabled:
+    - recruiter-review      # 3 personas × 8 target companies
+    - executive-review      # 8 named executive personas, schedule-a-call probability
+    - agentic-seo           # validate AI crawler discoverability as recruiters use LLMs
+  disabled:
+    - testing               # no test runs needed in recruiter sessions
+    - security-review       # not relevant to recruiter evaluation
+    - redesign-portfolio    # read-only mode — no UI changes
+    - add-demo              # no new demos during recruiter evaluation
+
+tools:
+  read_only: true           # no file writes during recruiter sessions
+  disabled:
+    - terminal              # no shell commands
+    - browser               # no browser control needed
+  enabled:
+    - file_read             # read profile.json, demos.ts, llms.txt, Experience.tsx
+
+context:
+  focus: >
+    Executive positioning, ATS keyword coverage, outcome narrative strength,
+    interview readiness score, board-level confidence signal.
+  audience:
+    - CTO
+    - VP Engineering
+    - Executive Recruiter
+    - Board Member / PE Principal
+  reading_order:
+    - public/llms.txt                                  # what AI assistants see
+    - src/data/profile.json                            # headline and experience
+    - src/data/demos.ts                                # demo businessImpact fields
+    - src/components/sections/Experience.tsx           # OUTCOMES record (Krutrim, Ola, HERE)
+    - public/.well-known/ai-agent-manifest.json       # agent-readable manifest
+
+output_format:
+  - strengths (with evidence)
+  - concerns (with suggested fix)
+  - missing_keywords (company-specific ATS match)
+  - missing_demos (signal gaps for target company)
+  - interview_readiness_score (X/10)
+  - schedule_a_call_probability (X%)
+
+target_companies:
+  - Anthropic
+  - OpenAI
+  - Google DeepMind
+  - Stripe
+  - NVIDIA
+  - Databricks
+  - Zip
+  - Microsoft / GitHub

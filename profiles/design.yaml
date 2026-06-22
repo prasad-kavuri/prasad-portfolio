@@ -1,0 +1,71 @@
+# profiles/design.yaml
+# Agent profile for UI/UX redesign and component work sessions.
+# Load this profile when: adding a new section, redesigning an existing component,
+# fixing mobile issues, updating accessibility, or improving visual hierarchy.
+#
+# Usage: "Use the design profile" or "Redesign the hero section"
+
+name: design
+description: >
+  UI/UX redesign and component implementation mode. Activates redesign-portfolio
+  and add-demo skills. Full write access to src/components/, src/app/, and tests.
+  All changes must pass tsc, lint, tests, and build before commit.
+
+skills:
+  enabled:
+    - redesign-portfolio    # full 8-step workflow: component → a11y → tests → SEO → llms.txt → PR
+    - add-demo              # when a redesign session includes adding a new demo
+    - testing               # run tests after every change
+    - agentic-seo           # update llms.txt and JSON-LD when content changes
+  disabled:
+    - recruiter-review      # not relevant during design sessions
+    - executive-review      # not relevant during design sessions
+    - security-review       # run separately after design changes land
+
+tools:
+  read_only: false
+  write_scope:
+    - src/components/**
+    - src/app/**
+    - src/__tests__/**
+    - e2e/**
+    - public/llms.txt
+    - public/.well-known/ai-agent-manifest.json
+    - src/app/layout.tsx
+  enabled:
+    - terminal              # tsc, lint, test, build
+    - file_read
+    - file_write
+  disabled:
+    - browser               # use Playwright via terminal for E2E
+  forbidden:
+    - vercel.json           # never touch — breaks WASM demos (see ADR-0003)
+    - next.config.ts        # CSP changes require human approval
+    - src/proxy.ts          # CSP changes require human approval
+
+context:
+  focus: >
+    Recruiter-attractive UI, executive readability above the fold, accessibility
+    compliance (WCAG AA), mobile-first rendering, zero TypeScript errors.
+    Every visual change must have a corresponding unit test.
+  design_tokens:
+    accent_brand: "var(--accent-brand)"           # oklch(0.5 0.24 264)
+    motion_component: "@/components/ui/motion"    # FadeUp with delay/duration/yOffset
+    analytics: "@/lib/analytics trackEvent"       # on every interactive element
+  mandatory_checks:
+    - npx tsc --noEmit        # zero errors
+    - npm run lint            # zero errors
+    - npm run test            # all unit tests pass
+    - npm run build           # production build succeeds
+  recruiter_path_invariants:
+    - Navbar "Demos" must link to /demos (not #tools)
+    - Hero CTA must link to /demos
+    - All 4 browser demos must render BrowserAIWarning on mobile
+    - Signature demo (evaluation-showcase) always renders featured in DemosGallery
+
+output_format:
+  - changed_files (list)
+  - test_results (pass/fail)
+  - tsc_result (zero errors)
+  - build_result (pass/fail)
+  - pr_commit_message (feat(ui): ...)

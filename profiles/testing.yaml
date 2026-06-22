@@ -1,0 +1,63 @@
+# profiles/testing.yaml
+# Agent profile for test suite execution and coverage auditing.
+# Load this profile when: running the full test suite, auditing coverage gaps,
+# adding missing tests, fixing failing tests, or generating docs/testing.md.
+#
+# Usage: "Use the testing profile" or "Run the full test suite"
+
+name: testing
+description: >
+  Full test suite execution mode. Activates testing and security-review skills.
+  Enables terminal and Playwright. Source code changes are permitted only to add
+  or fix tests — no feature code changes in this mode.
+
+skills:
+  enabled:
+    - testing               # full suite: lint, typecheck, unit, E2E, coverage, Lighthouse
+    - security-review       # npm audit, semgrep, gitleaks, headers, guardrails
+  disabled:
+    - recruiter-review      # not relevant during test runs
+    - executive-review      # not relevant during test runs
+    - redesign-portfolio    # no UI changes during testing sessions
+    - add-demo              # no new demos during testing sessions
+
+tools:
+  read_only: false          # writes permitted for test files only
+  write_scope:
+    - src/__tests__/**/*.test.tsx     # unit test files
+    - e2e/**/*.spec.ts                # E2E test files
+    - docs/testing.md                 # generated report
+  enabled:
+    - terminal              # npm run test, npx tsc, npm run build
+    - playwright            # E2E browser testing
+  disabled:
+    - browser               # no browser control (Playwright handles E2E)
+
+context:
+  focus: >
+    Code correctness, coverage gates, build health, accessibility compliance,
+    performance baselines. Every changed line must map to a test assertion.
+  execution_order:
+    - npm run lint
+    - npx tsc --noEmit
+    - npm audit --audit-level=high
+    - npm run test
+    - npm run test:coverage
+    - npm run test:fuzz
+    - npm run test:evals
+    - npm run build
+    - npm run test:e2e
+  coverage_gates:
+    global_statements: 80
+    global_branches: 80
+    global_functions: 80
+    api_statements: 90
+    api_branches: 85
+    lib_functions: 95
+
+output_format:
+  - phase_results (pass/fail per phase)
+  - coverage_by_layer (table)
+  - open_gaps (files below threshold)
+  - recommended_tests (3-5 highest value missing tests)
+  - generated_file: docs/testing.md

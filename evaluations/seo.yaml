@@ -1,0 +1,91 @@
+# evaluations/seo.yaml
+# Machine-readable quality gates for agentic SEO / AI discoverability dimension.
+# Run via: skills/agentic-seo
+# Human reviewer: update status and score after each sprint or llms.txt update.
+
+dimension: agentic_seo
+passing_score: 9.0
+current_score: 8.0
+target_score: 9.5
+last_reviewed: 2026-06-22
+
+checks:
+  - id: llms_txt_exists
+    description: public/llms.txt exists and has all 5 required sections
+    gate: file present AND contains VERIFIED IMPACT METRICS, PLATFORM ARCHITECTURE, AI DEMOS, RECRUITER QUERIES, WHAT'S NEW
+    command: "grep -c 'VERIFIED IMPACT METRICS\\|PLATFORM ARCHITECTURE\\|AI DEMOS\\|RECRUITER QUERIES\\|WHAT' public/llms.txt"
+    expected: 5
+    status: pass
+
+  - id: llms_txt_demo_count
+    description: Demo count in llms.txt matches demos.ts entry count
+    gate: counts match
+    status: pass
+    note: Update llms.txt when demos are added or removed
+
+  - id: llms_txt_metrics_match
+    description: Headline metrics in llms.txt match PORTFOLIO_FACTS in site-config.ts
+    gate: no stale metrics
+    status: pass
+
+  - id: ai_agent_manifest_valid
+    description: public/.well-known/ai-agent-manifest.json is valid JSON with schema_version >= 1.1
+    gate: valid JSON, schema_version 1.1+
+    command: "node -e \"JSON.parse(require('fs').readFileSync('public/.well-known/ai-agent-manifest.json','utf8')); console.log('valid')\""
+    status: pass
+
+  - id: ai_agent_manifest_metrics
+    description: ai-agent-manifest.json has the 4 required metrics keys
+    gate: call_center_seats_automated, pois_indexed, languages_ai_supported, llm_cost_reduction all present
+    status: pass
+
+  - id: json_ld_person_entity
+    description: JSON-LD @graph contains Person entity with name, jobTitle, sameAs
+    gate: Person entity present with LinkedIn and GitHub sameAs
+    status: pass
+
+  - id: json_ld_software_applications
+    description: JSON-LD @graph contains >= 10 SoftwareApplication entities (one per demo)
+    gate: ">= 10 SoftwareApplication entities"
+    status: pass
+
+  - id: speakable_selectors
+    description: speakable.cssSelector has >= 6 elements including #experience
+    gate: ">= 6 selectors"
+    status: pass
+
+  - id: sitemap_covers_key_pages
+    description: sitemap.xml includes /, /demos, /governance, /capabilities, /for-recruiters
+    gate: all 5 pages present
+    status: untested
+    command: "curl -s https://www.prasadkavuri.com/sitemap.xml | grep -c '<url>'"
+
+  - id: robots_allows_llms_txt
+    description: robots.txt has Allow: /llms.txt
+    gate: Allow directive present
+    command: "curl -s https://www.prasadkavuri.com/robots.txt | grep 'llms.txt'"
+    status: untested
+
+  - id: chatgpt_accuracy
+    description: ChatGPT returns accurate answers to "Who is Prasad Kavuri?" (score >= 4/5)
+    gate: accuracy score >= 4/5
+    status: untested
+    note: Manual test — run agentic-seo skill Phase 5
+
+  - id: claude_accuracy
+    description: Claude returns accurate answers to "Who is Prasad Kavuri?" (score >= 4/5)
+    gate: accuracy score >= 4/5
+    status: untested
+    note: Manual test — run agentic-seo skill Phase 5
+
+  - id: llms_full_txt_exists
+    description: public/llms-full.txt exists with full experience narratives
+    gate: file present
+    status: missing
+    priority: high
+    note: Create llms-full.txt — currently only llms.txt exists
+
+remediation_on_fail:
+  llms_txt_demo_count: Update public/llms.txt AI DEMOS section to match demos.ts
+  llms_full_txt_exists: Create public/llms-full.txt with full OUTCOMES narratives from Experience.tsx
+  chatgpt_accuracy: Add missing information to llms.txt under the relevant section; redeploy

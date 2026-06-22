@@ -1,0 +1,72 @@
+# evaluations/recruiter.yaml
+# Machine-readable quality gates for recruiter experience dimension.
+# Run via: skills/recruiter-review + skills/agentic-seo
+# Human reviewer: update status and score after each sprint.
+
+dimension: recruiter_experience
+passing_score: 9.0
+current_score: 8.5
+target_score: 9.5
+last_reviewed: 2026-06-22
+
+checks:
+  - id: recruiter_path_no_404
+    description: All pages in the recruiter path resolve without 404
+    gate: 0 broken links
+    pages:
+      - /for-recruiters
+      - /recruiter-dashboard
+      - /capabilities
+      - /governance
+      - /demos/evaluation-showcase
+    status: pass
+
+  - id: navbar_demos_link
+    description: Navbar "Demos" item links to /demos (not anchor #tools)
+    gate: href === "/demos"
+    status: pass
+
+  - id: hero_cta_link
+    description: Hero CTA links to /demos
+    gate: href === "/demos"
+    status: pass
+
+  - id: signature_demo_featured
+    description: evaluation-showcase renders as featured card in DemosGallery
+    gate: featured card present with "Signature System" badge
+    status: pass
+
+  - id: outcome_metrics_present
+    description: Each featured role has at least 2 quantified metrics (%, $, scale)
+    gate: ">= 2 metrics per featured role"
+    roles_checked:
+      - krutrim    # 300-seat, 50% CSAT, $10M+
+      - ola        # 70% deflection, 35M+ users, 13 languages
+      - here-head  # 40 engineers, multi-region
+    status: pass
+
+  - id: keyword_coverage_anthropic
+    description: ATS keyword match rate against Anthropic VP Eng JD
+    gate: ">= 80% keyword coverage"
+    status: untested
+    note: Run recruiter-review skill targeting Anthropic to measure
+
+  - id: keyword_coverage_openai
+    description: ATS keyword match rate against OpenAI Head of AI Eng JD
+    gate: ">= 80% keyword coverage"
+    status: untested
+
+  - id: keyword_coverage_stripe
+    description: ATS keyword match rate against Stripe VP Eng JD
+    gate: ">= 75% keyword coverage"
+    status: untested
+
+  - id: llms_txt_accuracy
+    description: ChatGPT and Claude return accurate answers to "Who is Prasad Kavuri?"
+    gate: accuracy score >= 4/5 per LLM
+    status: untested
+    note: Run agentic-seo skill Phase 5 to measure
+
+remediation_on_fail:
+  keyword_coverage: Run recruiter-review skill for the failing company, add missing keywords to profile.json skills array and llms.txt
+  llms_txt_accuracy: Update public/llms.txt with missing information, redeploy

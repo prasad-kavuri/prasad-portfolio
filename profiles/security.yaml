@@ -1,0 +1,63 @@
+# profiles/security.yaml
+# Agent profile for security audit sessions.
+# Load this profile when: running a security sweep, validating CSP headers,
+# checking for leaked secrets, auditing rate limiting / guardrail coverage,
+# or generating docs/security.md.
+#
+# Usage: "Use the security profile" or "Run a full security audit"
+
+name: security
+description: >
+  Security audit mode. Activates security-review skill. Read-only except for
+  docs/security.md. No source code changes — findings are documented for human
+  review and approval before any remediation.
+
+skills:
+  enabled:
+    - security-review       # npm audit, semgrep, gitleaks, CSP, rate limiting, guardrails
+  disabled:
+    - testing               # test suite not the focus (but npm audit runs inside security-review)
+    - recruiter-review      # not relevant
+    - executive-review      # not relevant
+    - redesign-portfolio    # no UI changes in security mode
+    - add-demo              # no new demos in security mode
+    - agentic-seo           # not the focus of a security session
+
+tools:
+  read_only: true           # writes permitted only for docs/security.md
+  write_scope:
+    - docs/security.md      # generated security report
+  enabled:
+    - terminal              # npm audit, semgrep, gitleaks, curl header checks
+  disabled:
+    - browser               # no browser control
+  requires_human_approval:
+    - any change to src/proxy.ts
+    - any change to next.config.ts
+    - any change to .github/workflows/ci.yml
+    - any change involving API keys or secrets
+
+context:
+  focus: >
+    Zero high/critical vulnerabilities. All routes rate-limited and guardrailed.
+    CSP correct in both next.config.ts and proxy.ts. No secrets in public files.
+    IP hashing confirmed. SSRF vectors audited.
+  execution_order:
+    - npm audit --audit-level=high
+    - semgrep --config=p/owasp-top-ten src/
+    - gitleaks detect --source . --verbose
+    - curl -I https://www.prasadkavuri.com (header check)
+    - grep -r enforceRateLimit src/app/api/ (coverage check)
+    - grep -r enforceGuardrails src/app/api/ (coverage check)
+  human_approval_required: true
+  note: >
+    NEVER modify CSP, security headers, auth, env handling, rate limits, SSRF
+    protections, or deployment config without explicit human approval.
+    See AGENTS.md Security Scope section.
+
+output_format:
+  - phase_results (pass/fail per phase)
+  - findings (severity, description, file, remediation)
+  - header_grades (per header)
+  - coverage_gaps (routes missing rate limit or guardrails)
+  - generated_file: docs/security.md

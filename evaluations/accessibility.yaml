@@ -1,0 +1,85 @@
+# evaluations/accessibility.yaml
+# Machine-readable quality gates for accessibility dimension.
+# Run via: skills/testing Phase 4 (axe-core checks)
+# Human reviewer: update after any UI change or Lighthouse re-run.
+
+dimension: accessibility
+passing_score: 9.5
+current_score: 9.5
+target_score: 9.8
+last_reviewed: 2026-06-22
+
+checks:
+  - id: axe_homepage
+    description: axe-core 0 critical violations on homepage (/)
+    gate: 0 critical violations
+    command: "npx axe-core-cli https://localhost:3000"
+    status: pass
+
+  - id: axe_demos
+    description: axe-core 0 critical violations on /demos
+    gate: 0 critical violations
+    command: "npx axe-core-cli https://localhost:3000/demos"
+    status: pass
+
+  - id: axe_governance
+    description: axe-core 0 critical violations on /governance
+    gate: 0 critical violations
+    command: "npx axe-core-cli https://localhost:3000/governance"
+    status: pass
+
+  - id: skip_link_demos
+    description: Skip-link present on /demos page for keyboard users
+    gate: <a href="#main-content"> present before Navbar
+    status: pass
+
+  - id: filter_buttons_aria_pressed
+    description: DemosGallery filter buttons have aria-pressed attribute
+    gate: aria-pressed="true" on active filter, "false" on others
+    status: pass
+
+  - id: layer_toggles_aria_expanded
+    description: AIArchitecture layer toggle buttons have aria-expanded
+    gate: aria-expanded="false" initial, "true" when open
+    status: pass
+
+  - id: layer_toggles_aria_label
+    description: AIArchitecture layer toggle buttons have aria-label with name and tagline
+    gate: aria-label="${layer.name}: ${layer.tagline}"
+    status: pass
+
+  - id: all_images_have_alt
+    description: All img elements have alt text
+    gate: 0 images without alt
+    command: "grep -rn '<img' src/ | grep -v 'alt='"
+    status: pass
+
+  - id: focus_rings_visible
+    description: All interactive elements have visible focus rings
+    gate: focus:ring or focus-visible styles present on buttons, links, inputs
+    status: pass
+
+  - id: color_contrast_normal_text
+    description: Normal text has color contrast >= 4.5:1
+    gate: ">= 4.5:1"
+    status: pass
+    note: Verified via Lighthouse accessibility audit
+
+  - id: lighthouse_accessibility
+    description: Lighthouse accessibility score >= 95 on homepage
+    gate: ">= 95"
+    current: untested
+    status: untested
+    note: Re-run after June UI changes (AIArchitecture, DemosGallery, Experience added)
+    command: "npx lighthouse http://localhost:3000 --only-categories=accessibility --output json"
+
+  - id: voiceover_navigation
+    description: Mobile screen reader (VoiceOver / TalkBack) can navigate key sections
+    gate: all headings, buttons, and CTAs reachable and announced correctly
+    status: untested
+    note: Manual test on iOS Safari + VoiceOver
+
+remediation_on_fail:
+  axe_critical_violation: Identify element, add missing aria-label or role, re-run
+  lighthouse_accessibility: Run Lighthouse, fix specific issues in report (usually missing labels or contrast)
+  voiceover_navigation: Test with VoiceOver on iPhone, fix heading hierarchy or button labels

@@ -31,8 +31,7 @@ test.describe('LLM Router demo page', () => {
   test('model routing UI or loading state is visible', async ({ page }) => {
     // The demo renders either the interactive UI or a loading/error state —
     // either is a valid smoke-test pass (we just confirm the page shell renders)
-    const hasContent = await page.locator('main, [role="main"], #main-content').count();
-    expect(hasContent).toBeGreaterThan(0);
+    await expect(page.locator('body')).toContainText(/LLM Router/i);
   });
 
   test('does not render a 404 or error boundary', async ({ page }) => {
@@ -75,8 +74,7 @@ test.describe('Multimodal demo page', () => {
     } else {
       // Desktop headless: warning OR the actual UI — either is valid
       // The test just confirms no crash / blank page
-      const hasContent = await page.locator('main, [role="main"], #main-content').count();
-      expect(hasContent).toBeGreaterThan(0);
+      await expect(page.locator('body')).toContainText(/Multimodal/i);
     }
   });
 
@@ -93,7 +91,7 @@ test.describe('Demos index page — filter tabs', () => {
 
   test('page heading renders', async ({ page }) => {
     await expect(
-      page.getByRole('heading', { name: /AI Platform Modules/i }).first()
+      page.getByRole('heading', { name: /Production AI Modules/i }).first()
     ).toBeVisible();
   });
 
@@ -101,7 +99,7 @@ test.describe('Demos index page — filter tabs', () => {
     await expect(page.getByRole('button', { name: /All Modules/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Core AI/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Agentic/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Apps/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Applications/i })).toBeVisible();
   });
 
   test('"All Modules" filter is active by default (aria-pressed=true)', async ({ page }) => {

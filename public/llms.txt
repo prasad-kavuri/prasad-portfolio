@@ -33,7 +33,7 @@ VP, AI Platform Engineering | Chief AI Officer (CAIO)
 - 13 languages supported across Indic + global AI systems
 - 13,000+ B2B enterprise customers enabled
 - 50% latency reduction via intelligent model routing
-- 15 production AI demos, all live
+- 16 production AI demos, all live
 
 ## PLATFORM ARCHITECTURE
 14-layer AI platform execution flow documented on portfolio homepage:
@@ -49,7 +49,7 @@ URL: https://www.prasadkavuri.com/#ai-architecture
 - Global teams: 200+ engineers across North America, India, and Europe
 - Remote: Fully distributed-capable; open to US, APAC, EMEA, and global remote roles
 
-## DEMOS (15 total — all live)
+## DEMOS (16 total — all live)
 Flagship:      /demos/evaluation-showcase  — LLM-as-Judge eval, drift, HITL, CI gating
 Agent catalog: /agent-marketplace          — 15 agents filterable by capability tier
 Full catalog:  /demos
@@ -66,6 +66,7 @@ Agentic Systems:
 - /demos/agent-auth            — auth.md agent identity: anon → email → Bearer
 - /demos/edge-agent-collaboration — Edge BERT NER + HITL gate + Groq cloud
 - /demos/enterprise-control-plane — RBAC, spend limits, observability dashboard
+- /demos/storm-research        — STORM-style multi-perspective research synthesis
 - /demos/world-generation      — Spatial AI + LLM query layer, Three.js
 
 AI Applications:

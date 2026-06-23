@@ -53,7 +53,7 @@ Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a com
 - $10M+ revenue launched from AI systems
 - 13,000+ B2B enterprise customers enabled (Ola Maps)
 - 200+ engineers led globally
-- 15 production AI demos, all live on portfolio
+- 16 production AI demos, all live on portfolio
 ---
 
 --- RECRUITER SIGNALS ---
@@ -428,7 +428,7 @@ Engineering concern: outcome → feature causality, A/B test isolation, metric d
 
 ---
 
-## 15 PRODUCTION DEMOS — FULL DESCRIPTIONS
+## 16 PRODUCTION DEMOS — FULL DESCRIPTIONS
 
 1. AI EVALUATION SHOWCASE (Signature)
    URL: /demos/evaluation-showcase | Engine: Groq (server)
@@ -514,6 +514,12 @@ Engineering concern: outcome → feature causality, A/B test isolation, metric d
     3D spatial scene generation with LLM-driven natural-language instructions. Parametric
     editing, diff visualization, GLB export, drift correction.
     What this proves: LLM reasoning in spatial planning — auditable, diffable, simulation-ready.
+
+16. STORM RESEARCH AGENT
+    URL: /demos/storm-research | Engine: Groq Llama 3.3 70B (server)
+    Multi-perspective research workflow inspired by Stanford STORM. Discovers expert lenses,
+    generates questions, researches each angle, and streams an executive brief.
+    What this proves: Governed agentic research orchestration with transparent synthesis phases.
 
 ---
 

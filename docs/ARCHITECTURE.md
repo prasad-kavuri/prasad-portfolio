@@ -8,7 +8,7 @@ This document describes the real system architecture implemented in this reposit
 
 | Layer | Repo implementation | Purpose |
 |---|---|---|
-| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 15 production demos |
+| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 16 production demos |
 | Skills Layer | `src/data/skills.ts`, `src/app/skills/` | Reusable capability modules (guardrails, observability, eval, drift, HITL, planning) wired to demos |
 | Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
@@ -54,6 +54,7 @@ The current API surface is:
 | `/api/resume-generator` | Resume tailoring | Parses job descriptions and returns structured resume JSON |
 | `/api/multi-agent` | Multi-agent analysis | Proxies to the agent backend with hardened SSRF checks via `src/lib/url-security.ts` |
 | `/api/mcp-demo` | MCP-style tool calling | Lets Groq select and execute profile tools via a JSON-RPC-like tool schema |
+| `/api/storm-research` | Multi-perspective research synthesis | Streams STORM-style perspectives, questions, research notes, and executive brief synthesis |
 | `/api/resume-download` | Resume redirect | Rate-limited redirect to the public PDF asset |
 
 All routes use the shared helpers in `src/lib/api.ts` for request context, errors, rate-limit headers, and response finalization.
@@ -88,6 +89,7 @@ The AI services layer contains both server-side and browser-side demos:
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
 | Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, structured observability |
 | Native Browser AI Skill | `/demos/browser-native-ai-skill` | On-device accessibility and agent-readiness analysis |
+| STORM Research Agent | `/demos/storm-research` | Multi-perspective research workflow with streaming synthesis |
 | Real-Time Spatial AI + World Modeling Engine | `/demos/world-generation` | Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. |
 
 The LLM Router demonstrates the cost/latency tradeoff pattern directly. RAG and vector search demonstrate retrieval before generation. Browser demos show local inference patterns that reduce server load and external API cost.

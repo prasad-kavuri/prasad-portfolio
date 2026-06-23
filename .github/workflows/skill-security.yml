@@ -49,28 +49,35 @@ jobs:
 
       - name: Determine skill path
         id: skill-path
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SKILL_PATH: ${{ inputs.skill_path }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "path=${{ inputs.skill_path }}" >> $GITHUB_OUTPUT
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "path=$INPUT_SKILL_PATH" >> "$GITHUB_OUTPUT"
           else
-            echo "path=./skills/prasad-portfolio" >> $GITHUB_OUTPUT
+            echo "path=./skills/prasad-portfolio" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run SkillSpector (static-only, no LLM key required)
         id: scan
+        env:
+          SKILL_PATH: ${{ steps.skill-path.outputs.path }}
         run: |
-          skillspector scan "${{ steps.skill-path.outputs.path }}" \
+          skillspector scan "$SKILL_PATH" \
             --format sarif \
             --output skillspector-report.sarif \
             --no-llm
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
         # Allow the step to succeed so we can always upload the SARIF artifact;
         # the gate step below enforces the actual pass/fail.
         continue-on-error: true
 
       - name: Run SkillSpector (terminal summary)
+        env:
+          SKILL_PATH: ${{ steps.skill-path.outputs.path }}
         run: |
-          skillspector scan "${{ steps.skill-path.outputs.path }}" --no-llm || true
+          skillspector scan "$SKILL_PATH" --no-llm || true
 
       - name: Upload SARIF to GitHub Security tab
         if: always()

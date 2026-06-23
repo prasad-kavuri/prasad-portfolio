@@ -22,7 +22,7 @@ test.describe('Homepage', () => {
   test('AI Platform Demos CTA navigates to agent marketplace', async ({ page }) => {
     await page.getByRole('link', { name: /Explore AI Platform Demos/i }).click();
     await expect(page).toHaveURL(/\/agent-marketplace\/?$/);
-    await expect(page.getByRole('heading', { name: /15 Production AI Agents/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /16 Production AI Agents/i })).toBeVisible();
   });
 
   test('all 3 demo group headers are visible', async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('AI Applications', { exact: true }).first()).toBeVisible();
   });
 
-  test('all 15 demo cards are present', async ({ page }) => {
+  test('all 16 demo cards are present', async ({ page }) => {
     // Use first() because card titles may appear in multiple elements (heading + aria-label etc.)
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
     await expect(page.getByText('LLM Router').first()).toBeVisible();
@@ -50,6 +50,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Native Browser AI Skill').first()).toBeVisible();
     await expect(page.getByText('Real-Time Spatial AI + World Modeling Engine').first()).toBeVisible();
     await expect(page.getByText('Edge Agent + Cloud Agent Collaboration').first()).toBeVisible();
+    await expect(page.getByText('STORM Research Agent').first()).toBeVisible();
   });
 
   test('Desktop badge appears on exactly 4 cards', async ({ page }) => {

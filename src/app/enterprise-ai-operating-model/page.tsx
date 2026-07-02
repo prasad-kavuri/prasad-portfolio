@@ -43,6 +43,39 @@ const operatingModel = [
   },
 ];
 
+const maturityModel = [
+  {
+    stage: 'Prompt Engineering',
+    detail: 'Single-call prompting against a foundation model, no retrieval or tool use.',
+    current: false,
+  },
+  {
+    stage: 'RAG',
+    detail: 'Retrieval-augmented generation with vector search grounds responses in owned data.',
+    current: false,
+  },
+  {
+    stage: 'Single Agent',
+    detail: 'One agent with tool access and a defined task scope, no cross-agent coordination.',
+    current: false,
+  },
+  {
+    stage: 'Multi-Agent',
+    detail: 'Coordinated agents (analyzer, researcher, strategist) handing off work with shared context.',
+    current: false,
+  },
+  {
+    stage: 'Managed Agents',
+    detail: 'Agents run under a control plane: RBAC, spend limits, structured observability, human checkpoints.',
+    current: false,
+  },
+  {
+    stage: 'Enterprise AI Platform',
+    detail: 'Governed agent runtime at organization scale — identity, policy engine, prompt versioning, canary rollout, rollback, FinOps, and audit as platform primitives, not bolt-ons.',
+    current: true,
+  },
+];
+
 const boardSignals = [
   '200+ engineers led across US, India, and Europe',
   '$8M-$20M annual engineering budget responsibility',
@@ -105,6 +138,44 @@ export default function EnterpriseAIOperatingModelPage() {
                 <h2 className="mb-2 text-sm font-semibold text-foreground">{item.title}</h2>
                 <p className="text-sm text-muted-foreground">{item.detail}</p>
               </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            AI Platform Maturity Model
+          </p>
+          <p className="mb-4 max-w-3xl text-sm text-muted-foreground">
+            Most organizations stall between single-agent pilots and governed production. This is the
+            path from prompt engineering to an enterprise AI platform, and where this work sits on it today.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-stretch">
+            {maturityModel.map((step, i) => (
+              <div key={step.stage} className="flex items-stretch gap-2 sm:flex-1 sm:min-w-[150px]">
+                <div
+                  className={`flex-1 rounded-lg border p-4 ${
+                    step.current
+                      ? 'border-green-500/40 bg-green-500/5'
+                      : 'border-border bg-card'
+                  }`}
+                >
+                  <p className="text-sm font-semibold text-foreground">
+                    {step.stage}
+                    {step.current && (
+                      <span className="ml-2 rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-medium text-green-600">
+                        Current focus
+                      </span>
+                    )}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{step.detail}</p>
+                </div>
+                {i < maturityModel.length - 1 && (
+                  <span className="hidden items-center text-muted-foreground sm:flex" aria-hidden="true">
+                    →
+                  </span>
+                )}
+              </div>
             ))}
           </div>
         </section>

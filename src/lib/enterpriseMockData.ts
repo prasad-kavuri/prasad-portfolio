@@ -9,6 +9,10 @@ import type {
   KvCacheMetrics,
   KvCacheModelMetrics,
   KvCacheDailyMetrics,
+  AgentVersion,
+  SessionOverride,
+  RolloutEvent,
+  AgentLifecycleSnapshot,
 } from '@/components/enterprise/types';
 
 // Captured once on module load — anchors all event/chart timestamps to the current session
@@ -412,4 +416,126 @@ export function getOrgSummary(period: '7d' | '30d' | '90d'): OrgSummary {
     avgTokensPerSession,
     period,
   };
+}
+
+// Agent lifecycle: prompt versioning, canary rollout, session overrides, rollback history
+const AGENTS = [
+  { agentName: 'Support Triage Agent',   base: 14 },
+  { agentName: 'Sales Research Agent',   base: 8  },
+  { agentName: 'Code Review Agent',      base: 21 },
+];
+
+export function getAgentLifecycle(): AgentLifecycleSnapshot {
+  const rand = seededRand(4242);
+  const now = MODULE_INIT_TIME;
+  const day = 24 * 60 * 60 * 1000;
+
+  const versions: AgentVersion[] = [];
+  const rolloutEvents: RolloutEvent[] = [];
+  let eventCounter = 0;
+
+  AGENTS.forEach(({ agentName, base }) => {
+    // Stable version, promoted ~14 days ago
+    const stableVersion = `v${base}.0`;
+    const stableCreatedAt = new Date(now - 14 * day).toISOString();
+    const stablePromotedAt = new Date(now - 12 * day).toISOString();
+    versions.push({
+      versionId: stableVersion,
+      agentName,
+      promptHash: `sha256:${Math.floor(rand() * 0xfffff).toString(16)}`,
+      stage: 'stable',
+      trafficPct: 90,
+      createdAt: stableCreatedAt,
+      promotedAt: stablePromotedAt,
+      approvedBy: 'prasad.kavuri',
+      evalScore: 0.88 + rand() * 0.08,
+      rollbackOf: null,
+    });
+    rolloutEvents.push({
+      eventId: `evt-${eventCounter++}`,
+      timestamp: stablePromotedAt,
+      versionId: stableVersion,
+      agentName,
+      action: 'promote',
+      actor: 'prasad.kavuri',
+      note: `Promoted to stable after eval gate pass (30d canary)`,
+    });
+
+    // Canary version, in flight
+    const canaryVersion = `v${base}.1`;
+    const canaryCreatedAt = new Date(now - 3 * day).toISOString();
+    versions.push({
+      versionId: canaryVersion,
+      agentName,
+      promptHash: `sha256:${Math.floor(rand() * 0xfffff).toString(16)}`,
+      stage: 'canary',
+      trafficPct: 10,
+      createdAt: canaryCreatedAt,
+      promotedAt: null,
+      approvedBy: 'prasad.kavuri',
+      evalScore: 0.82 + rand() * 0.1,
+      rollbackOf: null,
+    });
+    rolloutEvents.push({
+      eventId: `evt-${eventCounter++}`,
+      timestamp: canaryCreatedAt,
+      versionId: canaryVersion,
+      agentName,
+      action: 'canary_start',
+      actor: 'prasad.kavuri',
+      note: 'Started 10% canary rollout behind session-override flag',
+    });
+
+    // One agent has a rolled-back version to show the rollback path
+    if (base === 21) {
+      const badVersion = `v${base - 1}.4`;
+      const rolledBackAt = new Date(now - 20 * day).toISOString();
+      versions.push({
+        versionId: badVersion,
+        agentName,
+        promptHash: `sha256:${Math.floor(rand() * 0xfffff).toString(16)}`,
+        stage: 'rolled_back',
+        trafficPct: 0,
+        createdAt: new Date(now - 22 * day).toISOString(),
+        promotedAt: null,
+        approvedBy: 'prasad.kavuri',
+        evalScore: 0.61 + rand() * 0.05,
+        rollbackOf: `v${base - 2}.0`,
+      });
+      rolloutEvents.push({
+        eventId: `evt-${eventCounter++}`,
+        timestamp: rolledBackAt,
+        versionId: badVersion,
+        agentName,
+        action: 'rollback',
+        actor: 'auto',
+        note: 'Policy-triggered rollback: eval score dropped below 0.65 gate during canary window',
+      });
+    }
+  });
+
+  const overrides: SessionOverride[] = TEAMS.map((team, i) => ({
+    overrideId: `ovr-${i}`,
+    teamId: team.teamId,
+    teamName: team.teamName,
+    scope: (['model', 'temperature', 'tool_access', 'max_tokens'] as const)[i % 4],
+    value: [
+      'claude-sonnet-5',
+      '0.2',
+      'read_only',
+      '4096',
+    ][i % 4],
+    reason: [
+      'Cost-sensitive workload, pinned to lower-cost model tier',
+      'Deterministic output required for compliance review workflow',
+      'Restricted to read-only tools pending security review',
+      'Latency-sensitive UI flow, capped response length',
+    ][i % 4],
+    setBy: 'prasad.kavuri',
+    expiresAt: i % 2 === 0 ? null : new Date(now + 7 * day).toISOString(),
+  })).filter((_, i) => i < 3); // keep it to a readable handful
+
+  rolloutEvents.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+  return { versions, overrides, rolloutEvents };
 }

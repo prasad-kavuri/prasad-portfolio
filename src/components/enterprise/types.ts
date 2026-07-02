@@ -122,6 +122,49 @@ export interface KvCacheMetrics {
   };
 }
 
+// Agent lifecycle management
+export type RolloutStage = 'draft' | 'canary' | 'stable' | 'rolled_back' | 'deprecated';
+
+export interface AgentVersion {
+  versionId: string;         // e.g. "v14.2"
+  agentName: string;         // e.g. "Support Triage Agent"
+  promptHash: string;        // short hash of the prompt template
+  stage: RolloutStage;
+  trafficPct: number;        // 0-100, share of traffic on this version
+  createdAt: string;         // ISO 8601
+  promotedAt: string | null; // ISO 8601, when it reached stable
+  approvedBy: string;        // human approver for the promotion
+  evalScore: number;         // 0-1, eval-engine composite score at promotion gate
+  rollbackOf: string | null; // versionId this was rolled back to, if stage === 'rolled_back'
+}
+
+export interface SessionOverride {
+  overrideId: string;
+  teamId: string;
+  teamName: string;
+  scope: 'model' | 'temperature' | 'tool_access' | 'max_tokens';
+  value: string;
+  reason: string;
+  setBy: string;
+  expiresAt: string | null;  // ISO 8601, null = persistent
+}
+
+export interface RolloutEvent {
+  eventId: string;
+  timestamp: string;         // ISO 8601
+  versionId: string;
+  agentName: string;
+  action: 'canary_start' | 'promote' | 'rollback' | 'deprecate';
+  actor: string;             // human or 'auto' for policy-triggered actions
+  note: string;
+}
+
+export interface AgentLifecycleSnapshot {
+  versions: AgentVersion[];
+  overrides: SessionOverride[];
+  rolloutEvents: RolloutEvent[];
+}
+
 // Aggregated org-level summary
 export interface OrgSummary {
   totalTeams: number;

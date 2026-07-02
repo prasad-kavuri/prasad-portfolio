@@ -35,9 +35,10 @@ import { ObservabilityFeed } from "@/components/enterprise/ObservabilityFeed";
 import { TokenUsageChart } from "@/components/enterprise/TokenUsageChart";
 import { ToolRegistryPanel } from "@/components/enterprise/ToolRegistryPanel";
 import { KvCachePanel } from "@/components/enterprise/KvCachePanel";
-import type { TeamPermissions, TeamSpendConfig, UsageMetrics, DailyTokenUsage, OtelEvent, OrgSummary, KvCacheMetrics } from "@/components/enterprise/types";
+import { AgentLifecyclePanel } from "@/components/enterprise/AgentLifecyclePanel";
+import type { TeamPermissions, TeamSpendConfig, UsageMetrics, DailyTokenUsage, OtelEvent, OrgSummary, KvCacheMetrics, AgentLifecycleSnapshot } from "@/components/enterprise/types";
 
-type TabId = 'registry' | 'rbac' | 'spend' | 'observability' | 'kv-cache';
+type TabId = 'registry' | 'rbac' | 'spend' | 'observability' | 'kv-cache' | 'lifecycle';
 
 // Seed constants — render immediately, no loading state needed
 const SEED = {
@@ -113,9 +114,11 @@ export default function EnterpriseControlPlanePage() {
   const events      = useFetch<OtelEvent[]>('/api/enterprise-sim?resource=events&limit=50');
   const summary     = useFetch<OrgSummary>('/api/enterprise-sim?resource=summary&period=30d');
   const kvCache     = useFetch<KvCacheMetrics>('/api/enterprise-sim?resource=kv-cache&period=30d');
+  const lifecycle   = useFetch<AgentLifecycleSnapshot>('/api/enterprise-sim?resource=lifecycle');
 
   const TABS: { id: TabId; label: string }[] = [
     { id: 'registry',      label: 'Tool Registry' },
+    { id: 'lifecycle',     label: 'Agent Lifecycle' },
     { id: 'rbac',          label: 'Access Control' },
     { id: 'spend',         label: 'Spend & Tokens' },
     { id: 'observability', label: 'Observability' },
@@ -279,6 +282,19 @@ export default function EnterpriseControlPlanePage() {
           </div>
         )}
 
+        {/* Tab: Agent Lifecycle */}
+        {activeTab === 'lifecycle' && (
+          <div role="tabpanel">
+            {lifecycle.loading && (
+              <div className="flex items-center gap-2 text-muted-foreground py-8">
+                <Loader2 className="w-4 h-4 animate-spin" /> Loading lifecycle data...
+              </div>
+            )}
+            {lifecycle.error && <ErrorCard message={lifecycle.error} onRetry={lifecycle.reload} />}
+            {lifecycle.data && <AgentLifecyclePanel snapshot={lifecycle.data} />}
+          </div>
+        )}
+
         {/* Tab: Access Control */}
         {activeTab === 'rbac' && (
           <div role="tabpanel">
@@ -369,6 +385,7 @@ export default function EnterpriseControlPlanePage() {
                 <li><strong>SCIM</strong> → Teams marked &quot;SCIM provisioned&quot; would sync from Okta/Azure AD in production</li>
                 <li><strong>Per-connector permissions</strong> → Each connector maps to an MCP server with enforced read/write/delete ACLs</li>
                 <li><strong>Token cost tracking</strong> → Uses Anthropic&apos;s <code>usage_metadata</code> response fields: <code>input_tokens</code>, <code>output_tokens</code>, <code>cache_read_input_tokens</code></li>
+                <li><strong>Agent lifecycle</strong> → Prompt versions, canary rollout %, and rollback events map to a prompt registry + version manager gating promotion on eval score and human approval</li>
               </ul>
               <p className="pt-2">
                 <a

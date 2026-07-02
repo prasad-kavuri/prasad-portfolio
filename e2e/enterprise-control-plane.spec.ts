@@ -193,6 +193,8 @@ test.describe('Enterprise Control Plane demo', () => {
   test('all interactive elements are keyboard accessible', async () => {
     await sharedPage.getByRole('tab', { name: 'Tool Registry' }).focus();
     await sharedPage.keyboard.press('ArrowRight');
+    await expect(sharedPage.getByRole('tab', { name: 'Agent Lifecycle' })).toBeFocused();
+    await sharedPage.keyboard.press('ArrowRight');
     await expect(sharedPage.getByRole('tab', { name: 'Access Control' })).toBeFocused();
   });
 

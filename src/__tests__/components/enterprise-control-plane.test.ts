@@ -6,6 +6,7 @@ import {
   getDailyTokenUsage,
   getRecentOtelEvents,
   getOrgSummary,
+  getAgentLifecycle,
 } from '@/lib/enterpriseMockData';
 
 const PRICING = { input: 3, output: 15, cacheRead: 0.30, cacheWrite: 3.75 };
@@ -112,5 +113,50 @@ describe('enterpriseMockData', () => {
     const perms1 = getTeamPermissions();
     const perms2 = getTeamPermissions();
     expect(perms1).toEqual(perms2);
+  });
+
+  it('getAgentLifecycle returns deterministic rollout state for every agent', () => {
+    const lifecycle = getAgentLifecycle();
+
+    expect(lifecycle).toEqual(getAgentLifecycle());
+    expect(new Set(lifecycle.versions.map(version => version.agentName)).size).toBe(3);
+
+    for (const agentName of new Set(lifecycle.versions.map(version => version.agentName))) {
+      const activeVersions = lifecycle.versions.filter(
+        version => version.agentName === agentName && version.trafficPct > 0
+      );
+      expect(activeVersions.map(version => version.stage)).toEqual(['stable', 'canary']);
+      expect(activeVersions.reduce((total, version) => total + version.trafficPct, 0)).toBe(100);
+    }
+  });
+
+  it('getAgentLifecycle includes rollback history and valid session overrides', () => {
+    const lifecycle = getAgentLifecycle();
+    const rolledBackVersion = lifecycle.versions.find(version => version.stage === 'rolled_back');
+
+    expect(rolledBackVersion).toMatchObject({
+      agentName: 'Code Review Agent',
+      trafficPct: 0,
+      rollbackOf: 'v19.0',
+    });
+    expect(lifecycle.rolloutEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          versionId: rolledBackVersion?.versionId,
+          action: 'rollback',
+          actor: 'auto',
+        }),
+      ])
+    );
+    expect(lifecycle.overrides).toHaveLength(3);
+    expect(lifecycle.overrides.map(override => override.scope)).toEqual([
+      'model',
+      'temperature',
+      'tool_access',
+    ]);
+    expect(lifecycle.overrides[0].expiresAt).toBeNull();
+    expect(new Date(lifecycle.overrides[1].expiresAt!).toISOString()).toBe(
+      lifecycle.overrides[1].expiresAt
+    );
   });
 });

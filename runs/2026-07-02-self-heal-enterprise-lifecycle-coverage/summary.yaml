@@ -1,0 +1,14 @@
+run_id: 2026-07-02-self-heal-enterprise-lifecycle-coverage
+date: 2026-07-02
+skill: self-heal
+profile: testing
+failure_type: test
+root_cause: The new getAgentLifecycle mock-data generator and lifecycle API branch had no tests, reducing src/lib coverage below the 95% gate.
+files_changed:
+  - src/__tests__/components/enterprise-control-plane.test.ts
+  - src/__tests__/api/enterprise-api.test.ts
+  - runs/2026-07-02-self-heal-enterprise-lifecycle-coverage/summary.yaml
+gates_passed: 7
+gates_failed: 0
+hallucinations_detected: 0
+steps_missed: 0

@@ -79,6 +79,16 @@ describe('GET /api/enterprise-sim', () => {
     expect(body.data.totalTeams).toBe(5);
   });
 
+  it('returns 200 with agent lifecycle data', async () => {
+    const { GET } = await import('@/app/api/enterprise-sim/route');
+    const res = await GET(makeRequest({ resource: 'lifecycle' }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.data.versions).toHaveLength(7);
+    expect(body.data.overrides).toHaveLength(3);
+    expect(body.meta.totalRecords).toBe(body.data.versions.length);
+  });
+
   it('returns 400 for unknown resource param', async () => {
     const { GET } = await import('@/app/api/enterprise-sim/route');
     const res = await GET(makeRequest({ resource: 'unknown-resource' }));

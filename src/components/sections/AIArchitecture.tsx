@@ -92,8 +92,18 @@ const LAYERS: Layer[] = [
     example: 'LLM Router demo: live routing decisions with cost and latency breakdown per model tier.',
   },
   {
-    id: 'inference',
+    id: 'adaptive-governance',
     num: '06',
+    name: 'Adaptive AI Governance',
+    tagline: 'Runtime risk classification · Policy-based routing · Human approval triggers',
+    category: 'governance',
+    detail: 'Every routed request passes through a runtime risk classifier before a model is selected: standard requests proceed normally, security-sensitive requests are routed to a restricted tier pending human review, regulated-domain requests proceed under policy with a mandatory audit entry, and prompt-injection attempts are blocked outright — every decision logged.',
+    tech: ['risk-classifier.ts', 'Runtime risk tiers', 'Policy-based model restriction', 'HITL escalation trigger'],
+    example: 'LLM Router demo: every prompt is classified standard / security-sensitive / regulated / blocked before a model is chosen — see the live Runtime Governance panel.',
+  },
+  {
+    id: 'inference',
+    num: '07',
     name: 'Inference',
     tagline: 'Server LLM · Browser WASM · WebGPU',
     category: 'model',
@@ -103,7 +113,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'eval',
-    num: '07',
+    num: '08',
     name: 'Evaluation',
     tagline: 'LLM-as-Judge · Offline suites · CI regression gate',
     category: 'quality',
@@ -113,7 +123,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'guardrails',
-    num: '08',
+    num: '09',
     name: 'Guardrails',
     tagline: 'Injection detection · Output sanitization · Competitor filter',
     category: 'quality',
@@ -123,7 +133,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'observability',
-    num: '09',
+    num: '10',
     name: 'Observability',
     tagline: 'Trace IDs · Structured logs · Anomaly detection',
     category: 'ops',
@@ -133,7 +143,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'drift',
-    num: '10',
+    num: '11',
     name: 'Drift Monitor',
     tagline: 'Output quality tracking · Statistical drift alerts',
     category: 'ops',
@@ -143,7 +153,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'finops',
-    num: '11',
+    num: '12',
     name: 'FinOps',
     tagline: 'Per-route cost · Token budget · Spend gates',
     category: 'ops',
@@ -153,7 +163,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'audit',
-    num: '12',
+    num: '13',
     name: 'Audit Trail',
     tagline: 'Immutable logs · Decision records · Trace IDs',
     category: 'governance',
@@ -163,7 +173,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'hitl',
-    num: '13',
+    num: '14',
     name: 'Human Approval',
     tagline: 'HITL checkpoints · High-impact gate · Override path',
     category: 'governance',
@@ -173,7 +183,7 @@ const LAYERS: Layer[] = [
   },
   {
     id: 'outcome',
-    num: '14',
+    num: '15',
     name: 'Business Outcome',
     tagline: 'KPIs · Closed-loop feedback · Value measurement',
     category: 'outcome',
@@ -356,7 +366,7 @@ export function AIArchitecture() {
           <div className="mt-10 rounded-xl border border-border bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
-                All 14 layers are live in this portfolio
+                All 15 layers are live in this portfolio
               </p>
               <p className="text-sm text-muted-foreground">
                 Guardrails, eval, drift monitoring, HITL, and FinOps all run on real requests — not mocked.

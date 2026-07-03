@@ -85,6 +85,8 @@ Demos gallery:     /demos
 Capabilities:      /capabilities
 Runtime Eng.:      /ai-runtime-engineering  (speculative decoding, KV/prefix cache, batching, quantization)
 AI FinOps:         /ai-finops  (cost per request, routing savings, cache hit rate, GPU utilization, budget governance)
+Agent Runtime:     /enterprise-agent-runtime  (prompt versioning, canary/rollback, session overrides, tool registry, HITL)
+Adaptive Governance: /adaptive-ai-governance  (runtime risk classification, risk-aware routing, human approval escalation, audit trail)
 Governance:        /governance
 AI architecture:   /#ai-architecture
 Agent entry:       /agent

@@ -34,13 +34,14 @@ describe('AIArchitecture', () => {
     expect(screen.getByText('Platform Execution Flow')).toBeInTheDocument();
   });
 
-  it('renders all 14 layer names', () => {
+  it('renders all 15 layer names', () => {
     render(<AIArchitecture />);
     expect(screen.getByText('User Intent')).toBeInTheDocument();
     expect(screen.getByText('Agent Orchestration')).toBeInTheDocument();
     expect(screen.getByText('Memory & Context')).toBeInTheDocument();
     expect(screen.getByText('Tool / MCP Layer')).toBeInTheDocument();
     expect(screen.getByText('Model Router')).toBeInTheDocument();
+    expect(screen.getByText('Adaptive AI Governance')).toBeInTheDocument();
     expect(screen.getByText('Inference')).toBeInTheDocument();
     expect(screen.getByText('Evaluation')).toBeInTheDocument();
     expect(screen.getByText('Guardrails')).toBeInTheDocument();
@@ -52,10 +53,10 @@ describe('AIArchitecture', () => {
     expect(screen.getByText('Business Outcome')).toBeInTheDocument();
   });
 
-  it('renders layer numbers 01 through 14', () => {
+  it('renders layer numbers 01 through 15', () => {
     render(<AIArchitecture />);
     expect(screen.getByText('01')).toBeInTheDocument();
-    expect(screen.getByText('14')).toBeInTheDocument();
+    expect(screen.getByText('15')).toBeInTheDocument();
   });
 
   it('all layer buttons have aria-expanded=false initially', () => {
@@ -151,7 +152,7 @@ describe('AIArchitecture', () => {
 
   it('renders bottom callout with Explore Demos link', () => {
     render(<AIArchitecture />);
-    expect(screen.getByText('All 14 layers are live in this portfolio')).toBeInTheDocument();
+    expect(screen.getByText('All 15 layers are live in this portfolio')).toBeInTheDocument();
     const link = screen.getByRole('link', { name: /Explore Demos/i });
     expect(link.getAttribute('href')).toBe('/demos');
   });

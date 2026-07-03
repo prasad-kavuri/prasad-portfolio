@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getRoutingRecommendation } from '@/lib/llm-routing';
+import { classifyRequestRisk, type RiskClassification } from '@/lib/risk-classifier';
 
 interface ModelResult {
   model: string;
@@ -156,6 +157,7 @@ export default function LLMRouterDemo() {
   const [executiveTradeoff, setExecutiveTradeoff] = useState('');
   const [businessValueMode, setBusinessValueMode] = useState(false);
   const [projectedRequests, setProjectedRequests] = useState<number>(10000);
+  const [riskClassification, setRiskClassification] = useState<RiskClassification | null>(null);
 
   const handleRunAll = async () => {
     if (!prompt.trim()) return;
@@ -165,6 +167,7 @@ export default function LLMRouterDemo() {
     setRecommendedModel(recommendation.model);
     setRoutingRationale(recommendation.rationale);
     setExecutiveTradeoff(recommendation.executiveTradeoff);
+    setRiskClassification(classifyRequestRisk(prompt));
     setResults(null);
 
     try {
@@ -497,6 +500,57 @@ export default function LLMRouterDemo() {
                     </p>
                   </div>
                 </div>
+              </Card>
+            )}
+
+            {riskClassification && (
+              <Card
+                className={`mb-6 p-4 ${
+                  riskClassification.tier === 'blocked'
+                    ? 'border-red-500/40 bg-red-500/10'
+                    : riskClassification.tier === 'security_sensitive'
+                    ? 'border-amber-500/40 bg-amber-500/10'
+                    : riskClassification.tier === 'regulated'
+                    ? 'border-blue-500/30 bg-blue-500/10'
+                    : 'border-border bg-card'
+                }`}
+                aria-label="Runtime governance risk classification"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                  Runtime Governance — Risk Tier
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Risk Tier</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground capitalize">
+                      {riskClassification.tier.replace('_', ' ')}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Route</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground capitalize">
+                      {riskClassification.route.replace(/_/g, ' ')}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Human Approval</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      {riskClassification.requiresHumanApproval ? 'Required' : 'Not required'}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Audit Trail</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      {riskClassification.auditRequired ? 'Logged' : 'Not required'}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">{riskClassification.rationale}</p>
+                {riskClassification.matchedSignals.length > 0 && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Matched signals: {riskClassification.matchedSignals.join(', ')}
+                  </p>
+                )}
               </Card>
             )}
 

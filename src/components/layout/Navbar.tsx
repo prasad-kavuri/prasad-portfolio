@@ -12,6 +12,7 @@ const links = [
   { href: "/ai-runtime-engineering", label: "Runtime Engineering" },
   { href: "/ai-finops", label: "AI FinOps" },
   { href: "/enterprise-agent-runtime", label: "Agent Runtime" },
+  { href: "/adaptive-ai-governance", label: "Adaptive Governance" },
   { href: "/enterprise-ai-operating-model", label: "Operating Model" },
   { href: "/governance", label: "Governance" },
   { href: "/testimonials", label: "Testimonials" },

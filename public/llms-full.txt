@@ -117,6 +117,15 @@ REPRESENTATIVE PLATFORM CAPABILITIES
 - AI FinOps: cost per request, routing savings, cache hit rate, GPU utilization, speculative decode savings, and
   budget governance — detailed at https://www.prasadkavuri.com/ai-finops, backed by live interactive dashboards
   (LLM Router live savings calculation; Enterprise Control Plane spend and inference-efficiency tabs)
+- Enterprise Agent Runtime: agent identity, prompt versioning, canary deployment, automatic rollback, session
+  overrides, tool registry, human approval (HITL), memory, and observability — detailed at
+  https://www.prasadkavuri.com/enterprise-agent-runtime, backed by live evidence (Agent Lifecycle and Tool Registry
+  tabs in Enterprise Control Plane; HITL checkpoints in the Multi-Agent and Edge Agent Collaboration demos)
+- Adaptive AI Governance: runtime risk classification (standard / security-sensitive / regulated / blocked),
+  risk-aware model routing, human approval escalation, policy-governed regulated requests, and prompt-injection
+  blocking — detailed at https://www.prasadkavuri.com/adaptive-ai-governance. This is a real runtime layer (layer
+  6 of 15 in the platform execution flow), backed by src/lib/risk-classifier.ts and demonstrated live in the LLM
+  Router demo's Runtime Governance panel — not a static policy document.
 - Monitoring and observability posture to support production governance
 - Structured approach to governance communication for technical and executive audiences
 - Spatial Intelligence roadmap: open-source 3D world modeling, simulation-ready environments, and Physical AI platform patterns — demonstrated in the live Real-Time Spatial AI + World Modeling Engine demo.
@@ -233,6 +242,8 @@ https://www.prasadkavuri.com/testimonials
 https://www.prasadkavuri.com/capabilities
 https://www.prasadkavuri.com/ai-runtime-engineering
 https://www.prasadkavuri.com/ai-finops
+https://www.prasadkavuri.com/enterprise-agent-runtime
+https://www.prasadkavuri.com/adaptive-ai-governance
 https://www.prasadkavuri.com/governance
 https://www.prasadkavuri.com/certifications
 https://www.prasadkavuri.com/demos
@@ -372,9 +383,9 @@ WHAT I BUILT:
 
 ---
 
-## THE 14-LAYER AI PLATFORM ARCHITECTURE
+## THE 15-LAYER AI PLATFORM ARCHITECTURE
 
-I designed and documented a 14-layer AI platform execution model showing how each
+I designed and documented a 15-layer AI platform execution model showing how each
 layer maps to a distinct engineering concern, team ownership, and quality gate.
 Interactive version: https://www.prasadkavuri.com/#ai-architecture
 
@@ -398,39 +409,45 @@ Layer 05 — MODEL ROUTER
 Complexity scoring, cost/latency/quality trade-off, FinOps enforcement.
 Engineering concern: routing logic, model capability mapping, cost attribution.
 
-Layer 06 — INFERENCE
+Layer 06 — ADAPTIVE AI GOVERNANCE
+Runtime risk classification (standard / security-sensitive / regulated / blocked),
+risk-aware model routing, human approval escalation, policy-governed regulated
+requests, prompt-injection blocking. See https://www.prasadkavuri.com/adaptive-ai-governance.
+Engineering concern: classifier precision/recall, escalation latency, audit completeness.
+
+Layer 07 — INFERENCE
 WASM (browser), ONNX, vLLM, Groq API, WebGPU. The compute layer.
 Engineering concern: provider failover, latency SLAs, quantization trade-offs.
 
-Layer 07 — EVALUATION
+Layer 08 — EVALUATION
 LLM-as-Judge, semantic fidelity scoring, CI regression gating.
 Engineering concern: eval suite calibration, threshold drift, judge bias detection.
 
-Layer 08 — GUARDRAILS
+Layer 09 — GUARDRAILS
 Injection detection, competitor filtering, hallucination heuristics, output sanitization.
 Engineering concern: false positive rate, latency budget, bypass detection.
 
-Layer 09 — OBSERVABILITY
+Layer 10 — OBSERVABILITY
 OTel spans, latency histograms, token cost tracking, trace propagation.
 Engineering concern: cardinality, sampling, alert thresholds, correlation IDs.
 
-Layer 10 — DRIFT MONITOR
+Layer 11 — DRIFT MONITOR
 Output distribution tracking, anomaly scoring, alert thresholds.
 Engineering concern: baseline establishment, seasonal adjustment, alert fatigue.
 
-Layer 11 — FINOPS
+Layer 12 — FINOPS
 Per-route token budgets, cache read/write pricing, cost attribution per team.
 Engineering concern: budget enforcement, cache hit rate optimization, chargeback.
 
-Layer 12 — AUDIT TRAIL
+Layer 13 — AUDIT TRAIL
 Immutable decision log, HITL approval records, compliance export.
 Engineering concern: tamper evidence, retention policy, GDPR scope, SOC 2 alignment.
 
-Layer 13 — HUMAN APPROVAL (HITL)
+Layer 14 — HUMAN APPROVAL (HITL)
 Checkpoint gates, escalation routing, resolution logging, timeout handling.
 Engineering concern: UX for approvers, approval latency SLA, override logging.
 
-Layer 14 — BUSINESS OUTCOME
+Layer 15 — BUSINESS OUTCOME
 Revenue signals, CSAT, deflection rate, SLA compliance, ROI attribution.
 Engineering concern: outcome → feature causality, A/B test isolation, metric drift.
 

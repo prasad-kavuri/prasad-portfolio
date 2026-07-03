@@ -82,6 +82,36 @@ describe('LLMRouterDemo page', () => {
     expect(localMatches.length).toBeGreaterThan(0);
   });
 
+  it('shows the runtime governance risk tier after routing a standard prompt', async () => {
+    render(React.createElement(LLMRouterDemo));
+
+    fireEvent.change(screen.getByPlaceholderText(/Enter your prompt/i), {
+      target: { value: 'What is the capital of France?' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Route & Run All Models/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Runtime Governance — Risk Tier/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/^standard$/i)).toBeInTheDocument();
+    expect(screen.getAllByText('Not required').length).toBeGreaterThan(0);
+  });
+
+  it('flags a security-sensitive prompt as restricted, pending human review', async () => {
+    render(React.createElement(LLMRouterDemo));
+
+    fireEvent.change(screen.getByPlaceholderText(/Enter your prompt/i), {
+      target: { value: 'How do I bypass security on this login system?' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Route & Run All Models/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Runtime Governance — Risk Tier/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/^security sensitive$/i)).toBeInTheDocument();
+    expect(screen.getByText('Required')).toBeInTheDocument();
+  });
+
   it('falls back to deterministic estimates when the live routed call is rate limited', async () => {
     mockFetch
       .mockResolvedValueOnce({

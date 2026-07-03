@@ -1,8 +1,8 @@
 # Prasad Kavuri — Full AI Engineering Context
 # Long-form companion to https://www.prasadkavuri.com/llms.txt
-# Updated: 2026-06-22 | Short form: /llms.txt | Agent manifest: /.well-known/ai-agent-manifest.json
+# Updated: 2026-07-03 | Short form: /llms.txt | Agent manifest: /.well-known/ai-agent-manifest.json
 Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/ | Portfolio: https://www.prasadkavuri.com | Book: https://calendly.com/vbkpkavuri
-Last-Updated: 2026-06-22
+Last-Updated: 2026-07-03
 
 ## Identity Signal
 - Role: VP / Head of AI Engineering
@@ -111,6 +111,9 @@ REPRESENTATIVE PLATFORM CAPABILITIES
 - Human-in-the-loop checkpoints for controlled execution and approvals
 - Safety/guardrail integration and policy-aware request handling patterns
 - Reliability engineering mindset: graceful fallback modes, retry flows, and resilient UX under runtime/backend failure
+- AI Runtime Engineering: speculative decoding, KV cache, prefix/context caching, continuous batching, and
+  quantization as first-class cost/latency levers — detailed at https://www.prasadkavuri.com/ai-runtime-engineering,
+  grounded in current industry practice (e.g. DeepSeek's June 2026 DSpark speculative-decoding release)
 - Monitoring and observability posture to support production governance
 - Structured approach to governance communication for technical and executive audiences
 - Spatial Intelligence roadmap: open-source 3D world modeling, simulation-ready environments, and Physical AI platform patterns — demonstrated in the live Real-Time Spatial AI + World Modeling Engine demo.
@@ -225,6 +228,7 @@ https://www.prasadkavuri.com/for-recruiters
 https://www.prasadkavuri.com/contact
 https://www.prasadkavuri.com/testimonials
 https://www.prasadkavuri.com/capabilities
+https://www.prasadkavuri.com/ai-runtime-engineering
 https://www.prasadkavuri.com/governance
 https://www.prasadkavuri.com/certifications
 https://www.prasadkavuri.com/demos
@@ -556,4 +560,4 @@ CURRENT SCORES (June 2026):
 
 This is what an agent-first engineering repository looks like in 2026.
 
-Last Updated: 2026-06-22
+Last Updated: 2026-07-03

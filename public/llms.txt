@@ -4,7 +4,7 @@ Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/ |
 Positioning: AI Engineering Executive — not an individual contributor profile
 Location: Chicago, IL (open to remote globally — US, APAC, EMEA)
 GitHub: https://github.com/prasad-kavuri/prasad-portfolio
-Last-Updated: 2026-06-19
+Last-Updated: 2026-07-03
 
 ## TARGET ROLES
 VP of AI Engineering | Head of AI Engineering |
@@ -23,6 +23,7 @@ VP, AI Platform Engineering | Chief AI Officer (CAIO)
 - Model Context Protocol (MCP)
 - Browser WASM / WebGPU Inference
 - Edge AI & Sovereign AI
+- AI Runtime Engineering (speculative decoding, KV/prefix cache, batching, quantization)
 
 ## VERIFIED IMPACT METRICS
 - 200+ engineers led across global teams
@@ -82,6 +83,7 @@ Legacy brief:      /for-recruiters
 Agent marketplace: /agent-marketplace
 Demos gallery:     /demos
 Capabilities:      /capabilities
+Runtime Eng.:      /ai-runtime-engineering  (speculative decoding, KV/prefix cache, batching, quantization)
 Governance:        /governance
 AI architecture:   /#ai-architecture
 Agent entry:       /agent

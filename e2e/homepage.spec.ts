@@ -43,7 +43,7 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Agent Auth Demo').first()).toBeVisible();
     await expect(page.getByText('Enterprise Control Plane').first()).toBeVisible();
     await expect(page.getByText('AI Portfolio Assistant').first()).toBeVisible();
-    await expect(page.getByText('Resume Generator').first()).toBeVisible();
+    await expect(page.getByText('AI Hiring Intelligence').first()).toBeVisible();
     await expect(page.getByText('Multimodal Assistant').first()).toBeVisible();
     await expect(page.getByText('Model Quantization').first()).toBeVisible();
     await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
@@ -67,12 +67,12 @@ test.describe('Homepage', () => {
     await expect(transformationSection.getByRole('heading', { name: 'Organization' })).toBeVisible();
   });
 
-  test('architecture diagram shows 6 layers', async ({ page }) => {
-    const architectureSection = page.locator('#architecture');
+  test('architecture diagram shows the platform execution flow', async ({ page }) => {
+    const architectureSection = page.locator('#ai-architecture');
     await architectureSection.scrollIntoViewIfNeeded();
-    await expect(architectureSection.getByText('How I Build Enterprise AI Systems')).toBeVisible();
-    await expect(architectureSection.getByText('Users & Channels', { exact: true })).toBeVisible();
-    await expect(architectureSection.getByText('Business Outcomes', { exact: true })).toBeVisible();
+    await expect(architectureSection.getByText('How a Request Moves Through the Platform')).toBeVisible();
+    await expect(architectureSection.getByText('User Intent', { exact: true })).toBeVisible();
+    await expect(architectureSection.getByText('Business Outcome', { exact: true })).toBeVisible();
   });
 
   test('case studies section shows all 3 companies', async ({ page }) => {

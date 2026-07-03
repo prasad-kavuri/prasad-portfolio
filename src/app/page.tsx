@@ -3,7 +3,6 @@ import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { AITools } from "@/components/sections/AITools";
 import { Transformation } from "@/components/sections/Transformation";
-import { Architecture } from "@/components/sections/Architecture";
 import { AIArchitecture } from "@/components/sections/AIArchitecture";
 import { Expertise } from "@/components/sections/Expertise";
 import { Experience } from "@/components/sections/Experience";
@@ -54,7 +53,6 @@ const homePageStructuredData = {
           "#ai-architecture",
           "#experience",
           "#tools",
-          "#architecture",
         ],
       },
       inLanguage: "en-US",
@@ -84,7 +82,6 @@ export default function Home() {
         <AITools />
         <Transformation />
         <SectionBridge text="These principles are reflected in how I architect real enterprise AI systems." />
-        <Architecture />
         <AIArchitecture />
         <SectionBridge text="These systems represent that architecture in action — production implementations, not prototypes." />
         <Expertise />

@@ -11,6 +11,8 @@ const links = [
   { href: "/capabilities", label: "Capabilities" },
   { href: "/ai-runtime-engineering", label: "Runtime Engineering" },
   { href: "/ai-finops", label: "AI FinOps" },
+  { href: "/enterprise-agent-runtime", label: "Agent Runtime" },
+  { href: "/enterprise-ai-operating-model", label: "Operating Model" },
   { href: "/governance", label: "Governance" },
   { href: "/testimonials", label: "Testimonials" },
   { href: "/prasad-kavuri-vp-ai-engineering-2026.pdf", label: "Resume" },

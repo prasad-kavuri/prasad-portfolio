@@ -229,7 +229,7 @@ describe('SEO metadata integrity', () => {
     expect(resume).toContain('Agent Auth');
     expect(llmsFull).toContain('Chief AI Officer');
     expect(llmsFull).toContain('CAIO');
-    expect(llmsFull).toContain('Last-Updated: 2026-06-22');
+    expect(llmsFull).toContain('Last-Updated: 2026-07-03');
     expect(llmsFull).not.toContain('Last Updated: 2026-05-08');
   });
 

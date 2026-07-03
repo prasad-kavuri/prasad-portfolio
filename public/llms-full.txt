@@ -114,6 +114,9 @@ REPRESENTATIVE PLATFORM CAPABILITIES
 - AI Runtime Engineering: speculative decoding, KV cache, prefix/context caching, continuous batching, and
   quantization as first-class cost/latency levers — detailed at https://www.prasadkavuri.com/ai-runtime-engineering,
   grounded in current industry practice (e.g. DeepSeek's June 2026 DSpark speculative-decoding release)
+- AI FinOps: cost per request, routing savings, cache hit rate, GPU utilization, speculative decode savings, and
+  budget governance — detailed at https://www.prasadkavuri.com/ai-finops, backed by live interactive dashboards
+  (LLM Router live savings calculation; Enterprise Control Plane spend and inference-efficiency tabs)
 - Monitoring and observability posture to support production governance
 - Structured approach to governance communication for technical and executive audiences
 - Spatial Intelligence roadmap: open-source 3D world modeling, simulation-ready environments, and Physical AI platform patterns — demonstrated in the live Real-Time Spatial AI + World Modeling Engine demo.
@@ -229,6 +232,7 @@ https://www.prasadkavuri.com/contact
 https://www.prasadkavuri.com/testimonials
 https://www.prasadkavuri.com/capabilities
 https://www.prasadkavuri.com/ai-runtime-engineering
+https://www.prasadkavuri.com/ai-finops
 https://www.prasadkavuri.com/governance
 https://www.prasadkavuri.com/certifications
 https://www.prasadkavuri.com/demos

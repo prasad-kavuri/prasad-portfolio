@@ -84,6 +84,7 @@ Agent marketplace: /agent-marketplace
 Demos gallery:     /demos
 Capabilities:      /capabilities
 Runtime Eng.:      /ai-runtime-engineering  (speculative decoding, KV/prefix cache, batching, quantization)
+AI FinOps:         /ai-finops  (cost per request, routing savings, cache hit rate, GPU utilization, budget governance)
 Governance:        /governance
 AI architecture:   /#ai-architecture
 Agent entry:       /agent

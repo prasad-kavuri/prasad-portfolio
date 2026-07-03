@@ -88,6 +88,14 @@ For multi-step tasks, state a brief plan with verifiable checks before starting.
 Transform vague goals into testable outcomes: build passes, tests pass, coverage gates pass.
 Verify success explicitly — don't assume "it works" without running the checks.
 
+## Specs
+
+Before implementing a non-trivial feature (a new page, a new architecture layer, new real logic — not a
+copy edit or small bugfix), write a short spec to `specs/NNNN-short-slug.md` using `specs/TEMPLATE.md`.
+This is a lightweight, repo-native adoption of the spirit of GitHub's Spec-Driven Development (spec-kit) —
+not the literal tool or its constitution — see `specs/README.md` for the full convention. Skip this for
+trivial changes; the Agent Operating Contract below already covers those.
+
 ## Agent Operating Contract
 
 For every non-trivial coding task, state this before editing:

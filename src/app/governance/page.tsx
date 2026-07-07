@@ -185,6 +185,9 @@ export default function GovernancePage() {
             <p className="text-muted-foreground mt-1">
               Platform safety, cost controls, and eval quality
             </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Part of the <Link href="/capabilities#lifecycle" className="underline hover:text-foreground">Enterprise Capability Lifecycle</Link> — this page covers Observability &amp; Feedback.
+            </p>
             <SnapshotTimestamp />
           </div>
           <div className="flex items-center gap-3">

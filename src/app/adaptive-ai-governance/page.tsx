@@ -126,6 +126,9 @@ export default function AdaptiveAIGovernancePage() {
               model is selected, and routes standard, security-sensitive, regulated, and blocked requests
               differently — live, not as a policy document.
             </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Part of the <Link href="/capabilities#lifecycle" className="underline hover:text-foreground">Enterprise Capability Lifecycle</Link> — this page covers Validation &amp; Approval.
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/demos/llm-router" className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/40">
                 Live Runtime Governance Panel

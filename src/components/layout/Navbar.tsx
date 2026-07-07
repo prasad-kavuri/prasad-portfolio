@@ -19,6 +19,7 @@ const primaryLinks = [
 // instead of sitting inline, to keep the primary nav from overflowing.
 const platformLinks = [
   { href: "/capabilities", label: "Capabilities" },
+  { href: "/skills", label: "Skills Catalog" },
   { href: "/ai-runtime-engineering", label: "Runtime Engineering" },
   { href: "/ai-finops", label: "AI FinOps" },
   { href: "/enterprise-agent-runtime", label: "Agent Runtime" },

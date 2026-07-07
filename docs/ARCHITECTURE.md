@@ -148,6 +148,18 @@ public/architecture-diagram.svg
 
 The website renders it in `src/components/sections/Architecture.tsx`. README and this document embed the same file. If the API routes, demo list, or external services change, update the SVG and this document in the same change.
 
+A second, narrower diagram covers the capability lifecycle rather than the system architecture:
+
+```text
+public/capability-lifecycle-diagram.svg
+```
+
+The website renders it on `/capabilities#lifecycle` (`src/app/capabilities/page.tsx`). It is a separate artifact by design — one concern (system architecture) per diagram, not a shared canvas.
+
+## Enterprise Capability Lifecycle
+
+The Platform pages (`/skills`, `/capabilities`, `/enterprise-agent-runtime`, `/ai-runtime-engineering`, `/adaptive-ai-governance`, `/ai-finops`, `/governance`, `/agent-marketplace`) each implement one or more stages of a twelve-stage, vendor-neutral capability lifecycle: domain expertise → playbook → capability authoring → validation → approval → versioning → capability registry → runtime enforcement → execution → observability → feedback → continuous improvement, looping back to domain expertise. `/capabilities#lifecycle` is the canonical page for this narrative and links out to the implementation of each stage. This is a documentation and navigation layer on top of existing functionality — it does not introduce new runtime behavior.
+
 ## Patentable Patterns
 
 The following design patterns in this portfolio represent novel combinations of techniques that are not commonly implemented together in production AI systems. They are documented here for intellectual property purposes.

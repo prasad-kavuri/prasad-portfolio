@@ -124,6 +124,9 @@ export default function AIFinOpsPage() {
               that make AI spend forecastable, attributable, and defensible to a CFO — each backed by a live,
               interactive dashboard rather than a static claim.
             </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Part of the <Link href="/capabilities#lifecycle" className="underline hover:text-foreground">Enterprise Capability Lifecycle</Link> — this page covers Continuous Improvement.
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/demos/enterprise-control-plane" className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/40">
                 Enterprise Control Plane

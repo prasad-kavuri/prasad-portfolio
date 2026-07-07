@@ -184,6 +184,9 @@ export default function AgentMarketplacePage() {
           <p className="text-sm text-muted-foreground max-w-2xl">
             All demos are live, governed by shared platform infrastructure — guardrails, rate limiting, observability, and eval-gated CI. Browse by capability tier or explore the full catalog.
           </p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Part of the <Link href="/capabilities#lifecycle" className="underline hover:text-foreground">Enterprise Capability Lifecycle</Link> — this page covers Execution.
+          </p>
 
           {/* Platform coverage row */}
           <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">

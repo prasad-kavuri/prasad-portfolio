@@ -151,6 +151,9 @@ export default function EnterpriseAgentRuntimePage() {
               observably — as it changes, scales, and touches production data. This is why agent runtime matters more
               than the prompt itself.
             </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Part of the <Link href="/capabilities#lifecycle" className="underline hover:text-foreground">Enterprise Capability Lifecycle</Link> — this page covers Versioning &amp; Runtime.
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/demos/enterprise-control-plane" className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/40">
                 Enterprise Control Plane

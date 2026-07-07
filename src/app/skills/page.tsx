@@ -33,6 +33,9 @@ export default function SkillsPage() {
               This is the orchestration substrate — the layer that makes models
               interchangeable and systems governable.
             </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Part of the <Link href="/capabilities#lifecycle" className="underline hover:text-foreground">Enterprise Capability Lifecycle</Link> — this page covers Capability Authoring &amp; Registry.
+            </p>
           </div>
         </div>
 

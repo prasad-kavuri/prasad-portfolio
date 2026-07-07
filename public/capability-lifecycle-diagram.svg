@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="920" viewBox="0 0 1200 920" role="img" aria-labelledby="title desc">
+  <title id="title">Enterprise Capability Lifecycle</title>
+  <desc id="desc">A twelve-stage lifecycle showing how domain expertise becomes a governed, versioned, reusable AI capability: domain expertise, playbook, capability authoring, validation, approval, versioning, capability registry, runtime enforcement, execution, observability, feedback, and continuous improvement looping back to domain expertise.</desc>
+  <defs>
+    <linearGradient id="lcBg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="55%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="lcAccent" x1="0" x2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <marker id="lcArrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#93c5fd"/>
+    </marker>
+    <marker id="lcLoopArrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
+    </marker>
+    <style>
+      .lc-title { fill: #f8fafc; font: 700 28px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .lc-subtitle { fill: #94a3b8; font: 400 14px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .lc-stage-num { fill: #38bdf8; font: 700 11px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .lc-node-title { fill: #e5e7eb; font: 650 14px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .lc-node-copy { fill: #94a3b8; font: 400 11px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .lc-pill { fill: #0f172a; stroke: #334155; stroke-width: 1; }
+      .lc-pill-loop { fill: #0f172a; stroke: #34d399; stroke-width: 1; stroke-dasharray: 3 3; }
+      .lc-line { stroke: #93c5fd; stroke-width: 1.8; fill: none; marker-end: url(#lcArrow); opacity: 0.9; }
+      .lc-loop-line { stroke: #34d399; stroke-width: 1.6; fill: none; marker-end: url(#lcLoopArrow); opacity: 0.8; stroke-dasharray: 4 3; }
+      .lc-group-label { fill: #64748b; font: 700 11px ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 1px; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="920" rx="28" fill="url(#lcBg)"/>
+  <rect x="24" y="24" width="1152" height="872" rx="24" fill="none" stroke="url(#lcAccent)" stroke-width="1.4" opacity="0.55"/>
+
+  <text x="64" y="72" class="lc-title">Enterprise Capability Lifecycle</text>
+  <text x="64" y="98" class="lc-subtitle">How domain knowledge becomes a governed, versioned, reusable AI capability — and keeps improving itself</text>
+
+  <!-- Row 1: Origination (stages 1-3) -->
+  <text x="64" y="138" class="lc-group-label">ORIGINATION</text>
+  <g transform="translate(64 152)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">01</text>
+    <text x="50" y="26" class="lc-node-title">Domain Expertise</text>
+    <text x="20" y="48" class="lc-node-copy">A person who knows the process, policy, or judgment call.</text>
+  </g>
+  <g transform="translate(435 152)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">02</text>
+    <text x="50" y="26" class="lc-node-title">Playbook / Procedure</text>
+    <text x="20" y="48" class="lc-node-copy">Knowledge written down as repeatable steps and rules.</text>
+  </g>
+  <g transform="translate(806 152)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">03</text>
+    <text x="50" y="26" class="lc-node-title">Capability Authoring</text>
+    <text x="20" y="48" class="lc-node-copy">The playbook becomes a defined, packaged AI capability.</text>
+  </g>
+  <line x1="394" y1="185" x2="429" y2="185" class="lc-line"/>
+  <line x1="765" y1="185" x2="800" y2="185" class="lc-line"/>
+  <line x1="971" y1="218" x2="971" y2="252" class="lc-line"/>
+
+  <!-- Row 2: Governance (stages 4-6) -->
+  <text x="64" y="272" class="lc-group-label">GOVERNANCE</text>
+  <g transform="translate(806 286)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">04</text>
+    <text x="50" y="26" class="lc-node-title">Validation &amp; Testing</text>
+    <text x="20" y="48" class="lc-node-copy">Accuracy, safety, and regression checks before release.</text>
+  </g>
+  <g transform="translate(435 286)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">05</text>
+    <text x="50" y="26" class="lc-node-title">Approval &amp; Sign-off</text>
+    <text x="20" y="48" class="lc-node-copy">Governance review confirms the capability is fit to ship.</text>
+  </g>
+  <g transform="translate(64 286)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">06</text>
+    <text x="50" y="26" class="lc-node-title">Versioning &amp; Change Control</text>
+    <text x="20" y="48" class="lc-node-copy">Every capability has a version, owner, and rollback path.</text>
+  </g>
+  <line x1="800" y1="319" x2="765" y2="319" class="lc-line"/>
+  <line x1="429" y1="319" x2="394" y2="319" class="lc-line"/>
+  <line x1="229" y1="352" x2="229" y2="386" class="lc-line"/>
+
+  <!-- Row 3: Platform (stages 7-9) -->
+  <text x="64" y="406" class="lc-group-label">PLATFORM</text>
+  <g transform="translate(64 420)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">07</text>
+    <text x="50" y="26" class="lc-node-title">Capability Registry</text>
+    <text x="20" y="48" class="lc-node-copy">The governed catalog of everything the org can run.</text>
+  </g>
+  <g transform="translate(435 420)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">08</text>
+    <text x="50" y="26" class="lc-node-title">Runtime &amp; Policy Enforcement</text>
+    <text x="20" y="48" class="lc-node-copy">Identity, policy, and cost limits enforced live.</text>
+  </g>
+  <g transform="translate(806 420)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">09</text>
+    <text x="50" y="26" class="lc-node-title">Execution</text>
+    <text x="20" y="48" class="lc-node-copy">The capability runs and produces a business outcome.</text>
+  </g>
+  <line x1="394" y1="453" x2="429" y2="453" class="lc-line"/>
+  <line x1="765" y1="453" x2="800" y2="453" class="lc-line"/>
+  <line x1="971" y1="486" x2="971" y2="520" class="lc-line"/>
+
+  <!-- Row 4: Improvement (stages 10-12) -->
+  <text x="64" y="540" class="lc-group-label">IMPROVEMENT</text>
+  <g transform="translate(806 554)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">10</text>
+    <text x="50" y="26" class="lc-node-title">Observability &amp; Audit Trail</text>
+    <text x="20" y="48" class="lc-node-copy">Every execution is logged, measured, and attributable.</text>
+  </g>
+  <g transform="translate(435 554)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">11</text>
+    <text x="50" y="26" class="lc-node-title">Feedback &amp; Performance Signals</text>
+    <text x="20" y="48" class="lc-node-copy">Outcomes and errors flow back into the next revision.</text>
+  </g>
+  <g transform="translate(64 554)">
+    <rect class="lc-pill" width="330" height="66" rx="14"/>
+    <text x="20" y="24" class="lc-stage-num">12</text>
+    <text x="50" y="26" class="lc-node-title">Continuous Improvement</text>
+    <text x="20" y="48" class="lc-node-copy">The loop closes and re-enters authoring with new signal.</text>
+  </g>
+  <line x1="800" y1="587" x2="765" y2="587" class="lc-line"/>
+  <line x1="429" y1="587" x2="394" y2="587" class="lc-line"/>
+
+  <!-- Loop back to stage 1 -->
+  <path d="M 229 620 C 229 690, 60 700, 30 500 C 10 350, 10 250, 30 185 C 45 130, 55 120, 60 185"
+        fill="none" class="lc-loop-line"/>
+  <g transform="translate(64 700)">
+    <rect class="lc-pill-loop" width="330" height="52" rx="14"/>
+    <text x="20" y="22" class="lc-node-title" style="fill:#6ee7b7;font-size:12px;">Continuous Improvement Loop</text>
+    <text x="20" y="40" class="lc-node-copy">New signal re-enters Domain Expertise / Playbook — the lifecycle repeats, not restarts.</text>
+  </g>
+
+  <!-- Footer strip -->
+  <rect x="64" y="800" width="1072" height="88" rx="16" fill="#0f172a" stroke="#334155"/>
+  <text x="90" y="832" class="lc-node-title" style="font-size:13px;">Maturity isn&#8217;t one model or one agent.</text>
+  <text x="90" y="854" class="lc-node-copy">It&#8217;s whether an organization can turn what an expert knows into a governed, versioned, reusable capability — and safely run it at scale while it keeps improving itself.</text>
+</svg>

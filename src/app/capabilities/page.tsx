@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -219,6 +220,37 @@ export default function CapabilitiesPage() {
               <Link href="/governance" className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/40">
                 Governance
               </Link>
+            </div>
+          </div>
+        </section>
+
+        <section id="lifecycle" className="border-b border-border/60 py-10">
+          <div className="mx-auto max-w-5xl px-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Enterprise Capability Lifecycle</p>
+            <h2 className="mt-2 text-2xl font-semibold text-foreground">How this platform turns knowledge into a governed capability</h2>
+            <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+              Enterprise AI maturity isn&apos;t about a single model or a single agent — it&apos;s about whether an
+              organization can take what an expert knows, turn it into a governed, versioned, reusable capability,
+              and safely run that capability at scale while it keeps improving itself. Every page under{' '}
+              <span className="text-foreground">Platform</span> in the nav implements one or more stages of this
+              loop; this diagram is the map that connects them.
+            </p>
+            <Image
+              src="/capability-lifecycle-diagram.svg"
+              alt="Enterprise Capability Lifecycle diagram: domain expertise, playbook, capability authoring, validation, approval, versioning, capability registry, runtime enforcement, execution, observability, feedback, and continuous improvement looping back to domain expertise."
+              className="mt-6 w-full rounded-2xl border border-border"
+              width={1200}
+              height={920}
+              unoptimized
+            />
+            <div className="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+              <p><span className="font-semibold text-foreground">Authoring &amp; Registry —</span> <Link href="/skills" className="underline hover:text-foreground">Skills Catalog</Link></p>
+              <p><span className="font-semibold text-foreground">Versioning &amp; Runtime —</span> <Link href="/enterprise-agent-runtime" className="underline hover:text-foreground">Enterprise Agent Runtime</Link></p>
+              <p><span className="font-semibold text-foreground">Execution (inference layer) —</span> <Link href="/ai-runtime-engineering" className="underline hover:text-foreground">AI Runtime Engineering</Link></p>
+              <p><span className="font-semibold text-foreground">Validation &amp; Approval —</span> <Link href="/adaptive-ai-governance" className="underline hover:text-foreground">Adaptive AI Governance</Link></p>
+              <p><span className="font-semibold text-foreground">Observability &amp; Feedback —</span> <Link href="/governance" className="underline hover:text-foreground">Governance Dashboard</Link></p>
+              <p><span className="font-semibold text-foreground">Execution (live outcomes) —</span> <Link href="/agent-marketplace" className="underline hover:text-foreground">Agent Marketplace</Link></p>
+              <p><span className="font-semibold text-foreground">Continuous Improvement —</span> <Link href="/ai-finops" className="underline hover:text-foreground">AI FinOps</Link></p>
             </div>
           </div>
         </section>

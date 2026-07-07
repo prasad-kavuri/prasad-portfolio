@@ -124,6 +124,9 @@ export default function AIRuntimeEngineeringPage() {
               down — in the inference runtime. This page maps the runtime techniques that turn a working model into a
               production-viable platform.
             </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Part of the <Link href="/capabilities#lifecycle" className="underline hover:text-foreground">Enterprise Capability Lifecycle</Link> — this page covers Execution at the inference layer.
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/capabilities" className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/40">
                 Capability Map

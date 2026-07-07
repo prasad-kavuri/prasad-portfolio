@@ -19,7 +19,15 @@ describe('AdaptiveAIGovernancePage', () => {
 
     expect(screen.getByRole('heading', { name: 'Adaptive AI Governance', level: 1 })).toBeInTheDocument();
     expect(screen.getByText(/Runtime Governance Layer/i)).toBeInTheDocument();
-    expect(screen.getByText(/moving from static review to runtime control/i)).toBeInTheDocument();
+    expect(screen.getByText(/expands the enterprise threat model beyond prompt-level controls/i)).toBeInTheDocument();
+  });
+
+  it('is honest about what the risk classifier enforces today vs. the broader threat model', () => {
+    render(React.createElement(AdaptiveAIGovernancePage));
+
+    expect(screen.getByText(/Enforced today vs\. the broader threat model/i)).toBeInTheDocument();
+    expect(screen.getByText('Memory poisoning')).toBeInTheDocument();
+    expect(screen.getByText('MCP misuse')).toBeInTheDocument();
   });
 
   it('renders governance controls linked to the live risk-routing evidence', () => {

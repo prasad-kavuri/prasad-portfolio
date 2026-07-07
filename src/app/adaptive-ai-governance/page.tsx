@@ -67,7 +67,7 @@ const controls: GovernanceControl[] = [
 export const metadata: Metadata = {
   title: 'Adaptive AI Governance',
   description:
-    'Runtime risk classification and risk-aware model routing — governance as an active platform layer, not a static policy document. Standard, security-sensitive, regulated, and blocked requests each route differently, live.',
+    'The rise of autonomous, multi-agent AI systems expands the enterprise threat model beyond prompt-level controls. Runtime risk classification and risk-aware model routing, honestly scoped against the broader threat model — not a static policy document.',
   alternates: {
     canonical: `${SITE_URL}/adaptive-ai-governance`,
   },
@@ -120,9 +120,11 @@ export default function AdaptiveAIGovernancePage() {
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Runtime Governance Layer</p>
             <h1 className="mt-2 text-3xl font-semibold">Adaptive AI Governance</h1>
             <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-              Modern enterprise AI governance is moving from static review to runtime control. This platform classifies
-              every request&apos;s risk tier before a model is selected, and routes standard, security-sensitive,
-              regulated, and blocked requests differently — live, not as a policy document.
+              The rise of autonomous, multi-agent AI systems expands the enterprise threat model beyond
+              prompt-level controls, requiring continuous runtime governance, policy enforcement, execution
+              monitoring, and auditability. This platform classifies every request&apos;s risk tier before a
+              model is selected, and routes standard, security-sensitive, regulated, and blocked requests
+              differently — live, not as a policy document.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/demos/llm-router" className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/40">
@@ -148,6 +150,41 @@ export default function AdaptiveAIGovernancePage() {
                 one: standard model routing decides <em>which</em> model based on cost and complexity, this layer
                 decides <em>whether</em> and <em>how</em> the request should proceed at all.
               </p>
+            </Card>
+          </div>
+        </section>
+
+        <section className="pb-10">
+          <div className="mx-auto max-w-5xl px-4">
+            <Card className="border-border bg-card p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Enforced today vs. the broader threat model</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                The risk classifier below operates at request/routing time — one decision, made once, before a
+                model is selected. That is one instrument in a larger set enterprises need as agents move from
+                single prompts to long-running, multi-step execution: plan → call tool → read memory → write
+                memory → delegate → call MCP server → repeat. Being precise about the difference matters more
+                than claiming broader coverage than what is actually built.
+              </p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Enforced today, live</p>
+                  <ul className="mt-1.5 space-y-1 text-sm text-muted-foreground">
+                    <li>Prompt injection blocking</li>
+                    <li>Security-sensitive request restriction</li>
+                    <li>Regulated-domain policy + audit</li>
+                    <li>Human approval escalation (HITL)</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Broader enterprise threat model</p>
+                  <ul className="mt-1.5 space-y-1 text-sm text-muted-foreground">
+                    <li>Tool abuse across a running agent</li>
+                    <li>Memory poisoning</li>
+                    <li>MCP misuse</li>
+                    <li>Cross-agent coordination, workflow escalation, data exfiltration</li>
+                  </ul>
+                </div>
+              </div>
             </Card>
           </div>
         </section>

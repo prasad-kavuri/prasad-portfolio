@@ -36,6 +36,28 @@ export default function SkillsPage() {
           </div>
         </div>
 
+        {/* Disambiguation + Agent Skills format note */}
+        <div className="mb-8 rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
+          <p>
+            This catalog documents <strong className="text-foreground">application-level skills</strong> —
+            the orchestration modules (guardrails, observability, evaluation, and so on) that demos on this
+            site call at runtime. It is distinct from the repository&apos;s own{' '}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">skills/*/SKILL.md</code> files, which are
+            agent-facing instructions used by coding agents (Claude Code and others) working on this
+            codebase — each one already conforms structurally to the open{' '}
+            <a
+              href="https://github.com/agentskills/agentskills"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-foreground underline underline-offset-2 hover:no-underline"
+            >
+              Agent Skills format
+            </a>{' '}
+            (a folder, a <code className="rounded bg-muted px-1 py-0.5 text-xs">SKILL.md</code> with YAML
+            frontmatter, and markdown instructions loaded via progressive disclosure).
+          </p>
+        </div>
+
         <SkillsCatalog skills={SKILLS} categories={categories} />
 
         {/* Architecture note */}

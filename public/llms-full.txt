@@ -558,8 +558,13 @@ WHAT MAKES IT AGENT-NATIVE:
 - docs/adr/: 10 Architecture Decision Records — decisions another engineer cannot
   infer from reading the code alone (server-only LLMs, dual CSP locations,
   useBrowserAI mandatory, named exports, no shadcn, etc.)
-- skills/: 8 reusable agent skill files (add-demo, redesign-portfolio, testing,
-  security-review, agentic-seo, recruiter-review, executive-review, self-heal)
+- skills/: 9 reusable agent skill files (add-demo, redesign-portfolio, testing,
+  security-review, agentic-seo, recruiter-review, executive-review, self-heal,
+  prasad-portfolio) — each conforms structurally to the open Agent Skills format
+  (https://github.com/agentskills/agentskills): a folder, a SKILL.md with YAML
+  frontmatter (name/description), and markdown instructions loaded via
+  progressive disclosure. Distinct from /skills, the application-level skills
+  catalog of orchestration modules used by the demos.
 - profiles/: 5 context-switching agent profiles (recruiter, testing, security,
   executive, design) — controls which skills are active and what tools are permitted
 - evaluations/: 6 YAML files with machine-readable quality gates (62 individual

@@ -91,9 +91,10 @@ test.describe('Homepage', () => {
     await expect(page.getByText(/Managing Tradeoffs/i).first()).toBeVisible();
   });
 
-  test('contact section shows role targeting', async ({ page }) => {
+  test('contact section shows AI strategy conversation CTA', async ({ page }) => {
     const contact = page.locator('#contact');
-    await expect(contact.getByText(/Open to VP \/ Head of AI Engineering/i)).toBeVisible();
+    await expect(contact.getByText(/Let's Talk AI Strategy/i)).toBeVisible();
+    await expect(contact.getByText(/building an AI platform/i)).toBeVisible();
     await expect(contact.getByRole('link', { name: /Connect on LinkedIn/i }).first()).toBeVisible();
   });
 

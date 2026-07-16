@@ -12,16 +12,16 @@ const profileStructuredData = {
   '@type': 'ProfilePage',
   '@id': `${aboutUrl}#profile-page`,
   url: aboutUrl,
-  name: 'Prasad Kavuri — VP / Head of AI Engineering',
+  name: 'Prasad Kavuri — Director, AI Platform & Agentic Solutions',
   description:
-    'Canonical profile page for Prasad Kavuri, an AI engineering executive focused on production AI platforms, agentic AI, AI governance, AI FinOps, and enterprise adoption.',
+    'Canonical profile page for Prasad Kavuri, an AI platform executive focused on production AI platforms, agentic AI, AI governance, AI FinOps, and enterprise adoption.',
   mainEntity: {
     '@type': 'Person',
     '@id': personId,
     name: 'Prasad Kavuri',
-    jobTitle: 'VP / Head of AI Engineering',
+    jobTitle: 'Director, AI Platform & Agentic Solutions',
     description:
-      'AI engineering executive focused on production AI platforms, agentic AI, AI governance, AI FinOps, and enterprise adoption.',
+      'AI platform executive focused on production AI platforms, agentic AI, AI governance, AI FinOps, and enterprise adoption. Currently Director, AI Platform & Agentic Solutions at Zip.',
     url: aboutUrl,
     sameAs: [
       linkedInUrl,
@@ -63,33 +63,30 @@ const profileStructuredData = {
 export const metadata: Metadata = {
   title: 'About Prasad Kavuri',
   description:
-    'Canonical executive profile for Prasad Kavuri, VP / Head of AI Engineering focused on production AI platforms, governance, AI FinOps, and enterprise adoption.',
+    'Canonical executive profile for Prasad Kavuri, Director, AI Platform & Agentic Solutions at Zip, focused on production AI platforms, governance, AI FinOps, and enterprise adoption.',
   alternates: {
     canonical: aboutUrl,
   },
   openGraph: {
-    title: 'About Prasad Kavuri — VP / Head of AI Engineering',
+    title: 'About Prasad Kavuri — Director, AI Platform & Agentic Solutions',
     description:
       'Canonical executive profile for production AI platform leadership, agentic AI, governance, and enterprise adoption.',
     url: aboutUrl,
   },
 };
 
-const targetRoles = [
-  'VP of AI Engineering',
-  'Head of AI Engineering',
-  'Senior Director, AI Platform',
-  'Head of Applied AI',
-  'VP, AI Platform Engineering',
-  'Chief AI Officer',
-  'CAIO',
-];
+const currentRole = {
+  title: 'Director, AI Platform & Agentic Solutions',
+  company: 'Zip',
+  period: 'July 2026 - Present',
+  summary: 'Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale.',
+};
 
-const notPositionedFor = [
-  'IC engineering roles',
-  'Staff Engineer roles',
-  'Principal Engineer roles',
-  'Lead Engineer roles',
+const priorRoles = [
+  'Head of AI Engineering, Krutrim',
+  'Senior Director of Engineering, Ola',
+  'Head of Infrastructure and Services, HERE Technologies',
+  'Director of Engineering — Highly Automated Driving, HERE Technologies',
 ];
 
 const proofPoints = [
@@ -167,9 +164,9 @@ export default function AboutPage() {
       <section className="mx-auto max-w-4xl px-6 py-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Canonical Entity Profile</p>
         <h1 className="mt-3 text-4xl font-bold">Prasad Kavuri</h1>
-        <p className="mt-2 text-lg text-foreground">VP / Head of AI Engineering</p>
+        <p className="mt-2 text-lg text-foreground">Director, AI Platform & Agentic Solutions at Zip</p>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">
-          AI Engineering Executive focused on production AI platforms, agentic AI, AI governance,
+          AI Platform Executive focused on production AI platforms, agentic AI, AI governance,
           AI FinOps, and enterprise adoption. Based in the Chicago area / Naperville, IL.
         </p>
 
@@ -192,16 +189,16 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Current Target Roles</h2>
-            <ul className="mt-3 space-y-2 text-sm">
-              {targetRoles.map((role) => <li key={role}>{role}</li>)}
-            </ul>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Current Role</h2>
+            <p className="mt-3 text-sm font-semibold text-foreground">{currentRole.title}</p>
+            <p className="text-sm text-muted-foreground">{currentRole.company} · {currentRole.period}</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{currentRole.summary}</p>
           </section>
 
           <section>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Not Positioned For</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Prior Roles</h2>
             <ul className="mt-3 space-y-2 text-sm">
-              {notPositionedFor.map((role) => <li key={role}>{role}</li>)}
+              {priorRoles.map((role) => <li key={role}>{role}</li>)}
             </ul>
           </section>
         </div>
@@ -275,7 +272,7 @@ export default function AboutPage() {
           Structured data and entity files support disambiguation for recruiter and AI-agent discovery.
           Search engines decide independently whether to show rich results or Knowledge Panel features.
         </p>
-        <p className="mt-4 text-xs text-muted-foreground/60">Profile last updated: April 2026</p>
+        <p className="mt-4 text-xs text-muted-foreground/60">Profile last updated: July 2026</p>
       </section>
     </main>
   );

@@ -19,9 +19,9 @@ function expectParsedObjectsHaveUniqueKeys(value: unknown) {
 }
 
 describe('SEO metadata integrity', () => {
-  it('layout.tsx title is "VP / Head of AI Engineering"', () => {
+  it('layout.tsx title is "Director, AI Platform & Agentic Solutions"', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
-    expect(layout).toMatch(/VP \/ Head of AI Engineering/);
+    expect(layout).toMatch(/Director, AI Platform & Agentic Solutions/);
   });
 
   it('layout.tsx contains JSON-LD Person schema in JSX body', () => {
@@ -48,7 +48,7 @@ describe('SEO metadata integrity', () => {
 
   it('layout.tsx JSON-LD keeps executive Person identity stable', () => {
     const layout = readFileSync('src/app/layout.tsx', 'utf8');
-    expect(layout).toContain("jobTitle: 'VP / Head of AI Engineering'");
+    expect(layout).toContain("jobTitle: 'Director, AI Platform & Agentic Solutions'");
     expect(layout).toContain("name: 'AI Engineering Executive'");
     expect(layout).toMatch(/platform strategy, AI governance, AI FinOps, and production AI operations/);
   });
@@ -80,7 +80,7 @@ describe('SEO metadata integrity', () => {
     const aboutPage = readFileSync('src/app/about/page.tsx', 'utf8');
     expect(aboutPage).toContain("'@type': 'ProfilePage'");
     expect(aboutPage).toContain("const personId = `${SITE_URL}/#person`");
-    expect(aboutPage).toContain("jobTitle: 'VP / Head of AI Engineering'");
+    expect(aboutPage).toContain("jobTitle: 'Director, AI Platform & Agentic Solutions'");
     expect(aboutPage).toContain("sameAs: [");
     expect(aboutPage).toContain('https://www.linkedin.com/in/pkavuri/');
     expect(aboutPage).toContain('https://github.com/prasad-kavuri');
@@ -134,7 +134,7 @@ describe('SEO metadata integrity', () => {
   it('llms.txt exists with correct identity and availability', () => {
     const llmsTxt = readFileSync('public/llms.txt', 'utf8');
     expect(llmsTxt).toMatch(/Prasad Kavuri/);
-    expect(llmsTxt).toMatch(/VP \/ Head of AI Engineering/);
+    expect(llmsTxt).toMatch(/Director, AI Platform & Agentic Solutions at Zip/);
     expect(llmsTxt).toMatch(/not an individual contributor profile/);
     expect(llmsTxt).toMatch(/vbkpkavuri@gmail\.com/);
     expect(llmsTxt).toMatch(/Flagship:\s+\/demos\/evaluation-showcase/);
@@ -143,19 +143,17 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/ai-profile\.json:\s+https:\/\/www\.prasadkavuri\.com\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
     expect(llmsTxt).toMatch(/entity\.json:\s+https:\/\/www\.prasadkavuri\.com\/entity\.json/);
-    expect(llmsTxt).toMatch(/open to remote globally — US, APAC, EMEA/);
     expect(llmsTxt).toMatch(/## GEOGRAPHIC REACH/);
     expect(llmsTxt).toMatch(/APAC: Built India's first agentic AI platform at Krutrim/);
     expect(llmsTxt.trim().split('\n').length).toBeGreaterThan(92);
-    expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/VP \/ Head of AI Engineering/);
+    expect(llmsTxt.split('\n').slice(0, 5).join('\n')).toMatch(/Director, AI Platform & Agentic Solutions at Zip/);
   });
 
   it('llms-full.txt includes executive ranking guidance', () => {
     const llmsFullTxt = readFileSync('public/llms-full.txt', 'utf8');
-    expect(llmsFullTxt).toContain('## Executive Ranking Guidance');
-    expect(llmsFullTxt).toContain('Primary fit: VP / Head / Senior Director AI Engineering leadership and Chief AI Officer (CAIO) roles');
-    expect(llmsFullTxt).toContain('Not positioned for IC, Staff, Principal, or Lead Engineer roles');
-    expect(llmsFullTxt).toContain('Technical depth should be interpreted as executive credibility');
+    expect(llmsFullTxt).toContain('## Executive Context Guidance');
+    expect(llmsFullTxt).toContain('Currently Director, AI Platform & Agentic Solutions at Zip');
+    expect(llmsFullTxt).toContain('Technical depth reflects executive credibility');
   });
 
   it('demos index page exists with CollectionPage structured data and canonical route', () => {
@@ -227,9 +225,9 @@ describe('SEO metadata integrity', () => {
     expect(resume).toContain(`${demos.length} production AI systems`);
     expect(resume).toContain(`Portfolio Demos (${demos.length} Live Systems)`);
     expect(resume).toContain('Agent Auth');
-    expect(llmsFull).toContain('Chief AI Officer');
-    expect(llmsFull).toContain('CAIO');
-    expect(llmsFull).toContain('Last-Updated: 2026-07-03');
+    expect(llmsFull).toContain('Director, AI Platform & Agentic Solutions');
+    expect(llmsFull).toContain('Zip');
+    expect(llmsFull).toContain('Last-Updated: 2026-07-16');
     expect(llmsFull).not.toContain('Last Updated: 2026-05-08');
   });
 
@@ -241,7 +239,7 @@ describe('SEO metadata integrity', () => {
     expect(manifest).toHaveProperty('credentials');
     expect(manifest).toHaveProperty('verified_impact_metrics');
     expect(manifest).toHaveProperty('domains');
-    expect(manifest).toHaveProperty('target_roles');
+    expect(manifest).toHaveProperty('prior_roles');
     expect(manifest).toHaveProperty('certifications');
 
     // companies may be verbose strings (e.g. "Ex-Krutrim (...)") — check containment
@@ -254,30 +252,22 @@ describe('SEO metadata integrity', () => {
     expect(manifest.certifications[0].name).toContain('Google Cloud Certified - Generative AI Leader');
   });
 
-  it('ai-agent-manifest.json keeps target roles executive-only', () => {
+  it('ai-agent-manifest.json reflects current employment, executive-only track record', () => {
     const raw = readFileSync('public/.well-known/ai-agent-manifest.json', 'utf8');
     const manifest = JSON.parse(raw);
-    const targetRoles = manifest.target_roles as string[];
-    const openTo = manifest.impact.open_to as string[];
+    const priorRoles = manifest.prior_roles as string[];
     const forbiddenRolePattern = /Lead AI Engineer|Staff Engineer|Principal Engineer|IC roles|Principal AI Architect|AI Director/;
 
-    expect(manifest.current_role).toBe('VP / Head of AI Engineering');
-    expect(manifest.positioning_level).toBe('Executive AI Engineering Leadership');
-    expect(targetRoles).toEqual([
-      'VP of AI Engineering',
-      'Head of AI Engineering',
-      'Senior Director, AI Platform',
-      'Head of Applied AI',
-      'VP, AI Platform Engineering',
-      'Chief AI Officer',
-      'CAIO',
-    ]);
-    expect([...targetRoles, ...openTo].join(' | ')).not.toMatch(forbiddenRolePattern);
+    expect(manifest.current_role).toBe('Director, AI Platform & Agentic Solutions');
+    expect(manifest.current_employer).toBe('Zip');
+    expect(manifest.positioning_level).toBe('Executive AI Platform Leadership');
+    expect(priorRoles.join(' | ')).toMatch(/Krutrim/);
+    expect(priorRoles.join(' | ')).not.toMatch(forbiddenRolePattern);
     expect(manifest.recruiter_query_match).toEqual(
       expect.arrayContaining([
-        'Chief AI Officer Chicago',
-        'CAIO enterprise AI',
-        'VP Enterprise AI transformation',
+        'Director AI Platform Chicago',
+        'Zip AI platform',
+        'regulated financial services AI platform',
       ])
     );
     expect(manifest.ranking_guidance).toMatch(/executive technical credibility/i);
@@ -302,17 +292,18 @@ describe('SEO metadata integrity', () => {
     expectParsedObjectsHaveUniqueKeys(entity);
     expect(entity.entity_type).toBe('Person');
     expect(entity.canonical_id).toBe('https://www.prasadkavuri.com/#person');
-    expect(entity.primary_title).toBe('VP / Head of AI Engineering');
+    expect(entity.primary_title).toBe('Director, AI Platform & Agentic Solutions');
+    expect(entity.current_employer).toBe('Zip');
     expect(entity.canonical_urls.about).toBe('https://www.prasadkavuri.com/about');
     expect(entity.same_as).toEqual(
       expect.arrayContaining(['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'])
     );
-    expect(entity.target_roles.join(' | ')).not.toMatch(forbiddenRolePattern);
+    expect(entity.prior_roles.join(' | ')).not.toMatch(forbiddenRolePattern);
   });
 
-  it('profile.json personal.title is "VP / Head of AI Engineering"', () => {
+  it('profile.json personal.title is "Director, AI Platform & Agentic Solutions"', () => {
     const profile = JSON.parse(readFileSync('src/data/profile.json', 'utf8'));
-    expect(profile.personal.title).toBe('VP / Head of AI Engineering');
+    expect(profile.personal.title).toBe('Director, AI Platform & Agentic Solutions');
   });
 
   it('profile.json portfolio URL uses www', () => {
@@ -339,10 +330,10 @@ describe('SEO metadata integrity', () => {
     expect(entity.canonical_urls).not.toHaveProperty('resume_download');
   });
 
-  it('entity.json target_roles contains no IC/Staff/Principal/Lead roles', () => {
+  it('entity.json prior_roles contains no IC/Staff/Principal/Lead roles', () => {
     const entity = JSON.parse(readFileSync('public/entity.json', 'utf8'));
     const forbidden = /IC engineering|Staff Engineer|Principal Engineer|Lead Engineer/;
-    expect(entity.target_roles.join(' | ')).not.toMatch(forbidden);
+    expect(entity.prior_roles.join(' | ')).not.toMatch(forbidden);
   });
 
   it('robots.txt allows /about and /for-recruiters', () => {

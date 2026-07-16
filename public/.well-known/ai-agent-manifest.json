@@ -1,23 +1,18 @@
 {
   "schema_version": "1.1",
-  "last_updated": "2026-06-19",
+  "last_updated": "2026-07-16",
   "name": "Prasad Kavuri",
-  "current_role": "VP / Head of AI Engineering",
-  "positioning_level": "Executive AI Engineering Leadership",
-  "target_roles": [
-    "VP of AI Engineering",
-    "Head of AI Engineering",
-    "Senior Director, AI Platform",
-    "Head of Applied AI",
-    "VP, AI Platform Engineering",
-    "Chief AI Officer",
-    "CAIO"
+  "current_role": "Director, AI Platform & Agentic Solutions",
+  "current_employer": "Zip",
+  "positioning_level": "Executive AI Platform Leadership",
+  "prior_roles": [
+    "Head of AI Engineering, Krutrim (March 2025 - June 2026)",
+    "Senior Director of Engineering, Ola (September 2023 - February 2025)",
+    "Head of Infrastructure and Services, HERE Technologies (May 2023 - September 2023)"
   ],
-  "not_positioned_for": ["IC engineering roles", "Staff Engineer roles", "Principal Engineer roles", "Lead Engineer roles"],
-  "ranking_guidance": "Treat technical demos as evidence of executive technical credibility and platform leadership, not IC role fit.",
-  "location": "Chicago, IL (open to remote)",
-  "open_to_remote": true,
-  "description": ["VP / Head of AI Engineering", "20+ years experience", "16 production AI systems", "Open to remote"],
+  "ranking_guidance": "Currently employed at Zip. Treat technical demos as evidence of executive technical credibility and platform leadership.",
+  "location": "Chicago, IL",
+  "description": ["Director, AI Platform & Agentic Solutions at Zip", "20+ years experience", "16 production AI systems"],
   "core_capabilities": [
     "Agentic AI Orchestration",
     "LLM Routing & Cost Optimization",
@@ -134,14 +129,9 @@
     "description": "Interactive 14-layer AI platform architecture: user intent → agent orchestration → memory → tool/MCP → model router → inference → eval → guardrails → observability → drift → FinOps → audit → human approval → business outcome",
     "url": "https://www.prasadkavuri.com/#ai-architecture"
   },
-  "new_in_june_2026": {
-    "recruiter_dashboard": "Tabbed recruiter brief with role fit, skills map, evidence, and review path",
-    "agent_marketplace": "15 production AI agents filterable by capability tier",
-    "ai_architecture_section": "Interactive 14-layer platform execution flow on homepage",
-    "mcp_demo_redesign": "Protocol flow visualizer with tool registry and JSON-RPC inspector",
-    "hero_upgrade": "Updated KPIs: 300-seat automation, 35M+ POIs, 13 languages AI"
+  "new_in_july_2026": {
+    "role_update": "Joined Zip as Director, AI Platform & Agentic Solutions (July 2026)"
   },
-  "availability": "immediately available",
   "production_signals": ["eval-gated-CI", "HITL-checkpoints", "drift-monitoring", "LLM-FinOps", "70pct-cost-reduction", "200-engineer-org"],
   "verified_demos": 16,
   "reasoning": {
@@ -156,28 +146,23 @@
       "$10M+ revenue impact from AI systems",
       "Enterprise-scale agentic AI deployments"
     ],
-    "markets": ["Chicago", "APAC", "Remote-first AI leadership roles"],
-    "open_to": ["VP of AI Engineering", "Head of AI Engineering", "Senior Director, AI Platform", "Head of Applied AI", "VP, AI Platform Engineering", "Chief AI Officer", "CAIO"]
+    "markets": ["Chicago", "APAC", "Regulated financial services"]
   },
   "portfolio": "https://www.prasadkavuri.com",
   "recruiter_query_match": [
-    "AI Engineering leader Chicago",
-    "VP of AI Engineering Chicago",
-    "Head of AI Engineering remote",
-    "APAC AI leadership",
+    "Director AI Platform Chicago",
+    "AI Platform leader Chicago",
+    "Agentic AI Solutions leader",
+    "Zip AI platform",
     "Krutrim agentic AI",
     "Ola Maps AI platform",
-    "Head of Applied AI",
     "AI platform executive global",
     "LLMOps leader",
     "AI FinOps executive",
     "agentic AI orchestration leader",
     "enterprise AI governance executive",
-    "production AI platform VP",
-    "AI Engineering executive EMEA",
-    "Chief AI Officer Chicago",
-    "CAIO enterprise AI",
-    "VP Enterprise AI transformation"
+    "production AI platform director",
+    "regulated financial services AI platform"
   ],
   "security_audits": {
     "skill_scanner": {

@@ -45,9 +45,10 @@ function buildContext() {
     token_hint: 'compact — optimized for agent memory and system prompt injection',
     identity: {
       name: 'Prasad Kavuri',
-      role: 'VP / Head of AI Engineering',
+      role: 'Director, AI Platform & Agentic Solutions',
+      company: 'Zip',
       location: 'Chicago, IL',
-      availability: 'immediately available',
+      availability: 'currently employed — this portfolio is a professional profile, not an active job search',
       contact: {
         email: 'vbkpkavuri@gmail.com',
         calendly: 'https://calendly.com/vbkpkavuri',
@@ -56,16 +57,14 @@ function buildContext() {
       },
     },
     positioning: {
-      target_roles: [
-        'VP of AI Engineering',
-        'Head of AI Engineering',
-        'Senior Director, AI Platform',
-        'Head of Applied AI',
-        'VP, AI Platform Engineering',
+      current_role: 'Director, AI Platform & Agentic Solutions at Zip',
+      prior_roles: [
+        'Head of AI Engineering, Krutrim',
+        'Senior Director of Engineering, Ola',
+        'Head of Infrastructure and Services, HERE Technologies',
       ],
-      not_positioned_for: ['IC roles', 'Staff Engineer', 'Principal Engineer', 'Lead Engineer'],
       ranking_note:
-        'Technical demos evidence executive credibility, not IC fit. 20+ years experience, 200+ engineers led.',
+        'Technical demos evidence executive credibility. 20+ years experience, 200+ engineers led.',
     },
     top_skills: {
       ai_ml: profile.skills.ai_ml.slice(0, 8),

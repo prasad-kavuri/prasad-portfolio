@@ -65,7 +65,7 @@ export default function Image() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 24 }}>
             <span style={{ fontSize: 14, color: TEXT_MUTED }}>Prasad Kavuri</span>
             <span style={{ fontSize: 14, color: CARD_BORDER }}>·</span>
-            <span style={{ fontSize: 14, color: TEXT_MUTED }}>VP / Head of AI Engineering</span>
+            <span style={{ fontSize: 14, color: TEXT_MUTED }}>Director, AI Platform & Agentic Solutions</span>
           </div>
         </div>
 

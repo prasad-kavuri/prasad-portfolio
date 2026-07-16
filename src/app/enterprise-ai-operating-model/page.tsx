@@ -97,7 +97,7 @@ const schema = {
     '@type': 'Person',
     '@id': `${SITE_URL}/#person`,
     name: 'Prasad Kavuri',
-    jobTitle: 'VP / Head of AI Engineering',
+    jobTitle: 'Director, AI Platform & Agentic Solutions',
     knowsAbout: [
       'Chief AI Officer',
       'Enterprise AI operating model',

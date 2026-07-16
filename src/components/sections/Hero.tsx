@@ -27,11 +27,11 @@ export function Hero() {
               width={120}
               height={120}
               className="rounded-full object-cover ring-2 ring-border"
-              alt="Prasad Kavuri, VP / Head of AI Engineering"
+              alt="Prasad Kavuri, Director, AI Platform & Agentic Solutions"
             />
             <div>
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--accent-brand)' }}>
-                AI Engineering Executive · Agentic AI Platforms · Enterprise Transformation
+                AI Platform Executive · Agentic AI Platforms · Enterprise Transformation
               </p>
               <h1 id="profile-name" className="text-3xl font-bold">
                 {profile.personal.name}
@@ -70,7 +70,7 @@ export function Hero() {
           </div>
 
           <p id="profile-summary" className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            20 years building AI platforms — from Krutrim&apos;s agentic AI ($10M+ revenue impact) to Ola Maps at 13,000+ B2B customers with 70% cost reduction. I take AI from demo to production with governance, cost discipline, and measurable outcomes.
+            20 years building AI platforms — now leading AI Platform and Agentic Solutions at Zip, after building Krutrim&apos;s agentic AI platform and scaling Ola Maps to 13,000+ B2B customers with 70% cost reduction.
           </p>
           <details className="mt-2 max-w-3xl">
             <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">Full background →</summary>
@@ -86,9 +86,9 @@ export function Hero() {
             </p>
             <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground/80">
               {[
-                "AI Engineering Leadership", "System Design", "Agentic Orchestration", 
-                "LLMOps", "AI FinOps", "Chicago", "APAC AI Leadership", "Krutrim", 
-                "Ola", "Global AI Platform Leader", "VP of AI Engineering", 
+                "AI Platform Leadership", "System Design", "Agentic Orchestration",
+                "LLMOps", "AI FinOps", "Chicago", "Zip", "Krutrim",
+                "Ola", "Global AI Platform Leader", "Director of AI Platform",
                 "Head of AI Engineering", "Senior Director AI Platform"
               ].map((term) => (
                 <span key={term} className="inline-flex items-center hover:text-foreground transition-colors cursor-default">
@@ -267,15 +267,15 @@ export function Hero() {
               </p>
               {/* Role clarity — reduces recruiter ambiguity, increases inbound relevance */}
               <p className="mt-1 text-sm text-muted-foreground">
-                Open to select{' '}
+                Currently{' '}
                 <span className="font-medium text-foreground">
-                  VP / Head of AI Engineering
+                  Director, AI Platform &amp; Agentic Solutions at Zip
                 </span>
-                {' '}and{' '}
+                {' '}— always happy to talk{' '}
                 <span className="font-medium text-foreground">
-                  Chief AI Officer (CAIO)
+                  AI platform strategy
                 </span>
-                {' '}conversations — Chicago area &amp; remote. Start with{' '}
+                . Start with{' '}
                 <Link href="/capabilities" className="underline underline-offset-2 hover:no-underline">
                   Platform Capabilities
                 </Link>

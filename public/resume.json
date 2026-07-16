@@ -2,10 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
   "basics": {
     "name": "Prasad Kavuri",
-    "label": "VP / Head of AI Engineering",
+    "label": "Director, AI Platform & Agentic Solutions",
     "email": "vbkpkavuri@gmail.com",
     "url": "https://www.prasadkavuri.com",
-    "summary": "Applied AI engineering executive with 20+ years building production-grade AI platforms at enterprise scale. Core differentiator: bridges the gap between AI research and enterprise reliability — ships AI systems that are observable, governed, and cost-efficient. Led AI platforms serving 13,000+ B2B customers with 70% infrastructure cost reduction.",
+    "summary": "Applied AI platform executive with 20+ years building production-grade AI platforms at enterprise scale. Core differentiator: bridges the gap between AI research and enterprise reliability — ships AI systems that are observable, governed, and cost-efficient. Currently leads AI Platform and Agentic Solutions at Zip in a regulated financial-services environment. Previously led AI platforms serving 13,000+ B2B customers with 70% infrastructure cost reduction.",
     "location": {
       "city": "Naperville",
       "region": "IL",
@@ -25,8 +25,17 @@
   },
   "work": [
     {
+      "name": "Zip",
+      "position": "Director, AI Platform & Agentic Solutions",
+      "startDate": "2026-07-01",
+      "summary": "Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment.",
+      "highlights": []
+    },
+    {
       "name": "Krutrim (Ola)",
       "position": "Head of AI Engineering",
+      "startDate": "2025-03-01",
+      "endDate": "2026-06-30",
       "url": "https://www.krutrim.com",
       "summary": "Architected India's first Agentic AI platform (Kruti.ai) from zero to production. Designed and shipped platform serving 13,000+ B2B customers across logistics, automotive, and mobility.",
       "highlights": [
@@ -111,6 +120,6 @@
   "meta": {
     "canonical": "https://www.prasadkavuri.com/resume.json",
     "version": "v1.0.0",
-    "lastModified": "2026-04-18"
+    "lastModified": "2026-07-16"
   }
 }

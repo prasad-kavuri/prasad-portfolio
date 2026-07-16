@@ -55,7 +55,7 @@ export default function Image() {
               <br />Recruiter Brief
             </div>
             <div style={{ fontSize: 20, color: ACCENT, marginBottom: 10 }}>
-              Prasad Kavuri — VP / Head of AI Engineering
+              Prasad Kavuri — Director, AI Platform & Agentic Solutions
             </div>
             <div style={{ fontSize: 15, color: TEXT_MUTED, marginBottom: 28, lineHeight: 1.5 }}>
               60-second summary, capability map, and production evidence for AI leadership evaluation.

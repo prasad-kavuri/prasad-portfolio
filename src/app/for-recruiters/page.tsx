@@ -8,14 +8,14 @@ import { CALENDLY_URLS } from '@/lib/tracking';
 export const metadata: Metadata = {
   title: 'For Recruiters',
   description:
-    'Executive recruiter brief for VP/Head AI Engineering and Chief AI Officer (CAIO) role matching. 200+ engineers led, $10M+ revenue launched, 70% cost reduction delivered. With capability map, demos, governance evidence, and budget context.',
+    'Executive brief on Prasad Kavuri, Director, AI Platform & Agentic Solutions at Zip. 200+ engineers led, $10M+ revenue launched, 70% cost reduction delivered. With capability map, demos, governance evidence, and career track record.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/for-recruiters',
   },
   openGraph: {
     title: 'For Recruiters — Prasad Kavuri',
     description:
-      'Executive summary and guided review path for VP / Head of AI Engineering and Chief AI Officer (CAIO) conversations. Budget context, transition narrative, and live governance evidence included.',
+      'Executive summary and guided review path covering AI platform leadership track record. Career narrative and live governance evidence included.',
     url: 'https://www.prasadkavuri.com/for-recruiters',
   },
   twitter: {
@@ -129,7 +129,7 @@ export default function ForRecruitersPage() {
             I build production AI platforms. Here&apos;s the evidence.
           </h1>
           <p className="text-muted-foreground mb-6">
-            VP / Head of AI Engineering · Chief AI Officer (CAIO) · Senior Director AI Platform — 20 years, 200+ engineers, $10M+ revenue launched.
+            Director, AI Platform &amp; Agentic Solutions at Zip — 20 years, 200+ engineers, $10M+ revenue launched.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -335,7 +335,7 @@ export default function ForRecruitersPage() {
             </li>
             <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
-              VP / Head of AI Engineering and Chief AI Officer (CAIO) searches — Chicago, APAC, EMEA, or global remote
+              Currently Director, AI Platform &amp; Agentic Solutions at Zip — always open to AI platform strategy conversations
             </li>
           </ul>
         </div>
@@ -352,11 +352,11 @@ export default function ForRecruitersPage() {
               </p>
               <ul className="space-y-2">
                 {[
-                  "VP / Head of AI Engineering — global or regional",
-                  "Chief AI Officer (CAIO) — building or scaling enterprise AI strategy",
+                  "Director / VP / Head of AI Engineering track record — global or regional",
+                  "Chief AI Officer (CAIO) scope — building or scaling enterprise AI strategy",
                   "Senior Director, AI Platform or Applied AI",
-                  "Head of AI for enterprise SaaS, fintech, mobility, healthcare, or deep-tech orgs",
-                  "Remote-first or Chicago-based; open to US, APAC, EMEA",
+                  "AI leadership for enterprise SaaS, fintech, mobility, healthcare, or deep-tech orgs",
+                  "Chicago-based",
                   "Orgs scaling from PoC to governed production AI with real budget accountability",
                   "Roles requiring both technical depth and executive org leadership",
                 ].map((item) => (
@@ -412,7 +412,7 @@ export default function ForRecruitersPage() {
                 "@type": "Person",
                 "@id": "https://www.prasadkavuri.com/#person",
                 "name": "Prasad Kavuri",
-                "jobTitle": "VP / Head of AI Engineering",
+                "jobTitle": "Director, AI Platform & Agentic Solutions",
                 "email": "mailto:vbkpkavuri@gmail.com",
                 "url": "https://www.prasadkavuri.com/for-recruiters",
                 "sameAs": [
@@ -433,18 +433,18 @@ export default function ForRecruitersPage() {
                 "mainEntity": [
                   {
                     "@type": "Question",
-                    "name": "What roles is Prasad Kavuri targeting?",
+                    "name": "What is Prasad Kavuri's current role?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad is targeting VP of AI Engineering, Head of AI Engineering, Chief AI Officer (CAIO), Senior Director of AI Platform, Head of Applied AI, and VP of AI Platform Engineering roles. He is not positioned for individual contributor, Staff, Principal, or Lead Engineer roles.",
+                      "text": "Prasad is currently Director, AI Platform & Agentic Solutions at Zip (July 2026 - Present), leading enterprise AI platform strategy and agentic AI capability development in a regulated financial-services environment.",
                     },
                   },
                   {
                     "@type": "Question",
-                    "name": "Is Prasad Kavuri available for new roles?",
+                    "name": "Can I connect with Prasad Kavuri to discuss AI strategy?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Yes, Prasad is immediately available. You can book a 30-minute call at calendly.com/vbkpkavuri or reach him at vbkpkavuri@gmail.com.",
+                      "text": "Yes, Prasad is happy to discuss AI platform strategy. You can book a 30-minute call at calendly.com/vbkpkavuri or reach him at vbkpkavuri@gmail.com.",
                     },
                   },
                   {
@@ -452,7 +452,7 @@ export default function ForRecruitersPage() {
                     "name": "Where is Prasad Kavuri located?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad is based in Naperville, IL in the Greater Chicago Area, and is open to remote positions globally.",
+                      "text": "Prasad is based in Naperville, IL in the Greater Chicago Area.",
                     },
                   },
                   {
@@ -473,10 +473,10 @@ export default function ForRecruitersPage() {
                   },
                   {
                     "@type": "Question",
-                    "name": "Is Prasad Kavuri qualified for a Chief AI Officer (CAIO) role?",
+                    "name": "What is Prasad Kavuri's track record for AI platform leadership?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Yes. Prasad has built and governed enterprise-scale AI platforms from strategy through production, including eval-gated CI, HITL checkpoints, drift monitoring, and AI FinOps discipline. He has led global engineering organizations of 200+ with $8M–$20M budgets, and has driven measurable business outcomes — 70% cost reduction, $10M+ revenue, 13,000+ enterprise customers — making him a strong candidate for CAIO and VP of AI Engineering roles at enterprise organizations.",
+                      "text": "Prasad has built and governed enterprise-scale AI platforms from strategy through production, including eval-gated CI, HITL checkpoints, drift monitoring, and AI FinOps discipline. He has led global engineering organizations of 200+ with $8M–$20M budgets, and has driven measurable business outcomes — 70% cost reduction, $10M+ revenue, 13,000+ enterprise customers.",
                     },
                   },
                   {
@@ -484,7 +484,7 @@ export default function ForRecruitersPage() {
                     "name": "What companies has Prasad Kavuri worked at?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad has held senior AI engineering leadership roles at Krutrim (Head of AI Engineering, building India's first Agentic AI platform), Ola (Senior Director of Engineering, scaling Ola Maps to 13,000+ B2B customers), and HERE Technologies (Director of Engineering for Highly Automated Driving, 18-year tenure).",
+                      "text": "Prasad is currently Director, AI Platform & Agentic Solutions at Zip. He previously held senior AI engineering leadership roles at Krutrim (Head of AI Engineering, building India's first Agentic AI platform), Ola (Senior Director of Engineering, scaling Ola Maps to 13,000+ B2B customers), and HERE Technologies (Director of Engineering for Highly Automated Driving, 18-year tenure).",
                     },
                   },
                 ],

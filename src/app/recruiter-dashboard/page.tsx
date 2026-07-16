@@ -14,7 +14,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 // ---------------------------------------------------------------------------
 
 const ROLE_DIMENSIONS = [
-  { id: 'vp-ai', label: 'VP / Head of AI Engineering', score: 97, rationale: 'Built and led 200+ eng orgs at Krutrim & Ola. $10M+ revenue, 70% cost reduction, eval-gated CI.' },
+  { id: 'vp-ai', label: 'Director / VP / Head of AI Engineering', score: 97, rationale: 'Built and led 200+ eng orgs at Krutrim & Ola; currently Director, AI Platform & Agentic Solutions at Zip. $10M+ revenue, 70% cost reduction, eval-gated CI.' },
   { id: 'caio', label: 'Chief AI Officer (CAIO)', score: 91, rationale: 'Platform strategy, board-level governance, AI FinOps, and org transformation at enterprise scale.' },
   { id: 'sd-platform', label: 'Sr. Director, AI Platform', score: 94, rationale: 'Deep hands-on platform architecture: RAG, agentic orchestration, observability, rate limiting.' },
   { id: 'vp-applied', label: 'VP Applied AI / ML', score: 82, rationale: 'Strong LLMOps foundation; not a pure ML research track — focus is production systems and business outcomes.' },
@@ -169,9 +169,9 @@ export default function RecruiterDashboardPage() {
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
             Recruiter Intelligence Dashboard
           </p>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Prasad Kavuri — AI Engineering Executive</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Prasad Kavuri — AI Platform Executive</h1>
           <p className="text-sm text-muted-foreground">
-            VP / Head of AI Engineering · Chief AI Officer (CAIO) · Chicago & Remote · Immediately available
+            Director, AI Platform &amp; Agentic Solutions at Zip · Chicago
           </p>
 
           {/* Quick stat pills */}

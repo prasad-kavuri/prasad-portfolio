@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'About Prasad Kavuri — VP / Head of AI Engineering';
+export const alt = 'About Prasad Kavuri — Director, AI Platform & Agentic Solutions';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -55,7 +55,7 @@ export default function Image() {
               <br />Kavuri
             </div>
             <div style={{ fontSize: 18, color: ACCENT, marginBottom: 8 }}>
-              VP / Head of AI Engineering
+              Director, AI Platform & Agentic Solutions
             </div>
             <div style={{ fontSize: 15, color: TEXT_MUTED, lineHeight: 1.5 }}>
               Production AI platforms · Agentic AI

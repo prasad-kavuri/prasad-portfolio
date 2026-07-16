@@ -53,7 +53,7 @@ describe('CopyForAI', () => {
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('Prasad Kavuri'));
     });
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('VP / Head of AI Engineering'));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('Director, AI Platform & Agentic Solutions'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('production AI governance'));
   });
 

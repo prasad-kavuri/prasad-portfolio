@@ -43,16 +43,16 @@ describe('Hero', () => {
   it('renders title and subtitle', () => {
     render(<Hero />);
     // The phrase appears in both the title paragraph and the recruiter banner
-    const matches = screen.getAllByText(/Head of AI Engineering/i);
+    const matches = screen.getAllByText(/Director, AI Platform & Agentic Solutions/i);
     expect(matches.length).toBeGreaterThan(0);
   });
 
   it('renders all 4 pills', () => {
     render(<Hero />);
-    expect(screen.getByText('Agentic AI')).toBeDefined();
-    expect(screen.getByText('LLM Platforms')).toBeDefined();
-    expect(screen.getByText('Applied AI Strategy')).toBeDefined();
-    expect(screen.getByText('Global Engineering Leadership')).toBeDefined();
+    expect(screen.getAllByText('Agentic AI').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Enterprise AI Platforms').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('AI Governance').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('AI FinOps').length).toBeGreaterThan(0);
   });
 
   it('renders summary paragraph', () => {
@@ -137,7 +137,7 @@ describe('Hero', () => {
   it('renders recruiter strip with role targeting', () => {
     render(<Hero />);
     expect(screen.getByText(/Recruiters/i)).toBeDefined();
-    expect(screen.getAllByText(/VP \/ Head of AI Engineering/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Director, AI Platform & Agentic Solutions at Zip/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Signature review artifact/i)).toBeDefined();
   });
 

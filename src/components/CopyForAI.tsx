@@ -5,16 +5,17 @@ import { trackEvent } from "@/lib/analytics";
 import { PORTFOLIO_FACTS } from "@/data/site-config";
 
 function getProfileMarkdown() {
-  return `# Prasad Kavuri — VP / Head of AI Engineering
+  return `# Prasad Kavuri — Director, AI Platform & Agentic Solutions
 
 **Location**: Naperville, IL (Greater Chicago Area)
+**Current**: Director, AI Platform & Agentic Solutions at Zip
 **Website**: https://www.prasadkavuri.com
 **LinkedIn**: https://linkedin.com/in/pkavuri
 **GitHub**: https://github.com/prasad-kavuri
 
 ## Summary
 
-Applied AI engineering executive with 20+ years building production-grade AI platforms
+Applied AI platform executive with 20+ years building production-grade AI platforms
 at enterprise scale. Specializes in agentic orchestration, LLM FinOps, and production AI governance.
 
 **Key metrics**: ${PORTFOLIO_FACTS.costReductionDelivered.replace('Up to ', '')} infrastructure cost reduction | ${PORTFOLIO_FACTS.latencyReduction} latency reduction |
@@ -30,7 +31,10 @@ at enterprise scale. Specializes in agentic orchestration, LLM FinOps, and produ
 
 ## Career Highlights
 
-**Krutrim / Ola** — Head of AI Engineering
+**Zip** — Director, AI Platform & Agentic Solutions (July 2026 - Present)
+- Leading enterprise AI platform strategy and agentic AI capability development in a regulated financial-services environment
+
+**Krutrim / Ola** — Head of AI Engineering (March 2025 - June 2026)
 - India's first Agentic AI platform for 13,000+ B2B customers
 - 70% infra cost reduction via LLM routing
 - Closed-loop evaluation engine, HITL checkpoints
@@ -39,10 +43,6 @@ at enterprise scale. Specializes in agentic orchestration, LLM FinOps, and produ
 - 50% latency reduction across global AI platform
 - Scaled engineering org to 200+ across global regions
 - Built multi-agent orchestration for real-time HD mapping
-
-## Open To
-
-VP of AI Engineering | Head of AI Engineering | Senior Director, AI Platform | Head of Applied AI | VP, AI Platform Engineering
 
 ## Live Portfolio Demos
 

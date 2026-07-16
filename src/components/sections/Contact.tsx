@@ -18,7 +18,6 @@ export function Contact() {
           <p className="mb-10 text-muted-foreground">
             If you&apos;re building an AI platform, scaling GenAI in the enterprise, or
             evaluating governance models — I&apos;d welcome the conversation.
-            Open to VP / Head of AI Engineering and AI Platform Leadership roles.
           </p>
         </div>
 

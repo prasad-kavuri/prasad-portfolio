@@ -9,6 +9,7 @@ import './globals.css';
 
 const personId = `${SITE_URL}/#person`;
 const websiteId = `${SITE_URL}/#website`;
+const zipId = `${SITE_URL}/#organization-zip`;
 const krutrimId = `${SITE_URL}/#organization-krutrim`;
 
 const siteStructuredData = {
@@ -31,9 +32,9 @@ const siteStructuredData = {
       '@type': 'Person',
       '@id': personId,
       name: 'Prasad Kavuri',
-      jobTitle: 'VP / Head of AI Engineering',
+      jobTitle: 'Director, AI Platform & Agentic Solutions',
       description:
-        'AI engineering executive with 20+ years building production AI platforms at scale. Led 200+ engineers across platform strategy, AI governance, AI FinOps, and production AI operations, with $10M+ revenue impact and 70% cost reduction.',
+        'AI platform executive with 20+ years building production AI platforms at scale. Leads AI Platform and Agentic Solutions at Zip, in a regulated financial-services environment. Previously led 200+ engineers across platform strategy, AI governance, AI FinOps, and production AI operations at Krutrim and Ola.',
       url: SITE_URL,
       mainEntityOfPage: SITE_URL,
       email: 'vbkpkavuri@gmail.com',
@@ -67,7 +68,7 @@ const siteStructuredData = {
         `${SITE_URL}/.well-known/ai-agent-manifest.json`,
         `${SITE_URL}/llms.txt`,
       ],
-      worksFor: { '@id': krutrimId },
+      worksFor: { '@id': zipId },
       alumniOf: [
         {
           '@type': 'CollegeOrUniversity',
@@ -77,6 +78,7 @@ const siteStructuredData = {
           '@type': 'CollegeOrUniversity',
           name: 'Osmania University',
         },
+        { '@id': krutrimId },
       ],
       knowsAbout: [
         'Agentic AI',
@@ -127,12 +129,20 @@ const siteStructuredData = {
     },
     {
       '@type': 'Organization',
+      '@id': zipId,
+      name: 'Zip',
+      sameAs: [],
+      description: 'Enterprise financial services platform where Prasad Kavuri serves as Director, AI Platform & Agentic Solutions.',
+      employee: { '@id': personId },
+    },
+    {
+      '@type': 'Organization',
       '@id': krutrimId,
       name: 'Krutrim',
       url: 'https://olakrutrim.com/',
       sameAs: ['https://www.linkedin.com/company/krutrim'],
-      description: 'AI computing company where Prasad Kavuri serves as Head of AI Engineering.',
-      employee: { '@id': personId },
+      description: 'AI computing company where Prasad Kavuri previously served as Head of AI Engineering (March 2025 - June 2026).',
+      alumni: { '@id': personId },
     },
     // Flagship demo artifacts — connect proof to the Person entity
     {
@@ -311,17 +321,18 @@ const siteStructuredData = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Prasad Kavuri — VP / Head of AI Engineering',
+    default: 'Prasad Kavuri — Director, AI Platform & Agentic Solutions',
     template: '%s | Prasad Kavuri',
   },
   description:
-    'Production AI platform portfolio for VP/Head-level evaluation: agentic orchestration, governance, retrieval systems, reliability controls, and enterprise AI operating rigor. Built India\'s first agentic AI platform (Kruti.ai), 300-seat call center automation, 70% cost reduction across 13K+ enterprise customers.',
+    'Production AI platform portfolio for Director/VP-level evaluation: agentic orchestration, governance, retrieval systems, reliability controls, and enterprise AI operating rigor. Currently Director, AI Platform & Agentic Solutions at Zip. Previously built India\'s first agentic AI platform (Kruti.ai), 300-seat call center automation, 70% cost reduction across 13K+ enterprise customers.',
   keywords: [
     'AI Engineering',
     'Agentic AI',
     'LLM Orchestration',
     'RAG Pipeline',
     'Multi-Agent Systems',
+    'Director of AI Platform',
     'Head of AI Engineering',
     'VP of AI Engineering',
     'Chief AI Officer',
@@ -331,6 +342,7 @@ export const metadata: Metadata = {
     'AI Platform Lead',
     'Director of Machine Learning',
     'AI Executive',
+    'Zip',
     'Krutrim',
     'Kruti.ai',
     'Prasad Kavuri',
@@ -359,8 +371,8 @@ export const metadata: Metadata = {
   authors: [{ name: 'Prasad Kavuri', url: SITE_URL }],
   creator: 'Prasad Kavuri',
   openGraph: {
-    title: 'Prasad Kavuri — VP / Head of AI Engineering | Chicago',
-    description: `VP-level AI engineering executive. Built agentic AI platforms at Krutrim/Ola (${PORTFOLIO_FACTS.b2bCustomersEnabled} B2B customers, ${PORTFOLIO_FACTS.costReductionDelivered} cost reduction, ${PORTFOLIO_FACTS.latencyReduction} latency improvement).`,
+    title: 'Prasad Kavuri — Director, AI Platform & Agentic Solutions | Chicago',
+    description: `Director-level AI platform executive at Zip. Previously built agentic AI platforms at Krutrim/Ola (${PORTFOLIO_FACTS.b2bCustomersEnabled} B2B customers, ${PORTFOLIO_FACTS.costReductionDelivered} cost reduction, ${PORTFOLIO_FACTS.latencyReduction} latency improvement).`,
     url: SITE_URL,
     siteName: SITE_NAME,
     images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Prasad Kavuri AI engineering portfolio' }],
@@ -368,7 +380,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prasad Kavuri — VP / Head of AI Engineering',
+    title: 'Prasad Kavuri — Director, AI Platform & Agentic Solutions',
     description: `Enterprise AI platform leadership: agentic orchestration, governance, evaluation, and reliability with ${PORTFOLIO_FACTS.productionDemoCount} production demos.`,
     images: ['/og-image.jpg'],
     creator: '@prasadkavuri',

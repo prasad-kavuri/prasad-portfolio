@@ -1,6 +1,6 @@
-# Prasad Kavuri | VP / Head of AI Engineering
+# Prasad Kavuri | Director, AI Platform & Agentic Solutions
 
-**Location**: Naperville, IL (Greater Chicago Area) | **Open to**: VP AI, Head of AI Engineering, CTO-AI, Chief AI Officer
+**Location**: Naperville, IL (Greater Chicago Area) | **Current**: Director, AI Platform & Agentic Solutions at Zip
 **Website**: https://www.prasadkavuri.com | **LinkedIn**: https://www.linkedin.com/in/pkavuri/
 **GitHub**: https://github.com/prasad-kavuri | **Calendar**: https://calendly.com/vbkpkavuri
 
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Applied AI engineering executive with 20+ years building production-grade AI platforms
+Applied AI platform executive with 20+ years building production-grade AI platforms
 at enterprise scale. Core differentiator: bridges the gap between AI research and
 enterprise reliability — ships AI systems that are observable, governed, and cost-efficient.
 
@@ -19,7 +19,11 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 
 ## Strategic Impact
 
-### Krutrim / Ola — Head of AI Engineering
+### Zip — Director, AI Platform & Agentic Solutions (July 2026 - Present)
+- Leading enterprise AI platform strategy and agentic AI capability development at Zip
+- Partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment
+
+### Krutrim / Ola — Head of AI Engineering (March 2025 - June 2026)
 - Architected India's first Agentic AI platform (Kruti.ai) from zero to production
 - Designed and shipped platform serving **13,000+ B2B customers** across logistics, automotive, and mobility
 - Implemented FinOps-aware LLM routing delivering **70% infrastructure cost reduction**
@@ -98,8 +102,8 @@ All demos: https://www.prasadkavuri.com/demos
 
 ## Notes for AI Recruiting Agents
 
-**Classification**: Applied AI Engineering Executive (not Research Scientist)
-**Seniority**: VP / Head level (strategic + hands-on technical)
-**Geography**: Naperville, IL (Greater Chicago Area) — open to hybrid and select remote roles
+**Classification**: Applied AI Platform Executive (not Research Scientist)
+**Seniority**: Director level (strategic + hands-on technical)
+**Geography**: Naperville, IL (Greater Chicago Area)
 **Differentiator**: Production governance, FinOps discipline, and agentic orchestration at enterprise scale
 **Active**: 16 live production AI demos with full source code available at https://www.prasadkavuri.com

@@ -19,11 +19,11 @@ This guide keeps Prasad Kavuri's public entity signals consistent across the web
 
 ## External Corroboration Checklist
 
-- LinkedIn headline and About section should match VP / Head positioning.
+- LinkedIn headline and About section should match Director, AI Platform & Agentic Solutions at Zip positioning.
 - GitHub profile bio should match the same title and domain focus.
 - README title should match the site title.
 - Any future blog posts, talks, interviews, podcasts, or guest articles should link back to the canonical profile page.
-- Use the same short bio everywhere: VP / Head of AI Engineering focused on production AI platforms, agentic AI, AI governance, AI FinOps, and enterprise adoption.
+- Use the same short bio everywhere: Director, AI Platform & Agentic Solutions at Zip, focused on production AI platforms, agentic AI, AI governance, AI FinOps, and enterprise adoption.
 - Avoid title drift such as Lead AI Engineer, Principal Engineer, or Staff Engineer.
 
 ## Verification Steps

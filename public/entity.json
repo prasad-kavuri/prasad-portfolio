@@ -3,8 +3,9 @@
   "entity_type": "Person",
   "canonical_id": "https://www.prasadkavuri.com/#person",
   "name": "Prasad Kavuri",
-  "primary_title": "VP / Head of AI Engineering",
-  "positioning_level": "Executive AI Engineering Leadership",
+  "primary_title": "Director, AI Platform & Agentic Solutions",
+  "current_employer": "Zip",
+  "positioning_level": "Executive AI Platform Leadership",
   "location": "Chicago area / Naperville, IL",
   "canonical_urls": {
     "website": "https://www.prasadkavuri.com",
@@ -24,20 +25,16 @@
     "https://github.com/prasad-kavuri",
     "https://www.prasadkavuri.com"
   ],
-  "target_roles": [
-    "VP of AI Engineering",
-    "Head of AI Engineering",
-    "Senior Director, AI Platform",
-    "Head of Applied AI",
-    "VP, AI Platform Engineering",
-    "Chief AI Officer",
-    "CAIO"
-  ],
-  "not_positioned_for": [
-    "IC engineering roles",
-    "Staff Engineer roles",
-    "Principal Engineer roles",
-    "Lead Engineer roles"
+  "current_role": {
+    "title": "Director, AI Platform & Agentic Solutions",
+    "company": "Zip",
+    "period": "July 2026 - Present",
+    "summary": "Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment."
+  },
+  "prior_roles": [
+    "Head of AI Engineering, Krutrim (March 2025 - June 2026)",
+    "Senior Director of Engineering, Ola (September 2023 - February 2025)",
+    "Head of Infrastructure and Services, HERE Technologies (May 2023 - September 2023)"
   ],
   "key_capabilities": [
     "Agentic AI Orchestration",
@@ -63,33 +60,21 @@
     "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "github": "https://github.com/prasad-kavuri"
   },
-  "last_updated": "2026-06-16",
+  "last_updated": "2026-07-16",
   "recruiter_query_match": [
+    "Director AI Platform Chicago",
     "AI Engineering leader Chicago",
-    "VP of AI Engineering Chicago",
-    "Head of AI Engineering remote",
-    "APAC AI leadership",
+    "Agentic AI Solutions leader",
+    "Zip AI platform",
     "Krutrim agentic AI",
     "Ola Maps AI platform",
-    "Head of Applied AI",
     "AI platform executive global",
     "LLMOps leader",
     "AI FinOps executive",
     "agentic AI orchestration leader",
     "enterprise AI governance executive",
     "multi-agent systems architect",
-    "production AI platform VP",
-    "AI Engineering executive EMEA",
-    "Chief AI Officer Chicago",
-    "CAIO enterprise AI",
-    "VP Enterprise AI transformation"
-  ],
-  "not_a_match_for": [
-    "IC engineering roles",
-    "Staff Engineer",
-    "Principal Engineer",
-    "Lead Engineer",
-    "pure ML research",
-    "data science IC roles"
+    "production AI platform director",
+    "regulated financial services AI platform"
   ]
 }

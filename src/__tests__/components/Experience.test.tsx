@@ -63,7 +63,7 @@ import { Experience } from '@/components/sections/Experience';
 describe('Experience', () => {
   it('renders the Leadership Timeline section heading', () => {
     render(<Experience />);
-    expect(screen.getByText('20 Years. Four Defining Transformations.')).toBeInTheDocument();
+    expect(screen.getByText('20 Years. Five Defining Transformations.')).toBeInTheDocument();
   });
 
   it('renders the "Leadership Timeline" label', () => {

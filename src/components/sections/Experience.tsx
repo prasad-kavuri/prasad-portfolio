@@ -8,8 +8,17 @@ import profile from '@/data/profile.json';
 const OUTCOMES: Record<string, {
   situation: string;
   built: string;
+  builtLabel?: string;
   metrics: { value: string; label: string }[];
 }> = {
+  zip: {
+    situation:
+      'Zip needed centralized AI platform capabilities to let AI agents, decision systems, and intelligent workflows operate safely and at scale across a regulated financial-services environment.',
+    built:
+      'Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale.',
+    builtLabel: "What I'm Building",
+    metrics: [],
+  },
   krutrim: {
     situation:
       'India had no sovereign agentic AI platform. Krutrim (Ola Group) was starting from zero and needed to reach national production scale in months, not years.',
@@ -59,6 +68,7 @@ const OUTCOMES: Record<string, {
 
 // Color accents cycling through featured roles
 const ROLE_COLORS = [
+  'border-emerald-500/50',
   'border-indigo-500/50',
   'border-violet-500/50',
   'border-blue-500/50',
@@ -66,6 +76,7 @@ const ROLE_COLORS = [
 ];
 
 const DOT_COLORS = [
+  'bg-emerald-500',
   'bg-indigo-500',
   'bg-violet-500',
   'bg-blue-500',
@@ -77,7 +88,7 @@ const DOT_COLORS = [
 // ---------------------------------------------------------------------------
 
 export function Experience() {
-  const featuredIds = ['krutrim', 'ola', 'here-head', 'here-director'];
+  const featuredIds = ['zip', 'krutrim', 'ola', 'here-head', 'here-director'];
   const featuredExperiences = featuredIds
     .map(id => profile.experience.find(e => e.id === id))
     .filter(Boolean) as typeof profile.experience;
@@ -96,11 +107,11 @@ export function Experience() {
             Leadership Timeline
           </p>
           <h2 className="text-3xl font-semibold text-foreground mb-4">
-            20 Years. Four Defining Transformations.
+            20 Years. Five Defining Transformations.
           </h2>
           <p className="text-muted-foreground max-w-2xl leading-relaxed">
             From HERE Technologies&apos; AI/ML infrastructure for autonomous driving to India&apos;s first national-scale
-            agentic AI platform — each role was a deliberate step into harder problems.
+            agentic AI platform, to leading AI Platform and Agentic Solutions at Zip — each role was a deliberate step into harder problems.
           </p>
         </div>
 
@@ -149,7 +160,7 @@ export function Experience() {
 
                     {/* Outcome narrative */}
                     {outcome && (
-                      <div className="px-5 py-4 grid gap-4 sm:grid-cols-2">
+                      <div className={`px-5 py-4 grid gap-4 ${outcome.metrics.length > 0 ? 'sm:grid-cols-2' : ''}`}>
                         {/* Left: Situation + Built */}
                         <div className="space-y-4">
                           <div>
@@ -160,29 +171,31 @@ export function Experience() {
                           </div>
                           <div>
                             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-1.5">
-                              What I Built
+                              {outcome.builtLabel ?? 'What I Built'}
                             </p>
                             <p className="text-sm text-muted-foreground leading-relaxed">{outcome.built}</p>
                           </div>
                         </div>
 
-                        {/* Right: Quantified outcomes */}
-                        <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">
-                            Outcomes
-                          </p>
-                          <div className="grid grid-cols-2 gap-2">
-                            {outcome.metrics.map(m => (
-                              <div
-                                key={m.label}
-                                className="rounded-lg border border-border bg-muted/30 px-3 py-2.5"
-                              >
-                                <p className="text-sm font-bold text-foreground leading-tight">{m.value}</p>
-                                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{m.label}</p>
-                              </div>
-                            ))}
+                        {/* Right: Quantified outcomes — only shown once results are available */}
+                        {outcome.metrics.length > 0 && (
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-2">
+                              Outcomes
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                              {outcome.metrics.map(m => (
+                                <div
+                                  key={m.label}
+                                  className="rounded-lg border border-border bg-muted/30 px-3 py-2.5"
+                                >
+                                  <p className="text-sm font-bold text-foreground leading-tight">{m.value}</p>
+                                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{m.label}</p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     )}
 

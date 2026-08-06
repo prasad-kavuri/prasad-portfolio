@@ -192,6 +192,42 @@ export default function AdaptiveAIGovernancePage() {
           </div>
         </section>
 
+        <section className="pb-10">
+          <div className="mx-auto max-w-5xl px-4">
+            <Card className="border-border bg-card p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Industry signal</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                In August 2026, Uber open-sourced{' '}
+                <Link
+                  href="https://github.com/uber/ADR"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-foreground"
+                >
+                  ADR (Agentic Detection and Response)
+                </Link>
+                , an EDR-style runtime detection system for agentic AI — sensors that capture agent
+                telemetry (prompts, MCP activity, reasoning traces, tool calls) and a detection layer
+                that flags credential exposure, prompt injection, data exfiltration, and policy-violating
+                tool use. Uber&apos;s code is not yet public; the project is described in an{' '}
+                <Link
+                  href="https://arxiv.org/abs/2605.17380"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-foreground"
+                >
+                  accompanying paper
+                </Link>
+                . It is not a dependency of this platform and nothing here integrates with it — it is
+                cited as external validation that runtime, telemetry-driven detection for agentic AI
+                is becoming a recognized enterprise category, the same category this page&apos;s risk
+                classification, prompt-injection blocking, and audit trail already operate in at a
+                smaller, single-request scope.
+              </p>
+            </Card>
+          </div>
+        </section>
+
         <section className="pb-14">
           <div className="mx-auto grid max-w-5xl gap-4 px-4 sm:grid-cols-2">
             {controls.map((control) => (

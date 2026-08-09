@@ -8,7 +8,7 @@ import { CALENDLY_URLS } from '@/lib/tracking';
 export const metadata: Metadata = {
   title: 'For Recruiters',
   description:
-    'Executive brief on Prasad Kavuri, Director, AI Platform & Agentic Solutions at Zip. 200+ engineers led, $10M+ revenue launched, 70% cost reduction delivered. With capability map, demos, governance evidence, and career track record.',
+    'Executive brief on Prasad Kavuri, Head of AI Platform & Agentic Solutions at Zip. 200+ engineers led, $10M+ revenue launched, 70% cost reduction delivered. With capability map, demos, governance evidence, and career track record.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/for-recruiters',
   },
@@ -129,7 +129,7 @@ export default function ForRecruitersPage() {
             I build production AI platforms. Here&apos;s the evidence.
           </h1>
           <p className="text-muted-foreground mb-6">
-            Director, AI Platform &amp; Agentic Solutions at Zip — 20 years, 200+ engineers, $10M+ revenue launched.
+            Head of AI Platform &amp; Agentic Solutions at Zip — 20 years, 200+ engineers, $10M+ revenue launched.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -335,7 +335,7 @@ export default function ForRecruitersPage() {
             </li>
             <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="mt-2 size-1 rounded-full shrink-0 bg-indigo-500" />
-              Currently Director, AI Platform &amp; Agentic Solutions at Zip — always open to AI platform strategy conversations
+              Currently Head of AI Platform &amp; Agentic Solutions at Zip — always open to AI platform strategy conversations
             </li>
           </ul>
         </div>
@@ -412,7 +412,7 @@ export default function ForRecruitersPage() {
                 "@type": "Person",
                 "@id": "https://www.prasadkavuri.com/#person",
                 "name": "Prasad Kavuri",
-                "jobTitle": "Director, AI Platform & Agentic Solutions",
+                "jobTitle": "Head of AI Platform & Agentic Solutions",
                 "email": "mailto:vbkpkavuri@gmail.com",
                 "url": "https://www.prasadkavuri.com/for-recruiters",
                 "sameAs": [
@@ -436,7 +436,7 @@ export default function ForRecruitersPage() {
                     "name": "What is Prasad Kavuri's current role?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad is currently Director, AI Platform & Agentic Solutions at Zip (July 2026 - Present), leading enterprise AI platform strategy and agentic AI capability development in a regulated financial-services environment.",
+                      "text": "Prasad is currently Head of AI Platform & Agentic Solutions at Zip (July 2026 - Present), leading enterprise AI platform strategy and agentic AI capability development in a regulated financial-services environment.",
                     },
                   },
                   {
@@ -484,7 +484,7 @@ export default function ForRecruitersPage() {
                     "name": "What companies has Prasad Kavuri worked at?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad is currently Director, AI Platform & Agentic Solutions at Zip. He previously held senior AI engineering leadership roles at Krutrim (Head of AI Engineering, building India's first Agentic AI platform), Ola (Senior Director of Engineering, scaling Ola Maps to 13,000+ B2B customers), and HERE Technologies (Director of Engineering for Highly Automated Driving, 18-year tenure).",
+                      "text": "Prasad is currently Head of AI Platform & Agentic Solutions at Zip. He previously held senior AI engineering leadership roles at Krutrim (Head of AI Engineering, building India's first Agentic AI platform), Ola (Senior Director of Engineering, scaling Ola Maps to 13,000+ B2B customers), and HERE Technologies (Director of Engineering for Highly Automated Driving, 18-year tenure).",
                     },
                   },
                 ],

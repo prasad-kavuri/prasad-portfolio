@@ -19,7 +19,7 @@ export default function ContactPage() {
         <header className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Contact</h1>
           <p className="text-xl text-muted-foreground">
-            I&apos;m currently <span className="text-foreground font-semibold">Director, AI Platform &amp; Agentic Solutions at Zip</span>. Always happy to talk <span className="text-foreground font-semibold">AI platform strategy</span>.
+            I&apos;m currently <span className="text-foreground font-semibold">Head of AI Platform &amp; Agentic Solutions at Zip</span>. Always happy to talk <span className="text-foreground font-semibold">AI platform strategy</span>.
           </p>
         </header>
 

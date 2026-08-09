@@ -1,8 +1,8 @@
 {
   "personal": {
     "name": "Prasad Kavuri",
-    "title": "Director, AI Platform & Agentic Solutions",
-    "subtitle": "Director, AI Platform & Agentic Solutions at Zip | Agentic AI · Enterprise AI Platforms · AI Governance · AI FinOps | Ex-Krutrim, Ola, HERE",
+    "title": "Head of AI Platform & Agentic Solutions",
+    "subtitle": "Head of AI Platform & Agentic Solutions at Zip | Agentic AI · Enterprise AI Platforms · AI Governance · AI FinOps | Ex-Krutrim, Ola, HERE",
     "location": "Naperville, IL (Greater Chicago Area)",
     "email": "vbkpkavuri@gmail.com",
     "linkedin": "https://linkedin.com/in/pkavuri",
@@ -23,7 +23,7 @@
       "id": "zip",
       "company": "Zip",
       "companyContext": "Enterprise financial services platform operating in a regulated environment",
-      "title": "Director, AI Platform & Agentic Solutions",
+      "title": "Head of AI Platform & Agentic Solutions",
       "period": "July 2026 - Present",
       "location": "Naperville, IL",
       "duration": "Present",
@@ -319,7 +319,7 @@
     }
   ],
   "knowledgeBase": [
-    "Prasad Kavuri is currently Director, AI Platform & Agentic Solutions at Zip (July 2026 - Present), based in Naperville, IL. He leads enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment.",
+    "Prasad Kavuri is currently Head of AI Platform & Agentic Solutions at Zip (July 2026 - Present), based in Naperville, IL. He leads enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment.",
     "Prasad was Head of AI Engineering at Krutrim (March 2025 - June 2026), based in Naperville, IL. He led end-to-end architecture and delivery of India's first Agentic AI platform (Kruti.ai) spanning multi-model LLM orchestration, RAG pipelines, vector search, and real-time personalization across mobility, commerce, and payments.",
     "At Krutrim, Prasad built and scaled a 200+ global engineering organization delivering enterprise-grade 24/7 PaaS capabilities and integrating diverse AI models and vendors into a unified production ecosystem. He defined SDK/API integration strategy that accelerated enterprise client adoption and expanded the Kruti.ai agent ecosystem.",
     "At Krutrim, Prasad launched domain-specific AI agents for cab booking, food ordering, bill payments, and image generation, opening new B2B and B2C revenue streams at national scale. He also drove 50% latency reduction and 40% cost savings through multimodal Agentic AI architecture and intelligent model routing.",

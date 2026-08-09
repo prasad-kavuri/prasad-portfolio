@@ -32,7 +32,7 @@ const siteStructuredData = {
       '@type': 'Person',
       '@id': personId,
       name: 'Prasad Kavuri',
-      jobTitle: 'Director, AI Platform & Agentic Solutions',
+      jobTitle: 'Head of AI Platform & Agentic Solutions',
       description:
         'AI platform executive with 20+ years building production AI platforms at scale. Leads AI Platform and Agentic Solutions at Zip, in a regulated financial-services environment. Previously led 200+ engineers across platform strategy, AI governance, AI FinOps, and production AI operations at Krutrim and Ola.',
       url: SITE_URL,
@@ -132,7 +132,7 @@ const siteStructuredData = {
       '@id': zipId,
       name: 'Zip',
       sameAs: [],
-      description: 'Enterprise financial services platform where Prasad Kavuri serves as Director, AI Platform & Agentic Solutions.',
+      description: 'Enterprise financial services platform where Prasad Kavuri serves as Head of AI Platform & Agentic Solutions.',
       employee: { '@id': personId },
     },
     {
@@ -321,17 +321,18 @@ const siteStructuredData = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Prasad Kavuri — Director, AI Platform & Agentic Solutions',
+    default: 'Prasad Kavuri — Head of AI Platform & Agentic Solutions',
     template: '%s | Prasad Kavuri',
   },
   description:
-    'Production AI platform portfolio for Director/VP-level evaluation: agentic orchestration, governance, retrieval systems, reliability controls, and enterprise AI operating rigor. Currently Director, AI Platform & Agentic Solutions at Zip. Previously built India\'s first agentic AI platform (Kruti.ai), 300-seat call center automation, 70% cost reduction across 13K+ enterprise customers.',
+    'Production AI platform portfolio for Director/VP-level evaluation: agentic orchestration, governance, retrieval systems, reliability controls, and enterprise AI operating rigor. Currently Head of AI Platform & Agentic Solutions at Zip. Previously built India\'s first agentic AI platform (Kruti.ai), 300-seat call center automation, 70% cost reduction across 13K+ enterprise customers.',
   keywords: [
     'AI Engineering',
     'Agentic AI',
     'LLM Orchestration',
     'RAG Pipeline',
     'Multi-Agent Systems',
+    'Head of AI Platform',
     'Director of AI Platform',
     'Head of AI Engineering',
     'VP of AI Engineering',
@@ -371,7 +372,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Prasad Kavuri', url: SITE_URL }],
   creator: 'Prasad Kavuri',
   openGraph: {
-    title: 'Prasad Kavuri — Director, AI Platform & Agentic Solutions | Chicago',
+    title: 'Prasad Kavuri — Head of AI Platform & Agentic Solutions | Chicago',
     description: `Director-level AI platform executive at Zip. Previously built agentic AI platforms at Krutrim/Ola (${PORTFOLIO_FACTS.b2bCustomersEnabled} B2B customers, ${PORTFOLIO_FACTS.costReductionDelivered} cost reduction, ${PORTFOLIO_FACTS.latencyReduction} latency improvement).`,
     url: SITE_URL,
     siteName: SITE_NAME,
@@ -380,7 +381,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prasad Kavuri — Director, AI Platform & Agentic Solutions',
+    title: 'Prasad Kavuri — Head of AI Platform & Agentic Solutions',
     description: `Enterprise AI platform leadership: agentic orchestration, governance, evaluation, and reliability with ${PORTFOLIO_FACTS.productionDemoCount} production demos.`,
     images: ['/og-image.jpg'],
     creator: '@prasadkavuri',

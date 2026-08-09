@@ -36,7 +36,7 @@ const homePageStructuredData = {
       "@type": ["WebPage", "ProfilePage"],
       "@id": `${siteUrl}/#webpage`,
       url: siteUrl,
-      name: "Prasad Kavuri - Director, AI Platform & Agentic Solutions",
+      name: "Prasad Kavuri - Head of AI Platform & Agentic Solutions",
       isPartOf: { "@id": `${siteUrl}/#website` },
       about: { "@id": `${siteUrl}/#person` },
       mainEntity: { "@id": `${siteUrl}/#person` },

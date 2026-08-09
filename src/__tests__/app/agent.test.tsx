@@ -10,9 +10,9 @@ describe('/agent page', () => {
     expect(container).toBeTruthy();
   });
 
-  it('contains "Director, AI Platform & Agentic Solutions"', () => {
+  it('contains "Head of AI Platform & Agentic Solutions"', () => {
     render(React.createElement(AgentPage));
-    const matches = screen.getAllByText(/Director, AI Platform & Agentic Solutions/i);
+    const matches = screen.getAllByText(/Head of AI Platform & Agentic Solutions/i);
     expect(matches.length).toBeGreaterThan(0);
   });
 

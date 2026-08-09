@@ -43,7 +43,7 @@ describe('Hero', () => {
   it('renders title and subtitle', () => {
     render(<Hero />);
     // The phrase appears in both the title paragraph and the recruiter banner
-    const matches = screen.getAllByText(/Director, AI Platform & Agentic Solutions/i);
+    const matches = screen.getAllByText(/Head of AI Platform & Agentic Solutions/i);
     expect(matches.length).toBeGreaterThan(0);
   });
 
@@ -137,7 +137,7 @@ describe('Hero', () => {
   it('renders recruiter strip with role targeting', () => {
     render(<Hero />);
     expect(screen.getByText(/Recruiters/i)).toBeDefined();
-    expect(screen.getAllByText(/Director, AI Platform & Agentic Solutions at Zip/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Head of AI Platform & Agentic Solutions at Zip/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Signature review artifact/i)).toBeDefined();
   });
 

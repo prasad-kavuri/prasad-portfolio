@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
   "basics": {
     "name": "Prasad Kavuri",
-    "label": "Director, AI Platform & Agentic Solutions",
+    "label": "Head of AI Platform & Agentic Solutions",
     "email": "vbkpkavuri@gmail.com",
     "url": "https://www.prasadkavuri.com",
     "summary": "Applied AI platform executive with 20+ years building production-grade AI platforms at enterprise scale. Core differentiator: bridges the gap between AI research and enterprise reliability — ships AI systems that are observable, governed, and cost-efficient. Currently leads AI Platform and Agentic Solutions at Zip in a regulated financial-services environment. Previously led AI platforms serving 13,000+ B2B customers with 70% infrastructure cost reduction.",
@@ -26,7 +26,7 @@
   "work": [
     {
       "name": "Zip",
-      "position": "Director, AI Platform & Agentic Solutions",
+      "position": "Head of AI Platform & Agentic Solutions",
       "startDate": "2026-07-01",
       "summary": "Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment.",
       "highlights": []

@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'AI Agent Entry Point — Prasad Kavuri | Director, AI Platform & Agentic Solutions',
+  title: 'AI Agent Entry Point — Prasad Kavuri | Head of AI Platform & Agentic Solutions',
   description:
     'Machine-readable portfolio entry for AI agents and recruiting systems. Prasad Kavuri: agentic AI, LLM orchestration, AI governance, 200+ engineers, 70% cost reduction.',
   robots: 'index, follow',
@@ -126,14 +126,14 @@ export default function AgentPage() {
           </p>
           <h1 className="text-3xl font-bold text-foreground mb-1">Prasad Kavuri</h1>
           <p className="text-lg text-muted-foreground mb-1">
-            Director, AI Platform &amp; Agentic Solutions at Zip
+            Head of AI Platform &amp; Agentic Solutions at Zip
           </p>
           <p className="text-sm text-muted-foreground mb-3">
             Chicago, IL
           </p>
           <div className="flex flex-wrap gap-2">
             {[
-              'Director, AI Platform & Agentic Solutions',
+              'Head of AI Platform & Agentic Solutions',
               'Ex-Krutrim, Ola, HERE',
               'AI Transformation Leader',
             ].map((role) => (
@@ -297,7 +297,7 @@ export default function AgentPage() {
                 "@type": "Person",
                 "@id": "https://www.prasadkavuri.com/#person",
                 "name": "Prasad Kavuri",
-                "jobTitle": "Director, AI Platform & Agentic Solutions",
+                "jobTitle": "Head of AI Platform & Agentic Solutions",
                 "email": "mailto:vbkpkavuri@gmail.com",
                 "url": "https://www.prasadkavuri.com/agent",
                 "sameAs": [
@@ -325,7 +325,7 @@ export default function AgentPage() {
                     "name": "What is Prasad Kavuri's current role?",
                     "acceptedAnswer": {
                       "@type": "Answer",
-                      "text": "Prasad is currently Director, AI Platform & Agentic Solutions at Zip (July 2026 - Present). Previously Head of AI Engineering at Krutrim, Senior Director of Engineering at Ola, and Head of Infrastructure and Services at HERE Technologies.",
+                      "text": "Prasad is currently Head of AI Platform & Agentic Solutions at Zip (July 2026 - Present). Previously Head of AI Engineering at Krutrim, Senior Director of Engineering at Ola, and Head of Infrastructure and Services at HERE Technologies.",
                     },
                   },
                   {

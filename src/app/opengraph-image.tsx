@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Prasad Kavuri — Director, AI Platform & Agentic Solutions';
+export const alt = 'Prasad Kavuri — Head of AI Platform & Agentic Solutions';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -57,7 +57,7 @@ export default function Image() {
               <br />Kavuri
             </div>
             <div style={{ fontSize: 20, color: ACCENT, marginBottom: 10 }}>
-              Director, AI Platform & Agentic Solutions
+              Head of AI Platform & Agentic Solutions
             </div>
             <div style={{ fontSize: 15, color: TEXT_MUTED, marginBottom: 28 }}>
               Chicago · Immediately available · Remote-open

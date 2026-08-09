@@ -45,7 +45,7 @@ function buildContext() {
     token_hint: 'compact — optimized for agent memory and system prompt injection',
     identity: {
       name: 'Prasad Kavuri',
-      role: 'Director, AI Platform & Agentic Solutions',
+      role: 'Head of AI Platform & Agentic Solutions',
       company: 'Zip',
       location: 'Chicago, IL',
       availability: 'currently employed — this portfolio is a professional profile, not an active job search',
@@ -57,7 +57,7 @@ function buildContext() {
       },
     },
     positioning: {
-      current_role: 'Director, AI Platform & Agentic Solutions at Zip',
+      current_role: 'Head of AI Platform & Agentic Solutions at Zip',
       prior_roles: [
         'Head of AI Engineering, Krutrim',
         'Senior Director of Engineering, Ola',

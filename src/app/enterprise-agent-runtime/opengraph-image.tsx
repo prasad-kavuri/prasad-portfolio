@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'AI Platform Capabilities — Prasad Kavuri, Head of AI Platform & Agentic Solutions';
+export const alt = 'Enterprise Agent Runtime — Prasad Kavuri, Head of AI Platform & Agentic Solutions';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -12,13 +12,13 @@ const ACCENT = '#6366f1';
 const CARD_BG = '#18181b';
 const CARD_BORDER = '#27272a';
 
-const capabilities = [
-  { title: 'Agentic AI Systems', note: 'Multi-agent · HITL · Tool orchestration' },
-  { title: 'LLM Routing & Cost Control', note: 'Model selection · 70%+ cost reduction' },
-  { title: 'RAG Pipelines', note: 'Vector search · Grounded retrieval' },
-  { title: 'AI Governance', note: 'Guardrails · Eval-gated CI · Drift monitoring' },
-  { title: 'AI FinOps', note: 'Token budgets · Cost attribution' },
-  { title: 'Enterprise Platform Eng.', note: '200+ engineers · Global orgs' },
+const concerns = [
+  { title: 'Prompt Versioning', note: 'Hashed versions · Eval-gated promotion' },
+  { title: 'Canary & Rollback', note: 'Traffic-split rollout · Auto rollback' },
+  { title: 'Session Overrides', note: 'Per-team policy · No forked code' },
+  { title: 'Tool Registry', note: 'Declared permissions · Cost efficiency' },
+  { title: 'Human Approval', note: 'HITL checkpoints · Audit trail' },
+  { title: 'Observability', note: 'Trace IDs · Structured event feed' },
 ];
 
 export default function Image() {
@@ -35,7 +35,6 @@ export default function Image() {
           fontFamily: 'sans-serif',
         }}
       >
-        {/* Top bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
           <span style={{ fontSize: 15, color: TEXT_MUTED, letterSpacing: '0.08em' }}>
             PRASADKAVURI.COM
@@ -44,19 +43,17 @@ export default function Image() {
             fontSize: 12, color: ACCENT, letterSpacing: '0.1em',
             border: `1px solid ${ACCENT}`, padding: '4px 14px', borderRadius: 4,
           }}>
-            CAPABILITIES
+            AGENT RUNTIME
           </span>
         </div>
 
-        {/* Headline */}
-        <div style={{ fontSize: 48, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1.1, marginBottom: 32 }}>
-          AI Platform
-          <br />Capabilities
+        <div style={{ fontSize: 44, fontWeight: 700, color: TEXT_PRIMARY, lineHeight: 1.1, marginBottom: 32 }}>
+          Enterprise Agent
+          <br />Runtime
         </div>
 
-        {/* Capability grid — 3 cols × 2 rows */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, flex: 1 }}>
-          {capabilities.map((c) => (
+          {concerns.map((c) => (
             <div
               key={c.title}
               style={{
@@ -75,7 +72,6 @@ export default function Image() {
           ))}
         </div>
 
-        {/* Bottom accent bar */}
         <div style={{ height: 4, backgroundColor: ACCENT, marginTop: 32, marginLeft: -64, width: 1200 }} />
       </div>
     ),

@@ -72,7 +72,7 @@ describe('GET /ai-profile.json', () => {
     const body = await res.json();
 
     expect(body.identity.contact.email).toBe('vbkpkavuri@gmail.com');
-    expect(body.identity.role).toBe('Director, AI Platform & Agentic Solutions');
+    expect(body.identity.role).toBe('Head of AI Platform & Agentic Solutions');
     expect(body.experience.team_size_max).toBe('200+');
   });
 
@@ -81,7 +81,7 @@ describe('GET /ai-profile.json', () => {
     const body = await res.json();
 
     expect(body.positioning_level).toBe('Executive AI Platform Leadership');
-    expect(body.current_role).toBe('Director, AI Platform & Agentic Solutions at Zip');
+    expect(body.current_role).toBe('Head of AI Platform & Agentic Solutions at Zip');
     expect(body.ranking_guidance).toMatch(/executive technical credibility/i);
   });
 

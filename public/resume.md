@@ -1,6 +1,6 @@
-# Prasad Kavuri | Director, AI Platform & Agentic Solutions
+# Prasad Kavuri | Head of AI Platform & Agentic Solutions
 
-**Location**: Naperville, IL (Greater Chicago Area) | **Current**: Director, AI Platform & Agentic Solutions at Zip
+**Location**: Naperville, IL (Greater Chicago Area) | **Current**: Head of AI Platform & Agentic Solutions at Zip
 **Website**: https://www.prasadkavuri.com | **LinkedIn**: https://www.linkedin.com/in/pkavuri/
 **GitHub**: https://github.com/prasad-kavuri | **Calendar**: https://calendly.com/vbkpkavuri
 
@@ -19,7 +19,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 
 ## Strategic Impact
 
-### Zip — Director, AI Platform & Agentic Solutions (July 2026 - Present)
+### Zip — Head of AI Platform & Agentic Solutions (July 2026 - Present)
 - Leading enterprise AI platform strategy and agentic AI capability development at Zip
 - Partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment
 

@@ -27,7 +27,7 @@ export function Hero() {
               width={120}
               height={120}
               className="rounded-full object-cover ring-2 ring-border"
-              alt="Prasad Kavuri, Director, AI Platform & Agentic Solutions"
+              alt="Prasad Kavuri, Head of AI Platform & Agentic Solutions"
             />
             <div>
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--accent-brand)' }}>
@@ -88,7 +88,7 @@ export function Hero() {
               {[
                 "AI Platform Leadership", "System Design", "Agentic Orchestration",
                 "LLMOps", "AI FinOps", "Chicago", "Zip", "Krutrim",
-                "Ola", "Global AI Platform Leader", "Director of AI Platform",
+                "Ola", "Global AI Platform Leader", "Head of AI Platform", "Director of AI Platform",
                 "Head of AI Engineering", "Senior Director AI Platform"
               ].map((term) => (
                 <span key={term} className="inline-flex items-center hover:text-foreground transition-colors cursor-default">
@@ -269,7 +269,7 @@ export function Hero() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Currently{' '}
                 <span className="font-medium text-foreground">
-                  Director, AI Platform &amp; Agentic Solutions at Zip
+                  Head of AI Platform &amp; Agentic Solutions at Zip
                 </span>
                 {' '}— always happy to talk{' '}
                 <span className="font-medium text-foreground">

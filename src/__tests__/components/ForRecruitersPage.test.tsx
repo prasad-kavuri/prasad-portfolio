@@ -65,7 +65,7 @@ describe('ForRecruitersPage', () => {
     render(React.createElement(ForRecruitersPage));
     expect(screen.getByText(/Who This Portfolio Is Built For/i)).toBeInTheDocument();
     expect(screen.getByText(/platform thinking and operating model discipline/i)).toBeInTheDocument();
-    expect(screen.getByText(/Currently Director, AI Platform & Agentic Solutions at Zip/i)).toBeInTheDocument();
+    expect(screen.getByText(/Currently Head of AI Platform & Agentic Solutions at Zip/i)).toBeInTheDocument();
   });
 
   it('CTA row has 4 elements: Download Resume, LinkedIn, email, Book Call', () => {

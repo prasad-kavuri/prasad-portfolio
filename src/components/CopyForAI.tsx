@@ -5,10 +5,10 @@ import { trackEvent } from "@/lib/analytics";
 import { PORTFOLIO_FACTS } from "@/data/site-config";
 
 function getProfileMarkdown() {
-  return `# Prasad Kavuri — Director, AI Platform & Agentic Solutions
+  return `# Prasad Kavuri — Head of AI Platform & Agentic Solutions
 
 **Location**: Naperville, IL (Greater Chicago Area)
-**Current**: Director, AI Platform & Agentic Solutions at Zip
+**Current**: Head of AI Platform & Agentic Solutions at Zip
 **Website**: https://www.prasadkavuri.com
 **LinkedIn**: https://linkedin.com/in/pkavuri
 **GitHub**: https://github.com/prasad-kavuri
@@ -31,7 +31,7 @@ at enterprise scale. Specializes in agentic orchestration, LLM FinOps, and produ
 
 ## Career Highlights
 
-**Zip** — Director, AI Platform & Agentic Solutions (July 2026 - Present)
+**Zip** — Head of AI Platform & Agentic Solutions (July 2026 - Present)
 - Leading enterprise AI platform strategy and agentic AI capability development in a regulated financial-services environment
 
 **Krutrim / Ola** — Head of AI Engineering (March 2025 - June 2026)

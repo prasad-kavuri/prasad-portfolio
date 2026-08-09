@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Contact Prasad Kavuri — Director, AI Platform & Agentic Solutions';
+export const alt = 'Contact Prasad Kavuri — Head of AI Platform & Agentic Solutions';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -53,7 +53,7 @@ export default function Image() {
               <br />AI leadership.
             </div>
             <div style={{ fontSize: 16, color: TEXT_MUTED, lineHeight: 1.6 }}>
-              Director, AI Platform & Agentic Solutions at Zip.
+              Head of AI Platform & Agentic Solutions at Zip.
               {'\n'}Let&apos;s talk AI platform strategy.
             </div>
             <div style={{ marginTop: 20, fontSize: 14, color: TEXT_MUTED }}>

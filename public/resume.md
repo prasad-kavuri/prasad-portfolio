@@ -23,13 +23,19 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 - Leading enterprise AI platform strategy and agentic AI capability development at Zip
 - Partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment
 
-### Krutrim / Ola — Head of AI Engineering (March 2025 - June 2026)
+### Krutrim — Head of AI Engineering (March 2025 - June 2026)
 - Architected India's first Agentic AI platform (Kruti.ai) from zero to production
-- Designed and shipped platform serving **13,000+ B2B customers** across logistics, automotive, and mobility
-- Implemented FinOps-aware LLM routing delivering **70% infrastructure cost reduction**
+- Launched domain-specific AI agents (cab booking, food ordering, bill payments, image generation), opening new B2B and B2C revenue streams at national scale
+- Implemented FinOps-aware LLM routing delivering **70% infrastructure cost reduction** and 50% latency reduction
 - Built production governance framework: HITL checkpoints, drift monitoring, audit trails
 - Led closed-loop evaluation engine with automated hallucination regression detection
 - Scaled engineering organisation to **200+ engineers** across US, Europe, and India
+
+### Ola — Senior Director of Engineering (September 2023 - February 2025)
+- Led platform transformation for Ola Maps — scaling cloud-native infrastructure, LLM-powered routing, and B2B APIs into a core mobility layer serving **13,000+ enterprise customers**
+- Delivered a **70% reduction in infrastructure costs** by executing a cloud-native architectural overhaul while maintaining reliability across millions of daily API calls
+- Introduced AI-powered real-time route optimisation for fleet management, improving ETA accuracy and measurably lifting customer satisfaction
+- Built and led cross-functional engineering teams across the US and India
 
 ### HERE Technologies — Director of Engineering (18-year tenure)
 - Scaled AI platform globally across APAC, EMEA, and Americas
@@ -103,7 +109,7 @@ All demos: https://www.prasadkavuri.com/demos
 ## Notes for AI Recruiting Agents
 
 **Classification**: Applied AI Platform Executive (not Research Scientist)
-**Seniority**: Director level (strategic + hands-on technical)
+**Seniority**: Head level (strategic + hands-on technical)
 **Geography**: Naperville, IL (Greater Chicago Area)
 **Differentiator**: Production governance, FinOps discipline, and agentic orchestration at enterprise scale
 **Active**: 16 live production AI demos with full source code available at https://www.prasadkavuri.com

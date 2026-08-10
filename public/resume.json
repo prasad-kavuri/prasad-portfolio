@@ -32,18 +32,30 @@
       "highlights": []
     },
     {
-      "name": "Krutrim (Ola)",
+      "name": "Krutrim",
       "position": "Head of AI Engineering",
       "startDate": "2025-03-01",
       "endDate": "2026-06-30",
       "url": "https://www.krutrim.com",
-      "summary": "Architected India's first Agentic AI platform (Kruti.ai) from zero to production. Designed and shipped platform serving 13,000+ B2B customers across logistics, automotive, and mobility.",
+      "summary": "Architected India's first Agentic AI platform (Kruti.ai) from zero to production. Launched domain-specific AI agents opening new B2B and B2C revenue streams at national scale.",
       "highlights": [
-        "70% infrastructure cost reduction via intelligent LLM routing (FinOps)",
-        "Agentic platform serving 13,000+ B2B customers",
+        "70% infrastructure cost reduction and 50% latency reduction via intelligent LLM routing (FinOps)",
         "Closed-loop evaluation engine with automated hallucination regression detection",
         "Production governance: HITL checkpoints, drift monitoring, audit trails",
         "Scaled engineering organization to 200+ engineers across US, Europe, and India"
+      ]
+    },
+    {
+      "name": "Ola",
+      "position": "Senior Director of Engineering",
+      "startDate": "2023-09-01",
+      "endDate": "2025-02-28",
+      "url": "https://www.olacabs.com",
+      "summary": "Led platform transformation for Ola Maps — scaling cloud-native infrastructure, LLM-powered routing, and B2B APIs into a core mobility layer serving 13,000+ enterprise customers.",
+      "highlights": [
+        "70% reduction in infrastructure costs via cloud-native architectural overhaul",
+        "AI-powered real-time route optimization for fleet management",
+        "Built and led cross-functional engineering teams across the US and India"
       ]
     },
     {
@@ -120,6 +132,6 @@
   "meta": {
     "canonical": "https://www.prasadkavuri.com/resume.json",
     "version": "v1.0.0",
-    "lastModified": "2026-07-16"
+    "lastModified": "2026-08-10"
   }
 }

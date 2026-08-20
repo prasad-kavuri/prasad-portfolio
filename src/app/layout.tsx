@@ -373,7 +373,7 @@ export const metadata: Metadata = {
   creator: 'Prasad Kavuri',
   openGraph: {
     title: 'Prasad Kavuri — Head of AI Platform & Agentic Solutions | Chicago',
-    description: `Director-level AI platform executive at Zip. Previously built agentic AI platforms at Krutrim/Ola (${PORTFOLIO_FACTS.b2bCustomersEnabled} B2B customers, ${PORTFOLIO_FACTS.costReductionDelivered} cost reduction, ${PORTFOLIO_FACTS.latencyReduction} latency improvement).`,
+    description: `Head of AI Platform & Agentic Solutions at Zip. Previously built agentic AI platforms at Krutrim/Ola (${PORTFOLIO_FACTS.b2bCustomersEnabled} B2B customers, ${PORTFOLIO_FACTS.costReductionDelivered} cost reduction, ${PORTFOLIO_FACTS.latencyReduction} latency improvement).`,
     url: SITE_URL,
     siteName: SITE_NAME,
     images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Prasad Kavuri AI engineering portfolio' }],

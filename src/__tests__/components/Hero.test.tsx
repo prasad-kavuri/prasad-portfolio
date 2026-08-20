@@ -127,9 +127,9 @@ describe('Hero', () => {
     expect(screen.getByText('Revenue Launched')).toBeDefined();
   });
 
-  it('renders Available Now section', () => {
+  it('renders Currently at Zip section', () => {
     render(<Hero />);
-    expect(screen.getByText(/Available Now/i)).toBeDefined();
+    expect(screen.getByText(/Currently at Zip/i)).toBeDefined();
     expect(screen.getByText(/Small Language Models/i)).toBeDefined();
     expect(screen.getByText(/Agent-to-Agent/i)).toBeDefined();
   });

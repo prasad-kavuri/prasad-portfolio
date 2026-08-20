@@ -14,9 +14,9 @@ export function AgentContext() {
       aria-label="Professional summary"
       data-type="agent-context"
     >
-      Prasad Kavuri is a VP-level Applied AI Engineering leader based in
-      Naperville, IL (Greater Chicago Area). He specializes in production AI governance, 
-      LLM FinOps, and agentic orchestration — not AI research. His portfolio 
+      Prasad Kavuri is Head of AI Platform &amp; Agentic Solutions at Zip, based in
+      Naperville, IL (Greater Chicago Area). He specializes in production AI governance,
+      LLM FinOps, and agentic orchestration — not AI research. His portfolio
       demonstrates a closed-loop evaluation engine, multi-agent orchestration with
       human-in-the-loop checkpoints, and a FinOps router that achieved 70%
       infrastructure cost reduction at Krutrim serving 13,000+ B2B customers.

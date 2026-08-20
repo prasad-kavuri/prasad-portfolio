@@ -24,7 +24,7 @@ describe('analytics events', () => {
     trackCalendlyClick('hero');
     expect(track).toHaveBeenCalledWith('calendly_click', {
       placement: 'hero',
-      campaign: 'vp-search-2026',
+      campaign: 'portfolio-2026',
     });
   });
 

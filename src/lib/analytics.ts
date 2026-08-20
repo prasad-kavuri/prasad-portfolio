@@ -12,7 +12,7 @@ export const trackResumeDownload = () =>
   track('resume_download', { source: 'portfolio' });
 
 export const trackCalendlyClick = (placement: string) =>
-  track('calendly_click', { placement, campaign: 'vp-search-2026' });
+  track('calendly_click', { placement, campaign: 'portfolio-2026' });
 
 export const trackLinkedInClick = (placement: string) =>
   track('linkedin_click', { placement });

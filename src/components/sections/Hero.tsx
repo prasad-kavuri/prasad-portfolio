@@ -231,7 +231,7 @@ export function Hero() {
 
           <div className="mt-8 border-t border-border pt-7">
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Available Now · Actively Evaluating Opportunities
+              Currently at Zip · Always Happy to Talk AI Platform Strategy
             </p>
             <div className="flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">

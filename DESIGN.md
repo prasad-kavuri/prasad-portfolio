@@ -73,7 +73,7 @@ This portfolio is designed for executive clarity: it makes Prasad Kavuri's AI pl
 
 ## Brand Positioning
 
-- Role: Head of AI Engineering / VP of AI Engineering
+- Role: Head of AI Platform & Agentic Solutions (at Zip) — canonical source: `src/data/profile.json`
 - Tone: Executive. Precise. Credible. Not startup-casual.
 - Visual language: Professional, minimal, high-signal
 - Anti-pattern: Do not introduce startup/hacker aesthetic, excessive animation, or decorative complexity
@@ -112,8 +112,8 @@ This portfolio is designed for executive clarity: it makes Prasad Kavuri's AI pl
 
 ## AI Agent Editing Rules
 
-1. Before editing any UI copy, read: README.md, ai-profile.json, llms-full.txt, and homepage copy for canonical values.
-2. Use canonical role: "Head of AI Engineering" for machine surfaces and "VP / Head of AI Engineering" for human pages.
+1. Before editing any UI copy, read: `src/data/profile.json` (source of truth), README.md, ai-profile.json, llms-full.txt, and homepage copy for canonical values.
+2. Use canonical role: "Head of AI Platform & Agentic Solutions" (at Zip) on both machine and human surfaces — see `profile.json` `personal.title`.
 3. Use canonical email: vbkpkavuri@gmail.com — nowhere else.
 4. Use canonical metrics: 200+ engineers, 70%+ cost reduction, $10M+ revenue impact — do not alter these.
 5. If modifying a demo page, verify JSON-LD structured data remains intact after your change.
@@ -127,15 +127,17 @@ This portfolio is designed for executive clarity: it makes Prasad Kavuri's AI pl
 
 | Field | Canonical Value |
 |---|---|
-| Role (machine) | Head of AI Engineering |
-| Role (human) | VP / Head of AI Engineering |
+| Role (machine + human) | Head of AI Platform & Agentic Solutions (at Zip) |
 | Email | vbkpkavuri@gmail.com |
 | Team size | 200+ |
 | Cost metric | 70%+ AI infrastructure cost reduction |
 | Revenue | $10M+ revenue impact |
-| Demo count | 13 (dynamic — check demos.ts) |
+| Demo count | 16 (dynamic — check demos.ts / PORTFOLIO_FACTS.productionDemoCount) |
 | Portfolio | https://www.prasadkavuri.com |
 | GitHub | github.com/prasad-kavuri/prasad-portfolio |
+
+All of the above are sourced from `src/data/profile.json` — treat that file as canonical and this
+table as a cached mirror; if the two disagree, `profile.json` wins.
 
 ## Accessibility and Performance Rules
 

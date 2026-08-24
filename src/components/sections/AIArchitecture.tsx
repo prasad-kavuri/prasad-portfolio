@@ -310,7 +310,7 @@ export function AIArchitecture() {
               How a Request Moves Through the Platform
             </h2>
             <p className="text-muted-foreground max-w-2xl leading-relaxed">
-              Every production AI request traverses 14 layers — from user intent through inference,
+              Every production AI request traverses 15 layers — from user intent through inference,
               governance, and back to measurable business outcomes. Click any layer to see what runs there.
             </p>
           </div>

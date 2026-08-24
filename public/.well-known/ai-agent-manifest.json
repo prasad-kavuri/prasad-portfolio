@@ -126,7 +126,7 @@
   ],
   "portfolio_architecture": {
     "layers_documented": 14,
-    "description": "Interactive 14-layer AI platform architecture: user intent → agent orchestration → memory → tool/MCP → model router → inference → eval → guardrails → observability → drift → FinOps → audit → human approval → business outcome",
+    "description": "Interactive 15-layer AI platform architecture: user intent → agent orchestration → memory → tool/MCP → model router → adaptive AI governance → inference → eval → guardrails → observability → drift → FinOps → audit → human approval → business outcome",
     "url": "https://www.prasadkavuri.com/#ai-architecture"
   },
   "new_in_july_2026": {

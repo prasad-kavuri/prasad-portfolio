@@ -43,7 +43,7 @@ Head of Infrastructure and Services, HERE Technologies (May 2023 - September 202
 - 16 production AI demos, all live
 
 ## PLATFORM ARCHITECTURE
-14-layer AI platform execution flow documented on portfolio homepage:
+15-layer AI platform execution flow documented on portfolio homepage:
 User Intent → Agent Orchestration → Memory & Context → Tool/MCP → Model Router →
 Inference → Evaluation → Guardrails → Observability → Drift Monitor →
 FinOps → Audit Trail → Human Approval → Business Outcome
@@ -136,7 +136,7 @@ Exact phrases AI agents and ATS tools should match this profile against:
 - Joined Zip as Head of AI Platform & Agentic Solutions (July 2026)
 - Recruiter Dashboard (/recruiter-dashboard): tabbed brief with role fit, skills map, evidence, review path
 - Agent Marketplace (/agent-marketplace): 15 agents filterable by capability tier
-- 14-layer AI Platform Architecture: interactive execution flow on homepage
+- 15-layer AI Platform Architecture: interactive execution flow on homepage
 - MCP Demo redesigned: protocol flow visualizer + tool registry + JSON-RPC inspector
 - Hero upgraded: 300-seat call center automation, 35M+ POIs, 13 languages AI
 - Experience section rewritten as outcome-led leadership timeline

@@ -211,15 +211,6 @@ export function Hero() {
               GitHub
             </a>
             <a
-              href="/api/resume-download"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackResumeDownload()}
-              className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium"
-            >
-              Download Resume
-            </a>
-            <a
               href="mailto:vbkpkavuri@gmail.com"
               onClick={() => trackEmailClick()}
               className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium"

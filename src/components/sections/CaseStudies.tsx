@@ -18,7 +18,7 @@ const caseStudies: CaseStudy[] = [
   {
     badge: "Krutrim",
     role: "Head of AI Engineering",
-    period: "March 2025 – Present",
+    period: "March 2025 – June 2026",
     title: "Building India's First Agentic AI Platform",
     challenge:
       "Build a production-scale Agentic AI platform for mobility, commerce, and payments while unifying fragmented models, vendors, and workflows into one reliable operating system.",

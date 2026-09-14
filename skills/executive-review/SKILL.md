@@ -1,11 +1,15 @@
 ---
 name: executive-review
-description: Board-level and CEO-persona review of the portfolio. Use when the user wants to know how their work reads to a named executive, board member, or prominent industry figure — and whether it would warrant a direct conversation or referral. Provides: first impression, confidence level, concerns, missing narratives, board readiness, and estimated interview probability.
+description: >
+  Board-level and CEO-persona review of the portfolio. Use when the user wants to know how their
+  work reads to a named executive, board member, or prominent industry figure — and whether it
+  would warrant a direct conversation or referral. Provides: first impression, confidence level,
+  concerns, missing narratives, board readiness, and estimated interview probability.
 ---
 
 # Executive Review — Named Persona Simulation
 
-Read `CONTEXT.md` before starting. Key terms: **executive summary**, **featured role**, **outcome narrative**, **leadership timeline**, **recruiter experience**, **anthropic-style**, **stripe-style**, **vercel-style**.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **executive summary**, **featured role**, **outcome narrative**, **leadership timeline**, **recruiter experience**, **anthropic-style**, **stripe-style**, **vercel-style**.
 
 ## Step 0 — Select persona
 

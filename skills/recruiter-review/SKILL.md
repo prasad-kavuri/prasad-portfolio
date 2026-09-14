@@ -5,7 +5,7 @@ description: Simulates a recruiter persona review of the portfolio for a specifi
 
 # Recruiter Review — Persona Simulation
 
-Read `CONTEXT.md` before starting. Key terms: **recruiter experience**, **recruiter path**, **featured role**, **executive summary**, **leadership timeline**, **signature demo**, **outcome narrative**.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **recruiter experience**, **recruiter path**, **featured role**, **executive summary**, **leadership timeline**, **signature demo**, **outcome narrative**.
 
 ## Step 0 — Clarify
 
@@ -55,7 +55,7 @@ Review criteria:
 Evaluating: "Can I place this candidate in a VP/Head of AI Engineering role at this company?"
 
 Review criteria:
-- Title match: "VP / Head of AI Engineering" — does it pattern-match the target JD level?
+- Title match: "Head of AI Platform & Agentic Solutions" — does it pattern-match the target JD level?
 - ATS keyword coverage: check the target company's recent VP/Head of AI Engineering JDs and cross-reference keywords
 - Notable company names in experience — do they carry signal for this target company?
 - Portfolio clarity: Can I explain this person's background in 2 sentences to a hiring committee?
@@ -66,7 +66,7 @@ Review criteria:
 # Recruiter Review — <Target Company> — <Date>
 
 ## Target role
-VP / Head of AI Engineering at <company>
+Head of AI Platform & Agentic Solutions at <company>
 
 ## Persona assessments
 

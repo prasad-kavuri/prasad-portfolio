@@ -14,7 +14,7 @@ A demo where inference runs on a Vercel serverless function, calling the Groq AP
 _Avoid_: "backend demo", "API demo"
 
 **layer**:
-One of the 14 stages in the AIArchitecture platform execution flow (User Intent → Business Outcome). Each has an id, num (01-14), name, tagline, category, detail, tech chips, and portfolio example.
+One of the 15 stages in the AIArchitecture platform execution flow (User Intent → Business Outcome), including Adaptive AI Governance at position 06. Each has an id, num (01-15), name, tagline, category, detail, tech chips, and portfolio example.
 _Avoid_: "step", "stage", "node"
 
 **signature demo**:
@@ -34,7 +34,7 @@ One of the 4 stats in the DemosGallery header strip: Governance layer, Rate limi
 _Avoid_: "header stat", "infra stat"
 
 **featured role**:
-One of the 4 outcome-led experience entries in the Experience section: `krutrim`, `ola`, `here-head`, `here-director`. Each has a Situation + What I Built + Outcomes grid.
+One of the 5 outcome-led experience entries in the Experience section: `zip`, `krutrim`, `ola`, `here-head`, `here-director`. Each has a Situation + What I Built (or "What I'm Building" for the current role) + Outcomes grid.
 _Avoid_: "highlighted role", "key role"
 
 **compact strip**:
@@ -122,7 +122,7 @@ The curated path from recruiter landing → capabilities → governance → sign
 _Avoid_: "recruiter flow", "candidate path"
 
 **executive summary**:
-The above-the-fold profile section (Hero) plus the AIArchitecture 14-layer section together — the two sections a VP or CTO sees first.
+The above-the-fold profile section (Hero) plus the AIArchitecture 15-layer section together — the two sections a VP or CTO sees first.
 _Avoid_: "hero section" (too narrow), "summary section"
 
 **leadership timeline**:
@@ -138,8 +138,8 @@ Ola Electric (OLA brand) — Prasad built the AI recommendation engine for 35M+ 
 _Avoid_: "Ola Electric" and "Ola" used interchangeably — prefer "Ola Electric" in copy, "ola" in code keys
 
 **here**:
-HERE Technologies (maps/location intelligence) — two roles: `here-head` (Head of AI Engineering, managed 40 engineers) and `here-director` (Director AI Engineering). Compact strip roles below them.
-_Avoid_: "HERE Maps" (outdated name), just "here" in isolation without clarifying head vs. director
+HERE Technologies (maps/location intelligence) — two featured roles: `here-head` (Head of Infrastructure and Services) and `here-director` (Director of Engineering — Highly Automated Driving). Earlier HERE roles (Sr Engineering Manager, Engineering Manager, Lead Engineer, Sr Engineer) render in the compact strip below them.
+_Avoid_: "HERE Maps" (outdated name), just "here" in isolation without clarifying which role
 
 **anthropic-style**:
 Design and communication pattern inspired by Anthropic: detailed technical prose, safety emphasis, honest uncertainty, long-form explanation. Referenced in executive-review skill personas.
@@ -189,7 +189,7 @@ _Avoid_: using it as if it is currently live (it is not)
 - The **signature demo** (`evaluation-showcase`) always renders outside any **demo group** grid, above all groups.
 - A **featured role** always has an **outcome narrative**; a **compact strip** role never does.
 - **Profile facts** are the single source of truth — never hardcode a count or metric that has a matching `PORTFOLIO_FACTS` key.
-- **krutrim**, **ola**, and **here** map directly to the `OUTCOMES` record keys in `Experience.tsx`.
+- **zip**, **krutrim**, **ola**, and **here** map directly to the `OUTCOMES` record keys in `Experience.tsx`.
 - **llms-txt** + `ai-agent-manifest.json` + JSON-LD `@graph` together form the **agentic-seo** system.
 - **playwright** tests are E2E; **vitest** tests are unit/integration. Both must pass before every commit.
 

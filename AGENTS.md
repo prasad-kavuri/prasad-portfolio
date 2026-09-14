@@ -84,7 +84,7 @@ See `runs/README.md` for the `summary.yaml` schema and naming convention.
 ---
 
 ## What This Project Is
-Production-grade AI engineering portfolio. Next.js 16.2.6 App Router + Turbopack.
+Production-grade AI engineering portfolio. Next.js 16.3.1 App Router + Turbopack.
 **Do NOT assume standard Next.js patterns** — verify in `node_modules/next/dist/docs/`
 before writing any code. APIs, middleware, and config differ from training data.
 
@@ -202,8 +202,8 @@ Coverage gates: API routes ≥90% statements / ≥85% branches; lib ≥95% funct
 Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/patch updates
 
 ## Key Invariants
-- `next` is pinned to exact `16.2.6` (no caret) — do not add `^`
-- `profile.personal.title` = "VP / Head of AI Engineering" — do not change without updating layout.tsx
+- `next` is pinned to exact `16.3.1` (no caret) — do not add `^`
+- `profile.personal.title` = "Head of AI Platform & Agentic Solutions" — do not change without updating layout.tsx
 - All URLs use `https://www.prasadkavuri.com` (with www) — be consistent
 - New demos need entries in BOTH `src/data/demos.ts` AND `src/components/sections/AITools.tsx` (DEMO_GROUPS ids array)
 - `react-hooks/set-state-in-effect` ESLint rule fires on `setState()` inside `useEffect` — use `// eslint-disable-next-line` when the pattern is intentional (e.g., client-only hydration-safe init with `useState(null)`)

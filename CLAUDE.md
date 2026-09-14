@@ -13,12 +13,12 @@ When instructions conflict, apply this priority order:
 # Claude Code Context — prasad-portfolio
 
 ## Project Overview
-Production AI engineering portfolio at prasadkavuri.com. Next.js 16.2.6 / React 19.2.6 / TypeScript 6.0.3 / Tailwind CSS 4.2.4 / Vercel.
+Production AI engineering portfolio at prasadkavuri.com. Next.js 16.3.1 / React 19.2.8 / TypeScript 6.0.3 / Tailwind CSS 4.2.4 / Vercel.
 Full architecture: see `docs/ARCHITECTURE.md`.
 
 ## Tech Stack
-- Next.js 16.2.6 (App Router + Turbopack) — pinned exact, no `^`
-- React 19.2.6, TypeScript 6.0.3, Tailwind CSS 4.2.4
+- Next.js 16.3.1 (App Router + Turbopack) — pinned exact, no `^`
+- React 19.2.8, TypeScript 6.0.3, Tailwind CSS 4.2.4
 - Groq SDK for LLM inference (server-side only)
 - @huggingface/transformers v4 for browser WASM inference
 - Upstash Redis for rate limiting
@@ -44,7 +44,7 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 
 ## Critical Rules (NEVER violate these)
 
-- **NEVER assume standard Next.js/React/Tailwind patterns** — verify actual behavior in `node_modules/next/dist/` before writing any code. APIs, middleware, and config differ from training data for these pinned versions.
+- **Don't assume standard Next.js/React/Tailwind patterns hold for these pinned versions** — when touching a Next.js API, middleware, or config you're not certain still behaves as trained, verify against `node_modules/next/dist/` rather than assuming.
 - **NEVER touch server-side demos** when fixing browser-WASM/mobile issues. They are independent.
 - **ALWAYS use `useBrowserAI` hook** (`src/hooks/useBrowserAI.ts`) for any demo that loads WASM or WebGPU. Never load models unconditionally.
 - **NEVER modify** `vercel.json` headers or the CSP in `next.config.ts` unless that is the explicit task. These are fragile — wrong changes break all 4 browser demos.
@@ -204,7 +204,7 @@ add simulated fallback path for mobile/low-memory devices.
 - WASM headers (`COOP`, `COEP`, `blob:` CSP) are set in `next.config.ts` AND `src/proxy.ts`. Both must be consistent.
 - `public/.well-known/ai-agent-manifest.json` — AI recruiter manifest. Keep valid JSON after any edit: `node -e "JSON.parse(require('fs').readFileSync('public/.well-known/ai-agent-manifest.json','utf8'))"`
 - No legacy `.html` files in `public/` — Next.js serves them verbatim. Delete any found.
-- `profile.personal.title` = "VP / Head of AI Engineering" — do not change without updating `layout.tsx`
+- `profile.personal.title` = "Head of AI Platform & Agentic Solutions" — do not change without updating `layout.tsx`
 - All URLs use `https://www.prasadkavuri.com` (with www) — be consistent
 
 ---

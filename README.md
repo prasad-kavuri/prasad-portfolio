@@ -1,8 +1,8 @@
-# Prasad Kavuri — VP / Head of AI Engineering
+# Prasad Kavuri — Head of AI Platform & Agentic Solutions
 
 **prasadkavuri.com** · [LinkedIn](https://linkedin.com/in/pkavuri) · vbkpkavuri@gmail.com
 
-> Production AI platform portfolio. 14 live demos. Built for VP / Head-level evaluation.
+> Production AI platform portfolio. 16 live demos. Built for VP / Head-level evaluation.
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## About
 
-**Prasad Kavuri** — VP / Head of AI Engineering with 20+ years building
+**Prasad Kavuri** — Head of AI Platform & Agentic Solutions (at Zip) with 20+ years building
 production AI platforms at enterprise scale.
 
 | Metric | Result |
@@ -32,8 +32,7 @@ production AI platforms at enterprise scale.
 | Production AI platform | India's first agentic AI platform |
 | Experience | 20+ years, AI/ML → Agentic AI |
 
-Currently exploring VP / Head of AI Engineering and AI Platform Leadership
-roles — Chicago area & remote.
+Chicago area & remote.
 
 ---
 
@@ -84,5 +83,5 @@ Full architecture: [ARCHITECTURE.md](./ARCHITECTURE.md) · Security: [SECURITY.m
 
 ---
 
-*Currently exploring VP / Head of AI Engineering roles · Chicago area & remote*  
+*Chicago area & remote*  
 *Contact: vbkpkavuri@gmail.com · [LinkedIn](https://linkedin.com/in/pkavuri) · [Book a call](https://calendly.com/vbkpkavuri)*

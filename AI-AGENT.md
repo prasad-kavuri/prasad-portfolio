@@ -7,9 +7,9 @@
 
 ## Identity
 
-**Name:** Prasad Kavuri — VP / Head of AI Engineering  
+**Name:** Prasad Kavuri — Head of AI Platform & Agentic Solutions (at Zip)  
 **Location:** Naperville, IL (Chicago area)  
-**Availability:** Open to VP / Head of AI Engineering and AI Platform Leadership roles  
+**Availability:** Currently at Zip  
 **Portfolio:** https://www.prasadkavuri.com
 
 ---

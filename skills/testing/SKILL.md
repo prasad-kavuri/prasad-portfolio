@@ -1,11 +1,15 @@
 ---
 name: testing
-description: Repository-wide test suite runner and coverage auditor. Use when the user wants to run all tests, check coverage, add missing tests, fix failing tests, audit test health, or generate a testing report. Covers: lint, typecheck, unit, integration, fuzz, evals, E2E, accessibility, and Lighthouse.
+description: >
+  Repository-wide test suite runner and coverage auditor. Use when the user wants to run all
+  tests, check coverage, add missing tests, fix failing tests, audit test health, or generate a
+  testing report. Covers: lint, typecheck, unit, integration, fuzz, evals, E2E, accessibility, and
+  Lighthouse.
 ---
 
 # Testing — Full Suite
 
-Read `CONTEXT.md` before starting. Key terms: **vitest**, **playwright**, **guardrail check**, **observability event**, **browser demo**, **server demo**.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **vitest**, **playwright**, **guardrail check**, **observability event**, **browser demo**, **server demo**.
 
 ## Coverage Goals (from CI gates)
 

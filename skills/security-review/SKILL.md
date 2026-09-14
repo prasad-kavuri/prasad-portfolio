@@ -1,11 +1,15 @@
 ---
 name: security-review
-description: Security validation sweep for the portfolio. Use when the user wants a security audit, security review, vulnerability check, CSP validation, secret scan, or wants to update docs/security.md. Covers: npm audit, semgrep, gitleaks, CSP/COOP/COEP/SRI, headers, robots.txt, rate limiting, guardrails.
+description: >
+  Security validation sweep for the portfolio. Use when the user wants a security audit, security
+  review, vulnerability check, CSP validation, secret scan, or wants to update docs/security.md.
+  Covers: npm audit, semgrep, gitleaks, CSP/COOP/COEP/SRI, headers, robots.txt, rate limiting,
+  guardrails.
 ---
 
 # Security Review
 
-Read `CONTEXT.md` before starting. Key terms: **guardrail check**, **HITL gate**, **observability event**. Also read `docs/SECURITY_THREAT_MODEL.md` for the full threat model.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **guardrail check**, **HITL gate**, **observability event**. For the full threat model, see `docs/SECURITY_THREAT_MODEL.md`.
 
 ## Phase 1 — Dependency vulnerabilities
 

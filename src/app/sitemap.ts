@@ -26,6 +26,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/enterprise-ai-operating-model`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${SITE_URL}/demos`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${SITE_URL}/agent`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${SITE_URL}/recruiter-dashboard`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${SITE_URL}/agent-marketplace`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${SITE_URL}/ai-profile.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
 
     // Supporting pages
@@ -44,7 +46,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/llms-full.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/entity.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/.well-known/ai-agent-manifest.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${SITE_URL}/api/context`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
+    // Note: /api/context is intentionally NOT listed here — robots.txt disallows /api/ for the
+    // default crawler group, and only submitting URLs that are actually crawlable to a sitemap
+    // avoids Google Search Console's "Submitted URL blocked by robots.txt" warning. AI crawlers
+    // that need it already have an explicit robots.txt Allow override and reach it via llms.txt.
 
     // Tier 4 — individual demo pages (derived dynamically from demos.ts, never hardcoded)
     // Flagship demo gets priority 0.9; all others 0.8

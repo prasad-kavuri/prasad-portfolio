@@ -104,8 +104,8 @@ Current controls implemented in this repo include:
 - **Severity**: CVSS 7.5 (High)
 - **Description**: Denial-of-service via malformed payloads targeting React Server Function (`"use server"`) endpoints.
 - **Status**: **Not exploitable** — this codebase contains zero `"use server"` directives; no Server Function endpoints are exposed.
-- **Patched baseline**: `react@19.2.6` and `next@16.2.4` are both at or above the versions where the fix was applied.
-- **Regression prevention**: `react` and `react-dom` are pinned to exact version `19.2.6` (no `^` caret) in `package.json` to prevent any accidental downgrade below the patched threshold.
+- **Patched baseline**: `react@19.2.8` and `next@16.3.5` (current pinned versions) are both at or above the versions where the fix was applied.
+- **Regression prevention**: `next` is pinned to an exact version (no `^` caret) in `package.json` to prevent any accidental downgrade below the patched threshold. `react`/`react-dom` currently use a caret range (`^19.2.8`), so a `npm update` could move React within that range without violating this pin — the exploitability finding above (zero `"use server"` directives) does not depend on the exact patch version, but the caret range means this line should be re-checked whenever React is bumped.
 
 ## Safe Harbor
 

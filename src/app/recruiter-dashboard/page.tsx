@@ -192,7 +192,7 @@ export default function RecruiterDashboardPage() {
             ))}
             <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/40 bg-green-500/10 px-3 py-1 text-xs font-medium text-green-400">
               <span className="size-1.5 rounded-full bg-green-400 animate-pulse" />
-              Actively interviewing
+              Currently at Zip
             </span>
           </div>
         </div>
@@ -245,11 +245,10 @@ export default function RecruiterDashboardPage() {
                 </ul>
               </Card>
               <Card className="border-border bg-card p-5">
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Compensation context</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Engagement context</p>
                 <ul className="space-y-1.5 text-sm text-muted-foreground">
                   {[
-                    'VP / Head level band',
-                    'Equity participation expected',
+                    'Currently at Zip — open to AI platform strategy conversations',
                     '$8M–$20M budget ownership track record',
                     'Board-ready governance posture',
                   ].map(l => (

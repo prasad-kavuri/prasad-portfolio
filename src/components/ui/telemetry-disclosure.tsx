@@ -18,7 +18,7 @@ export function TelemetryDisclosure({ label, message, className }: TelemetryDisc
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <Badge className="bg-amber-500/20 text-amber-300 border-amber-400/30">
+        <Badge variant="warning">
           {label}
         </Badge>
         <p className="text-sm text-foreground/95">{message}</p>

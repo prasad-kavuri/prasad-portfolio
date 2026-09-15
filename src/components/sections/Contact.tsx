@@ -25,7 +25,8 @@ export function Contact() {
           <LinkedInCta href={profile.personal.linkedin} />
 
           <Link href={`mailto:${profile.personal.email}`} onClick={() => trackEmailClick()}>
-            <Card className="h-full transition-shadow hover:shadow-md">
+            <Card interactive className="h-full">
+              {/* eslint-disable-next-line shadcn/no-restyle -- p-4/gap-2 sizes this icon+label row tighter than CardContent's block default; moving it to a wrapper would change the shipped, visually-verified layout for no benefit */}
               <CardContent className="flex items-center gap-2 p-4">
                 <Mail className="size-5 text-red-600" />
                 <span>Email</span>
@@ -34,7 +35,8 @@ export function Contact() {
           </Link>
 
           <Link href={profile.personal.github} target="_blank" rel="noopener noreferrer">
-            <Card className="h-full transition-shadow hover:shadow-md">
+            <Card interactive className="h-full">
+              {/* eslint-disable-next-line shadcn/no-restyle -- see Email card above */}
               <CardContent className="flex items-center gap-2 p-4">
                 <ExternalLink className="size-5" style={{ color: 'var(--accent-brand)' }} />
                 <span>GitHub</span>
@@ -48,7 +50,8 @@ export function Contact() {
             rel="noopener noreferrer"
             onClick={() => trackCalendlyClick('footer')}
           >
-            <Card className="h-full transition-shadow hover:shadow-md">
+            <Card interactive className="h-full">
+              {/* eslint-disable-next-line shadcn/no-restyle -- see Email card above */}
               <CardContent className="flex items-center gap-2 p-4">
                 <CalendarDays className="size-5" style={{ color: 'var(--accent-brand)' }} />
                 <span>Book a Call</span>

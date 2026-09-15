@@ -24,6 +24,7 @@ export function LinkedInCta({
       )}
       aria-label={label}
     >
+      {/* eslint-disable-next-line shadcn/no-arbitrary-values -- #0A66C2 is LinkedIn's official brand blue, required exact for brand accuracy */}
       <ExternalLink className="size-4 text-[#0A66C2]" aria-hidden="true" />
       <span>{label}</span>
     </Link>

@@ -112,14 +112,17 @@ This portfolio is designed for executive clarity: it makes Prasad Kavuri's AI pl
 
 ## AI Agent Editing Rules
 
-1. Before editing any UI copy, read: `src/data/profile.json` (source of truth), README.md, ai-profile.json, llms-full.txt, and homepage copy for canonical values.
+1. `src/data/profile.json` is the source of truth for canonical values (role, email, metrics). If a value you need isn't there, check `ai-profile.json` or `llms-full.txt` for the machine-facing surfaces, or the homepage copy for how it currently reads to a human — not all three on every edit.
 2. Use canonical role: "Head of AI Platform & Agentic Solutions" (at Zip) on both machine and human surfaces — see `profile.json` `personal.title`.
 3. Use canonical email: vbkpkavuri@gmail.com — nowhere else.
 4. Use canonical metrics: 200+ engineers, 70%+ cost reduction, $10M+ revenue impact — do not alter these.
 5. If modifying a demo page, verify JSON-LD structured data remains intact after your change.
 6. If adding a new demo, it must have: demos.ts entry with businessOutcome, route page, JSON-LD, sitemap entry, tests.
 7. If changing navigation, confirm /for-recruiters, /demos, /governance remain reachable within 1 click from homepage.
-8. Do not introduce new Tailwind classes not present in the existing codebase.
+8. Do not introduce new Tailwind classes not present in the existing codebase. Enforced by
+   `@shadcn/lint` (`shadcn/no-restyle`, `shadcn/no-arbitrary-values`) on `src/components/ui/**` —
+   `npm run lint` fails on a real violation there, not just a style suggestion. See
+   `specs/0013-shadcn-lint-scoped-rollout.md`.
 9. Do not modify llms.txt, llms-full.txt, ai-profile.json, or ai-agent-manifest.json without explicit instruction.
 10. Run npm run lint && npm run test && npm run build before committing any change.
 

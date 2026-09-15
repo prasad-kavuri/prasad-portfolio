@@ -26,6 +26,7 @@ export function LinkedInCTA({
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
+          {/* eslint-disable-next-line shadcn/no-arbitrary-values -- deliberate eyebrow-label letter-spacing tuned tighter than tracking-widest (0.1em) */}
           <p className="text-xs uppercase tracking-[0.16em] text-slate-300/80">Executive CTA</p>
           <h3 className="text-base font-semibold text-white sm:text-lg">{heading}</h3>
           <p className="text-sm text-slate-300/90">{description}</p>

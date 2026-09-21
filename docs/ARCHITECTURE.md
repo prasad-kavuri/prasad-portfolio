@@ -54,6 +54,7 @@ The current API surface is:
 | `/api/resume-generator` | Resume tailoring | Parses job descriptions and returns structured resume JSON |
 | `/api/multi-agent` | Multi-agent analysis | Proxies to the agent backend with hardened SSRF checks via `src/lib/url-security.ts` |
 | `/api/mcp-demo` | MCP-style tool calling | Lets Groq select and execute profile tools via a JSON-RPC-like tool schema |
+| `/api/generative-ui` | Constrained generative UI | Validates model output against a fixed component catalog before returning it (no markup ever emitted) |
 | `/api/storm-research` | Multi-perspective research synthesis | Streams STORM-style perspectives, questions, research notes, and executive brief synthesis |
 | `/api/resume-download` | Resume redirect | Rate-limited redirect to the public PDF asset |
 
@@ -90,6 +91,7 @@ The AI services layer contains both server-side and browser-side demos:
 | Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, structured observability |
 | Native Browser AI Skill | `/demos/browser-native-ai-skill` | On-device accessibility and agent-readiness analysis |
 | STORM Research Agent | `/demos/storm-research` | Multi-perspective research workflow with streaming synthesis |
+| Constrained Generative UI | `/demos/generative-ui` | Server route calling Groq, catalog-validated before render |
 | Real-Time Spatial AI + World Modeling Engine | `/demos/world-generation` | Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. |
 
 The LLM Router demonstrates the cost/latency tradeoff pattern directly. RAG and vector search demonstrate retrieval before generation. Browser demos show local inference patterns that reduce server load and external API cost.

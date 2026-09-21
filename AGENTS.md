@@ -10,6 +10,29 @@ When instructions conflict, apply this priority order:
 
 ---
 
+## Quick Start (Tool-Agnostic)
+
+If you are a coding agent seeing this repository for the first time — Codex, Cursor, Copilot, or
+anything other than Claude Code — this section is for you. (Claude Code: this is a subset of what
+`CLAUDE.md` already covers; read `CLAUDE.md` instead of relying on this alone.)
+
+- **What this is**: a production Next.js portfolio site (not a library), deployed on Vercel.
+- **Install**: `npm install`
+- **Run locally**: `npm run dev`
+- **Before proposing any change, run**: `npx tsc --noEmit` (zero errors required)
+- **Test**: `npm run test` (unit), `npm run test:e2e` (Playwright, requires a built server),
+  `npm run test:coverage` (coverage gates — see `CLAUDE.md`)
+- **Build**: `npm run build` (must succeed with zero errors before any commit)
+- **Security**: `npm audit --audit-level=high` must report 0 high/critical vulnerabilities
+- **Scope discipline**: this repo runs on an explicit Agent Operating Contract (surgical changes,
+  no drive-by refactors, no touching security/CSP/rate-limit/auth config unless asked) — see the
+  "Agent Operating Contract" and "Security Scope" sections in `CLAUDE.md`, which apply to every
+  coding agent, not just Claude Code.
+- **Before a non-trivial feature**: write a short spec to `specs/NNNN-short-slug.md` (see
+  `specs/README.md`) before writing code.
+
+---
+
 ## Domain Language
 
 Read `CONTEXT.md` at the repo root before any coding session. It defines the canonical vocabulary for this codebase — **browser demo**, **server demo**, **layer**, **signature demo**, **module card**, **exec model**, **featured role**, **HITL gate**, **accent brand**, **llms-txt**, **agentic-seo**, **krutrim**, **ola**, **here**, **playwright**, **vitest**, and more (45+ terms). Using these terms precisely reduces ambiguity and token usage.

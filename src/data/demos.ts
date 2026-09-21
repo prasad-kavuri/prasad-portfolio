@@ -340,6 +340,24 @@ export const demos: Demo[] = [
       cloudFallbackRoute: 'native',
     },
   },
+  {
+    id: "generative-ui",
+    emoji: "LayoutTemplate",
+    title: "Constrained Generative UI",
+    description: "Ask about Prasad's background — the model can only emit JSON for a fixed component catalog, validated server-side before anything renders.",
+    businessImpact: "Demonstrates safe generative UI for production: eliminates unvalidated AI-generated markup as an attack surface while keeping responses dynamic",
+    businessOutcome: "Shows a catalog-constrained, schema-validated generative UI pattern (inspired by Vercel's json-render) applied server-side with this repo's existing guardrails, rate limiting, and observability.",
+    href: "/demos/generative-ui",
+    tags: ["Groq", "Generative UI", "Schema Validation", "Guardrails"],
+    skills: ['guardrails', 'observability'],
+    status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
+  },
 ];
 
 // Named export alias for components that import as DEMOS

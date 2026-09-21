@@ -13,7 +13,7 @@ at enterprise scale. Core differentiator: bridges the gap between AI research an
 enterprise reliability — ships AI systems that are observable, governed, and cost-efficient.
 
 **Key outcomes**: **70% infrastructure cost reduction** | **50% latency reduction** |
-**13,000+ B2B customers** | **200+ engineers led** | **$10M+ revenue launched** | **16 production AI systems**
+**13,000+ B2B customers** | **200+ engineers led** | **$10M+ revenue launched** | **17 production AI systems**
 
 ---
 
@@ -75,7 +75,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 
 ---
 
-## Portfolio Demos (16 Live Systems)
+## Portfolio Demos (17 Live Systems)
 
 | Demo | What It Shows | Engine |
 |------|---------------|--------|
@@ -95,6 +95,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 | Edge-Agent Collaboration | Privacy-first BERT NER + HITL handoff + cloud orchestration | Groq API |
 | Agent Auth | Enterprise auth boundary for agentic systems with policy-aware access | Simulated |
 | STORM Research Agent | Multi-perspective research workflow with streaming executive synthesis | Groq API |
+| Constrained Generative UI | Catalog-constrained, schema-validated generative UI (safe AI-driven rendering) | Groq API |
 
 All demos: https://www.prasadkavuri.com/demos
 

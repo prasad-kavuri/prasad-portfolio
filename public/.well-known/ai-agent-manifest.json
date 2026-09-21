@@ -21,8 +21,15 @@
     "Multi-Agent Systems",
     "Drift Monitoring & Eval Gating",
     "AI FinOps",
-    "Enterprise Platform Engineering"
+    "Enterprise Platform Engineering",
+    "Agent Identity & Auth (auth.md protocol)"
   ],
+  "agent_lifecycle": {
+    "discover": ["llms.txt", "ai-agent-manifest.json", "JSON-LD"],
+    "authenticate": "auth.md (open protocol — see github.com/workos/auth.md)",
+    "authorize": "scoped, short-lived credentials (read:profile, call:mcp-tools)",
+    "act": "POST /api/mcp-demo"
+  },
   "leadership_scope": {
     "team_size": "200+ engineers",
     "organizational_impact": ["Product, infrastructure, and data ownership", "US, Europe, and India teams"]
@@ -69,6 +76,8 @@
     "resume_md": "https://www.prasadkavuri.com/resume.md",
     "llms_txt": "https://www.prasadkavuri.com/llms.txt",
     "llms_full_txt": "https://www.prasadkavuri.com/llms-full.txt",
+    "auth_md": "https://www.prasadkavuri.com/auth.md",
+    "oauth_protected_resource": "https://www.prasadkavuri.com/.well-known/oauth-protected-resource",
     "calendar": "https://calendly.com/vbkpkavuri"
   },
   "contact": {

@@ -46,10 +46,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/llms-full.txt`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/entity.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/.well-known/ai-agent-manifest.json`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/auth.md`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/.well-known/oauth-protected-resource`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     // Note: /api/context is intentionally NOT listed here — robots.txt disallows /api/ for the
     // default crawler group, and only submitting URLs that are actually crawlable to a sitemap
     // avoids Google Search Console's "Submitted URL blocked by robots.txt" warning. AI crawlers
     // that need it already have an explicit robots.txt Allow override and reach it via llms.txt.
+    // (/.well-known/ is not under robots.txt's /api/ disallow, so these two are fine to list.)
 
     // Tier 4 — individual demo pages (derived dynamically from demos.ts, never hardcoded)
     // Flagship demo gets priority 0.9; all others 0.8

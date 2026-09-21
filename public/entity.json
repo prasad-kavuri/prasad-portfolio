@@ -18,7 +18,15 @@
     "llms_txt": "https://www.prasadkavuri.com/llms.txt",
     "llms_full_txt": "https://www.prasadkavuri.com/llms-full.txt",
     "ai_agent_manifest": "https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json",
-    "resume_pdf": "https://www.prasadkavuri.com/prasad-kavuri-vp-ai-engineering-2026.pdf"
+    "resume_pdf": "https://www.prasadkavuri.com/prasad-kavuri-vp-ai-engineering-2026.pdf",
+    "auth_md": "https://www.prasadkavuri.com/auth.md",
+    "oauth_protected_resource": "https://www.prasadkavuri.com/.well-known/oauth-protected-resource"
+  },
+  "agent_lifecycle": {
+    "discover": ["llms.txt", "entity.json", "JSON-LD"],
+    "authenticate": "auth.md (open protocol — see github.com/workos/auth.md)",
+    "authorize": "scoped, short-lived credentials (read:profile, call:mcp-tools)",
+    "act": "POST /api/mcp-demo"
   },
   "same_as": [
     "https://www.linkedin.com/in/pkavuri/",
@@ -46,7 +54,8 @@
     "Enterprise AI platform engineering",
     "Multi-agent systems",
     "LLMOps",
-    "Evaluation frameworks"
+    "Evaluation frameworks",
+    "Agent identity and auth (auth.md protocol)"
   ],
   "proof_points": [
     "200+ engineers led",

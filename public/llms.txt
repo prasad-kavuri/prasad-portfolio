@@ -148,3 +148,8 @@ ai-profile.json:        https://www.prasadkavuri.com/ai-profile.json
 agent-manifest:         https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
 context-api:            https://www.prasadkavuri.com/api/context
 full-context:           https://www.prasadkavuri.com/llms-full.txt
+auth.md:                https://www.prasadkavuri.com/auth.md  (agent registration/credentials — open protocol, see github.com/workos/auth.md)
+oauth-protected-resource: https://www.prasadkavuri.com/.well-known/oauth-protected-resource
+
+This portfolio implements the full agent-native lifecycle: Discover (this file, entity.json,
+JSON-LD) → Authenticate (auth.md) → Authorize (scoped credentials) → Act (POST /api/mcp-demo).

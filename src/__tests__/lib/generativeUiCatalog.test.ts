@@ -40,6 +40,13 @@ describe('isUiNode', () => {
     expect(isUiNode({ type: 'stat-tile', label: 123, value: '18+' })).toBe(false);
   });
 
+  it('rejects an invalid optional caption and overlong required values', () => {
+    expect(isUiNode({ ...validStatTile, caption: '   ' })).toBe(false);
+    expect(isUiNode({ ...validStatTile, label: 'x'.repeat(61) })).toBe(false);
+    expect(isUiNode({ ...validStatTile, value: 'x'.repeat(41) })).toBe(false);
+    expect(isUiNode({ ...validStatTile, caption: 'x'.repeat(121) })).toBe(false);
+  });
+
   it('rejects an empty string field', () => {
     expect(isUiNode({ type: 'stat-tile', label: '   ', value: '18+' })).toBe(false);
   });
@@ -52,6 +59,24 @@ describe('isUiNode', () => {
         skills: Array.from({ length: MAX_LIST_ITEMS + 1 }, (_, i) => `skill-${i}`),
       })
     ).toBe(false);
+  });
+
+  it('rejects malformed comparison tables and rows', () => {
+    expect(isUiNode({ ...validComparisonTable, rows: [] })).toBe(false);
+    expect(isUiNode({ ...validComparisonTable, rows: [{ ...validComparisonTable.rows[0], left: '' }] })).toBe(false);
+    expect(isUiNode({ ...validComparisonTable, rows: [null] })).toBe(false);
+    expect(isUiNode({ ...validComparisonTable, title: 'x'.repeat(81) })).toBe(false);
+    expect(isUiNode({ ...validComparisonTable, leftHeader: 'x'.repeat(41) })).toBe(false);
+    expect(isUiNode({ ...validComparisonTable, rightHeader: 'x'.repeat(41) })).toBe(false);
+  });
+
+  it('rejects malformed timelines and skill lists', () => {
+    expect(isUiNode({ ...validTimeline, entries: [] })).toBe(false);
+    expect(isUiNode({ ...validTimeline, entries: [{ ...validTimeline.entries[0], detail: '' }] })).toBe(false);
+    expect(isUiNode({ ...validTimeline, entries: [null] })).toBe(false);
+    expect(isUiNode({ ...validSkillList, skills: [] })).toBe(false);
+    expect(isUiNode({ ...validSkillList, skills: [123] })).toBe(false);
+    expect(isUiNode({ ...validSkillList, title: 'x'.repeat(81) })).toBe(false);
   });
 
   it('rejects a non-object value', () => {
@@ -94,5 +119,12 @@ describe('isUiSpec', () => {
 
   it('rejects a spec missing a summary', () => {
     expect(isUiSpec({ nodes: [validStatTile] })).toBe(false);
+  });
+
+  it('rejects malformed specs and overlong summaries', () => {
+    expect(isUiSpec(null)).toBe(false);
+    expect(isUiSpec('not-an-object')).toBe(false);
+    expect(isUiSpec({ summary: 'x'.repeat(241), nodes: [validStatTile] })).toBe(false);
+    expect(isUiSpec({ summary: 'Valid summary', nodes: 'not-an-array' })).toBe(false);
   });
 });

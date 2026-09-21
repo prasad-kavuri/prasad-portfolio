@@ -15,7 +15,7 @@
     "generate:pdf": "node scripts/generate-pdf.mjs"
   },
   "dependencies": {
-    "@huggingface/transformers": "^4.2.0",
+    "@huggingface/transformers": "^4.3.0",
     "@upstash/ratelimit": "^2.1.0",
     "@upstash/redis": "^1.38.3",
     "@vercel/analytics": "^2.0.1",

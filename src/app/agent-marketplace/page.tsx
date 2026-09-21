@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database, Eye, FileText, GitBranch, KeyRound, Layers, MonitorCheck, Plug, Search, ShieldCheck, Users, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database, Eye, FileText, GitBranch, KeyRound, Layers, MonitorCheck, Plug, Search, ShieldCheck, Telescope, Users, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { demos } from '@/data/demos';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -28,6 +28,7 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
   'resume-generator': FileText,
   'multimodal': Eye,
   'quantization': Zap,
+  'storm-research': Telescope,
 };
 
 // ---------------------------------------------------------------------------
@@ -59,6 +60,7 @@ const DEMO_CAPABILITIES: Record<string, string[]> = {
   'resume-generator': ['inference', 'enterprise'],
   'multimodal': ['inference', 'browser'],
   'quantization': ['inference', 'browser'],
+  'storm-research': ['agentic', 'inference'],
 };
 
 // Agent tiers — how mature / production-ready

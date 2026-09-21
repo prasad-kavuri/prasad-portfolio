@@ -38,7 +38,7 @@ Chicago area & remote.
 
 ## Live Portfolio
 
-**[prasadkavuri.com](https://www.prasadkavuri.com)** — 14 production AI demos
+**[prasadkavuri.com](https://www.prasadkavuri.com)** — 16 production AI demos
 running on shared governance infrastructure: guardrails, observability,
 evaluation, and drift monitoring at the platform layer.
 

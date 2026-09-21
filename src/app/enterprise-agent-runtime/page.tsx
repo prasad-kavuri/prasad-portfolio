@@ -13,6 +13,14 @@ type RuntimeConcern = {
   links: Array<{ href: string; label: string }>;
 };
 
+type EcosystemMapping = {
+  portfolioConcept: string;
+  portfolioLink: { href: string; label: string };
+  googleAnalog: string;
+  note: string;
+  source: { href: string; label: string };
+};
+
 const concerns: RuntimeConcern[] = [
   {
     title: 'Agent Identity',
@@ -88,6 +96,55 @@ const concerns: RuntimeConcern[] = [
     enterpriseWhy:
       'When an agent misbehaves in production, observability is the difference between a five-minute root cause and a multi-day investigation.',
     links: [{ href: '/demos/enterprise-control-plane', label: 'Observability Tab' }],
+  },
+];
+
+// Maps this page's portfolio-native concerns onto Google's enterprise agent-platform ecosystem
+// (Agent Development Kit, Vertex AI Agent Engine, Agentspace / Gemini Enterprise Agent Platform,
+// Agent Identity, Agent Registry, Agent Gateway, A2A, Model Armor, current MCP spec) — added so the
+// existing, already-built governance work here is legible to anyone evaluating it against that stack.
+const googleEcosystemMapping: EcosystemMapping[] = [
+  {
+    portfolioConcept: 'Agent Identity',
+    portfolioLink: { href: '/demos/agent-auth', label: 'Agent Auth Demo' },
+    googleAnalog: 'Agent Identity',
+    note: 'This demo\'s anonymous-to-verified identity lifecycle is the same problem Google\'s Agent Identity solves with SPIFFE-based per-agent identity (replacing shared service accounts), using mTLS by default and DPoP across Agent Gateway.',
+    source: { href: 'https://docs.cloud.google.com/iam/docs/agent-identity-overview', label: 'Google Cloud: Agent Identity overview' },
+  },
+  {
+    portfolioConcept: 'Tool / Capability Registry',
+    portfolioLink: { href: '/demos/enterprise-control-plane', label: 'Tool Registry Tab' },
+    googleAnalog: 'Agent Registry + Agent Gateway',
+    note: 'Registering tools with declared permissions before they\'re callable is the same governance move as Google\'s Agent Registry (the catalog of approved agents, tools, and MCP servers) and Agent Gateway (the control plane that checks it before allowing a connection).',
+    source: { href: 'https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview', label: 'Google Cloud: Agent Gateway overview' },
+  },
+  {
+    portfolioConcept: 'Guardrails & Prompt-Injection Detection',
+    portfolioLink: { href: '/demos/mcp-demo', label: 'MCP Tool Demo' },
+    googleAnalog: 'Model Armor',
+    note: 'This portfolio\'s injection-detection guardrails run per-app; Google\'s Model Armor is the equivalent runtime security layer applied centrally at Agent Gateway to all agent traffic, without per-agent code changes.',
+    source: { href: 'https://cloud.google.com/security/products/model-armor', label: 'Google Cloud: Model Armor' },
+  },
+  {
+    portfolioConcept: 'Standardized Tool-Calling Protocol',
+    portfolioLink: { href: '/demos/mcp-demo', label: 'MCP Tool Demo' },
+    googleAnalog: 'MCP (current spec)',
+    note: 'The current MCP specification (2026-07-28) formalizes MCP servers as OAuth 2.1 resource servers and moves to a stateless protocol core — the enterprise-authorization direction this demo\'s tool-discovery flow points toward.',
+    source: { href: 'https://blog.modelcontextprotocol.io/posts/2026-07-28/', label: 'MCP Blog: The 2026-07-28 Specification' },
+  },
+  {
+    portfolioConcept: 'Multi-Agent Coordination',
+    portfolioLink: { href: '/demos/multi-agent', label: 'Multi-Agent Demo' },
+    googleAnalog: 'Agent2Agent (A2A) protocol',
+    note: 'Analyzer → Researcher → Strategist handoff here is a single-process version of what A2A standardizes across independent agents — capability discovery via Agent Cards and task delegation, now Linux Foundation-governed with 150+ supporting organizations.',
+    source: { href: 'https://a2a-protocol.org/latest/specification/', label: 'A2A Protocol Specification' },
+  },
+  {
+    portfolioConcept: 'Agent Build & Managed Runtime',
+    portfolioLink: { href: '/demos/multi-agent', label: 'Multi-Agent Demo' },
+    googleAnalog: 'Agent Development Kit (ADK) + Vertex AI Agent Engine',
+    note: 'This portfolio\'s hand-rolled orchestration (Groq-based agent classes, sequential/parallel handoffs) is the vendor-neutral pattern that ADK codifies as a framework, deployable to Google\'s managed Agent Engine runtime without a rewrite.',
+    source: { href: 'https://docs.cloud.google.com/agent-builder/agent-development-kit/overview', label: 'Google Cloud: Agent Development Kit overview' },
   },
 ];
 
@@ -207,6 +264,50 @@ export default function EnterpriseAgentRuntimePage() {
                 </div>
               </Card>
             ))}
+          </div>
+        </section>
+
+        <section className="pb-14">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="mb-6">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Ecosystem Alignment</p>
+              <h2 className="mt-1 text-xl font-semibold text-foreground">
+                How this maps to Google&apos;s enterprise agent-platform ecosystem
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+                Each concern above is a vendor-neutral pattern. Where Google&apos;s Gemini Enterprise Agent
+                Platform names the same pattern as a product, that mapping is below — with a link to the
+                primary source.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {googleEcosystemMapping.map((item) => (
+                <Card key={item.portfolioConcept} className="border-border bg-card p-5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <h3 className="text-sm font-semibold text-foreground">{item.portfolioConcept}</h3>
+                    <span className="text-xs font-medium text-muted-foreground">→ {item.googleAnalog}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">{item.note}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Link
+                      href={item.portfolioLink.href}
+                      className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-xs text-foreground hover:bg-muted"
+                    >
+                      {item.portfolioLink.label}
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                    <a
+                      href={item.source.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 rounded-md border border-border bg-transparent px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    >
+                      {item.source.label}
+                    </a>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
       </main>

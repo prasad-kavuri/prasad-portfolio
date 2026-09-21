@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database,
   Eye, FileText, GitBranch, KeyRound, Layers, MonitorCheck,
-  Plug, Search, ShieldCheck, Users, Zap,
+  Plug, Search, ShieldCheck, Telescope, Users, Zap,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { demos } from '@/data/demos';
@@ -32,6 +32,7 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
   'resume-generator': FileText,
   'multimodal': Eye,
   'quantization': Zap,
+  'storm-research': Telescope,
 };
 
 // Execution model label per demo
@@ -51,6 +52,7 @@ const EXEC_MODEL: Record<string, { label: string; color: string }> = {
   'edge-agent-collaboration':  { label: 'Edge + Cloud',  color: 'bg-orange-500/15 text-orange-400' },
   'agent-auth':                { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
   'world-generation':          { label: 'Three.js + API',color: 'bg-indigo-500/15 text-indigo-400' },
+  'storm-research':            { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
 };
 
 const GROUPS = [
@@ -58,29 +60,36 @@ const GROUPS = [
     id: 'core',
     label: 'Core AI Infrastructure',
     description: 'Foundation systems — quality, retrieval, routing, and governance',
-    ids: ['evaluation-showcase', 'rag-pipeline', 'llm-router', 'vector-search', 'browser-native-ai-skill'],
+    ids: ['evaluation-showcase', 'rag-pipeline', 'llm-router'],
   },
   {
     id: 'agentic',
     label: 'Agentic Systems',
     description: 'Autonomous agents, tool-use orchestration, and enterprise control',
-    ids: ['multi-agent', 'mcp-demo', 'agent-auth', 'edge-agent-collaboration', 'enterprise-control-plane', 'world-generation'],
+    ids: ['multi-agent', 'mcp-demo', 'agent-auth', 'edge-agent-collaboration', 'enterprise-control-plane', 'world-generation', 'storm-research'],
   },
   {
     id: 'apps',
     label: 'AI Applications',
     description: 'Production AI experiences across modalities',
-    ids: ['portfolio-assistant', 'resume-generator', 'multimodal', 'quantization'],
+    ids: ['portfolio-assistant', 'resume-generator'],
+  },
+  {
+    id: 'explorations',
+    label: 'Technical Explorations',
+    description: 'Focused engineering deep-dives — desktop/WebGPU-heavy, narrower audience than the core platform demos',
+    ids: ['vector-search', 'multimodal', 'quantization', 'browser-native-ai-skill'],
   },
 ] as const;
 
 type GroupId = typeof GROUPS[number]['id'];
 
 const FILTERS = [
-  { id: 'all' as const,     label: 'All Modules' },
-  { id: 'core' as const,    label: 'Core AI' },
-  { id: 'agentic' as const, label: 'Agentic' },
-  { id: 'apps' as const,    label: 'Applications' },
+  { id: 'all' as const,          label: 'All Modules' },
+  { id: 'core' as const,         label: 'Core AI' },
+  { id: 'agentic' as const,      label: 'Agentic' },
+  { id: 'apps' as const,         label: 'Applications' },
+  { id: 'explorations' as const, label: 'Explorations' },
 ];
 
 // ---------------------------------------------------------------------------

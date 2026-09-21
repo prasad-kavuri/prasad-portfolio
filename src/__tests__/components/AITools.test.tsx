@@ -156,11 +156,12 @@ describe('AITools', () => {
     expect(screen.getByText(/shared governance\s+infrastructure/i)).toBeInTheDocument();
   });
 
-  it('renders all three demo group labels', () => {
+  it('renders all four demo group labels', () => {
     render(React.createElement(AITools));
     expect(screen.getByText('Core AI Infrastructure')).toBeInTheDocument();
     expect(screen.getByText('Agentic Systems')).toBeInTheDocument();
     expect(screen.getByText('AI Applications')).toBeInTheDocument();
+    expect(screen.getByText('Technical Explorations')).toBeInTheDocument();
   });
 
   it('shows AI quality callout and signature quality labeling', () => {

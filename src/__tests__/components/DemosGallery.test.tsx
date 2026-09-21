@@ -24,7 +24,7 @@ vi.mock('lucide-react', () => {
     ArrowRight: stub, Bot: stub, Building2: stub, CheckCircle2: stub,
     Cuboid: stub, Database: stub, Eye: stub, FileText: stub, GitBranch: stub,
     KeyRound: stub, Layers: stub, MonitorCheck: stub, Plug: stub, Search: stub,
-    ShieldCheck: stub, Users: stub, Zap: stub,
+    ShieldCheck: stub, Telescope: stub, Users: stub, Zap: stub,
   };
 });
 
@@ -164,6 +164,16 @@ vi.mock('@/data/demos', () => ({
       mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: '/api/resume-generator' },
     },
     {
+      id: 'storm-research',
+      title: 'STORM Research Agent',
+      description: 'Multi-perspective research synthesis via Groq.',
+      businessImpact: 'Demonstrates research-agent orchestration at enterprise scale',
+      href: '/demos/storm-research',
+      tags: ['Groq', 'Multi-Agent', 'Research Synthesis'],
+      status: 'live',
+      mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: '/api/storm-research' },
+    },
+    {
       id: 'multimodal',
       title: 'Multimodal Assistant',
       description: 'Florence-2 WebGPU image captioning.',
@@ -194,12 +204,13 @@ describe('DemosGallery', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the filter bar with all 4 filter options', () => {
+  it('renders the filter bar with all 5 filter options', () => {
     render(<DemosGallery />);
     expect(screen.getByRole('button', { name: 'All Modules' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Core AI' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Agentic' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Applications' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Explorations' })).toBeInTheDocument();
   });
 
   it('"All Modules" filter is active (aria-pressed=true) by default', () => {
@@ -248,6 +259,15 @@ describe('DemosGallery', () => {
     expect(screen.getByText('Core AI Infrastructure')).toBeInTheDocument();
     expect(screen.getByText('Agentic Systems')).toBeInTheDocument();
     expect(screen.getByText('AI Applications')).toBeInTheDocument();
+    expect(screen.getByText('Technical Explorations')).toBeInTheDocument();
+  });
+
+  it('clicking "Explorations" filter shows only Technical Explorations group', () => {
+    render(<DemosGallery />);
+    fireEvent.click(screen.getByRole('button', { name: 'Explorations' }));
+    expect(screen.queryByText('Core AI Infrastructure')).not.toBeInTheDocument();
+    expect(screen.getByText('Technical Explorations')).toBeInTheDocument();
+    expect(screen.getByText('Vector Search')).toBeInTheDocument();
   });
 
   it('clicking "Agentic" filter hides Core AI group label', () => {
@@ -287,7 +307,7 @@ describe('DemosGallery', () => {
 
   it('shows module count for current filter', () => {
     render(<DemosGallery />);
-    // With all 15 demos, should show "15 modules"
-    expect(screen.getByText('15 modules')).toBeInTheDocument();
+    // With all 16 demos, should show "16 modules"
+    expect(screen.getByText('16 modules')).toBeInTheDocument();
   });
 });

@@ -12,17 +12,6 @@ test.describe('API Routes', () => {
     expect(response.status()).toBe(400);
   });
 
-  test('resume-generator returns 400 for missing job description', async ({ page }) => {
-    const response = await page.request.post('/api/resume-generator', {
-      data: {},
-      headers: {
-        'Content-Type': 'application/json',
-        'x-forwarded-for': '203.0.113.11',
-      },
-    });
-    expect(response.status()).toBe(400);
-  });
-
   test('mcp-demo returns 400 for missing query', async ({ page }) => {
     const response = await page.request.post('/api/mcp-demo', {
       data: {},

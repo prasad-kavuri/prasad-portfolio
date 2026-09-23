@@ -122,9 +122,14 @@ test.describe('Error states', () => {
     await expect(page).toHaveURL(/demos\/rag-pipeline/);
   });
 
-  test('known legacy redirect: /multimodal-assistant.html → /demos/multimodal', async ({ page }) => {
+  test('known legacy redirect: /multimodal-assistant.html → /demos/edge-agent-collaboration', async ({ page }) => {
     await page.goto('/multimodal-assistant.html');
-    await expect(page).toHaveURL(/demos\/multimodal/);
+    await expect(page).toHaveURL(/demos\/edge-agent-collaboration/);
+  });
+
+  test('retired demo route redirects: /demos/vector-search → /demos/rag-pipeline', async ({ page }) => {
+    await page.goto('/demos/vector-search');
+    await expect(page).toHaveURL(/demos\/rag-pipeline/);
   });
 
   test('API route returns JSON error for missing body', async ({ page }) => {

@@ -281,7 +281,7 @@ export default function GovernancePage() {
           </h2>
           <Card className="border border-border bg-card p-5">
             <div className="grid gap-3 text-sm text-muted-foreground md:grid-cols-2">
-              <p><span className="font-medium text-foreground">Automated Outcome Grading:</span> LLM-as-Judge grader agents score every response against ground-truth eval cases. CI blocks any merge where quality regresses below threshold — the same pattern as Anthropic&apos;s Outcomes primitive.</p>
+              <p><span className="font-medium text-foreground">Automated Outcome Grading:</span> Deterministic eval cases score responses against required-coverage and forbidden-topic rubrics, and run in CI on every push — a failing case fails the build. LLM-as-Judge grading is the next layer of this pattern.</p>
               <p><span className="font-medium text-foreground">Guardrail Boundary:</span> Prompt-injection checks and output sanitization are enforced centrally at API trust boundaries.</p>
               <p><span className="font-medium text-foreground">Human Oversight:</span> High-stakes multi-agent transitions require explicit HITL checkpoint approval before strategist output continues.</p>
               <p><span className="font-medium text-foreground">Traceable Operations:</span> Structured logs plus trace IDs make request, model, and policy decisions auditable end-to-end.</p>
@@ -330,9 +330,9 @@ export default function GovernancePage() {
                 The Content Security Policy intentionally permits{" "}
                 <code className="rounded bg-muted px-1 py-0.5">unsafe-inline</code>,{" "}
                 <code className="rounded bg-muted px-1 py-0.5">unsafe-eval</code>, and WASM execution.
-                These exceptions exist solely to support the four browser-native AI demos (RAG Pipeline,
-                Vector Search, Multimodal, Quantization) which run ONNX/Transformers.js models via
-                WebAssembly and WebGPU directly in the browser — no server inference. All other routes
+                These exceptions exist solely to support the browser-native AI demos (RAG Pipeline,
+                Quantization, and the Edge Agent&apos;s PII redaction) which run ONNX/Transformers.js
+                models via WebAssembly directly in the browser — no server inference. All other routes
                 operate under a strict baseline policy.
               </p>
               <p>

@@ -1,22 +1,22 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'AI Evaluation Showcase — LLM-as-Judge & Outcome Grading | Prasad Kavuri',
+  title: 'AI Evaluation Showcase — Rubric Scoring & Release Gating | Prasad Kavuri',
   description:
-    'Production-grade AI quality system: LLM-as-Judge grader agents score every response, CI regression gates block quality drift, and drift monitoring catches model degradation. Built by VP of AI Engineering Prasad Kavuri.',
+    'AI quality pipeline reference: deterministic rubric scoring, guardrail screening, pass/fail release gating, and eval suites that run in CI on every push — plus how LLM-as-Judge and online evals fit the pattern. By Prasad Kavuri.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/demos/evaluation-showcase',
   },
   openGraph: {
-    title: 'AI Evaluation Showcase — LLM-as-Judge & Outcome Grading | Prasad Kavuri',
+    title: 'AI Evaluation Showcase — Rubric Scoring & Release Gating | Prasad Kavuri',
     description:
-      'See automated outcome grading in action: grader agents, drift signals, HITL checkpoints, and CI release gates for production AI systems.',
+      'Rubric scoring, guardrail screening, drift signals, and CI release gates — a reference quality pipeline for production AI systems.',
     url: 'https://www.prasadkavuri.com/demos/evaluation-showcase',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Evaluation Showcase — LLM-as-Judge & Outcome Grading',
+    title: 'AI Evaluation Showcase — Rubric Scoring & Release Gating',
     description:
-      'Grader agents, drift monitoring, and CI regression gates — production AI quality controls by VP of AI Engineering Prasad Kavuri.',
+      'Rubric scoring, drift monitoring, and CI release gates — AI quality controls by Prasad Kavuri.',
   },
 };

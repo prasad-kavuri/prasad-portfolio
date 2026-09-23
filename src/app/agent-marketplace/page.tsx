@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database, Eye, FileText, GitBranch, KeyRound, Layers, MonitorCheck, Plug, Search, ShieldCheck, Telescope, Users, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database, GitBranch, KeyRound, Layers, LayoutTemplate, Plug, ShieldCheck, Telescope, Users, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { demos } from '@/data/demos';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -15,20 +15,17 @@ import type { LucideIcon } from 'lucide-react';
 const DEMO_ICONS: Record<string, LucideIcon> = {
   'rag-pipeline': Database,
   'llm-router': GitBranch,
-  'vector-search': Search,
   'evaluation-showcase': ShieldCheck,
   'multi-agent': Users,
   'mcp-demo': Plug,
   'agent-auth': KeyRound,
   'enterprise-control-plane': Building2,
   'world-generation': Cuboid,
-  'browser-native-ai-skill': MonitorCheck,
   'edge-agent-collaboration': Layers,
   'portfolio-assistant': Bot,
-  'resume-generator': FileText,
-  'multimodal': Eye,
   'quantization': Zap,
   'storm-research': Telescope,
+  'generative-ui': LayoutTemplate,
 };
 
 // ---------------------------------------------------------------------------
@@ -48,19 +45,16 @@ const DEMO_CAPABILITIES: Record<string, string[]> = {
   'evaluation-showcase': ['governance', 'inference'],
   'rag-pipeline': ['inference', 'browser'],
   'llm-router': ['inference', 'enterprise'],
-  'vector-search': ['inference', 'browser'],
   'multi-agent': ['agentic', 'governance'],
   'mcp-demo': ['agentic', 'governance'],
   'agent-auth': ['agentic', 'governance'],
   'enterprise-control-plane': ['enterprise', 'governance'],
   'world-generation': ['inference', 'enterprise'],
-  'browser-native-ai-skill': ['browser', 'inference'],
   'edge-agent-collaboration': ['agentic', 'browser', 'governance'],
   'portfolio-assistant': ['inference', 'agentic'],
-  'resume-generator': ['inference', 'enterprise'],
-  'multimodal': ['inference', 'browser'],
   'quantization': ['inference', 'browser'],
   'storm-research': ['agentic', 'inference'],
+  'generative-ui': ['governance', 'inference'],
 };
 
 // Agent tiers — how mature / production-ready

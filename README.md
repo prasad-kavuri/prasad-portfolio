@@ -2,7 +2,7 @@
 
 **prasadkavuri.com** · [LinkedIn](https://linkedin.com/in/pkavuri) · vbkpkavuri@gmail.com
 
-> Production AI platform portfolio. 16 live demos. Built for VP / Head-level evaluation.
+> Production AI platform portfolio: 9 core platform demos + 4 labs, all live. Built for VP / Head-level evaluation.
 
 ---
 
@@ -27,7 +27,7 @@ production AI platforms at enterprise scale.
 | Metric | Result |
 |--------|--------|
 | Engineers led | 200+ across Krutrim, Ola & HERE Technologies |
-| Infrastructure cost reduction | Up to 70% (Ola Maps, 13K+ B2B customers) |
+| Infrastructure cost reduction | 70% at Ola (cloud-native overhaul; 13K+ B2B customers) |
 | Revenue launched | $10M+ (Krutrim AI / Kruti.ai, 0 → production) |
 | Production AI platform | India's first agentic AI platform |
 | Experience | 20+ years, AI/ML → Agentic AI |
@@ -38,7 +38,7 @@ Chicago area & remote.
 
 ## Live Portfolio
 
-**[prasadkavuri.com](https://www.prasadkavuri.com)** — 16 production AI demos
+**[prasadkavuri.com](https://www.prasadkavuri.com)** — 13 live AI demos (9 core platform + 4 labs)
 running on shared governance infrastructure: guardrails, observability,
 evaluation, and drift monitoring at the platform layer.
 
@@ -46,9 +46,9 @@ evaluation, and drift monitoring at the platform layer.
 
 | Demo | Category | Signal |
 |------|----------|--------|
-| [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Flagship | Closed-loop eval, drift monitoring, CI gating |
-| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | CrewAI + Groq, HITL checkpoints, audit trails |
-| [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Infrastructure | Transformers.js, ChromaDB, in-browser |
+| [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Flagship | Rubric-scored evals, release gating, CI eval suites |
+| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq agents, human review step, audit trails |
+| [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Infrastructure | Transformers.js embeddings, in-browser retrieval, citations |
 | [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | FinOps | Multi-model routing, live cost/latency tradeoffs |
 | [Enterprise Control Plane](https://www.prasadkavuri.com/demos/enterprise-control-plane) | Governance | RBAC, spend limits, structured observability |
 | [Edge Agent Collaboration](https://www.prasadkavuri.com/demos/edge-agent-collaboration) | Privacy-first | BERT NER redaction, HITL gate, sovereign AI |
@@ -57,10 +57,10 @@ evaluation, and drift monitoring at the platform layer.
 
 ## Stack
 
-Next.js 16 · React 19 · TypeScript 5 · Tailwind CSS 4 · Transformers.js ·
-Vercel · Upstash Redis · Groq · CrewAI · ChromaDB · Playwright · Vitest
+Next.js 16 · React 19 · TypeScript 6 · Tailwind CSS 4 · Transformers.js ·
+Vercel · Upstash Redis · Groq · Playwright · Vitest
 
-**Quality baseline:** 1021 tests · 0 CVEs · 0 lint errors · CI: lint → build → E2E matrix
+**Quality baseline:** Vitest unit/integration/eval suites · npm audit, gitleaks, semgrep · 0 lint errors · CI: lint → unit → build → E2E matrix
 
 ---
 
@@ -68,7 +68,7 @@ Vercel · Upstash Redis · Groq · CrewAI · ChromaDB · Playwright · Vitest
 
 ![Architecture Diagram](public/architecture-diagram.svg)
 
-Full architecture: [ARCHITECTURE.md](./ARCHITECTURE.md) · Security: [SECURITY.md](./SECURITY.md)
+Full architecture: [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · Security: [SECURITY.md](./SECURITY.md)
 
 ---
 

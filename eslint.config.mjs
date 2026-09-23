@@ -47,8 +47,6 @@ const eslintConfig = defineConfig([
   {
     files: [
       "src/app/demos/rag-pipeline/page.tsx",
-      "src/app/demos/vector-search/page.tsx",
-      "src/app/demos/multimodal/page.tsx",
       "src/app/demos/quantization/page.tsx",
     ],
     rules: {

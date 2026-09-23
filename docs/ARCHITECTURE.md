@@ -8,7 +8,7 @@ This document describes the real system architecture implemented in this reposit
 
 | Layer | Repo implementation | Purpose |
 |---|---|---|
-| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 16 production demos |
+| UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 13 live demos (9 core platform + 4 labs) |
 | Skills Layer | `src/data/skills.ts`, `src/app/skills/` | Reusable capability modules (guardrails, observability, eval, drift, HITL, planning) wired to demos |
 | Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
@@ -51,7 +51,6 @@ The current API surface is:
 |---|---|---|
 | `/api/llm-router` | Multi-model routing | Calls Groq models, returns latency/cost metrics, validates prompt/model input |
 | `/api/portfolio-assistant` | Full-context streaming assistant | Streams Groq responses with curated knowledge injection and optional retrieval grounding cues |
-| `/api/resume-generator` | Resume tailoring | Parses job descriptions and returns structured resume JSON |
 | `/api/multi-agent` | Multi-agent analysis | Proxies to the agent backend with hardened SSRF checks via `src/lib/url-security.ts` |
 | `/api/mcp-demo` | MCP-style tool calling | Lets Groq select and execute profile tools via a JSON-RPC-like tool schema |
 | `/api/generative-ui` | Constrained generative UI | Validates model output against a fixed component catalog before returning it (no markup ever emitted) |
@@ -79,22 +78,18 @@ The AI services layer contains both server-side and browser-side demos:
 |---|---|---|
 | RAG Pipeline | `/demos/rag-pipeline` | Browser embeddings and retrieval |
 | LLM Router | `/demos/llm-router` | Server route calling Groq |
-| Vector Search | `/demos/vector-search` | Browser embeddings and visualization |
 | AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |
 | Multi-Agent System | `/demos/multi-agent` | Server route plus external agent backend |
 | MCP Tool Demo | `/demos/mcp-demo` | Server route calling Groq tool use |
 | Agent Auth Demo | `/demos/agent-auth` | auth.md discovery, anonymous and claimed agent authentication flows, and MCP auth context |
 | AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming full-context grounding and retrieval cues |
-| AI Hiring Intelligence | `/demos/resume-generator` | Server route calling Groq |
-| Multimodal Assistant | `/demos/multimodal` | Browser model execution |
 | Model Quantization | `/demos/quantization` | Browser ONNX benchmark |
 | Enterprise Control Plane | `/demos/enterprise-control-plane` | RBAC, spend governance, token analytics, structured observability |
-| Native Browser AI Skill | `/demos/browser-native-ai-skill` | On-device accessibility and agent-readiness analysis |
 | STORM Research Agent | `/demos/storm-research` | Multi-perspective research workflow with streaming synthesis |
 | Constrained Generative UI | `/demos/generative-ui` | Server route calling Groq, catalog-validated before render |
 | Real-Time Spatial AI + World Modeling Engine | `/demos/world-generation` | Perception → reconstruction → agent reasoning. Precomputed 3D mesh playback with drift correction visualization and LLM spatial query layer. |
 
-The LLM Router demonstrates the cost/latency tradeoff pattern directly. RAG and vector search demonstrate retrieval before generation. Browser demos show local inference patterns that reduce server load and external API cost.
+The LLM Router demonstrates the cost/latency tradeoff pattern directly. The RAG Pipeline demonstrates retrieval before generation. Browser demos show local inference patterns that reduce server load and external API cost.
 
 The world-generation demo uses a provider-adapter pattern: `hyworld` contract mode for future upstream integration and deterministic `mock` fallback mode for stable local/public execution. Current browser output is procedurally rendered from the governed scene specification and exported as GLB; provider mode and fallback status remain explicitly disclosed so capabilities stay operationally honest.
 
@@ -104,7 +99,7 @@ The primary repo data sources are:
 
 - `src/data/profile.json`: professional profile, experience, skills, education, and summary copy.
 - `src/data/demos.ts`: demo metadata, route paths, technology tags, and business impact lines.
-- Browser embeddings and vector search state in the RAG/vector demos.
+- Browser embeddings and vector index state in the RAG demo.
 - Public assets in `public/`, including `profile-photo.jpg`, `Prasad_Kavuri_Resume.pdf`, and `architecture-diagram.svg`.
 
 There is no hidden database for the portfolio content. The repo intentionally keeps public profile data auditable and versioned.

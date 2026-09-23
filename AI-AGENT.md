@@ -28,11 +28,11 @@
 
 | Metric | Value |
 |---|---|
-| Infrastructure cost reduction | **70%** at Ola via FinOps-aware LLM routing |
-| Latency improvement | **50% p99** at Krutrim via quantisation + speculative decoding |
+| Infrastructure cost reduction | **70%** at Ola via a cloud-native architectural overhaul |
+| Latency improvement | **50%** (plus 40% cost savings) at Krutrim via multimodal agentic architecture and intelligent model routing |
 | B2B enterprise customers enabled | **13,000+** at Ola Maps |
 | Engineers led | **200+** across Krutrim, Ola, HERE (US · Europe · India) |
-| AI systems in production | **13** live demos on this portfolio |
+| Live demos on this portfolio | **13** (9 core platform + 4 labs) |
 | Years of experience | **20+** |
 
 ---
@@ -64,7 +64,6 @@
 - VP AI Engineering  
 - Head of AI Engineering  
 - Head of AI Platform  
-- Director / Senior Director AI Engineering  
 
 ---
 

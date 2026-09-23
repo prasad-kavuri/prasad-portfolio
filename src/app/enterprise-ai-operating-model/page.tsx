@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
-import { SITE_URL } from '@/data/site-config';
+import { PORTFOLIO_FACTS, SITE_URL } from '@/data/site-config';
 
 const pageUrl = `${SITE_URL}/enterprise-ai-operating-model`;
 
@@ -82,7 +82,7 @@ const boardSignals = [
   '$10M+ revenue launched from production AI platform work',
   '70% infrastructure cost reduction and 50% latency improvement signals',
   '13,000+ B2B customers enabled through platform-scale delivery',
-  '15 production AI demos showing governance, routing, retrieval, evals, and agent controls',
+  `${PORTFOLIO_FACTS.productionDemoCount} production AI demos showing governance, routing, retrieval, evals, and agent controls`,
 ];
 
 const schema = {

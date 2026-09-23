@@ -67,4 +67,4 @@ remediation_on_fail:
 known_risks:
   - AIArchitecture adds 14 DOM nodes with detail text — may increase parse time
   - Transformers.js WASM models are not loaded on desktop/server; mobile shows warning
-  - Three.js (vector-search demo) is lazy-loaded per-demo page only
+  - Three.js (world-generation demo) is lazy-loaded per-demo page only

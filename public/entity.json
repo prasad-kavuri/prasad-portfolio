@@ -23,7 +23,11 @@
     "oauth_protected_resource": "https://www.prasadkavuri.com/.well-known/oauth-protected-resource"
   },
   "agent_lifecycle": {
-    "discover": ["llms.txt", "entity.json", "JSON-LD"],
+    "discover": [
+      "llms.txt",
+      "entity.json",
+      "JSON-LD"
+    ],
     "authenticate": "auth.md (open protocol — see github.com/workos/auth.md)",
     "authorize": "scoped, short-lived credentials (read:profile, call:mcp-tools)",
     "act": "POST /api/mcp-demo"
@@ -59,31 +63,15 @@
   ],
   "proof_points": [
     "200+ engineers led",
-    "70%+ AI infrastructure cost reduction",
+    "70% infrastructure cost reduction at Ola (cloud-native architectural overhaul)",
     "$10M+ revenue launched (Krutrim AI, 0→production)",
     "13,000+ B2B customers enabled",
-    "16 production AI demos / platform patterns"
+    "13 live AI demos (9 core platform + 4 labs)"
   ],
   "contact": {
     "email": "vbkpkavuri@gmail.com",
     "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "github": "https://github.com/prasad-kavuri"
   },
-  "last_updated": "2026-07-16",
-  "recruiter_query_match": [
-    "Director AI Platform Chicago",
-    "AI Engineering leader Chicago",
-    "Agentic AI Solutions leader",
-    "Zip AI platform",
-    "Krutrim agentic AI",
-    "Ola Maps AI platform",
-    "AI platform executive global",
-    "LLMOps leader",
-    "AI FinOps executive",
-    "agentic AI orchestration leader",
-    "enterprise AI governance executive",
-    "multi-agent systems architect",
-    "production AI platform director",
-    "regulated financial services AI platform"
-  ]
+  "last_updated": "2026-09-23"
 }

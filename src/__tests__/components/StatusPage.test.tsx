@@ -36,12 +36,12 @@ describe('StatusPage', () => {
     expect(screen.getByText(new RegExp(firstServiceStatus.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toBeInTheDocument();
   });
 
-  it('renders all systems from centralized status snapshot data (13 total)', () => {
+  it('renders all systems from centralized status snapshot data (10 total)', () => {
     render(React.createElement(StatusPage));
 
-    expect(STATUS_SNAPSHOT.services).toHaveLength(13);
+    expect(STATUS_SNAPSHOT.services).toHaveLength(10);
     expect(screen.getByText('AI Evaluation Showcase')).toBeInTheDocument();
-    expect(screen.getByText('Native Browser AI Skill')).toBeInTheDocument();
+    expect(screen.queryByText('Native Browser AI Skill')).not.toBeInTheDocument();
     expect(screen.getByText('AI Spatial Intelligence & World Generation')).toBeInTheDocument();
   });
 

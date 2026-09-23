@@ -3,7 +3,7 @@ import { TOOL_REGISTRY } from '@/lib/registry';
 
 describe('Tool Registry', () => {
   it('contains the expected number of tools', () => {
-    expect(TOOL_REGISTRY.length).toBe(13);
+    expect(TOOL_REGISTRY.length).toBe(9);
   });
 
   it('each tool has required properties', () => {

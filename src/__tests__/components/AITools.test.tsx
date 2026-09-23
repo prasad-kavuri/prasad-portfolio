@@ -156,12 +156,12 @@ describe('AITools', () => {
     expect(screen.getByText(/shared governance\s+infrastructure/i)).toBeInTheDocument();
   });
 
-  it('renders all four demo group labels', () => {
+  it('renders the three demo group labels from the shared demo-groups config', () => {
     render(React.createElement(AITools));
-    expect(screen.getByText('Core AI Infrastructure')).toBeInTheDocument();
-    expect(screen.getByText('Agentic Systems')).toBeInTheDocument();
-    expect(screen.getByText('AI Applications')).toBeInTheDocument();
-    expect(screen.getByText('Technical Explorations')).toBeInTheDocument();
+    expect(screen.getByText('Core AI Platform')).toBeInTheDocument();
+    expect(screen.getByText('Agentic Systems & Governance')).toBeInTheDocument();
+    expect(screen.getByText('Labs')).toBeInTheDocument();
+    expect(screen.queryByText('Technical Explorations')).not.toBeInTheDocument();
   });
 
   it('shows AI quality callout and signature quality labeling', () => {
@@ -180,16 +180,22 @@ describe('AITools', () => {
     expect(screen.getByText('LLM Router')).toBeInTheDocument();
     expect(screen.getByText('MCP Tool Demo')).toBeInTheDocument();
     expect(screen.getByText('Enterprise Control Plane')).toBeInTheDocument();
-    expect(screen.getByText('Native Browser AI Skill')).toBeInTheDocument();
     expect(screen.getByText('AI Spatial Intelligence & World Generation')).toBeInTheDocument();
-    expect(screen.getByText('Resume Generator')).toBeInTheDocument();
     expect(screen.getByText('AI Portfolio Assistant')).toBeInTheDocument();
+  });
+
+  it('does not render retired demos even if they are present in data', () => {
+    render(React.createElement(AITools));
+    expect(screen.queryByText('Native Browser AI Skill')).not.toBeInTheDocument();
+    expect(screen.queryByText('Resume Generator')).not.toBeInTheDocument();
+    expect(screen.queryByText('Vector Search')).not.toBeInTheDocument();
+    expect(screen.queryByText('Multimodal Assistant')).not.toBeInTheDocument();
   });
 
   it('renders business impact lines for demo cards', () => {
     render(React.createElement(AITools));
     expect(screen.getByText('Optimizes cost and latency in AI inference pipelines')).toBeInTheDocument();
-    expect(screen.getByText('Accelerates knowledge discovery across enterprise content')).toBeInTheDocument();
+    expect(screen.getByText('Improves location-aware planning with policy-aware decision support')).toBeInTheDocument();
   });
 
   it('renders demo card links with correct hrefs', () => {
@@ -204,22 +210,10 @@ describe('AITools', () => {
     expect(liveBadges.length).toBeGreaterThan(0);
   });
 
-  it('renders Desktop badge on exactly 4 cards', () => {
+  it('renders Desktop badge on exactly 2 cards', () => {
     render(React.createElement(AITools));
     const desktopBadges = screen.getAllByText('Desktop');
-    expect(desktopBadges.length).toBe(4);
-  });
-
-  it('Desktop badge appears on Vector Search', () => {
-    render(React.createElement(AITools));
-    const vectorCard = screen.getByText('Vector Search').closest('a');
-    expect(vectorCard?.textContent).toContain('Desktop');
-  });
-
-  it('Desktop badge appears on Multimodal Assistant', () => {
-    render(React.createElement(AITools));
-    const multimodalCard = screen.getByText('Multimodal Assistant').closest('a');
-    expect(multimodalCard?.textContent).toContain('Desktop');
+    expect(desktopBadges.length).toBe(2);
   });
 
   it('Desktop badge appears on Model Quantization', () => {

@@ -641,8 +641,8 @@ export default function MultiAgentPage() {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: 'Multi-Agent System',
-    description: 'CrewAI-powered agents with real LLM calls via Groq — Analyzer, Researcher, and Strategist collaborating in real time.',
-    keywords: 'CrewAI, Groq, Llama 3.3, Handoff Architecture, Audit Trail, Agent Orchestration',
+    description: 'Three specialized agents — Analyzer, Researcher, and Strategist — with real LLM calls via Groq, handing off in sequence to a human review step.',
+    keywords: 'Groq, Llama 3.3, Handoff Architecture, Audit Trail, Agent Orchestration',
     url: 'https://www.prasadkavuri.com/demos/multi-agent',
     author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
@@ -671,7 +671,7 @@ export default function MultiAgentPage() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {["CrewAI", "Groq", "Handoff Architecture", "Audit Trail", "Human Approval", "Traceable Decisions"].map((item) => (
+              {["Groq", "Handoff Architecture", "Audit Trail", "Human Review Step", "Traceable Decisions"].map((item) => (
                 <Badge key={item} variant="outline" className="bg-muted/40">
                   {item}
                 </Badge>

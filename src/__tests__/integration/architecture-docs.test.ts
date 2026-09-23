@@ -8,7 +8,6 @@ const routePaths = [
   '/api/multi-agent',
   '/api/portfolio-assistant',
   '/api/resume-download',
-  '/api/resume-generator',
 ];
 
 describe('architecture artifact and documentation', () => {

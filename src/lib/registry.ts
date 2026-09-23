@@ -64,7 +64,7 @@ export const TOOL_REGISTRY: RegisteredTool[] = [
     path: '/demos/evaluation-showcase',
     cost_tier: 'medium',
     security_level: 'enterprise',
-    description: 'Closed-loop evaluation framework with LLM-as-Judge and drift detection.'
+    description: 'Evaluation framework with deterministic rubric scoring, release gating, and drift detection.'
   },
   {
     id: 'enterprise-control-plane',
@@ -85,15 +85,6 @@ export const TOOL_REGISTRY: RegisteredTool[] = [
     description: 'Standardized tool-use via Model Context Protocol (MCP).'
   },
   {
-    id: 'vector-search',
-    name: 'Vector Search',
-    type: 'retrieval',
-    path: '/demos/vector-search',
-    cost_tier: 'free',
-    security_level: 'standard',
-    description: 'Client-side embedding visualization and similarity search.'
-  },
-  {
     id: 'portfolio-assistant',
     name: 'Portfolio Assistant',
     type: 'retrieval',
@@ -103,24 +94,6 @@ export const TOOL_REGISTRY: RegisteredTool[] = [
     description: 'RAG-powered conversational assistant for portfolio interaction.'
   },
   {
-    id: 'resume-generator',
-    name: 'Resume Generator',
-    type: 'transformation',
-    path: '/demos/resume-generator',
-    cost_tier: 'low',
-    security_level: 'standard',
-    description: 'Structured data generation for career artifacts.'
-  },
-  {
-    id: 'multimodal',
-    name: 'Multimodal Assistant',
-    type: 'inference',
-    path: '/demos/multimodal',
-    cost_tier: 'free',
-    security_level: 'standard',
-    description: 'Browser-native vision and image analysis via WebGPU.'
-  },
-  {
     id: 'quantization',
     name: 'Model Quantization',
     type: 'inference',
@@ -128,15 +101,6 @@ export const TOOL_REGISTRY: RegisteredTool[] = [
     cost_tier: 'free',
     security_level: 'standard',
     description: 'FP32 vs INT8 performance benchmarking on client-side engines.'
-  },
-  {
-    id: 'browser-native-ai-skill',
-    name: 'Browser-Native AI Skill',
-    type: 'inference',
-    path: '/demos/browser-native-ai-skill',
-    cost_tier: 'free',
-    security_level: 'standard',
-    description: 'Client-side WASM inference for zero-cost, private processing.'
   },
   {
     id: 'world-generation',

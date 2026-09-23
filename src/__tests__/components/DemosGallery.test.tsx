@@ -22,8 +22,8 @@ vi.mock('lucide-react', () => {
   const stub = ({ ...props }: object) => React.createElement('span', props);
   return {
     ArrowRight: stub, Bot: stub, Building2: stub, CheckCircle2: stub,
-    Cuboid: stub, Database: stub, Eye: stub, FileText: stub, GitBranch: stub,
-    KeyRound: stub, Layers: stub, MonitorCheck: stub, Plug: stub, Search: stub,
+    Cuboid: stub, Database: stub, GitBranch: stub,
+    KeyRound: stub, Layers: stub, LayoutTemplate: stub, Plug: stub,
     ShieldCheck: stub, Telescope: stub, Users: stub, Zap: stub,
   };
 });
@@ -62,26 +62,6 @@ vi.mock('@/data/demos', () => ({
       tags: ['Groq', 'Multi-model'],
       status: 'live',
       mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: '/api/llm-router' },
-    },
-    {
-      id: 'vector-search',
-      title: 'Vector Search',
-      description: 'Semantic search with UMAP visualization.',
-      businessImpact: 'Powers semantic enterprise knowledge retrieval',
-      href: '/demos/vector-search',
-      tags: ['WASM', 'PCA'],
-      status: 'live',
-      mobileConfig: { executionProfile: 'heavy-local', supportsOffline: true, fallbackMode: 'simulated', cloudFallbackRoute: null },
-    },
-    {
-      id: 'browser-native-ai-skill',
-      title: 'Browser Native AI',
-      description: 'On-device AI via Gemini Nano.',
-      businessImpact: 'Eliminates cloud latency for privacy-sensitive tasks',
-      href: '/demos/browser-native-ai-skill',
-      tags: ['Gemini Nano', 'On-device'],
-      status: 'live',
-      mobileConfig: { executionProfile: 'on-device', supportsOffline: true, fallbackMode: 'simulated', cloudFallbackRoute: null },
     },
     {
       id: 'multi-agent',
@@ -154,16 +134,6 @@ vi.mock('@/data/demos', () => ({
       mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: '/api/portfolio-assistant' },
     },
     {
-      id: 'resume-generator',
-      title: 'Resume Generator',
-      description: 'JD parsing + fit scoring + ATS resume.',
-      businessImpact: 'Reduces recruiter time-to-fit with AI-powered matching',
-      href: '/demos/resume-generator',
-      tags: ['Groq', 'LLM'],
-      status: 'live',
-      mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: '/api/resume-generator' },
-    },
-    {
       id: 'storm-research',
       title: 'STORM Research Agent',
       description: 'Multi-perspective research synthesis via Groq.',
@@ -174,16 +144,6 @@ vi.mock('@/data/demos', () => ({
       mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: '/api/storm-research' },
     },
     {
-      id: 'multimodal',
-      title: 'Multimodal Assistant',
-      description: 'Florence-2 WebGPU image captioning.',
-      businessImpact: 'Brings vision AI to the browser without server round-trips',
-      href: '/demos/multimodal',
-      tags: ['Florence-2', 'WebGPU'],
-      status: 'live',
-      mobileConfig: { executionProfile: 'heavy-local', supportsOffline: false, fallbackMode: 'simulated', cloudFallbackRoute: null },
-    },
-    {
       id: 'quantization',
       title: 'Model Quantization',
       description: 'INT8 vs FP32 ONNX benchmark.',
@@ -192,6 +152,16 @@ vi.mock('@/data/demos', () => ({
       tags: ['ONNX', 'INT8'],
       status: 'live',
       mobileConfig: { executionProfile: 'heavy-local', supportsOffline: false, fallbackMode: 'simulated', cloudFallbackRoute: null },
+    },
+    {
+      id: 'generative-ui',
+      title: 'Constrained Generative UI',
+      description: 'Catalog-constrained JSON to UI.',
+      businessImpact: 'Removes unvalidated AI markup as an attack surface',
+      href: '/demos/generative-ui',
+      tags: ['Generative UI', 'Schema Validation'],
+      status: 'live',
+      mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: 'native' },
     },
   ],
 }));
@@ -204,13 +174,13 @@ describe('DemosGallery', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the filter bar with all 5 filter options', () => {
+  it('renders the filter bar with all 4 filter options', () => {
     render(<DemosGallery />);
     expect(screen.getByRole('button', { name: 'All Modules' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Core AI' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Agentic' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Applications' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Explorations' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Labs' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Explorations' })).not.toBeInTheDocument();
   });
 
   it('"All Modules" filter is active (aria-pressed=true) by default', () => {
@@ -223,7 +193,7 @@ describe('DemosGallery', () => {
     render(<DemosGallery />);
     expect(screen.getByRole('button', { name: 'Core AI' }).getAttribute('aria-pressed')).toBe('false');
     expect(screen.getByRole('button', { name: 'Agentic' }).getAttribute('aria-pressed')).toBe('false');
-    expect(screen.getByRole('button', { name: 'Applications' }).getAttribute('aria-pressed')).toBe('false');
+    expect(screen.getByRole('button', { name: 'Labs' }).getAttribute('aria-pressed')).toBe('false');
   });
 
   it('clicking "Core AI" makes it active and deactivates "All Modules"', () => {
@@ -256,32 +226,29 @@ describe('DemosGallery', () => {
 
   it('renders group labels for all groups when "all" is selected', () => {
     render(<DemosGallery />);
-    expect(screen.getByText('Core AI Infrastructure')).toBeInTheDocument();
-    expect(screen.getByText('Agentic Systems')).toBeInTheDocument();
-    expect(screen.getByText('AI Applications')).toBeInTheDocument();
-    expect(screen.getByText('Technical Explorations')).toBeInTheDocument();
+    expect(screen.getByText('Core AI Platform')).toBeInTheDocument();
+    expect(screen.getByText('Agentic Systems & Governance')).toBeInTheDocument();
+    expect(screen.getAllByText('Labs').length).toBeGreaterThan(0);
   });
 
-  it('clicking "Explorations" filter shows only Technical Explorations group', () => {
+  it('renders the Constrained Generative UI card (regression: it was registered but missing from /demos)', () => {
     render(<DemosGallery />);
-    fireEvent.click(screen.getByRole('button', { name: 'Explorations' }));
-    expect(screen.queryByText('Core AI Infrastructure')).not.toBeInTheDocument();
-    expect(screen.getByText('Technical Explorations')).toBeInTheDocument();
-    expect(screen.getByText('Vector Search')).toBeInTheDocument();
+    expect(screen.getByText('Constrained Generative UI')).toBeInTheDocument();
+  });
+
+  it('clicking "Labs" filter shows only the Labs group', () => {
+    render(<DemosGallery />);
+    fireEvent.click(screen.getByRole('button', { name: 'Labs' }));
+    expect(screen.queryByText('Core AI Platform')).not.toBeInTheDocument();
+    expect(screen.getByText('Model Quantization')).toBeInTheDocument();
+    expect(screen.queryByText('Multi-Agent System')).not.toBeInTheDocument();
   });
 
   it('clicking "Agentic" filter hides Core AI group label', () => {
     render(<DemosGallery />);
     fireEvent.click(screen.getByRole('button', { name: 'Agentic' }));
-    expect(screen.queryByText('Core AI Infrastructure')).not.toBeInTheDocument();
-    expect(screen.getByText('Agentic Systems')).toBeInTheDocument();
-  });
-
-  it('clicking "Applications" filter hides Agentic group label', () => {
-    render(<DemosGallery />);
-    fireEvent.click(screen.getByRole('button', { name: 'Applications' }));
-    expect(screen.queryByText('Agentic Systems')).not.toBeInTheDocument();
-    expect(screen.getByText('AI Applications')).toBeInTheDocument();
+    expect(screen.queryByText('Core AI Platform')).not.toBeInTheDocument();
+    expect(screen.getByText('Agentic Systems & Governance')).toBeInTheDocument();
   });
 
   it('module cards link to the correct href', () => {
@@ -307,7 +274,7 @@ describe('DemosGallery', () => {
 
   it('shows module count for current filter', () => {
     render(<DemosGallery />);
-    // With all 16 demos, should show "16 modules"
-    expect(screen.getByText('16 modules')).toBeInTheDocument();
+    // With all 13 demos, should show "13 modules"
+    expect(screen.getByText('13 modules')).toBeInTheDocument();
   });
 });

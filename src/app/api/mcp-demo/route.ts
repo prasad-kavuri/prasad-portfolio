@@ -50,26 +50,6 @@ const MCP_TOOLS = [
     },
   },
   {
-    name: "calculate_fit_score",
-    description:
-      "Calculate how well Prasad fits a job role based on required skills",
-    inputSchema: {
-      type: "object",
-      properties: {
-        required_skills: {
-          type: "array",
-          items: { type: "string" },
-          description: "List of required skills for the role",
-        },
-        role_title: {
-          type: "string",
-          description: "The job title being evaluated",
-        },
-      },
-      required: ["required_skills", "role_title"],
-    },
-  },
-  {
     name: "get_achievements",
     description: "Get quantified achievements and metrics from Prasad's career",
     inputSchema: {
@@ -116,11 +96,6 @@ function getStringArg(args: ToolArgs, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
-function getStringArrayArg(args: ToolArgs, key: string): string[] {
-  const value = args[key];
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
-}
-
 function parseToolArgs(argumentsValue: unknown): ToolArgs {
   if (typeof argumentsValue === "string") {
     try {
@@ -165,37 +140,6 @@ function executeTool(name: string, args: ToolArgs): string {
     ];
     if (!skills) return "Category not found";
     return JSON.stringify({ category, skills });
-  }
-
-  if (name === "calculate_fit_score") {
-    const requiredSkills = getStringArrayArg(args, "required_skills");
-    const roleTitle = getStringArg(args, "role_title");
-    const allSkills = [
-      ...profile.skills.ai_ml,
-      ...profile.skills.cloud_infrastructure,
-      ...profile.skills.leadership,
-      ...profile.skills.industry,
-      ...profile.skills.core,
-    ].map((s) => s.toLowerCase());
-
-    const matched = requiredSkills.filter((skill) =>
-      allSkills.some(
-        (s) =>
-          s.includes(skill.toLowerCase()) ||
-          skill.toLowerCase().includes(s)
-      )
-    );
-
-    const score = requiredSkills.length > 0
-      ? Math.round((matched.length / requiredSkills.length) * 100)
-      : 0;
-    return JSON.stringify({
-      role: roleTitle,
-      score,
-      matched_skills: matched,
-      missing_skills: requiredSkills.filter((s) => !matched.includes(s)),
-      total_required: requiredSkills.length,
-    });
   }
 
   if (name === "get_achievements") {

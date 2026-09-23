@@ -17,8 +17,6 @@ import { test, expect } from '@playwright/test';
 
 const WASM_DEMOS = [
   { id: 'rag-pipeline', path: '/demos/rag-pipeline', label: 'RAG Pipeline' },
-  { id: 'vector-search', path: '/demos/vector-search', label: 'Vector Search' },
-  { id: 'multimodal', path: '/demos/multimodal', label: 'Multimodal' },
   { id: 'quantization', path: '/demos/quantization', label: 'Quantization' },
 ] as const;
 

@@ -4,11 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database,
-  Eye, FileText, GitBranch, KeyRound, Layers, MonitorCheck,
-  Plug, Search, ShieldCheck, Telescope, Users, Zap,
+  GitBranch, KeyRound, Layers, LayoutTemplate,
+  Plug, ShieldCheck, Telescope, Users, Zap,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { demos } from '@/data/demos';
+import { DEMO_GROUPS, SIGNATURE_DEMO_ID, type DemoGroupId } from '@/data/demo-groups';
 import { trackEvent } from '@/lib/analytics';
 import type { LucideIcon } from 'lucide-react';
 
@@ -20,76 +21,42 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
   'evaluation-showcase': ShieldCheck,
   'rag-pipeline': Database,
   'llm-router': GitBranch,
-  'vector-search': Search,
   'multi-agent': Users,
   'mcp-demo': Plug,
   'agent-auth': KeyRound,
   'enterprise-control-plane': Building2,
   'world-generation': Cuboid,
-  'browser-native-ai-skill': MonitorCheck,
   'edge-agent-collaboration': Layers,
   'portfolio-assistant': Bot,
-  'resume-generator': FileText,
-  'multimodal': Eye,
   'quantization': Zap,
   'storm-research': Telescope,
+  'generative-ui': LayoutTemplate,
 };
 
 // Execution model label per demo
 const EXEC_MODEL: Record<string, { label: string; color: string }> = {
   'rag-pipeline':              { label: 'Browser WASM',  color: 'bg-teal-500/15 text-teal-400' },
   'llm-router':                { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
-  'vector-search':             { label: 'Browser WASM',  color: 'bg-teal-500/15 text-teal-400' },
   'evaluation-showcase':       { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
   'multi-agent':               { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
   'mcp-demo':                  { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
   'portfolio-assistant':       { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
-  'resume-generator':          { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
-  'multimodal':                { label: 'WebGPU',        color: 'bg-purple-500/15 text-purple-400' },
   'quantization':              { label: 'Browser ONNX',  color: 'bg-teal-500/15 text-teal-400' },
   'enterprise-control-plane':  { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
-  'browser-native-ai-skill':   { label: 'On-Device AI',  color: 'bg-green-500/15 text-green-400' },
   'edge-agent-collaboration':  { label: 'Edge + Cloud',  color: 'bg-orange-500/15 text-orange-400' },
   'agent-auth':                { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
   'world-generation':          { label: 'Three.js + API',color: 'bg-indigo-500/15 text-indigo-400' },
   'storm-research':            { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
+  'generative-ui':             { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
 };
 
-const GROUPS = [
-  {
-    id: 'core',
-    label: 'Core AI Infrastructure',
-    description: 'Foundation systems — quality, retrieval, routing, and governance',
-    ids: ['evaluation-showcase', 'rag-pipeline', 'llm-router'],
-  },
-  {
-    id: 'agentic',
-    label: 'Agentic Systems',
-    description: 'Autonomous agents, tool-use orchestration, and enterprise control',
-    ids: ['multi-agent', 'mcp-demo', 'agent-auth', 'edge-agent-collaboration', 'enterprise-control-plane', 'world-generation', 'storm-research'],
-  },
-  {
-    id: 'apps',
-    label: 'AI Applications',
-    description: 'Production AI experiences across modalities',
-    ids: ['portfolio-assistant', 'resume-generator'],
-  },
-  {
-    id: 'explorations',
-    label: 'Technical Explorations',
-    description: 'Focused engineering deep-dives — desktop/WebGPU-heavy, narrower audience than the core platform demos',
-    ids: ['vector-search', 'multimodal', 'quantization', 'browser-native-ai-skill'],
-  },
-] as const;
-
-type GroupId = typeof GROUPS[number]['id'];
+type GroupId = DemoGroupId;
 
 const FILTERS = [
   { id: 'all' as const,          label: 'All Modules' },
   { id: 'core' as const,         label: 'Core AI' },
   { id: 'agentic' as const,      label: 'Agentic' },
-  { id: 'apps' as const,         label: 'Applications' },
-  { id: 'explorations' as const, label: 'Explorations' },
+  { id: 'labs' as const,         label: 'Labs' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -186,11 +153,11 @@ function ModuleCard({ demo, featured = false }: { demo: typeof demos[0]; feature
 export function DemosGallery() {
   const [activeGroup, setActiveGroup] = useState<'all' | GroupId>('all');
 
-  const signature = demos.find(d => d.id === 'evaluation-showcase');
-  const filteredGroups = GROUPS.filter(g => activeGroup === 'all' || g.id === activeGroup);
+  const signature = demos.find(d => d.id === SIGNATURE_DEMO_ID);
+  const filteredGroups = DEMO_GROUPS.filter(g => activeGroup === 'all' || g.id === activeGroup);
   const visibleCount = activeGroup === 'all'
     ? demos.length
-    : GROUPS.find(g => g.id === activeGroup)?.ids.length ?? 0;
+    : DEMO_GROUPS.find(g => g.id === activeGroup)?.ids.length ?? 0;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -240,7 +207,7 @@ export function DemosGallery() {
       {/* Groups */}
       {filteredGroups.map(group => {
         const groupDemos = demos.filter(d =>
-          (group.ids as readonly string[]).includes(d.id) && d.id !== 'evaluation-showcase'
+          group.ids.includes(d.id) && d.id !== SIGNATURE_DEMO_ID
         );
         if (groupDemos.length === 0) return null;
 

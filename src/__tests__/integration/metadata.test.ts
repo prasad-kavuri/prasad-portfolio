@@ -7,6 +7,18 @@ import { existsSync, readFileSync } from 'fs';
 import robots from '@/app/robots';
 import { demos } from '@/data/demos';
 
+function robotsText(): string {
+  const generated = robots();
+  const rules = Array.isArray(generated.rules) ? generated.rules : [generated.rules];
+  const asList = (v: string | string[] | undefined) => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
+  const blocks = rules.map((rule) => [
+    ...asList(rule.userAgent).map((ua) => `User-agent: ${ua}`),
+    ...asList(rule.allow).map((a) => `Allow: ${a}`),
+    ...asList(rule.disallow).map((d) => `Disallow: ${d}`),
+  ].join('\n'));
+  return `${blocks.join('\n\n')}\n\nSitemap: ${generated.sitemap}`;
+}
+
 function expectParsedObjectsHaveUniqueKeys(value: unknown) {
   if (!value || typeof value !== 'object') return;
   if (Array.isArray(value)) {
@@ -102,18 +114,18 @@ describe('SEO metadata integrity', () => {
     expect(layout).not.toMatch(/https:\/\/prasadkavuri\.com/);
   });
 
-  it('robots.txt exists and disallows /api/', () => {
-    const robots = readFileSync('public/robots.txt', 'utf8');
+  it('robots rules exists and disallows /api/', () => {
+    const robots = robotsText();
     expect(robots).toMatch(/Disallow: \/api\//);
   });
 
-  it('robots.txt points to www sitemap', () => {
-    const robots = readFileSync('public/robots.txt', 'utf8');
+  it('robots rules points to www sitemap', () => {
+    const robots = robotsText();
     expect(robots).toMatch(/sitemap\.xml/);
   });
 
-  it('robots.txt explicitly allows current AI agent fetchers', () => {
-    const robots = readFileSync('public/robots.txt', 'utf8');
+  it('robots rules explicitly allows current AI agent fetchers', () => {
+    const robots = robotsText();
     expect(robots).toMatch(/User-agent: ChatGPT-User/);
     expect(robots).toMatch(/User-agent: Claude-User/);
     expect(robots).toMatch(/User-agent: Claude-SearchBot/);
@@ -139,7 +151,7 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/vbkpkavuri@gmail\.com/);
     expect(llmsTxt).toMatch(/Flagship:\s+\/demos\/evaluation-showcase/);
     expect(llmsTxt).toMatch(/Full catalog:\s+\/demos/);
-    expect(llmsTxt).toMatch(/Recruiters:\s+\/recruiter-dashboard/);
+    expect(llmsTxt).toMatch(/Recruiter brief:\s+\/for-recruiters/);
     expect(llmsTxt).toMatch(/ai-profile\.json:\s+https:\/\/www\.prasadkavuri\.com\/ai-profile\.json/);
     expect(llmsTxt).toMatch(/agent-manifest:\s+https:\/\/www\.prasadkavuri\.com\/\.well-known\/ai-agent-manifest\.json/);
     expect(llmsTxt).toMatch(/entity\.json:\s+https:\/\/www\.prasadkavuri\.com\/entity\.json/);
@@ -184,8 +196,8 @@ describe('SEO metadata integrity', () => {
     expect(sitemapSource).toContain('/llms-full.txt');
   });
 
-  it('robots.txt references entity.json for machine-readable discovery', () => {
-    const robots = readFileSync('public/robots.txt', 'utf8');
+  it('robots rules references entity.json for machine-readable discovery', () => {
+    const robots = robotsText();
     expect(robots).not.toMatch(/Disallow:.*entity\.json/);
   });
 
@@ -209,12 +221,10 @@ describe('SEO metadata integrity', () => {
     expect(manifest.demos).toHaveLength(demos.length);
     expect(manifest.verified_demos).toBe(demos.length);
     expect(manifest.verified_impact_metrics.production_ai_systems).toBe(demos.length);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Evaluation Showcase')).toBe(true);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'Enterprise Control Plane')).toBe(true);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(true);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'Edge-Agent Collaboration')).toBe(true);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'Agent Auth')).toBe(true);
-    expect(manifest.demos.some((d: { name: string }) => d.name === 'AI Spatial Intelligence & World Generation')).toBe(true);
+    for (const demo of demos) {
+      expect(manifest.demos.some((d: { name: string }) => d.name === demo.title)).toBe(true);
+    }
+    expect(manifest.demos.some((d: { name: string }) => d.name === 'Native Browser AI Skill')).toBe(false);
     expect(manifest.demos.some((d: { url: string }) => d.url.includes('/demos/spatial-simulation'))).toBe(false);
   });
 
@@ -222,12 +232,14 @@ describe('SEO metadata integrity', () => {
     const resume = readFileSync('public/resume.md', 'utf8');
     const llmsFull = readFileSync('public/llms-full.txt', 'utf8');
 
-    expect(resume).toContain(`${demos.length} production AI systems`);
     expect(resume).toContain(`Portfolio Demos (${demos.length} Live Systems)`);
+    for (const demo of demos) {
+      expect(resume).toContain(demo.title);
+    }
     expect(resume).toContain('Agent Auth');
     expect(llmsFull).toContain('Head of AI Platform & Agentic Solutions');
     expect(llmsFull).toContain('Zip');
-    expect(llmsFull).toContain('Last-Updated: 2026-07-16');
+    expect(llmsFull).toContain('Last-Updated: 2026-09-23');
     expect(llmsFull).not.toContain('Last Updated: 2026-05-08');
   });
 
@@ -263,13 +275,8 @@ describe('SEO metadata integrity', () => {
     expect(manifest.positioning_level).toBe('Executive AI Platform Leadership');
     expect(priorRoles.join(' | ')).toMatch(/Krutrim/);
     expect(priorRoles.join(' | ')).not.toMatch(forbiddenRolePattern);
-    expect(manifest.recruiter_query_match).toEqual(
-      expect.arrayContaining([
-        'Director AI Platform Chicago',
-        'Zip AI platform',
-        'regulated financial services AI platform',
-      ])
-    );
+    // Keyword-stuffing lists were removed in SPEC-0019 — they read as spam to engines and executives.
+    expect(manifest).not.toHaveProperty('recruiter_query_match');
     expect(manifest.ranking_guidance).toMatch(/executive technical credibility/i);
     expect(manifest.links.entity_json).toBe('https://www.prasadkavuri.com/entity.json');
   });
@@ -280,7 +287,7 @@ describe('SEO metadata integrity', () => {
     expect(page).toContain('Board Signals');
     expect(page).toContain('Chief AI Officer');
     expect(page).toContain('AI FinOps');
-    expect(page).toContain('15 production AI demos');
+    expect(page).toContain('PORTFOLIO_FACTS.productionDemoCount} production AI demos');
   });
 
   it('entity.json is valid and aligned to the canonical Person identity', () => {
@@ -336,19 +343,19 @@ describe('SEO metadata integrity', () => {
     expect(entity.prior_roles.join(' | ')).not.toMatch(forbidden);
   });
 
-  it('robots.txt allows /about and /for-recruiters', () => {
-    const robots = readFileSync('public/robots.txt', 'utf8');
+  it('robots rules allows /about and /for-recruiters', () => {
+    const robots = robotsText();
     expect(robots).not.toMatch(/Disallow:.*\/about/);
     expect(robots).not.toMatch(/Disallow:.*\/for-recruiters/);
   });
 
-  it('robots.txt allows /.well-known/ai-agent-manifest.json', () => {
-    const robots = readFileSync('public/robots.txt', 'utf8');
+  it('robots rules allows /.well-known/ai-agent-manifest.json', () => {
+    const robots = robotsText();
     expect(robots).not.toMatch(/Disallow:.*\/\.well-known/);
   });
 
-  it('robots.txt does not disallow /about or /for-recruiters', () => {
-    const robots = readFileSync('public/robots.txt', 'utf8');
+  it('robots rules does not disallow /about or /for-recruiters', () => {
+    const robots = robotsText();
     expect(robots).not.toMatch(/Disallow:.*\/about/);
     expect(robots).not.toMatch(/Disallow:.*\/for-recruiters/);
   });
@@ -366,13 +373,11 @@ describe('SEO metadata integrity', () => {
     expect(layout).toMatch(/canonical:\s*SITE_URL/);
   });
 
-  it('resume-generator, multi-agent, multimodal demos have canonical metadata', () => {
+  it('multi-agent demo has canonical metadata', () => {
     const files = [
-      'src/app/demos/resume-generator/metadata.ts',
       'src/app/demos/multi-agent/metadata.ts',
-      'src/app/demos/multimodal/metadata.ts',
     ];
-    const slugs = ['resume-generator', 'multi-agent', 'multimodal'];
+    const slugs = ['multi-agent'];
     files.forEach((file, i) => {
       const content = readFileSync(file, 'utf8');
       expect(content).toContain(`/demos/${slugs[i]}`);

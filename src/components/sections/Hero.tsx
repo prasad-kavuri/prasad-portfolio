@@ -88,8 +88,8 @@ export function Hero() {
               {[
                 "AI Platform Leadership", "System Design", "Agentic Orchestration",
                 "LLMOps", "AI FinOps", "Chicago", "Zip", "Krutrim",
-                "Ola", "Global AI Platform Leader", "Head of AI Platform", "Director of AI Platform",
-                "Head of AI Engineering", "Senior Director AI Platform"
+                "Ola", "Global AI Platform Leader", "Head of AI Platform", "Enterprise Agentic AI",
+                "Head of AI Engineering", "AI Governance"
               ].map((term) => (
                 <span key={term} className="inline-flex items-center hover:text-foreground transition-colors cursor-default">
                   <span className="mr-1.5 size-1 rounded-full bg-border" />

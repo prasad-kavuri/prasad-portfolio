@@ -30,14 +30,6 @@ vi.mock('@/data/profile.json', () => ({
   },
 }));
 
-function resumeRequest(body: object) {
-  return new NextRequest('http://localhost/api/resume-generator', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-forwarded-for': '7.7.7.7' },
-    body: JSON.stringify(body),
-  });
-}
-
 function llmRequest(body: object) {
   return new NextRequest('http://localhost/api/llm-router', {
     method: 'POST',
@@ -45,23 +37,6 @@ function llmRequest(body: object) {
     body: JSON.stringify(body),
   });
 }
-
-const MALICIOUS_RESUME = {
-  matchScore: 88,
-  matchedSkills: ['LLM<script>alert(1)</script>'],
-  missingSkills: ['<img src=x onerror="steal()">'],
-  summary: '<script>alert("x")</script>Strong AI leader',
-  experience: [
-    {
-      company: '<b>Krutrim</b>',
-      title: '<img src=x onerror="x()">Head',
-      period: '2025-Present',
-      bullets: ['Built <script>alert(1)</script>platform', 'Open javascript:alert(1)'],
-    },
-  ],
-  skills: ['RAG', 'Agentic AI'],
-  atsKeywords: ['AI', 'LLM'],
-};
 
 beforeEach(() => {
   _resetCostControls();
@@ -90,32 +65,6 @@ describe('advanced reliability controls', () => {
     expect(payload.event).toBe('model.drift_warning');
     expect(payload.driftScore).toBeGreaterThanOrEqual(0.65);
     expect(payload.reasons).toContain('increased_error_patterns');
-  });
-
-  it('sanitizes malicious resume input and generated resume output', async () => {
-    mockFetch.mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({ choices: [{ message: { content: JSON.stringify(MALICIOUS_RESUME) } }] }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      )
-    );
-
-    const { POST } = await import('@/app/api/resume-generator/route');
-    const res = await POST(resumeRequest({
-      jobDescription: '<script>alert("x")</script>VP of AI Engineering & platform leadership',
-      focusAreas: ['<b>Agentic AI</b>'],
-    }));
-
-    expect(res.status).toBe(200);
-    const sentBody = JSON.parse(mockFetch.mock.calls[0][1].body as string);
-    expect(JSON.stringify(sentBody)).not.toContain('<script>');
-    expect(JSON.stringify(sentBody)).not.toContain('<b>');
-
-    const body = await res.json();
-    const serialized = JSON.stringify(body);
-    expect(serialized).not.toContain('<script>');
-    expect(serialized).not.toContain('onerror');
-    expect(serialized).not.toContain('javascript:');
   });
 
   it('emits actionable observability fields and detects repeated failures', () => {
@@ -216,17 +165,6 @@ describe('advanced reliability controls', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toBe('Invalid approval state');
-  });
-
-  it('rejects resume input with characters outside the PDF-safe allowlist', async () => {
-    const { POST } = await import('@/app/api/resume-generator/route');
-    const res = await POST(resumeRequest({
-      jobDescription: 'VP of AI Engineering {}',
-      focusAreas: [],
-    }));
-
-    expect(res.status).toBe(400);
-    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('blocks adversarial prompt attempts before calling the model', async () => {

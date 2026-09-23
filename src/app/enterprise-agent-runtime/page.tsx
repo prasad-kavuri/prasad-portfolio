@@ -100,7 +100,7 @@ const concerns: RuntimeConcern[] = [
 ];
 
 // Maps this page's portfolio-native concerns onto Google's enterprise agent-platform ecosystem
-// (Agent Development Kit, Vertex AI Agent Engine, Agentspace / Gemini Enterprise Agent Platform,
+// (Agent Development Kit, Agent Runtime, Gemini Enterprise Agent Platform,
 // Agent Identity, Agent Registry, Agent Gateway, A2A, Model Armor, current MCP spec) — added so the
 // existing, already-built governance work here is legible to anyone evaluating it against that stack.
 const googleEcosystemMapping: EcosystemMapping[] = [
@@ -129,22 +129,22 @@ const googleEcosystemMapping: EcosystemMapping[] = [
     portfolioConcept: 'Standardized Tool-Calling Protocol',
     portfolioLink: { href: '/demos/mcp-demo', label: 'MCP Tool Demo' },
     googleAnalog: 'MCP (current spec)',
-    note: 'The current MCP specification (2026-07-28) formalizes MCP servers as OAuth 2.1 resource servers and moves to a stateless protocol core — the enterprise-authorization direction this demo\'s tool-discovery flow points toward.',
+    note: 'The current MCP specification (2026-07-28) moves to a stateless protocol core and hardens authorization (issuer validation, Client ID Metadata Documents). This demo uses MCP-style JSON-Schema tool definitions over LLM function calling; it is not yet an MCP JSON-RPC server.',
     source: { href: 'https://blog.modelcontextprotocol.io/posts/2026-07-28/', label: 'MCP Blog: The 2026-07-28 Specification' },
   },
   {
     portfolioConcept: 'Multi-Agent Coordination',
     portfolioLink: { href: '/demos/multi-agent', label: 'Multi-Agent Demo' },
     googleAnalog: 'Agent2Agent (A2A) protocol',
-    note: 'Analyzer → Researcher → Strategist handoff here is a single-process version of what A2A standardizes across independent agents — capability discovery via Agent Cards and task delegation, now Linux Foundation-governed with 150+ supporting organizations.',
+    note: 'Analyzer → Researcher → Strategist handoff here is a single-process version of what A2A standardizes across independent agents — capability discovery via Agent Cards and task delegation with a defined task lifecycle (A2A v1.0).',
     source: { href: 'https://a2a-protocol.org/latest/specification/', label: 'A2A Protocol Specification' },
   },
   {
     portfolioConcept: 'Agent Build & Managed Runtime',
     portfolioLink: { href: '/demos/multi-agent', label: 'Multi-Agent Demo' },
-    googleAnalog: 'Agent Development Kit (ADK) + Vertex AI Agent Engine',
-    note: 'This portfolio\'s hand-rolled orchestration (Groq-based agent classes, sequential/parallel handoffs) is the vendor-neutral pattern that ADK codifies as a framework, deployable to Google\'s managed Agent Engine runtime without a rewrite.',
-    source: { href: 'https://docs.cloud.google.com/agent-builder/agent-development-kit/overview', label: 'Google Cloud: Agent Development Kit overview' },
+    googleAnalog: 'Agent Development Kit (ADK) + Agent Runtime',
+    note: 'This portfolio\'s hand-rolled orchestration (Groq-based agent classes, sequential/parallel handoffs) is the vendor-neutral pattern that ADK codifies as a framework, deployable to Agent Runtime — the managed runtime in Gemini Enterprise Agent Platform (the April 2026 evolution of Vertex AI).',
+    source: { href: 'https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk', label: 'Google Cloud: Agent Development Kit on Agent Platform' },
   },
 ];
 

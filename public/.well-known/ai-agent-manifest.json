@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "last_updated": "2026-07-16",
+  "last_updated": "2026-09-23",
   "name": "Prasad Kavuri",
   "current_role": "Head of AI Platform & Agentic Solutions",
   "current_employer": "Zip",
@@ -15,7 +15,7 @@
   "description": [
     "Head of AI Platform & Agentic Solutions at Zip",
     "20+ years experience",
-    "16 production AI systems"
+    "13 live AI demos (9 core platform + 4 labs)"
   ],
   "core_capabilities": [
     "Agentic AI Orchestration",
@@ -34,7 +34,7 @@
       "ai-agent-manifest.json",
       "JSON-LD"
     ],
-    "authenticate": "auth.md (open protocol \u2014 see github.com/workos/auth.md)",
+    "authenticate": "auth.md (open protocol — see github.com/workos/auth.md)",
     "authorize": "scoped, short-lived credentials (read:profile, call:mcp-tools)",
     "act": "POST /api/mcp-demo"
   },
@@ -46,17 +46,16 @@
     ]
   },
   "verified_impact_metrics": {
-    "latency_reduction": "50%",
-    "infrastructure_cost_reduction": "70%",
+    "latency_reduction": "50% (Krutrim)",
+    "infrastructure_cost_reduction": "70% (Ola)",
     "revenue_impact": "$10M+",
     "b2b_customers": "13000+",
     "engineers_led": "200+",
-    "production_ai_systems": 17,
+    "production_ai_systems": 13,
     "years_experience": 20,
     "call_center_seats_automated": "300",
     "pois_indexed": "35M+",
-    "languages_ai_supported": "13",
-    "llm_cost_reduction": "70%"
+    "languages_ai_supported": "13"
   },
   "technical_domains": {
     "ai_platform": [
@@ -125,9 +124,9 @@
   },
   "credentials": {
     "companies": [
-      "Ex-Krutrim (Agentic AI Leader) \u2014 Architected India's first Agentic AI platform (Kruti.ai); Head of AI Engineering",
-      "Ex-Ola (13K B2B Customers) \u2014 Led Ola Maps platform serving 13,000+ enterprise customers across logistics, automotive, and mobility verticals",
-      "Ex-HERE Technologies (18-year tenure) \u2014 Director of Engineering for Highly Automated Driving; HD maps for global OEM autonomous platforms"
+      "Ex-Krutrim (Agentic AI Leader) — Architected India's first Agentic AI platform (Kruti.ai); Head of AI Engineering",
+      "Ex-Ola (13K B2B Customers) — Led Ola Maps platform serving 13,000+ enterprise customers across logistics, automotive, and mobility verticals",
+      "Ex-HERE Technologies (18-year tenure) — Director of Engineering for Highly Automated Driving; HD maps for global OEM autonomous platforms"
     ],
     "focus_areas": [
       "Enterprise AI Platforms",
@@ -159,13 +158,13 @@
     "13,000+ enterprise customers at Ola Maps",
     "35M+ POIs indexed on Ola Maps enterprise platform",
     "13 languages supported across Indic + global AI systems",
-    "50% latency reduction via multimodal agentic AI architecture",
-    "70%+ AI infrastructure cost reduction",
+    "50% latency reduction and 40% cost savings at Krutrim via multimodal agentic AI architecture and intelligent model routing",
+    "70% infrastructure cost reduction at Ola (cloud-native architectural overhaul)",
     "$10M+ revenue launched from AI systems"
   ],
   "portfolio_architecture": {
     "layers_documented": 15,
-    "description": "Interactive 15-layer AI platform architecture: user intent \u2192 agent orchestration \u2192 memory \u2192 tool/MCP \u2192 model router \u2192 adaptive AI governance \u2192 inference \u2192 eval \u2192 guardrails \u2192 observability \u2192 drift \u2192 FinOps \u2192 audit \u2192 human approval \u2192 business outcome",
+    "description": "Interactive 15-layer AI platform architecture: user intent → agent orchestration → memory → tool/MCP → model router → adaptive AI governance → inference → eval → guardrails → observability → drift → FinOps → audit → human approval → business outcome",
     "url": "https://www.prasadkavuri.com/#ai-architecture"
   },
   "new_in_july_2026": {
@@ -179,7 +178,7 @@
     "70pct-cost-reduction",
     "200-engineer-org"
   ],
-  "verified_demos": 17,
+  "verified_demos": 13,
   "reasoning": {
     "philosophy": [
       "AI FinOps",
@@ -200,7 +199,7 @@
   "impact": {
     "highlights": [
       "200+ engineers led across global teams",
-      "70%+ AI infrastructure cost reduction",
+      "70% infrastructure cost reduction at Ola (cloud-native architectural overhaul)",
       "$10M+ revenue impact from AI systems",
       "Enterprise-scale agentic AI deployments"
     ],
@@ -211,22 +210,6 @@
     ]
   },
   "portfolio": "https://www.prasadkavuri.com",
-  "recruiter_query_match": [
-    "Director AI Platform Chicago",
-    "AI Platform leader Chicago",
-    "Agentic AI Solutions leader",
-    "Zip AI platform",
-    "Krutrim agentic AI",
-    "Ola Maps AI platform",
-    "AI platform executive global",
-    "LLMOps leader",
-    "AI FinOps executive",
-    "agentic AI orchestration leader",
-    "enterprise AI governance executive",
-    "production AI platform director",
-    "regulated financial services AI platform",
-    "sovereign AI platform leader"
-  ],
   "security_audits": {
     "skill_scanner": {
       "tool": "SkillSpector",
@@ -252,10 +235,6 @@
       "url": "https://www.prasadkavuri.com/demos/llm-router"
     },
     {
-      "name": "Vector Search",
-      "url": "https://www.prasadkavuri.com/demos/vector-search"
-    },
-    {
       "name": "AI Evaluation Showcase",
       "url": "https://www.prasadkavuri.com/demos/evaluation-showcase"
     },
@@ -268,44 +247,32 @@
       "url": "https://www.prasadkavuri.com/demos/mcp-demo"
     },
     {
-      "name": "Enterprise Control Plane",
-      "url": "https://www.prasadkavuri.com/demos/enterprise-control-plane"
-    },
-    {
-      "name": "Native Browser AI Skill",
-      "url": "https://www.prasadkavuri.com/demos/browser-native-ai-skill"
-    },
-    {
       "name": "AI Portfolio Assistant",
       "url": "https://www.prasadkavuri.com/demos/portfolio-assistant"
-    },
-    {
-      "name": "Resume Generator",
-      "url": "https://www.prasadkavuri.com/demos/resume-generator"
-    },
-    {
-      "name": "Multimodal Assistant",
-      "url": "https://www.prasadkavuri.com/demos/multimodal"
     },
     {
       "name": "Model Quantization",
       "url": "https://www.prasadkavuri.com/demos/quantization"
     },
     {
-      "name": "AI Spatial Intelligence & World Generation",
-      "url": "https://www.prasadkavuri.com/demos/world-generation"
+      "name": "Enterprise Control Plane",
+      "url": "https://www.prasadkavuri.com/demos/enterprise-control-plane"
     },
     {
-      "name": "Edge-Agent Collaboration",
+      "name": "Edge Agent + Cloud Agent Collaboration",
       "url": "https://www.prasadkavuri.com/demos/edge-agent-collaboration"
     },
     {
-      "name": "Agent Auth",
+      "name": "Agent Auth Demo",
       "url": "https://www.prasadkavuri.com/demos/agent-auth"
     },
     {
       "name": "STORM Research Agent",
       "url": "https://www.prasadkavuri.com/demos/storm-research"
+    },
+    {
+      "name": "Real-Time Spatial AI + World Modeling Engine",
+      "url": "https://www.prasadkavuri.com/demos/world-generation"
     },
     {
       "name": "Constrained Generative UI",

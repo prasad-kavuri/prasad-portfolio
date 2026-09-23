@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PORTFOLIO_FACTS } from '@/data/site-config';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { ArrowRight, ExternalLink } from 'lucide-react';
@@ -247,7 +248,7 @@ export default function AgentPage() {
           <div className="grid gap-2 sm:grid-cols-2 mb-4">
             <EntryLink href="/" label="/" note="Portfolio home" />
             <EntryLink href="/for-recruiters" label="/for-recruiters" note="Executive summary & resume" />
-            <EntryLink href="/demos" label="/demos" note="All 15 AI demos" />
+            <EntryLink href="/demos" label="/demos" note={`All ${PORTFOLIO_FACTS.productionDemoCount} AI demos`} />
             <EntryLink href="/demos/evaluation-showcase" label="/demos/evaluation-showcase" note="Flagship demo" />
             <EntryLink href="/governance" label="/governance" note="AI governance & HITL patterns" />
           </div>

@@ -93,7 +93,7 @@ export const SKILLS: Skill[] = [
     inputContract: 'User goal string + available agent registry',
     outputContract: 'Ordered execution plan with agent assignments and fallback paths',
     sourceFile: 'src/app/demos/multi-agent/page.tsx',
-    usedInDemos: ['multi-agent', 'resume-generator'],
+    usedInDemos: ['multi-agent'],
     productionSignal:
       'Separates "what to do" from "how to do it" — enabling the orchestration layer to be model-agnostic and swappable.',
   },

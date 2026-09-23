@@ -75,17 +75,16 @@ function buildContext() {
     top_achievements: topAchievements,
     callable_tools: {
       description:
-        'This portfolio exposes a live MCP-compatible tool-calling endpoint for programmatic queries.',
+        'This portfolio exposes a natural-language profile query endpoint (LLM tool calling over JSON-Schema tools; not an MCP JSON-RPC server).',
       endpoint: `${BASE_URL}/api/mcp-demo`,
       method: 'POST',
       body_schema: '{ "query": "<natural language question about Prasad>" }',
       tools: [
         'get_experience(company: "krutrim"|"ola"|"here")',
         'search_skills(category: "ai_ml"|"cloud_infrastructure"|"leadership"|"industry"|"core")',
-        'calculate_fit_score(required_skills: string[], role_title: string)',
         'get_achievements(company?: string)',
       ],
-      example: `POST ${BASE_URL}/api/mcp-demo { "query": "Is Prasad a fit for VP of AI Engineering requiring RAG and multi-agent systems?" }`,
+      example: `POST ${BASE_URL}/api/mcp-demo { "query": "What agentic AI and multi-agent platforms has Prasad led?" }`,
     },
     full_context_urls: {
       narrative: `${BASE_URL}/llms-full.txt`,

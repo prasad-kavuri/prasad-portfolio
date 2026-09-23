@@ -22,32 +22,30 @@ test.describe('Homepage', () => {
   test('AI Platform Demos CTA navigates to agent marketplace', async ({ page }) => {
     await page.getByRole('link', { name: /Explore AI Platform Demos/i }).click();
     await expect(page).toHaveURL(/\/agent-marketplace\/?$/);
-    await expect(page.getByRole('heading', { name: /17 Production AI Agents/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /13 Production AI Agents/i })).toBeVisible();
   });
 
   test('all 3 demo group headers are visible', async ({ page }) => {
     // DOM text is title-cased — CSS `uppercase` is visual-only and not matched by Playwright
     // Use exact:true to match only the header span, not paragraphs containing the phrase
-    await expect(page.getByText('Core AI Infrastructure', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('Agentic Systems', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('AI Applications', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Core AI Platform', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Agentic Systems & Governance', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Labs', { exact: true }).first()).toBeVisible();
   });
 
-  test('all 17 demo cards are present', async ({ page }) => {
+  test('all 13 demo cards are present', async ({ page }) => {
     // Use first() because card titles may appear in multiple elements (heading + aria-label etc.)
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
     await expect(page.getByText('LLM Router').first()).toBeVisible();
-    await expect(page.getByText('Vector Search').first()).toBeVisible();
     await expect(page.getByText('Multi-Agent System').first()).toBeVisible();
     await expect(page.getByText('MCP Tool Demo').first()).toBeVisible();
     await expect(page.getByText('Agent Auth Demo').first()).toBeVisible();
     await expect(page.getByText('Enterprise Control Plane').first()).toBeVisible();
     await expect(page.getByText('AI Portfolio Assistant').first()).toBeVisible();
-    await expect(page.getByText('AI Hiring Intelligence').first()).toBeVisible();
-    await expect(page.getByText('Multimodal Assistant').first()).toBeVisible();
     await expect(page.getByText('Model Quantization').first()).toBeVisible();
     await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
-    await expect(page.getByText('Native Browser AI Skill').first()).toBeVisible();
+    await expect(page.getByText('Constrained Generative UI').first()).toBeVisible();
+    await expect(page.getByText('STORM Research Agent').first()).toBeVisible();
     await expect(page.getByText('Real-Time Spatial AI + World Modeling Engine').first()).toBeVisible();
     await expect(page.getByText('Edge Agent + Cloud Agent Collaboration').first()).toBeVisible();
     await expect(page.getByText('STORM Research Agent').first()).toBeVisible();

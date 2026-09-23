@@ -13,7 +13,7 @@ at enterprise scale. Core differentiator: bridges the gap between AI research an
 enterprise reliability — ships AI systems that are observable, governed, and cost-efficient.
 
 **Key outcomes**: **70% infrastructure cost reduction** | **50% latency reduction** |
-**13,000+ B2B customers** | **200+ engineers led** | **$10M+ revenue launched** | **17 production AI systems**
+**13,000+ B2B customers** | **200+ engineers led** | **$10M+ revenue launched**
 
 ---
 
@@ -26,7 +26,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 ### Krutrim — Head of AI Engineering (March 2025 - June 2026)
 - Architected India's first Agentic AI platform (Kruti.ai) from zero to production
 - Launched domain-specific AI agents (cab booking, food ordering, bill payments, image generation), opening new B2B and B2C revenue streams at national scale
-- Implemented FinOps-aware LLM routing delivering **70% infrastructure cost reduction** and 50% latency reduction
+- Drove **50% latency reduction** and 40% cost savings through multimodal agentic AI architecture and intelligent model routing
 - Built production governance framework: HITL checkpoints, drift monitoring, audit trails
 - Led closed-loop evaluation engine with automated hallucination regression detection
 - Scaled engineering organisation to **200+ engineers** across US, Europe, and India
@@ -39,7 +39,6 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 
 ### HERE Technologies — Director of Engineering (18-year tenure)
 - Scaled AI platform globally across APAC, EMEA, and Americas
-- Achieved **50% latency reduction** through quantisation, speculative decoding, and multi-model routing
 - Built multi-agent orchestration layer for real-time HD mapping and autonomous driving data pipelines
 - Led global engineering for Highly Automated Driving maps for OEM autonomous platforms
 - Established LLMOps observability stack: trace-ID propagation, cost dashboards, anomaly detection
@@ -75,27 +74,23 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 
 ---
 
-## Portfolio Demos (17 Live Systems)
+## Portfolio Demos (13 Live Systems)
 
 | Demo | What It Shows | Engine |
 |------|---------------|--------|
-| LLM Router | Intelligent model routing with real-time cost display | Groq API |
-| Multi-Agent System | Orchestrated agents with HITL checkpoint + trace panel | Groq API |
-| RAG Pipeline | Vector search with chunk visualisation | Browser WASM |
-| AI Evaluation Showcase | Closed-loop eval framework, LLM-as-Judge, drift detection | Groq API |
-| Enterprise Control Plane | RBAC, spend analytics, OTEL observability dashboard | Simulated |
-| MCP Tool Demo | MCP protocol tool-use with Groq tool calling | Server |
-| Vector Search | PCA-reduced embedding visualisation | Browser WASM |
-| Portfolio Assistant | Groq-powered RAG assistant | Server |
-| Resume Generator | AI resume tailoring with JSON-LD schema.org output | Groq API |
-| Multimodal Assistant | Florence-2 image captioning via WebGPU | Browser WebGPU |
-| Model Quantization | FP32 vs INT8 ONNX benchmark with latency comparison | Browser WASM |
-| Browser-Native AI Skill | Client-side WASM inference, no server required | Browser WASM |
-| AI World Generation | Spatial intelligence + governed world generation | Groq API |
-| Edge-Agent Collaboration | Privacy-first BERT NER + HITL handoff + cloud orchestration | Groq API |
-| Agent Auth | Enterprise auth boundary for agentic systems with policy-aware access | Simulated |
-| STORM Research Agent | Multi-perspective research workflow with streaming executive synthesis | Groq API |
-| Constrained Generative UI | Catalog-constrained, schema-validated generative UI (safe AI-driven rendering) | Groq API |
+| AI Evaluation Showcase | Rubric-scored evals, guardrail screening, release gating, CI eval suites | Server |
+| RAG Pipeline | In-browser embedding retrieval with citations | Browser WASM |
+| LLM Router | Model routing with live cost/latency trade-offs | Groq API |
+| Multi-Agent System | Analyzer → Researcher → Strategist with a human review step and audit trail | Groq API |
+| MCP Tool Demo | MCP-style JSON-Schema tool calling with a protocol-flow visualizer | Groq API |
+| Agent Auth Demo | auth.md agent identity: anonymous → claimed → Bearer-authenticated tool calls | Server |
+| Edge Agent + Cloud Agent Collaboration | Browser BERT NER PII redaction + human approval + cloud summary | Browser WASM + Groq |
+| Enterprise Control Plane | RBAC, spend analytics, observability dashboard | Simulated |
+| Constrained Generative UI | Catalog-constrained, server-validated generative UI | Groq API |
+| STORM Research Agent (Lab) | Multi-perspective research synthesis | Groq API |
+| Real-Time Spatial AI + World Modeling Engine (Lab) | Spatial intelligence + governed world generation | Groq API |
+| Model Quantization (Lab) | FP32 vs INT8 ONNX benchmark | Browser WASM |
+| AI Portfolio Assistant (Lab) | Retrieval-grounded assistant | Groq API |
 
 All demos: https://www.prasadkavuri.com/demos
 
@@ -113,4 +108,4 @@ All demos: https://www.prasadkavuri.com/demos
 **Seniority**: Head level (strategic + hands-on technical)
 **Geography**: Naperville, IL (Greater Chicago Area)
 **Differentiator**: Production governance, FinOps discipline, and agentic orchestration at enterprise scale
-**Active**: 16 live production AI demos with full source code available at https://www.prasadkavuri.com
+**Active**: 13 live AI demos (9 core platform + 4 labs) with full source code available at https://www.prasadkavuri.com

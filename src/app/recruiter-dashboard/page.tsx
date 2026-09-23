@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { PORTFOLIO_FACTS } from '@/data/site-config';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Calendar, CheckCircle2, ChevronDown, Download, ExternalLink, Target, Users, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -35,9 +36,9 @@ const SKILL_AREAS = [
 const EVIDENCE_TRAIL = [
   { label: 'AI Evaluation Showcase', desc: 'Offline eval suites, drift detection, hallucination indicators, CI gating', href: '/demos/evaluation-showcase', tag: 'Flagship' },
   { label: 'Enterprise Control Plane', desc: 'RBAC, group spend limits, token analytics, observability feed', href: '/demos/enterprise-control-plane', tag: 'Governance' },
-  { label: 'Multi-Agent System', desc: 'Groq + CrewAI, HITL checkpoints, audit trail, real LLM calls', href: '/demos/multi-agent', tag: 'Agentic' },
+  { label: 'Multi-Agent System', desc: 'Analyzer → Researcher → Strategist on Groq, human review step, audit trail', href: '/demos/multi-agent', tag: 'Agentic' },
   { label: 'MCP Tool Demo', desc: 'Model Context Protocol — real tool discovery and execution trace', href: '/demos/mcp-demo', tag: 'Protocol' },
-  { label: 'Agent Marketplace', desc: 'All 15 demos organized by capability tier and integration status', href: '/agent-marketplace', tag: 'Catalog' },
+  { label: 'Agent Marketplace', desc: `All ${PORTFOLIO_FACTS.productionDemoCount} demos organized by capability tier and integration status`, href: '/agent-marketplace', tag: 'Catalog' },
   { label: 'Governance Dashboard', desc: 'Live telemetry: safety, eval quality, cost controls, auditability', href: '/governance', tag: 'Operations' },
 ] as const;
 

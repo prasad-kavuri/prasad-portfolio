@@ -104,7 +104,6 @@ export async function POST(request: NextRequest) {
         passed,
         verdict: passed ? '✅ Passed — safe to ship' : '❌ Failed — review required',
         traceId: context.traceId,
-        regressionDelta: '+0.00',
       }),
       context
     );

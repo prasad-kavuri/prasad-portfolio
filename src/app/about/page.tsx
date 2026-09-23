@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SITE_URL } from '@/data/site-config';
+import { PORTFOLIO_FACTS, SITE_URL } from '@/data/site-config';
 
 const personId = `${SITE_URL}/#person`;
 const aboutUrl = `${SITE_URL}/about`;
@@ -93,7 +93,7 @@ const proofPoints = [
   '200+ engineers led',
   '70%+ AI infrastructure cost reduction',
   '13,000+ B2B customers enabled',
-  '15 production AI demos / platform patterns',
+  `${PORTFOLIO_FACTS.productionDemoCount} production AI demos / platform patterns`,
 ];
 
 const testimonials = [

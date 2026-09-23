@@ -68,11 +68,10 @@ function buildPayload() {
         url: `${BASE_URL}/api/mcp-demo`,
         method: 'POST',
         auth: 'none',
-        description: "MCP-compatible tool-calling endpoint. POST { \"query\": \"<question>\" } to query Prasad's profile via agentic tool orchestration.",
+        description: "Natural-language profile query endpoint (LLM tool calling over JSON-Schema tools; not an MCP JSON-RPC server). POST { \"query\": \"<question>\" }.",
         tools: [
           'get_experience(company)',
           'search_skills(category)',
-          'calculate_fit_score(required_skills, role_title)',
           'get_achievements(company?)',
         ],
         example_query: "What is Prasad's current role and experience with multi-agent systems and LLM cost optimization?",

@@ -159,7 +159,7 @@ function FramingPanel() {
             What you&apos;re seeing
           </p>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li className="flex gap-2"><ChevronRight className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" /><span>LLM-as-Judge scoring responses in real time</span></li>
+            <li className="flex gap-2"><ChevronRight className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" /><span>Illustrative LLM-as-Judge rubric, plus live deterministic scoring via the eval API</span></li>
             <li className="flex gap-2"><ChevronRight className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" /><span>Offline batch evals vs. live traffic sampling</span></li>
             <li className="flex gap-2"><ChevronRight className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" /><span>CI regression gate blocking bad model updates</span></li>
             <li className="flex gap-2"><ChevronRight className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" /><span>Human-in-the-Loop checkpoint on high-stakes transitions</span></li>
@@ -481,7 +481,7 @@ function ScenarioPanel() {
 }
 
 // ---------------------------------------------------------------------------
-// Section 1 — LLM-as-Judge Panel (unchanged)
+// Section 1 — LLM-as-Judge Panel (illustrative, fixed sample scores)
 // ---------------------------------------------------------------------------
 
 function JudgePanel() {
@@ -512,10 +512,10 @@ function JudgePanel() {
     <Card className="bg-card border-border p-6">
       <div className="flex items-center gap-2 mb-1">
         <FlaskConical className="w-4 h-4 text-muted-foreground" />
-        <h2 className="font-semibold text-lg">LLM-as-Judge</h2>
+        <h2 className="font-semibold text-lg">LLM-as-Judge (illustrative)</h2>
       </div>
       <p className="text-sm text-muted-foreground mb-5">
-        A second LLM scores each response against weighted criteria before it reaches the user.
+        How an LLM judge weights criteria for a response. The scores below are fixed sample values for illustration; the live scorer on this page is deterministic.
       </p>
       <div className="mb-5 space-y-3">
         <div>
@@ -877,7 +877,7 @@ export default function EvaluationShowcasePage() {
       price: '0',
       priceCurrency: 'USD',
     },
-    keywords: 'LLM-as-Judge, Semantic Fidelity, Guardrails, CI Gating',
+    keywords: 'Rubric Scoring, Guardrails, Release Gating, CI Evals',
     url: 'https://www.prasadkavuri.com/demos/evaluation-showcase',
     author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },
@@ -915,8 +915,9 @@ export default function EvaluationShowcasePage() {
           <div>
             <h1 className="text-4xl font-bold">AI Evaluation Showcase</h1>
             <p className="text-muted-foreground mt-2">
-              Closed-loop LLM quality pipeline — LLM-as-Judge scoring, offline/online eval modes,
-              and CI regression gating that blocks bad deploys automatically
+              Reference AI quality pipeline — how LLM-as-Judge scoring, offline/online evals, and CI
+              release gates fit together. The live API here uses deterministic rubric scoring; eval
+              suites run in CI on every push.
             </p>
           </div>
         </div>
@@ -935,10 +936,10 @@ export default function EvaluationShowcasePage() {
 
         {/* How it fits together */}
         <Card className="bg-card border-border p-6 mt-6">
-          <h3 className="font-semibold mb-3 text-foreground">How this pipeline fits together</h3>
+          <h3 className="font-semibold mb-3 text-foreground">How this pipeline fits together (reference pattern)</h3>
           <ol className="space-y-2 text-sm text-muted-foreground list-none">
             <li><span className="text-foreground font-medium">1. LLM-as-Judge</span> — a separate model scores every sampled response against weighted criteria (accuracy, relevance, completeness, conciseness).</li>
-            <li><span className="text-foreground font-medium">2. Offline evals</span> — a curated 27-case golden dataset runs on every CI push; one failing case blocks the merge.</li>
+            <li><span className="text-foreground font-medium">2. Offline evals</span> — deterministic eval suites run in Vitest on every CI push; a failing case fails the build.</li>
             <li><span className="text-foreground font-medium">3. Online evals</span> — 1% of live traffic is scored asynchronously; drift triggers an alert before it becomes a customer problem.</li>
             <li><span className="text-foreground font-medium">4. Regression gate</span> — fidelity and hallucination scores are compared to a stored baseline; a regression of more than 5% blocks the deploy entirely.</li>
           </ol>

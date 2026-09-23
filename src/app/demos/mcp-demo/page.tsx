@@ -54,7 +54,7 @@ const PROTOCOL_STEPS = [
     label: 'Synthesize',
     icon: Server,
     desc: 'LLM forms final answer from results',
-    payload: '{"finalAnswer":"Based on the tools called, Prasad is a strong fit..."}',
+    payload: '{"finalAnswer":"Based on the tools called, Prasad has led..."}',
   },
 ] as const;
 
@@ -138,7 +138,7 @@ function ToolCard({ call, expanded, onToggle }: {
 // ---------------------------------------------------------------------------
 
 const EXAMPLE_QUERIES = [
-  "Is Prasad a good fit for VP of AI Engineering?",
+  "Which agentic AI platforms has Prasad led, and at what scale?",
   "What are Prasad's cloud infrastructure skills?",
   "Show Krutrim achievements and metrics",
   "Compare Prasad's skills to a CTO role requiring: strategy, AI, cloud, leadership",
@@ -147,7 +147,6 @@ const EXAMPLE_QUERIES = [
 const TOOLS_REGISTRY = [
   { name: 'get_experience', desc: 'Retrieves work history, roles, and tenure context', schema: '(query?: string) → ExperienceRecord[]' },
   { name: 'search_skills', desc: 'Semantic search over skills and technology stack', schema: '(skill: string, minLevel?: number) → SkillRecord[]' },
-  { name: 'calculate_fit_score', desc: 'Scores candidate fit against a role description', schema: '(role: string, requirements: string[]) → FitScore' },
   { name: 'get_achievements', desc: 'Returns quantified business outcomes by context', schema: '(context?: string) → Achievement[]' },
 ];
 
@@ -249,7 +248,7 @@ export default function MCPDemoPage() {
           <Card className="bg-card border-border p-4">
             <p className="text-xs text-muted-foreground font-medium mb-1">Tools Available</p>
             <p className="text-2xl font-bold">4</p>
-            <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">get_experience · search_skills · calculate_fit_score · get_achievements</p>
+            <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">get_experience · search_skills · get_achievements</p>
           </Card>
           <Card className="bg-card border-border p-4">
             <p className="text-xs text-muted-foreground font-medium mb-1">Transport</p>
@@ -294,7 +293,7 @@ export default function MCPDemoPage() {
           <textarea
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="E.g., Is Prasad a good fit for VP of AI Engineering?"
+            placeholder="E.g., Which agentic AI platforms has Prasad led?"
             className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 resize-none transition-all"
             rows={2}
             onKeyDown={(e) => { if (e.key === 'Enter' && e.ctrlKey) handleRunDemo(); }}

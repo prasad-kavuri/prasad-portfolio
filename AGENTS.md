@@ -195,7 +195,7 @@ skills.sh, and any coding-agent workflow used with this repository.
 - Demo pages: `src/app/demos/[name]/page.tsx`
 - Special pages: `src/app/status/page.tsx`, `src/app/governance/page.tsx`
 - Shared data: `src/data/profile.json` (do not duplicate data elsewhere)
-- Demo registry: `src/data/demos.ts` + `src/components/sections/AITools.tsx` (DEMO_GROUPS ids array — update both)
+- Demo registry: `src/data/demos.ts` + `src/data/demo-groups.ts` (DEMO_GROUPS — shared by homepage grid, /demos, marketplace; update both)
 - Tests: `src/__tests__/[api|components|evals|fuzz|integration|lib|resilience|stateful]/`
 - E2E: `e2e/*.spec.ts`
 
@@ -228,7 +228,7 @@ Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/pa
 - `next` is pinned to exact `16.3.5` (no caret) — do not add `^`
 - `profile.personal.title` = "Head of AI Platform & Agentic Solutions" — do not change without updating layout.tsx
 - All URLs use `https://www.prasadkavuri.com` (with www) — be consistent
-- New demos need entries in BOTH `src/data/demos.ts` AND `src/components/sections/AITools.tsx` (DEMO_GROUPS ids array)
+- New demos need entries in BOTH `src/data/demos.ts` AND `src/data/demo-groups.ts` (DEMO_GROUPS) — enforced by `src/__tests__/integration/demo-inventory-consistency.test.ts`
 - `react-hooks/set-state-in-effect` ESLint rule fires on `setState()` inside `useEffect` — use `// eslint-disable-next-line` when the pattern is intentional (e.g., client-only hydration-safe init with `useState(null)`)
 - Signature system is `evaluation-showcase` (AI Evaluation Showcase) — referenced in Hero, AITools featured card, and README
 

@@ -1,5 +1,5 @@
 /**
- * Eval engine — LLM-as-Judge scoring for portfolio assistant responses.
+ * Eval engine — deterministic rubric scoring (required coverage + forbidden topics) for portfolio assistant responses.
  *
  * Scores responses against ground-truth criteria without making real API calls.
  * Used by evals test suite to catch regression in prompt quality.

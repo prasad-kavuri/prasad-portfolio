@@ -204,7 +204,7 @@ describe('POST /api/mcp-demo', () => {
     expect(body.toolCallLog[0].result).toBe('Category not found');
   });
 
-  it('executes calculate_fit_score tool', async () => {
+  it('no longer exposes the retired calculate_fit_score tool', async () => {
     mockCreate
       .mockResolvedValueOnce({
         choices: [{ message: { content: null, tool_calls: [
@@ -212,13 +212,13 @@ describe('POST /api/mcp-demo', () => {
             id: 'call_1',
             function: {
               name: 'calculate_fit_score',
-              arguments: JSON.stringify({ required_skills: ['RAG', 'LLM'], role_title: 'VP of AI' }),
+              arguments: JSON.stringify({ required_skills: ['RAG'], role_title: 'VP of AI' }),
             },
           },
         ] } }],
       })
       .mockResolvedValueOnce({
-        choices: [{ message: { content: 'Prasad is an excellent fit with a score of 100.' } }],
+        choices: [{ message: { content: 'That tool is not available.' } }],
       });
 
     const { POST } = await import('@/app/api/mcp-demo/route');
@@ -226,10 +226,7 @@ describe('POST /api/mcp-demo', () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body.toolCallLog[0].tool).toBe('calculate_fit_score');
-    const result = JSON.parse(body.toolCallLog[0].result);
-    expect(result.role).toBe('VP of AI');
-    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(body.toolCallLog[0].result).toBe('Tool not found');
   });
 
   it('executes get_achievements tool with company filter', async () => {

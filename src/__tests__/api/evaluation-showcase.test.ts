@@ -110,12 +110,12 @@ describe('POST /api/evaluation-showcase', () => {
     expect(Number(body.fidelityScore)).toBeGreaterThanOrEqual(0);
   });
 
-  it('returns regressionDelta field in every successful response', async () => {
+  it('does not report a regression delta it has no baseline for', async () => {
     const { POST } = await import('@/app/api/evaluation-showcase/route');
     const res = await POST(makeRequest({ query: 'test', mockResponse: 'Prasad Krutrim Ola HERE agentic AI' }));
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toHaveProperty('regressionDelta');
+    expect(body).not.toHaveProperty('regressionDelta');
   });
 
   it('returns 429 after rate limit is exceeded', async () => {

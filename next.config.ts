@@ -1,11 +1,16 @@
 import type { NextConfig } from "next";
-import { LEGACY_HTML_REDIRECTS } from "./src/data/legacy-routes";
+import { LEGACY_HTML_REDIRECTS, RETIRED_DEMO_REDIRECTS } from "./src/data/legacy-routes";
 
 const nextConfig: NextConfig = {
   turbopack: {},
   async redirects() {
     return [
       ...LEGACY_HTML_REDIRECTS.map(({ source, destination }) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
+      ...RETIRED_DEMO_REDIRECTS.map(({ source, destination }) => ({
         source,
         destination,
         permanent: true,

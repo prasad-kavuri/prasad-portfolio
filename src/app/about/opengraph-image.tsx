@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { PORTFOLIO_FACTS } from '@/data/site-config';
 
 export const runtime = 'edge';
 export const alt = 'About Prasad Kavuri — Head of AI Platform & Agentic Solutions';
@@ -16,7 +17,7 @@ const proofPoints = [
   { icon: '▸', text: '200+ engineers led across AI platform orgs' },
   { icon: '▸', text: '70%+ AI infrastructure cost reduction' },
   { icon: '▸', text: '13,000+ B2B customers enabled' },
-  { icon: '▸', text: '15 production AI demos / platform patterns' },
+  { icon: '▸', text: `${PORTFOLIO_FACTS.productionDemoCount} production AI demos / platform patterns` },
 ];
 
 export default function Image() {

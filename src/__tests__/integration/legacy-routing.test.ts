@@ -59,11 +59,11 @@ describe('Legacy routing policy', () => {
     expect(response.headers.get('location')).toBe('https://www.prasadkavuri.com/demos');
   });
 
-  it('/resume-generator.html redirects 301 to /demos/resume-generator', async () => {
+  it('/resume-generator.html redirects 301 to /about (hiring tool retired in SPEC-0019)', async () => {
     const redirects = await nextConfig.redirects?.();
     expect(redirects).toContainEqual({
       source: '/resume-generator.html',
-      destination: '/demos/resume-generator',
+      destination: '/about',
       permanent: true,
     });
   });
@@ -77,12 +77,24 @@ describe('Legacy routing policy', () => {
     });
   });
 
-  it('/multimodal-assistant.html redirects 301 to /demos/multimodal', async () => {
+  it('/multimodal-assistant.html redirects 301 to the privacy-boundary demo (multimodal retired in SPEC-0019)', async () => {
     const redirects = await nextConfig.redirects?.();
     expect(redirects).toContainEqual({
       source: '/multimodal-assistant.html',
-      destination: '/demos/multimodal',
+      destination: '/demos/edge-agent-collaboration',
       permanent: true,
     });
+  });
+
+  it('retired demo routes redirect 301 to their closest surviving page', async () => {
+    const redirects = await nextConfig.redirects?.();
+    for (const [source, destination] of [
+      ['/demos/vector-search', '/demos/rag-pipeline'],
+      ['/demos/multimodal', '/demos/edge-agent-collaboration'],
+      ['/demos/browser-native-ai-skill', '/demos'],
+      ['/demos/resume-generator', '/about'],
+    ]) {
+      expect(redirects).toContainEqual({ source, destination, permanent: true });
+    }
   });
 });

@@ -80,7 +80,7 @@ checks:
     status: pass
 
   - id: e2e_demo_pages
-    description: E2E smoke tests cover /demos/llm-router and /demos/multimodal
+    description: E2E smoke tests cover /demos/llm-router and /demos filter tabs (multimodal demo retired in SPEC-0019)
     gate: both pages have E2E coverage
     status: pass
     completed: 2026-06-22

@@ -4,9 +4,10 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demos } from "@/data/demos";
+import { DEMO_GROUPS, SIGNATURE_DEMO_ID } from "@/data/demo-groups";
 import { PORTFOLIO_FACTS } from "@/data/site-config";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Bot, Building2, Cuboid, Database, Eye, FileText, GitBranch, KeyRound, Layers, LayoutTemplate, MonitorCheck, Plug, Search, ShieldCheck, Telescope, Users, Zap } from "lucide-react";
+import { ArrowRight, Bot, Building2, Cuboid, Database, GitBranch, KeyRound, Layers, LayoutTemplate, Plug, ShieldCheck, Telescope, Users, Zap } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 const statusLabel: Record<string, string> = {
@@ -21,49 +22,20 @@ const statusVariant: Record<string, "default" | "secondary" | "outline"> = {
   "coming-soon": "outline",
 };
 
-const DESKTOP_ONLY = ["quantization", "multimodal", "vector-search", "world-generation"];
-
-const DEMO_GROUPS = [
-  {
-    label: "Core AI Infrastructure",
-    description: "Foundation systems for scalable AI platforms",
-    ids: ["evaluation-showcase", "rag-pipeline", "llm-router"]
-  },
-  {
-    label: "Agentic Systems",
-    description: "Autonomous agents and tool-use orchestration",
-    ids: ["multi-agent", "mcp-demo", "agent-auth", "edge-agent-collaboration", "enterprise-control-plane", "world-generation", "storm-research"]
-  },
-  {
-    label: "AI Applications",
-    description: "Production AI experiences across modalities",
-    ids: ["portfolio-assistant", "resume-generator", "generative-ui"]
-  },
-  {
-    label: "Technical Explorations",
-    description: "Focused engineering deep-dives — desktop/WebGPU-heavy, narrower audience than the core platform demos",
-    ids: ["vector-search", "multimodal", "quantization", "browser-native-ai-skill"]
-  }
-];
-
-const SIGNATURE_DEMO_ID = "evaluation-showcase";
+const DESKTOP_ONLY = ["quantization", "world-generation"];
 
 const DEMO_ICONS: Record<string, LucideIcon> = {
   "evaluation-showcase": ShieldCheck,
   "rag-pipeline": Database,
   "llm-router": GitBranch,
-  "vector-search": Search,
   "multi-agent": Users,
   "mcp-demo": Plug,
   "agent-auth": KeyRound,
   "enterprise-control-plane": Building2,
   "world-generation": Cuboid,
-  "browser-native-ai-skill": MonitorCheck,
   "edge-agent-collaboration": Layers,
   "portfolio-assistant": Bot,
-  "resume-generator": FileText,
   "generative-ui": LayoutTemplate,
-  "multimodal": Eye,
   "quantization": Zap,
   "storm-research": Telescope,
 };
@@ -102,9 +74,9 @@ export function AITools() {
             How AI Quality Is Measured
           </p>
           <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
-            <p>Offline LLM-as-Judge eval cases with semantic fidelity scoring.</p>
+            <p>Deterministic eval cases with rubric coverage and forbidden-topic scoring, run in CI.</p>
             <p>Online drift snapshots with hallucination and anomaly indicators.</p>
-            <p>Regression-aware quality gates designed for release readiness.</p>
+            <p>Pass/fail quality gates designed for release readiness.</p>
           </div>
         </div>
 
@@ -113,7 +85,7 @@ export function AITools() {
             Local-First AI Demos
           </p>
           <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-3">
-            <p>RAG, Vector Search, Multimodal, and Quantization run in-browser with client-side inference paths.</p>
+            <p>RAG, Quantization, and the Edge Agent's PII redaction run in-browser with client-side inference paths.</p>
             <p>This reduces server-side data exposure for demo workloads and showcases privacy-aware execution patterns.</p>
             <p>Trade-off is explicit: local execution improves privacy/cost posture, while server models handle heavier reasoning workloads.</p>
           </div>
@@ -175,7 +147,7 @@ export function AITools() {
         )}
 
         {DEMO_GROUPS.map((group) => {
-          const groupDemos = demos.filter(d => group.ids.includes(d.id));
+          const groupDemos = demos.filter(d => group.ids.includes(d.id) && d.id !== SIGNATURE_DEMO_ID);
           return (
             <div key={group.label} className="mb-12">
 

@@ -58,7 +58,7 @@ A human-in-the-loop checkpoint — a point in an agent pipeline where execution 
 _Avoid_: "approval step", "human checkpoint"
 
 **browser AI warning**:
-The `BrowserAIWarning` component — shown on mobile/low-memory devices when a browser demo cannot run. All 4 browser demos must render this.
+The `BrowserAIWarning` component — shown on mobile/low-memory devices when a browser demo cannot run. All browser demos must render this.
 _Avoid_: "mobile warning", "WASM fallback banner"
 
 **recruiter path**:
@@ -91,7 +91,7 @@ _Avoid_: "safety check", "input check"
 - **Profile facts** are the single source of truth — never hardcode a count or metric that has a matching `PORTFOLIO_FACTS` key.
 
 **spatial demo**:
-A browser demo that uses Three.js or WebGL for 3D / spatial visualization alongside an API call — e.g. Vector Search. Exec model: `Three.js + API`.
+A browser demo that uses Three.js or WebGL for 3D / spatial visualization alongside an API call — e.g. World Generation. Exec model: `Three.js + API`.
 _Avoid_: "3D demo", "WebGL demo"
 
 **mcp-demo**:
@@ -130,11 +130,11 @@ The Experience section rewritten as a vertical timeline with featured roles and 
 _Avoid_: "experience section" (use when referring to the React component), "career timeline"
 
 **krutrim**:
-Ola Electric's AI division where Prasad built the 300-seat, 50%-CSAT-lift call center AI platform. Context: first major AI leadership role, $10M+ revenue attributable. Founded 2023, Bengaluru.
+India's sovereign AI computing company (Ola Group) where Prasad was Head of AI Engineering (Mar 2025 – Jun 2026) and led India's first agentic AI platform (Kruti.ai), including 300-seat call center automation. Canonical metric: 50% latency reduction and 40% cost savings via multimodal agentic architecture and intelligent model routing. Source of truth: `src/data/profile.json`.
 _Avoid_: "Krutrim AI" (full name in copy), abbreviating as "K"
 
 **ola**:
-Ola Electric (OLA brand) — Prasad built the AI recommendation engine for 35M+ users, 13 languages, 70% support deflection. Different from Krutrim (Krutrim is a subsidiary).
+Ola (Ola Maps) — Prasad was Senior Director of Engineering (Sep 2023 – Feb 2025), leading the Ola Maps platform transformation for 13,000+ B2B customers. Canonical metric: 70% infrastructure cost reduction via a cloud-native architectural overhaul. Krutrim is a separate Ola Group company.
 _Avoid_: "Ola Electric" and "Ola" used interchangeably — prefer "Ola Electric" in copy, "ola" in code keys
 
 **here**:

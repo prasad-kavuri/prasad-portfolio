@@ -31,12 +31,9 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 | Demo | Engine | Mode | File |
 |------|--------|------|------|
 | RAG Pipeline | Transformers.js, all-MiniLM-L6-v2 | **Browser WASM** | `src/app/demos/rag-pipeline/page.tsx` |
-| Vector Search | Transformers.js, PCA, Canvas | **Browser WASM** | `src/app/demos/vector-search/page.tsx` |
-| Multimodal | Florence-2, WebGPU + Transformers.js | **Browser WebGPU** | `src/app/demos/multimodal/page.tsx` |
 | Quantization | ONNX Runtime, FP32 vs INT8 | **Browser WASM** | `src/app/demos/quantization/page.tsx` |
 | LLM Router | Groq API | **Server** | `src/app/api/llm-router/` |
-| Portfolio Assistant | Groq + RAG, Vercel AI SDK | **Server** | `src/app/api/portfolio-assistant/` |
-| Resume Generator | Groq, Llama 3.3 70B | **Server** | `src/app/api/resume-generator/` |
+| Portfolio Assistant | Groq + RAG | **Server** | `src/app/api/portfolio-assistant/` |
 | Multi-Agent | Groq, Analyzer+Researcher+Strategist | **Server** | `src/app/api/multi-agent/` |
 | MCP Demo | MCP protocol, Groq tool calling | **Server** | `src/app/api/mcp-demo/` |
 
@@ -47,7 +44,7 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 - **Don't assume standard Next.js/React/Tailwind patterns hold for these pinned versions** — when touching a Next.js API, middleware, or config you're not certain still behaves as trained, verify against `node_modules/next/dist/` rather than assuming.
 - **NEVER touch server-side demos** when fixing browser-WASM/mobile issues. They are independent.
 - **ALWAYS use `useBrowserAI` hook** (`src/hooks/useBrowserAI.ts`) for any demo that loads WASM or WebGPU. Never load models unconditionally.
-- **NEVER modify** `vercel.json` headers or the CSP in `next.config.ts` unless that is the explicit task. These are fragile — wrong changes break all 4 browser demos.
+- **NEVER modify** `vercel.json` headers or the CSP in `next.config.ts` unless that is the explicit task. These are fragile — wrong changes break the browser demos.
 - **ALWAYS run `npx tsc --noEmit`** after any code change. Zero TypeScript errors required before commit.
 - **NEVER expose secrets** — no API keys, no Redis connection strings in client-side code or public files.
 - **Surgical changes only** — each prompt session targets specific identified gaps. Do not refactor working code unless asked.
@@ -160,13 +157,13 @@ skills.sh, and any coding-agent workflow used with this repository.
 
 ## Key Shared Utilities
 
-- `src/hooks/useBrowserAI.ts` — mobile/memory detection for all browser-WASM demos. Pass `true` for WebGPU-required demos (Multimodal).
-- `src/components/BrowserAIWarning.tsx` — warning banner component, used by all 4 browser demos
+- `src/hooks/useBrowserAI.ts` — mobile/memory detection for all browser-WASM demos. Pass `true` for WebGPU-required demos.
+- `src/components/BrowserAIWarning.tsx` — warning banner component, used by all browser demos
 - `src/data/profile.json` — Single source of truth for all profile data
 - `src/lib/rate-limit.ts` — Rate limiting (ALWAYS use on new API routes)
 - `src/lib/observability.ts` — Structured logging, anomaly detection, trace propagation
 - `src/lib/guardrails.ts` — Injection detection, competitor filtering, hallucination heuristics, `enforceGuardrails`
-- `src/lib/eval-engine.ts` — LLM-as-Judge scoring (`scoreResponse`, `runEvals`)
+- `src/lib/eval-engine.ts` — deterministic rubric scoring (`scoreResponse`, `runEvals`)
 - `src/lib/drift-monitor.ts` — Model output drift detection (`trackModelOutput`, `getDriftSnapshot`)
 - `src/lib/cost-control.ts` — Per-route token cost tracking
 - `src/lib/hitl.ts` — Human-in-the-loop checkpoint utilities
@@ -180,9 +177,11 @@ skills.sh, and any coding-agent workflow used with this repository.
 Short version: `src/app/demos/[name]/page.tsx` + `src/app/api/[name]/route.ts` +
 rate-limit + observability + guardrails + input validation + unit tests + E2E smoke test.
 
-**IMPORTANT:** Also add the new demo `id` to the `DEMO_GROUPS` array in
-`src/components/sections/AITools.tsx` — the homepage grid will silently skip
-demos that are in `demos.ts` but not in that array.
+**IMPORTANT:** Also add the new demo `id` to exactly one group in
+`src/data/demo-groups.ts` (shared by the homepage grid, `/demos`, and the agent
+marketplace). `src/__tests__/integration/demo-inventory-consistency.test.ts` fails
+if a registered demo is missing from a group or from any public inventory
+(`llms.txt`, `llms-full.txt`, the AI-agent manifest).
 
 For browser-WASM demos: wire `useBrowserAI` hook and `BrowserAIWarning` component,
 add simulated fallback path for mobile/low-memory devices.

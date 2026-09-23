@@ -3,9 +3,8 @@
 // Pattern: the model is only ever allowed to emit JSON that names one of the
 // component types below and fills in that type's fixed prop shape. It cannot
 // invent a component, emit markup, or emit a prop the catalog doesn't define.
-// A hand-written type-guard validator (matching the existing
-// `isResumeResponse`-style convention in `src/app/api/resume-generator/route.ts`)
-// checks the model's output against this catalog before anything is rendered.
+// A hand-written type-guard validator (the repo's minimal-dependency convention,
+// no schema library) checks the model's output against this catalog before anything is rendered.
 // This mirrors the safety property of Vercel's json-render (AI -> JSON -> UI,
 // constrained to a developer-defined catalog, schema-validated before render)
 // without adding a schema-validation dependency — see specs/0018 for why.

@@ -22,7 +22,6 @@ const PAGES = [
   { name: 'RAG Pipeline demo',           path: '/demos/rag-pipeline' },
   { name: 'MCP demo',                    path: '/demos/mcp-demo' },
   { name: 'Multi-Agent demo',            path: '/demos/multi-agent' },
-  { name: 'Resume Generator demo',       path: '/demos/resume-generator' },
 ];
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];

@@ -73,11 +73,10 @@ const capabilities: Capability[] = [
     description: 'Applies embedding-based semantic retrieval and ranking to improve discovery across unstructured information.',
     enterpriseWhy: 'Turns natural-language intent into practical retrieval for support, operations, and decision workflows.',
     evidence: [
-      'Vector search demo with embedding visualization and ranked retrieval',
+      'In-browser embedding retrieval with ranked, cited results in the RAG demo',
       'Resilience patterns for degraded local-inference conditions',
     ],
     links: [
-      { href: '/demos/vector-search', label: 'Vector Search Demo' },
       { href: '/demos/rag-pipeline', label: 'RAG Demo' },
     ],
   },

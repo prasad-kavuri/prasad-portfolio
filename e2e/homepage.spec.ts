@@ -52,9 +52,9 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Constrained Generative UI').first()).toBeVisible();
   });
 
-  test('Desktop badge appears on exactly 4 cards', async ({ page }) => {
+  test('Desktop badge appears on exactly 2 cards', async ({ page }) => {
     const desktopBadges = page.getByText(/^Desktop$/);
-    await expect(desktopBadges).toHaveCount(4);
+    await expect(desktopBadges).toHaveCount(2);
   });
 
   test('transformation framework section is visible', async ({ page }) => {

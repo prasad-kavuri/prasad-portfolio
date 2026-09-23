@@ -5,20 +5,21 @@ test.describe('Navigation', () => {
     await page.goto('/');
   });
 
-  test('Demos navbar link opens the demos page', async ({ page, isMobile }) => {
+  test('All Demos platform link opens the demos page', async ({ page, isMobile }) => {
     if (isMobile) {
       await page.goto('/demos');
     } else {
-      await page.getByRole('link', { name: 'Demos', exact: true }).click();
+      await page.getByRole('button', { name: 'Platform', exact: true }).click();
+      await page.getByRole('menuitem', { name: 'All Demos', exact: true }).click();
     }
     await expect(page).toHaveURL(/\/demos$/);
   });
 
-  test('clicking Experience nav scrolls to experience section', async ({ page, isMobile }) => {
+  test('clicking Leadership nav scrolls to experience section', async ({ page, isMobile }) => {
     if (isMobile) {
       await page.goto('/#experience');
     } else {
-      await page.getByRole('link', { name: 'Experience', exact: true }).click();
+      await page.getByRole('link', { name: 'Leadership', exact: true }).click();
     }
     await expect(page.locator('#experience')).toBeInViewport({ timeout: 10000 });
   });

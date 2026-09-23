@@ -5,7 +5,7 @@ description: Autonomous test-fail → diagnose → patch → retest → document
 
 # Self-Heal — Autonomous Repair Loop
 
-Read `CONTEXT.md` before starting. Key terms: **vitest**, **playwright**, **guardrail check**, **observability event**.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **vitest**, **playwright**, **guardrail check**, **observability event**.
 Also load profile: `profiles/testing.yaml`.
 
 ## When to invoke this skill

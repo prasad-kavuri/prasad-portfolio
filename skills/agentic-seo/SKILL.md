@@ -5,7 +5,7 @@ description: AI crawler and recruiter discoverability audit. Use when the user w
 
 # Agentic SEO — AI Crawler Discoverability
 
-Read `CONTEXT.md` before starting. Key terms: **llms-txt**, **agentic-seo**, **agent context**, **recruiter path**, **recruiter experience**.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **llms-txt**, **agentic-seo**, **agent context**, **recruiter path**, **recruiter experience**.
 
 Also read ADR-0006 (llms.txt), ADR-0007 (schema.org JSON-LD).
 

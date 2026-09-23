@@ -5,7 +5,7 @@ description: Add a new production AI demo to the portfolio. Use when the user wa
 
 # Add a New Demo
 
-Read `CONTEXT.md` before starting. Key terms: **browser demo**, **server demo**, **exec model**, **module card**, **demo group**, **guardrail check**, **observability event**.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **browser demo**, **server demo**, **exec model**, **module card**, **demo group**, **guardrail check**, **observability event**.
 
 ## Step 0 — Clarify before touching code
 
@@ -102,7 +102,7 @@ node -e "require('./src/data/demos')"   # demos.ts loads without error
 
 Check:
 - [ ] Demo entry in `demos.ts`
-- [ ] `id` added to `DEMO_GROUPS` in `AITools.tsx`
+- [ ] `id` added to `DEMO_GROUPS` in `src/data/demo-groups.ts`
 - [ ] `id` added to `GROUPS`, `EXEC_MODEL`, and `DEMO_ICONS` in `DemosGallery.tsx`
 - [ ] Page at `src/app/demos/<id>/page.tsx` exists
 - [ ] API route at `src/app/api/<id>/route.ts` exists (server demos)

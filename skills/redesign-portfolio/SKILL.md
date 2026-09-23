@@ -5,7 +5,7 @@ description: Complete Claude-native workflow for adding or redesigning a portfol
 
 # Redesign Portfolio Section
 
-Read `CONTEXT.md` before starting. Key terms: **accent brand**, **layer**, **featured role**, **module card**, **executive summary**, **agentic-seo**, **recruiter experience**, **profile fact**.
+Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **accent brand**, **layer**, **featured role**, **module card**, **executive summary**, **agentic-seo**, **recruiter experience**, **profile fact**.
 
 ## Step 0 — Clarify before touching code
 

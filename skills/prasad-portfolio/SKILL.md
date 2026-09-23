@@ -1,10 +1,10 @@
 ---
 name: prasad-portfolio
 description: >
-  Use this skill when working on the prasad-portfolio codebase at prasadkavuri.com.
-  Enforces the project's security invariants, demo execution modes, CSP/WASM rules,
-  coding conventions, and agent operating contract. Activate for any code change,
-  new demo, API route, test, or configuration edit in this repository.
+  Baseline security, CSP/WASM, and coding-convention invariants for the prasad-portfolio
+  repository at prasadkavuri.com — the contract every code change here must satisfy,
+  regardless of which other skill (add-demo, testing, security-review, etc.) is also in use.
+  Use alongside a task-specific skill, or on its own for a small edit that doesn't need one.
 ---
 
 # Prasad Portfolio — Agent Skill
@@ -23,9 +23,9 @@ other coding-agent workflow.
 - Groq SDK (server-side LLM) · @huggingface/transformers v4 (browser WASM)
 - Upstash Redis (rate limiting) · Vitest + Playwright (testing)
 
-**Never assume standard Next.js/React/Tailwind patterns.** Verify actual behavior in
-`node_modules/next/dist/` before writing any code — these pinned versions differ from
-LLM training data.
+**Don't assume standard Next.js/React/Tailwind patterns hold for these pinned versions.**
+When touching a Next.js API you're not certain still behaves as trained (App Router routing,
+middleware, Turbopack config), verify against `node_modules/next/dist/` rather than assuming.
 
 ---
 

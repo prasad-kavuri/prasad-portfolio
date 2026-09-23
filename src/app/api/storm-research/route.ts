@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
 
     const profileCtx = buildProfileContext();
     const encoder = new TextEncoder();
-    const DEFAULT_PERSPECTIVES = ['ML Engineer', 'Executive Recruiter', 'Security Architect', 'Product Manager'];
+    const DEFAULT_PERSPECTIVES = ['ML Engineer', 'Chief Technology Officer', 'Security Architect', 'Product Manager'];
     const isCompanyTopic = /anthropic|stripe|openai|zip\b|google|meta|microsoft|amazon|apple|uber|airbnb|figma|notion|linear|vercel|deepmind/i.test(cleanTopic);
 
     const stream = new ReadableStream<Uint8Array>({
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
           const perspRaw = await callGroq(
             apiKey,
             'You are a research orchestrator. Respond with a valid JSON array only — no markdown, no extra text.',
-            `For the research topic: "${cleanTopic}", identify exactly 3-4 expert perspectives that provide diverse, high-value insights. Return a JSON array of short role labels, e.g. ["ML Engineer", "Executive Recruiter", "Security Architect", "Product Manager"].`,
+            `For the research topic: "${cleanTopic}", identify exactly 3-4 expert perspectives that provide diverse, high-value insights. Return a JSON array of short role labels, e.g. ["ML Engineer", "Chief Technology Officer", "Security Architect", "Product Manager"].`,
             256,
           );
           const perspectives = parseJsonArray(perspRaw, DEFAULT_PERSPECTIVES).slice(0, 4);
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
             const qs = questions[perspective] ?? fallbackQuestions[perspective];
 
             const researchSystem = isCompanyTopic
-              ? `You are a ${perspective} evaluating a VP of AI Engineering candidate for ${cleanTopic}. Use the candidate profile below to provide specific, evidence-based assessments.\n\n${profileCtx}`
+              ? `You are a ${perspective} assessing how an AI platform executive's track record maps to ${cleanTopic}. Use the executive profile below to provide specific, evidence-based assessments.\n\n${profileCtx}`
               : `You are a ${perspective} researching "${cleanTopic}". Provide expert, specific insights from your professional perspective.`;
 
             const researchRaw = await callGroq(
@@ -210,7 +210,7 @@ export async function POST(req: NextRequest) {
           }).join('\n\n');
 
           const synthSystem = isCompanyTopic
-            ? `You are a senior analyst synthesizing multi-perspective research. Write executive-grade reports.\n\nCandidate profile for context:\n${profileCtx}`
+            ? `You are a senior analyst synthesizing multi-perspective research. Write executive-grade reports.\n\nExecutive profile for context:\n${profileCtx}`
             : 'You are a senior analyst synthesizing multi-perspective research. Write clear, executive-grade reports.';
 
           const reportRaw = await callGroq(

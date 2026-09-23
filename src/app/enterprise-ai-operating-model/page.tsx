@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
 import { PORTFOLIO_FACTS, SITE_URL } from '@/data/site-config';
 
 const pageUrl = `${SITE_URL}/enterprise-ai-operating-model`;
@@ -76,6 +78,70 @@ const maturityModel = [
   },
 ];
 
+const REPO = 'https://github.com/prasad-kavuri/prasad-portfolio/blob/main';
+
+/**
+ * Alignment map: controls that are implemented and tested in this portfolio's open-source code,
+ * mapped to NIST AI RMF 1.0 functions and ISO/IEC 42001:2023 Annex A control areas.
+ * It is an alignment map, not a certification or compliance claim.
+ */
+const FRAMEWORK_ALIGNMENT = [
+  {
+    fn: 'Govern',
+    iso: 'A.2 AI policies · A.3 Internal organization',
+    controls: [
+      'Default-deny tool policy: every agent tool declares its required scope; unknown tools are refused',
+      'Separate identities for the requesting user and the agent service principal, both recorded on every call',
+      'Fail-closed secrets: credential signing stops in production when the secret is missing',
+      'Spec-before-code change process with human approval for security-relevant changes',
+    ],
+    evidence: [
+      { label: 'Tool policy', href: `${REPO}/src/lib/tool-policy.ts` },
+      { label: 'Change specs', href: 'https://github.com/prasad-kavuri/prasad-portfolio/tree/main/specs' },
+    ],
+  },
+  {
+    fn: 'Map',
+    iso: 'A.8 Information for interested parties',
+    controls: [
+      'A2A Agent Card and auth.md publish what the agent can do, which scopes each skill needs, and how to get a credential',
+      'Golden scenarios enumerate the risk cases up front: over-threshold payments, duplicates, and poisoned vendor data',
+      'Every demo declares its execution mode (browser, server, or remote agent) in one registry',
+    ],
+    evidence: [
+      { label: 'Agent Card', href: '/.well-known/agent-card.json' },
+      { label: 'auth.md', href: '/auth.md' },
+    ],
+  },
+  {
+    fn: 'Measure',
+    iso: 'A.6 AI system life cycle (verification and validation)',
+    controls: [
+      'Trajectory evaluation scores each agent version on tool order, tool precision and recall, outcome accuracy, and safety violations',
+      'Eval suites and coverage thresholds run in CI on every push',
+      'Gateway spans record tool, principal, decision, reason, and latency for each call',
+    ],
+    evidence: [
+      { label: 'Release gate', href: '/api/flagship/release-gate' },
+      { label: 'Trajectory eval', href: `${REPO}/src/lib/flagship/trajectory-eval.ts` },
+    ],
+  },
+  {
+    fn: 'Manage',
+    iso: 'A.9 Use of AI systems · A.10 Third-party relationships · A.7 Data',
+    controls: [
+      'Consequential actions pause for human approval: single use, time-limited, bound to what was staged, replays rejected',
+      'A candidate that violates a safety case is rolled back from canary automatically',
+      'Tool and remote-agent outputs are treated as untrusted and screened for injected instructions',
+      'Daily spend caps and rate limits on every AI route; structured PII is re-checked before any cloud handoff',
+    ],
+    evidence: [
+      { label: 'Flagship demo', href: '/demos/governed-agent-platform' },
+      { label: 'Tool gateway', href: `${REPO}/src/lib/tool-gateway.ts` },
+    ],
+  },
+];
+
 const boardSignals = [
   '200+ engineers led across US, India, and Europe',
   '$8M-$20M annual engineering budget responsibility',
@@ -105,13 +171,17 @@ const schema = {
       'AI FinOps',
       'Production AI platforms',
       'Model risk management',
+      'NIST AI Risk Management Framework',
+      'ISO/IEC 42001',
     ],
   },
 };
 
 export default function EnterpriseAIOperatingModelPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <>
+    <Navbar />
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background text-foreground">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
@@ -180,6 +250,44 @@ export default function EnterpriseAIOperatingModelPage() {
           </div>
         </section>
 
+        <section className="mb-10" aria-labelledby="framework-alignment">
+          <p id="framework-alignment" className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Framework Alignment — NIST AI RMF and ISO/IEC 42001
+          </p>
+          <p className="mb-4 max-w-3xl text-sm text-muted-foreground">
+            How the controls running in this portfolio&apos;s open-source code line up with the four NIST AI RMF 1.0
+            functions and the ISO/IEC 42001:2023 Annex A control areas. It shows how I structure AI governance so
+            auditors and risk partners can trace a control to code. It is an alignment map, not a certification.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {FRAMEWORK_ALIGNMENT.map((row) => (
+              <Card key={row.fn} className="border-border bg-card p-5">
+                <h2 className="text-sm font-semibold text-foreground">{row.fn}</h2>
+                <p className="mb-3 text-xs text-muted-foreground">ISO/IEC 42001 · {row.iso}</p>
+                <ul className="mb-3 space-y-1.5">
+                  {row.controls.map((control) => (
+                    <li key={control} className="flex gap-2 text-sm text-muted-foreground">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" />
+                      {control}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-muted-foreground">
+                  Evidence:{' '}
+                  {row.evidence.map((item, i) => (
+                    <span key={item.href}>
+                      {i > 0 && ' · '}
+                      <a href={item.href} className="underline underline-offset-2 hover:text-foreground">
+                        {item.label}
+                      </a>
+                    </span>
+                  ))}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
         <section className="mb-10">
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Board Signals
@@ -200,7 +308,10 @@ export default function EnterpriseAIOperatingModelPage() {
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Controls In Practice
           </p>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Link className="rounded-lg border border-border p-4 text-sm hover:bg-muted/40" href="/demos/governed-agent-platform">
+              Governed agent platform (flagship)
+            </Link>
             <Link className="rounded-lg border border-border p-4 text-sm hover:bg-muted/40" href="/governance">
               Governance controls
             </Link>
@@ -213,10 +324,9 @@ export default function EnterpriseAIOperatingModelPage() {
           </div>
         </section>
 
-        <Link href="/for-recruiters" className="text-sm text-muted-foreground hover:text-foreground">
-          Back to recruiter brief
-        </Link>
       </div>
     </main>
+    <Footer />
+    </>
   );
 }

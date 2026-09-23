@@ -17,6 +17,6 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Enterprise AI Control Plane — RBAC, FinOps & Observability',
     description:
-      'Enterprise AI governance in action: access controls, spend analytics, and observability by VP of AI Engineering Prasad Kavuri.',
+      'Enterprise AI governance in action: access controls, spend analytics, and observability by AI platform leader Prasad Kavuri.',
   },
 };

@@ -79,16 +79,18 @@ export default function Home() {
       <Navbar />
       <main id="main-content" tabIndex={-1} className="overflow-x-hidden">
         <Hero />
-        <AITools />
-        <Transformation />
-        <SectionBridge text="These principles are reflected in how I architect real enterprise AI systems." />
-        <AIArchitecture />
-        <SectionBridge text="These systems represent that architecture in action — production implementations, not prototypes." />
-        <Expertise />
-        <SectionBridge text="Building these systems draws on five high-signal areas where I consistently create value." />
+        <SectionBridge text="Twenty years of platform transformations — from autonomous driving to agentic AI." />
         <Experience />
         <SectionBridge text="Three of those roles became defining transformations — here's how they actually happened." />
         <CaseStudies />
+        <SectionBridge text="Those transformations shaped how I drive AI change across systems, workflows, and organizations." />
+        <Transformation />
+        <SectionBridge text="Those principles run in code here — starting with a governed agent platform any agent can call." />
+        <AITools />
+        <SectionBridge text="Every demo runs on one shared platform architecture — governance, evaluation, and observability included." />
+        <AIArchitecture />
+        <SectionBridge text="Building these systems draws on five high-signal areas where I consistently create value." />
+        <Expertise />
         <SectionBridge text="These experiences shaped how I think about AI — and what I've learned along the way." />
         <Perspectives />
         <SectionBridge text="The people I've worked with put it better than I can." />

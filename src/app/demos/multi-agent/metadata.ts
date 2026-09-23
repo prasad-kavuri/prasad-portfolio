@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Multi-Agent AI System — Orchestration with HITL Checkpoints | Prasad Kavuri',
   description:
-    'Three specialized agents — Analyzer, Researcher, Strategist — collaborate with human-in-the-loop approval gates between high-stakes transitions. Production-grade agentic AI orchestration by VP of AI Engineering Prasad Kavuri.',
+    'Three specialized agents — Analyzer, Researcher, Strategist — collaborate with human-in-the-loop approval gates between high-stakes transitions. Production-grade agentic AI orchestration by AI platform leader Prasad Kavuri.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/demos/multi-agent',
   },
@@ -17,6 +17,6 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Multi-Agent AI Orchestration with HITL',
     description:
-      'Three-agent pipeline with human approval gates — production agentic AI orchestration by VP of AI Engineering Prasad Kavuri.',
+      'Three-agent pipeline with human approval gates — production agentic AI orchestration by AI platform leader Prasad Kavuri.',
   },
 };

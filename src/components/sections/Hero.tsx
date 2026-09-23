@@ -119,20 +119,20 @@ export function Hero() {
 
           <div className="mt-5 rounded-xl border border-border bg-muted/30 p-4 sm:p-5">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-              Signature System: AI Evaluation Showcase
+              Flagship: Governed Agent Platform
             </p>
             <p className="text-sm text-muted-foreground">
-              Offline eval suites, live drift monitoring, hallucination indicators, and regression-minded quality gating are built into this platform.
+              One enterprise task end to end on real A2A and MCP endpoints: agent identity, per-tool authorization at a gateway, human approval, poisoned-data defense, tracing, and a release gate driven by trajectory evaluation.
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              Why this matters: quality regressions are surfaced before release, so AI reliability is managed as an engineering system.
+              Why this matters: these are the controls that decide whether enterprise agents can be deployed, audited, and trusted.
             </p>
             <a
-              href="/demos/evaluation-showcase"
+              href="/demos/governed-agent-platform"
               className="mt-2 inline-flex items-center text-xs font-medium hover:underline"
               style={{ color: 'var(--accent-brand)' }}
             >
-              Explore Signature System
+              Run the flagship
             </a>
           </div>
 

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database,
   GitBranch, KeyRound, Layers, LayoutTemplate,
-  Plug, ShieldCheck, Telescope, Users, Zap,
+  Plug, ShieldCheck, Telescope, Users, Workflow, Zap,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { demos } from '@/data/demos';
@@ -18,6 +18,7 @@ import type { LucideIcon } from 'lucide-react';
 // ---------------------------------------------------------------------------
 
 const DEMO_ICONS: Record<string, LucideIcon> = {
+  'governed-agent-platform': Workflow,
   'evaluation-showcase': ShieldCheck,
   'rag-pipeline': Database,
   'llm-router': GitBranch,
@@ -37,6 +38,7 @@ const DEMO_ICONS: Record<string, LucideIcon> = {
 const EXEC_MODEL: Record<string, { label: string; color: string }> = {
   'rag-pipeline':              { label: 'Browser WASM',  color: 'bg-teal-500/15 text-teal-400' },
   'llm-router':                { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
+  'governed-agent-platform':   { label: 'A2A + MCP',     color: 'bg-indigo-500/15 text-indigo-400' },
   'evaluation-showcase':       { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
   'multi-agent':               { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
   'mcp-demo':                  { label: 'Server API',    color: 'bg-blue-500/15 text-blue-400' },
@@ -88,7 +90,7 @@ function ModuleCard({ demo, featured = false }: { demo: typeof demos[0]; feature
             <div className="flex flex-wrap items-center gap-2 mb-0.5">
               {featured && (
                 <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400">
-                  Signature System
+                  Flagship Platform
                 </span>
               )}
               <h3 className="text-sm font-semibold text-foreground leading-tight">{demo.title}</h3>

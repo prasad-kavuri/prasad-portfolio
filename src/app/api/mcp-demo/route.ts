@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { Groq } from "groq-sdk";
 import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat";
-import profile from "@/data/profile.json";
+import { PROFILE_TOOLS, executeProfileTool, type ToolArgs } from "@/lib/profile-tools";
 import { BLOCKED_TOOL_OUTPUT, isPromptInjection, sanitizeLLMOutput, screenToolOutput } from "@/lib/guardrails";
 import { authorizeToolCall, deniedToolResult } from "@/lib/tool-policy";
 import {
@@ -20,51 +20,7 @@ import { verifyToken, type TokenPayload } from "@/lib/agent-auth";
 
 const ROUTE = "/api/mcp-demo";
 
-const MCP_TOOLS = [
-  {
-    name: "get_experience",
-    description:
-      "Retrieve Prasad's work experience for a specific company or time period",
-    inputSchema: {
-      type: "object",
-      properties: {
-        company: {
-          type: "string",
-          description: "Company name: krutrim, ola, or here",
-        },
-      },
-      required: ["company"],
-    },
-  },
-  {
-    name: "search_skills",
-    description: "Search Prasad's skills by category",
-    inputSchema: {
-      type: "object",
-      properties: {
-        category: {
-          type: "string",
-          description:
-            "Category: ai_ml, cloud_infrastructure, leadership, industry, or core",
-        },
-      },
-      required: ["category"],
-    },
-  },
-  {
-    name: "get_achievements",
-    description: "Get quantified achievements and metrics from Prasad's career. Requires a caller credential with the read:profile scope (see /auth.md).",
-    inputSchema: {
-      type: "object",
-      properties: {
-        company: {
-          type: "string",
-          description: "Optional: filter by company name",
-        },
-      },
-    },
-  },
-];
+const MCP_TOOLS = PROFILE_TOOLS;
 
 // Security boundaries for tool-call execution
 const MAX_TOOL_CALLS = 5; // cap per request to prevent runaway loops
@@ -78,7 +34,6 @@ const GROQ_TOOLS = MCP_TOOLS.map(tool => ({
   }
 }));
 
-type ToolArgs = Record<string, unknown>;
 
 interface ToolCallLogEntry {
   tool: string;
@@ -93,11 +48,6 @@ interface ToolResultMessage {
   role: "tool";
   tool_call_id: string;
   content: string;
-}
-
-function getStringArg(args: ToolArgs, key: string): string {
-  const value = args[key];
-  return typeof value === "string" ? value : "";
 }
 
 function parseToolArgs(argumentsValue: unknown): ToolArgs {
@@ -117,50 +67,6 @@ function parseToolArgs(argumentsValue: unknown): ToolArgs {
     : {};
 }
 
-function executeTool(name: string, args: ToolArgs): string {
-  if (name === "get_experience") {
-    const company = getStringArg(args, "company").toLowerCase();
-    if (!company) return "Company not found";
-
-    const exp = profile.experience.find(
-      (e) =>
-        e.company.toLowerCase().includes(company) ||
-        e.id.includes(company)
-    );
-    if (!exp) return "Company not found";
-    return JSON.stringify({
-      company: exp.company,
-      title: exp.title,
-      period: exp.period,
-      highlights: exp.highlights,
-      tags: exp.tags,
-    });
-  }
-
-  if (name === "search_skills") {
-    const category = getStringArg(args, "category");
-    const skills = profile.skills[
-      category as keyof typeof profile.skills
-    ];
-    if (!skills) return "Category not found";
-    return JSON.stringify({ category, skills });
-  }
-
-  if (name === "get_achievements") {
-    const company = getStringArg(args, "company").toLowerCase();
-    let achievements = profile.achievements;
-    if (company) {
-      achievements = achievements.filter(
-        (a) =>
-          a.company.toLowerCase().includes(company) ||
-          company === "multiple"
-      );
-    }
-    return JSON.stringify(achievements);
-  }
-
-  return "Tool not found";
-}
 
 async function resolveAuthContext(request: NextRequest): Promise<{ authContext: TokenPayload | null }> {
   const authHeader = request.headers.get('authorization') ?? '';
@@ -302,7 +208,7 @@ export async function POST(request: NextRequest) {
         }
         const toolStartTime = Date.now();
         const toolArgs = parseToolArgs(toolCall.function.arguments);
-        const rawResult = executeTool(toolCall.function.name, toolArgs);
+        const rawResult = executeProfileTool(toolCall.function.name, toolArgs);
         const duration = Date.now() - toolStartTime;
 
         // Tool-poisoning defense: tool output is untrusted data. Screen it before it reaches

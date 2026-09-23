@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database, GitBranch, KeyRound, Layers, LayoutTemplate, Plug, ShieldCheck, Telescope, Users, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, Building2, CheckCircle2, Cuboid, Database, GitBranch, KeyRound, Layers, LayoutTemplate, Plug, ShieldCheck, Telescope, Users, Workflow, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { demos } from '@/data/demos';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -15,6 +15,7 @@ import type { LucideIcon } from 'lucide-react';
 const DEMO_ICONS: Record<string, LucideIcon> = {
   'rag-pipeline': Database,
   'llm-router': GitBranch,
+  'governed-agent-platform': Workflow,
   'evaluation-showcase': ShieldCheck,
   'multi-agent': Users,
   'mcp-demo': Plug,
@@ -42,6 +43,7 @@ const CAPABILITY_FILTERS = [
 ] as const;
 
 const DEMO_CAPABILITIES: Record<string, string[]> = {
+  'governed-agent-platform': ['agentic', 'governance', 'enterprise'],
   'evaluation-showcase': ['governance', 'inference'],
   'rag-pipeline': ['inference', 'browser'],
   'llm-router': ['inference', 'enterprise'],
@@ -59,7 +61,8 @@ const DEMO_CAPABILITIES: Record<string, string[]> = {
 
 // Agent tiers — how mature / production-ready
 const AGENT_TIERS: Record<string, { tier: string; color: string }> = {
-  'evaluation-showcase': { tier: 'Flagship', color: 'bg-indigo-500/20 text-indigo-400' },
+  'governed-agent-platform': { tier: 'Flagship', color: 'bg-indigo-500/20 text-indigo-400' },
+  'evaluation-showcase': { tier: 'Evaluation', color: 'bg-indigo-500/20 text-indigo-400' },
   'enterprise-control-plane': { tier: 'Enterprise', color: 'bg-purple-500/20 text-purple-400' },
   'multi-agent': { tier: 'Agentic', color: 'bg-blue-500/20 text-blue-400' },
   'mcp-demo': { tier: 'Protocol', color: 'bg-blue-500/20 text-blue-400' },
@@ -231,12 +234,12 @@ export default function AgentMarketplacePage() {
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
             Signature Agent — Start Here
           </p>
-          <p className="text-sm font-semibold text-foreground mb-1">AI Evaluation Showcase</p>
+          <p className="text-sm font-semibold text-foreground mb-1">Governed Agent Platform</p>
           <p className="text-sm text-muted-foreground mb-4">
-            The flagship platform demo: offline eval suites, live drift monitoring, hallucination indicators, and CI-gated quality regression prevention. This is what production AI governance looks like.
+            The flagship: a real A2A v1.0 agent and MCP server behind a policy-enforcing tool gateway, with human approval, poisoned-data defense, tracing, and a trajectory-evaluation release gate.
           </p>
           <Link
-            href="/demos/evaluation-showcase"
+            href="/demos/governed-agent-platform"
             className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white"
             style={{ background: 'var(--accent-brand)' }}
           >

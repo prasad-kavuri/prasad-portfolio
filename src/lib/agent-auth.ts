@@ -38,7 +38,7 @@ function getSigningSecret(): string {
   if (process.env.VERCEL_ENV === 'production') throw new AgentAuthConfigError();
   return DEV_ONLY_SECRET;
 }
-export const DEMO_SCOPES = ['read:profile', 'call:mcp-tools'];
+export const DEMO_SCOPES = ['read:profile', 'call:mcp-tools', 'finance:sandbox'];
 
 const ANON_TTL_S = 3600;    // 1 hour
 const CLAIM_TTL_S = 600;    // 10 minutes

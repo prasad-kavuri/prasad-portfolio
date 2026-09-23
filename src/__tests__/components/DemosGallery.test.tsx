@@ -24,12 +24,23 @@ vi.mock('lucide-react', () => {
     ArrowRight: stub, Bot: stub, Building2: stub, CheckCircle2: stub,
     Cuboid: stub, Database: stub, GitBranch: stub,
     KeyRound: stub, Layers: stub, LayoutTemplate: stub, Plug: stub,
-    ShieldCheck: stub, Telescope: stub, Users: stub, Zap: stub,
+    ShieldCheck: stub, Telescope: stub, Users: stub, Workflow: stub, Zap: stub,
   };
 });
 
 vi.mock('@/data/demos', () => ({
   demos: [
+    {
+      id: 'governed-agent-platform',
+      title: 'Governed Agent Platform',
+      description: 'One enterprise task end to end on real A2A and MCP endpoints.',
+      businessImpact: 'Shows the controls that make enterprise agents deployable',
+      businessOutcome: 'Proves agent identity, tool authorization, approval, and release gating work together.',
+      href: '/demos/governed-agent-platform',
+      tags: ['A2A v1.0', 'MCP', 'Tool Gateway'],
+      status: 'live',
+      mobileConfig: { executionProfile: 'cloud-preferred', supportsOffline: false, fallbackMode: 'cloud', cloudFallbackRoute: '/api/a2a' },
+    },
     {
       id: 'evaluation-showcase',
       title: 'AI Evaluation Showcase',
@@ -204,10 +215,11 @@ describe('DemosGallery', () => {
     expect(screen.getByRole('button', { name: 'All Modules' }).getAttribute('aria-pressed')).toBe('false');
   });
 
-  it('renders the signature "evaluation-showcase" card with "Signature System" badge', () => {
+  it('renders the flagship "governed-agent-platform" card with "Flagship Platform" badge', () => {
     render(<DemosGallery />);
+    expect(screen.getByText('Governed Agent Platform')).toBeInTheDocument();
+    expect(screen.getByText('Flagship Platform')).toBeInTheDocument();
     expect(screen.getByText('AI Evaluation Showcase')).toBeInTheDocument();
-    expect(screen.getByText('Signature System')).toBeInTheDocument();
   });
 
   it('renders businessOutcome "What this proves" callout for evaluation-showcase', () => {
@@ -260,9 +272,9 @@ describe('DemosGallery', () => {
   it('fires trackEvent when a module card is clicked', () => {
     render(<DemosGallery />);
     const links = screen.getAllByRole('link');
-    // First link is the signature card (evaluation-showcase)
+    // First link is the flagship card (governed-agent-platform)
     fireEvent.click(links[0]);
-    expect(trackEvent).toHaveBeenCalledWith('demo_opened', { demo: 'evaluation-showcase' });
+    expect(trackEvent).toHaveBeenCalledWith('demo_opened', { demo: 'governed-agent-platform' });
   });
 
   it('renders bottom CTA links', () => {
@@ -274,7 +286,7 @@ describe('DemosGallery', () => {
 
   it('shows module count for current filter', () => {
     render(<DemosGallery />);
-    // With all 13 demos, should show "13 modules"
-    expect(screen.getByText('13 modules')).toBeInTheDocument();
+    // With all 14 demos, should show "14 modules"
+    expect(screen.getByText('14 modules')).toBeInTheDocument();
   });
 });

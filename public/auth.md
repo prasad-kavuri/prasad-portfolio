@@ -16,7 +16,8 @@ GET https://www.prasadkavuri.com/.well-known/oauth-protected-resource
 | Scope | Description |
 |-------|-------------|
 | `read:profile` | Read profile data. Required for the `get_achievements` tool (enforced per tool, default deny) |
-| `call:mcp-tools` | Execute MCP tool calls (`get_experience`, `search_skills`, `get_achievements`) |
+| `call:mcp-tools` | Execute MCP tool calls (`get_experience`, `search_skills`, `get_achievements`) on the MCP server at `/api/mcp` |
+| `finance:sandbox` | Run the synthetic payment-exception review skill on the A2A agent (`/api/a2a`; card at `/.well-known/agent-card.json`). Fictional data only |
 
 ## Step 1 — Register (Anonymous Start)
 
@@ -38,7 +39,7 @@ Response:
 {
   "credential": "<token>",
   "type": "anonymous",
-  "scopes": ["read:profile", "call:mcp-tools"],
+  "scopes": ["read:profile", "call:mcp-tools", "finance:sandbox"],
   "expires_in": 3600,
   "claim_token": "<claim_token>",
   "claim_endpoint": "https://www.prasadkavuri.com/api/agent-auth"
@@ -94,7 +95,7 @@ Response:
   "credential": "<claimed_token>",
   "type": "claimed",
   "email": "recruiter@example.com",
-  "scopes": ["read:profile", "call:mcp-tools"],
+  "scopes": ["read:profile", "call:mcp-tools", "finance:sandbox"],
   "expires_in": 86400
 }
 ```

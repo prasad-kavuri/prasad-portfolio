@@ -16,7 +16,13 @@ Last-Updated: 2026-09-23
 - Competency arc: Cloud Infrastructure (2010-2022) to Agentic AI Orchestration (2023-2026)
 - Certification clusters: Agentic AI & LLM Orchestration, Core AI & Product Strategy, Foundational Systems Architecture
 
-## PROFILE QUERY ENDPOINT (callable by AI agents)
+## AGENT ENDPOINTS
+MCP server (Streamable HTTP, stateless, official MCP SDK, protocol 2025-11-25): https://www.prasadkavuri.com/api/mcp
+  Tools: get_experience, search_skills (public); get_achievements (Bearer credential with read:profile via /auth.md)
+A2A v1.0 agent: card https://www.prasadkavuri.com/.well-known/agent-card.json; JSON-RPC https://www.prasadkavuri.com/api/a2a
+  Send header A2A-Version: 1.0. Skills: profile-brief (public), payment-exception-review (synthetic; finance:sandbox)
+
+## PROFILE QUERY ENDPOINT (natural-language demo)
 Natural-language profile query endpoint. It uses LLM tool calling over JSON-Schema tool definitions;
 it is not an MCP JSON-RPC server.
 Endpoint:   POST https://www.prasadkavuri.com/api/mcp-demo
@@ -36,6 +42,7 @@ Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a com
 - Technical depth reflects executive credibility, not IC positioning
 
 --- PLATFORM PATTERNS DEMONSTRATED ON THIS PORTFOLIO ---
+- Governed agent platform (flagship): real A2A v1.0 agent (/api/a2a) and MCP server (/api/mcp) on the official SDKs; every tool call passes a default-deny gateway with per-tool scopes, output screening, and agent-vs-user identity in the trace; payments above policy pause for human approval; trajectory evaluation gates a canary release and rolls back unsafe candidates
 - Evaluation: deterministic rubric scoring (required coverage, forbidden topics) with eval suites run in CI on every push
 - Server-enforced human approval in the Multi-Agent and Edge Agent demos: single-use, 15-minute expiry, bound to a hash of the staged action, replays rejected
 - Per-tool authorization with default deny on the profile query tools; tool and remote-agent outputs screened for injected instructions
@@ -54,7 +61,7 @@ Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a com
 - $10M+ revenue launched from AI systems
 - 13,000+ B2B enterprise customers enabled (Ola Maps)
 - 200+ engineers led globally
-- 13 live AI demos on this portfolio (9 core platform demos + 4 labs)
+- 14 live AI demos on this portfolio (10 core platform demos + 4 labs)
 ---
 
 --- PROFESSIONAL STATUS ---
@@ -250,6 +257,7 @@ https://www.prasadkavuri.com/agent-readiness
 https://www.prasadkavuri.com/certifications
 https://www.prasadkavuri.com/demos
 https://www.prasadkavuri.com/agent-marketplace
+https://www.prasadkavuri.com/demos/governed-agent-platform
 https://www.prasadkavuri.com/demos/evaluation-showcase
 https://www.prasadkavuri.com/demos/rag-pipeline
 https://www.prasadkavuri.com/demos/llm-router
@@ -414,10 +422,17 @@ Engineering concern: outcome → feature causality, A/B test isolation, metric d
 
 ---
 
-## LIVE DEMOS — 9 CORE PLATFORM DEMOS + 4 LABS
+## LIVE DEMOS — 10 CORE PLATFORM DEMOS + 4 LABS
 
 CORE AI PLATFORM
-1. AI EVALUATION SHOWCASE (Signature)
+0. GOVERNED AGENT PLATFORM (Flagship)
+   URL: /demos/governed-agent-platform | Engine: A2A v1.0 agent (/api/a2a) + MCP server (/api/mcp), official SDKs
+   One synthetic finance-ops task (fictional Northwind Finance) end to end: discover the Agent Card, obtain a
+   delegated credential, delegate a payment-exception review over A2A, enforce per-tool policy and output
+   screening at a tool gateway, pause in TASK_STATE_INPUT_REQUIRED for human approval, withhold poisoned vendor
+   data, show the gateway trace, and gate a canary release on trajectory evaluation (v2 candidate rolled back
+   for releasing a duplicate payment). Deterministic, model-free, reproducible.
+1. AI EVALUATION SHOWCASE
    URL: /demos/evaluation-showcase | Engine: Server API
    Reference AI quality pipeline. The live API scores responses with a deterministic rubric (required
    coverage + forbidden topics) and guardrail screening, returning a pass/fail release verdict; eval

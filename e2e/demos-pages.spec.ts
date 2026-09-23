@@ -67,8 +67,8 @@ test.describe('Demos index page — filter tabs', () => {
     await expect(allButton).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('signature demo card is present', async ({ page }) => {
-    await expect(page.getByText('AI Evaluation Showcase').first()).toBeVisible();
+  test('flagship demo card is present', async ({ page }) => {
+    await expect(page.getByText('Governed Agent Platform').first()).toBeVisible();
   });
 
   test('does not render a 404 or error boundary', async ({ page }) => {

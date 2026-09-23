@@ -2,7 +2,7 @@
 
 **prasadkavuri.com** · [LinkedIn](https://linkedin.com/in/pkavuri) · vbkpkavuri@gmail.com
 
-> Production AI platform portfolio: 9 core platform demos + 4 labs, all live. Built for VP / Head-level evaluation.
+> Production AI platform portfolio: 10 core platform demos + 4 labs, all live. Built for VP / Head-level evaluation.
 
 ---
 
@@ -13,7 +13,7 @@
 | Step | Link | Time |
 |------|------|------|
 | 1. Capability map | [prasadkavuri.com/capabilities](https://www.prasadkavuri.com/capabilities) | 30 sec |
-| 2. Flagship demo | [Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | 60 sec |
+| 2. Flagship demo | [Governed Agent Platform](https://www.prasadkavuri.com/demos/governed-agent-platform) | 90 sec |
 | 3. Governance controls | [prasadkavuri.com/governance](https://www.prasadkavuri.com/governance) | 45 sec |
 | 4. Book a conversation | [calendly.com/vbkpkavuri](https://calendly.com/vbkpkavuri) | 30 sec |
 
@@ -38,7 +38,7 @@ Chicago area & remote.
 
 ## Live Portfolio
 
-**[prasadkavuri.com](https://www.prasadkavuri.com)** — 13 live AI demos (9 core platform + 4 labs)
+**[prasadkavuri.com](https://www.prasadkavuri.com)** — 14 live AI demos (10 core platform + 4 labs)
 running on shared governance infrastructure: guardrails, observability,
 evaluation, and drift monitoring at the platform layer.
 
@@ -46,7 +46,8 @@ evaluation, and drift monitoring at the platform layer.
 
 | Demo | Category | Signal |
 |------|----------|--------|
-| [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Flagship | Rubric-scored evals, release gating, CI eval suites |
+| [Governed Agent Platform](https://www.prasadkavuri.com/demos/governed-agent-platform) | Flagship | A2A v1.0 agent + MCP server, tool gateway, approval, trajectory-eval release gate |
+| [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Evaluation | Rubric-scored evals, release gating, CI eval suites |
 | [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq agents, server-enforced release approval, audit trails |
 | [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Infrastructure | Transformers.js embeddings, in-browser retrieval, citations |
 | [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | FinOps | Multi-model routing, live cost/latency tradeoffs |
@@ -79,6 +80,8 @@ Full architecture: [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · Security: [SECUR
 | [/llms.txt](https://www.prasadkavuri.com/llms.txt) | Fast-parse AI agent identity |
 | [/llms-full.txt](https://www.prasadkavuri.com/llms-full.txt) | Full capability context |
 | [/ai-profile.json](https://www.prasadkavuri.com/ai-profile.json) | Structured identity |
+| [/.well-known/agent-card.json](https://www.prasadkavuri.com/.well-known/agent-card.json) | A2A v1.0 Agent Card |
+| [/api/mcp](https://www.prasadkavuri.com/api/mcp) | MCP server (Streamable HTTP) |
 | [/about](https://www.prasadkavuri.com/about) | Canonical entity profile + JSON-LD |
 
 ---

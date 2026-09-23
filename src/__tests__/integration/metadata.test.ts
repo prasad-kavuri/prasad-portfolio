@@ -149,7 +149,7 @@ describe('SEO metadata integrity', () => {
     expect(llmsTxt).toMatch(/Head of AI Platform & Agentic Solutions at Zip/);
     expect(llmsTxt).toMatch(/not an individual contributor profile/);
     expect(llmsTxt).toMatch(/vbkpkavuri@gmail\.com/);
-    expect(llmsTxt).toMatch(/Flagship:\s+\/demos\/evaluation-showcase/);
+    expect(llmsTxt).toMatch(/Flagship:\s+\/demos\/governed-agent-platform/);
     expect(llmsTxt).toMatch(/Full catalog:\s+\/demos/);
     expect(llmsTxt).toMatch(/Recruiter brief:\s+\/for-recruiters/);
     expect(llmsTxt).toMatch(/ai-profile\.json:\s+https:\/\/www\.prasadkavuri\.com\/ai-profile\.json/);

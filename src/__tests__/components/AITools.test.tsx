@@ -10,6 +10,16 @@ vi.mock('next/link', () => ({
 vi.mock('@/data/demos', () => ({
   demos: [
     {
+      id: 'governed-agent-platform',
+      emoji: 'Workflow',
+      title: 'Governed Agent Platform',
+      description: 'One enterprise task end to end on real A2A and MCP endpoints.',
+      businessImpact: 'Shows the controls that make enterprise agents deployable',
+      href: '/demos/governed-agent-platform',
+      tags: ['A2A v1.0', 'MCP'],
+      status: 'live',
+    },
+    {
       id: 'rag-pipeline',
       emoji: 'Database',
       title: 'RAG Pipeline',
@@ -168,7 +178,8 @@ describe('AITools', () => {
     render(React.createElement(AITools));
     expect(screen.getByText('How AI Quality Is Measured')).toBeInTheDocument();
     expect(screen.getByText('Local-First AI Demos')).toBeInTheDocument();
-    expect(screen.getByText('Signature Quality System')).toBeInTheDocument();
+    expect(screen.getByText('Flagship Platform')).toBeInTheDocument();
+    expect(screen.getAllByText('Governed Agent Platform').length).toBeGreaterThan(0);
     expect(screen.getAllByText('AI Evaluation Showcase').length).toBeGreaterThan(0);
   });
 

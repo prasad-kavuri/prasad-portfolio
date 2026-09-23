@@ -44,9 +44,9 @@ describe('sitemap()', () => {
     expect(urls).toContain('https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json');
   });
 
-  it('evaluation-showcase entry has priority 0.9', () => {
+  it('flagship governed-agent-platform entry has priority 0.9', () => {
     const result = sitemap();
-    const entry = result.find((e) => e.url.includes('evaluation-showcase'));
+    const entry = result.find((e) => e.url.includes('governed-agent-platform'));
     expect(entry).toBeDefined();
     expect(entry?.priority).toBe(0.9);
   });

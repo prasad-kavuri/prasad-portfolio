@@ -18,8 +18,8 @@ One of the 15 stages in the AIArchitecture platform execution flow (User Intent 
 _Avoid_: "step", "stage", "node"
 
 **signature demo**:
-The `evaluation-showcase` demo — always rendered as a featured card at the top of DemosGallery, with a branded border and "Signature System" badge. One and only one signature demo exists.
-_Avoid_: "flagship demo", "featured demo" (though "flagship" appears in copy)
+The `governed-agent-platform` demo (SPEC-0021) — always rendered as a featured card at the top of DemosGallery, with a branded border and "Flagship Platform" badge. One and only one signature demo exists (`SIGNATURE_DEMO_ID`). "Flagship" is the user-facing word for it.
+_Avoid_: "featured demo"
 
 **module card**:
 A demo card in DemosGallery. Shows icon, title, exec-model badge, Live status, businessImpact (accent color), description, optional "What this proves" callout, and tech tags.
@@ -62,7 +62,7 @@ The `BrowserAIWarning` component — shown on mobile/low-memory devices when a b
 _Avoid_: "mobile warning", "WASM fallback banner"
 
 **recruiter path**:
-The intended recruiter review flow: `/for-recruiters` → `/recruiter-dashboard` → `/capabilities` → `/governance` → `/demos/evaluation-showcase` → book call.
+The intended recruiter review flow: `/for-recruiters` → `/recruiter-dashboard` → `/capabilities` → `/governance` → `/demos/governed-agent-platform` → book call.
 _Avoid_: "recruiter journey", "evaluation path"
 
 **demo group**:
@@ -86,7 +86,7 @@ _Avoid_: "safety check", "input check"
 - A **browser demo** must use the **useBrowserAI** hook and the **browser AI warning** component.
 - A **server demo** must call `enforceRateLimit`, `enforceGuardrails`, `startTimer`, and `logAPIEvent` in its route handler.
 - Every demo has exactly one **exec model** badge and belongs to exactly one **demo group**.
-- The **signature demo** (`evaluation-showcase`) always renders outside any **demo group** grid, above all groups.
+- The **signature demo** (`governed-agent-platform`) always renders outside any **demo group** grid, above all groups.
 - A **featured role** always has an **outcome narrative**; a **compact strip** role never does.
 - **Profile facts** are the single source of truth — never hardcode a count or metric that has a matching `PORTFOLIO_FACTS` key.
 
@@ -107,7 +107,7 @@ The `/governance` special page and its live `/api/enterprise-sim` feed — shows
 _Avoid_: "governance page" (use this term but with the understanding it is a full demo, not just marketing)
 
 **evaluation-demo**:
-The `/demos/evaluation-showcase` signature demo — LLM-as-Judge eval suite, regression CI gate, scorecard UI. This is the signature demo.
+The `/demos/evaluation-showcase` demo — LLM-as-Judge eval suite, regression CI gate, scorecard UI. Core platform demo (was the signature demo before SPEC-0021).
 _Avoid_: "eval demo", "judging demo"
 
 **finops-demo**:
@@ -186,7 +186,7 @@ _Avoid_: using it as if it is currently live (it is not)
 - A **browser demo** must use the **useBrowserAI** hook and the **browser AI warning** component.
 - A **server demo** must call `enforceRateLimit`, `enforceGuardrails`, `startTimer`, and `logAPIEvent` in its route handler.
 - Every demo has exactly one **exec model** badge and belongs to exactly one **demo group**.
-- The **signature demo** (`evaluation-showcase`) always renders outside any **demo group** grid, above all groups.
+- The **signature demo** (`governed-agent-platform`) always renders outside any **demo group** grid, above all groups.
 - A **featured role** always has an **outcome narrative**; a **compact strip** role never does.
 - **Profile facts** are the single source of truth — never hardcode a count or metric that has a matching `PORTFOLIO_FACTS` key.
 - **zip**, **krutrim**, **ola**, and **here** map directly to the `OUTCOMES` record keys in `Experience.tsx`.

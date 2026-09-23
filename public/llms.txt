@@ -40,7 +40,7 @@ Head of Infrastructure and Services, HERE Technologies (May 2023 - September 202
 - 13 languages supported across Indic + global AI systems
 - 13,000+ B2B enterprise customers enabled
 - 50% latency reduction and 40% cost savings at Krutrim (multimodal agentic architecture + intelligent model routing)
-- 13 live AI demos on this portfolio (9 core platform + 4 labs)
+- 14 live AI demos on this portfolio (10 core platform + 4 labs)
 
 ## PLATFORM ARCHITECTURE
 15-layer AI platform execution flow documented on portfolio homepage:
@@ -56,13 +56,14 @@ URL: https://www.prasadkavuri.com/#ai-architecture
 - EMEA: Led global engineering teams at HERE Technologies (Chicago + Europe)
 - Global teams: 200+ engineers across North America, India, and Europe
 
-## DEMOS (13 live — 9 core platform + 4 labs)
-Flagship:      /demos/evaluation-showcase  — rubric-scored evals, guardrails, pass/fail release gating, CI eval suites
-Agent catalog: /agent-marketplace          — all 13 demos filterable by capability
+## DEMOS (14 live — 10 core platform + 4 labs)
+Flagship:      /demos/governed-agent-platform — A2A agent + MCP server, tool gateway, human approval, trajectory-eval release gate
+Agent catalog: /agent-marketplace          — all 14 demos filterable by capability
 Full catalog:  /demos
 
 Core AI Platform:
-- /demos/evaluation-showcase   — Deterministic rubric scoring + release gating (signature)
+- /demos/governed-agent-platform — Flagship: one governed agent task end to end on real A2A v1.0 and MCP endpoints
+- /demos/evaluation-showcase   — Deterministic rubric scoring + release gating
 - /demos/rag-pipeline          — In-browser RAG with Transformers.js embeddings and citations
 - /demos/llm-router            — Multi-model routing with live cost/latency trade-offs
 
@@ -102,7 +103,14 @@ Full context:      /llms-full.txt
 - /perspectives/agentic-ai-changes-how-work-gets-done
 - /perspectives/real-work-in-production-ai
 
-## PROFILE QUERY ENDPOINT (callable by AI agents)
+## AGENT ENDPOINTS (callable by AI agents)
+MCP server:  https://www.prasadkavuri.com/api/mcp — Streamable HTTP, stateless, official MCP SDK (protocol 2025-11-25)
+             Tools: get_experience, search_skills (public); get_achievements (Bearer credential with read:profile)
+A2A agent:   card https://www.prasadkavuri.com/.well-known/agent-card.json (A2A v1.0), JSON-RPC https://www.prasadkavuri.com/api/a2a
+             Skills: profile-brief (public); payment-exception-review (synthetic, requires finance:sandbox; pauses for human approval)
+Credentials: https://www.prasadkavuri.com/auth.md
+
+## PROFILE QUERY ENDPOINT (natural-language demo)
 Endpoint:   POST https://www.prasadkavuri.com/api/mcp-demo
 Protocol:   JSON { "query": "..." } — LLM tool calling over JSON-Schema tools (not an MCP JSON-RPC server); no auth required, rate limited
 Tools available:
@@ -112,6 +120,8 @@ Tools available:
 Usage: POST { "query": "What is Prasad's current role and experience with agentic AI?" }
 
 ## WHAT'S NEW (SEPTEMBER 2026)
+- Flagship: Governed Agent Platform (/demos/governed-agent-platform) — real A2A v1.0 agent, MCP server, tool gateway, approval, trajectory-eval release gate
+- Server-enforced human approval, per-tool authorization, tool-output screening, daily spend caps
 - Demo catalog consolidated to 9 core platform demos + 4 labs; every claim aligned with the implementation
 - Retired: Vector Search (folded into RAG Pipeline), Multimodal Assistant, Native Browser AI Skill, AI Hiring Intelligence
 - Constrained Generative UI demo (/demos/generative-ui)
@@ -122,6 +132,8 @@ Usage: POST { "query": "What is Prasad's current role and experience with agenti
 entity.json:            https://www.prasadkavuri.com/entity.json
 ai-profile.json:        https://www.prasadkavuri.com/ai-profile.json
 agent-manifest:         https://www.prasadkavuri.com/.well-known/ai-agent-manifest.json
+agent-card (A2A):       https://www.prasadkavuri.com/.well-known/agent-card.json
+mcp-server:             https://www.prasadkavuri.com/api/mcp
 context-api:            https://www.prasadkavuri.com/api/context
 full-context:           https://www.prasadkavuri.com/llms-full.txt
 auth.md:                https://www.prasadkavuri.com/auth.md  (agent registration/credentials — open protocol, see github.com/workos/auth.md)

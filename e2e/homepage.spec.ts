@@ -22,7 +22,7 @@ test.describe('Homepage', () => {
   test('AI Platform Demos CTA navigates to agent marketplace', async ({ page }) => {
     await page.getByRole('link', { name: /Explore AI Platform Demos/i }).click();
     await expect(page).toHaveURL(/\/agent-marketplace\/?$/);
-    await expect(page.getByRole('heading', { name: /13 Production AI Agents/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /14 Production AI Agents/i })).toBeVisible();
   });
 
   test('all 3 demo group headers are visible', async ({ page }) => {
@@ -33,8 +33,9 @@ test.describe('Homepage', () => {
     await expect(page.getByText('Labs', { exact: true }).first()).toBeVisible();
   });
 
-  test('all 13 demo cards are present', async ({ page }) => {
+  test('all 14 demo cards are present', async ({ page }) => {
     // Use first() because card titles may appear in multiple elements (heading + aria-label etc.)
+    await expect(page.getByText('Governed Agent Platform').first()).toBeVisible();
     await expect(page.getByText('RAG Pipeline').first()).toBeVisible();
     await expect(page.getByText('LLM Router').first()).toBeVisible();
     await expect(page.getByText('Multi-Agent System').first()).toBeVisible();

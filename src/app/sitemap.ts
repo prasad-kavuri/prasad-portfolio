@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { demos } from '@/data/demos';
 import { SITE_URL } from '@/data/site-config';
 
-const FLAGSHIP_DEMO_ID = 'evaluation-showcase';
+const FLAGSHIP_DEMO_ID = 'governed-agent-platform';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

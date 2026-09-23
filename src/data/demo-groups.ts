@@ -11,14 +11,14 @@ export type DemoGroup = {
   ids: readonly string[];
 };
 
-export const SIGNATURE_DEMO_ID = 'evaluation-showcase';
+export const SIGNATURE_DEMO_ID = 'governed-agent-platform';
 
 export const DEMO_GROUPS: readonly DemoGroup[] = [
   {
     id: 'core',
     label: 'Core AI Platform',
-    description: 'Evaluation, grounded retrieval, and model routing economics',
-    ids: ['evaluation-showcase', 'rag-pipeline', 'llm-router'],
+    description: 'The flagship agent platform, evaluation, grounded retrieval, and model routing economics',
+    ids: ['governed-agent-platform', 'evaluation-showcase', 'rag-pipeline', 'llm-router'],
   },
   {
     id: 'agentic',

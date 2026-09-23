@@ -40,10 +40,10 @@ describe('/agent page', () => {
     expect(link).toHaveAttribute('href', '/ai-profile.json');
   });
 
-  it('contains link to /demos/evaluation-showcase', () => {
+  it('contains link to the flagship /demos/governed-agent-platform', () => {
     render(React.createElement(AgentPage));
-    const link = screen.getByRole('link', { name: /evaluation-showcase/i });
+    const link = screen.getByRole('link', { name: /governed-agent-platform/i });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', '/demos/evaluation-showcase');
+    expect(link).toHaveAttribute('href', '/demos/governed-agent-platform');
   });
 });

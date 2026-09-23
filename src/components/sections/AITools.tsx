@@ -7,7 +7,7 @@ import { demos } from "@/data/demos";
 import { DEMO_GROUPS, SIGNATURE_DEMO_ID } from "@/data/demo-groups";
 import { PORTFOLIO_FACTS } from "@/data/site-config";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Bot, Building2, Cuboid, Database, GitBranch, KeyRound, Layers, LayoutTemplate, Plug, ShieldCheck, Telescope, Users, Zap } from "lucide-react";
+import { ArrowRight, Bot, Building2, Cuboid, Database, GitBranch, KeyRound, Layers, LayoutTemplate, Plug, ShieldCheck, Telescope, Users, Workflow, Zap } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 const statusLabel: Record<string, string> = {
@@ -25,6 +25,7 @@ const statusVariant: Record<string, "default" | "secondary" | "outline"> = {
 const DESKTOP_ONLY = ["quantization", "world-generation"];
 
 const DEMO_ICONS: Record<string, LucideIcon> = {
+  "governed-agent-platform": Workflow,
   "evaluation-showcase": ShieldCheck,
   "rag-pipeline": Database,
   "llm-router": GitBranch,
@@ -111,7 +112,7 @@ export function AITools() {
                   <div>
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                       <span className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400">
-                        Signature Quality System
+                        Flagship Platform
                       </span>
                       <span className="text-xs font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
                         Flagship Demo
@@ -125,9 +126,7 @@ export function AITools() {
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground mb-3 max-w-2xl">
-                {signatureDemo.description} Demonstrates the quality loop recruiters and CTOs look for:
-                offline eval coverage, online drift monitoring, hallucination indicators, and CI-ready
-                regression gating.
+                {signatureDemo.description}
               </p>
               <div className="flex flex-wrap gap-2">
                 {signatureDemo.tags.map(tag => (
@@ -135,12 +134,6 @@ export function AITools() {
                     {tag}
                   </span>
                 ))}
-                <span className="text-xs px-2 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400">
-                  Drift Monitoring
-                </span>
-                <span className="text-xs px-2 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400">
-                  Quality Gates
-                </span>
               </div>
             </div>
           </Link>

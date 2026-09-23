@@ -73,13 +73,10 @@ describe('Hero', () => {
     expect(screen.getByText(/Most AI programs fail in production/i)).toBeDefined();
   });
 
-  it('surfaces signature-system quality callout and evaluation showcase link', () => {
+  it('surfaces the flagship governed agent platform callout', () => {
     render(<Hero />);
-    expect(screen.getByText(/Signature System: AI Evaluation Showcase/i)).toBeDefined();
-    expect(screen.getByText(/Why this matters: quality regressions are surfaced before release/i)).toBeDefined();
-    const links = screen.getAllByRole('link', { name: /Explore Signature System/i });
-    expect(links.length).toBeGreaterThan(0);
-    expect(links[0].getAttribute('href')).toBe('/demos/evaluation-showcase');
+    expect(screen.getByText(/Flagship: Governed Agent Platform/i)).toBeDefined();
+    expect(screen.getByText(/Why this matters: these are the controls that decide whether enterprise agents can be deployed/i)).toBeDefined();
   });
 
   it('renders AI Platform Demos CTA linking to agent marketplace', () => {
@@ -88,11 +85,11 @@ describe('Hero', () => {
     expect(link.getAttribute('href')).toBe('/agent-marketplace');
   });
 
-  it('renders Explore Signature System CTA linking to evaluation showcase', () => {
+  it('renders Run the flagship CTA linking to the governed agent platform', () => {
     render(<Hero />);
-    const links = screen.getAllByRole('link', { name: /Explore Signature System/i });
+    const links = screen.getAllByRole('link', { name: /Run the flagship/i });
     expect(links.length).toBeGreaterThan(0);
-    expect(links[0].getAttribute('href')).toBe('/demos/evaluation-showcase');
+    expect(links[0].getAttribute('href')).toBe('/demos/governed-agent-platform');
   });
 
   it('renders recruiter brief CTA linking to recruiter dashboard', () => {

@@ -32,7 +32,7 @@
 | Latency improvement | **50%** (plus 40% cost savings) at Krutrim via multimodal agentic architecture and intelligent model routing |
 | B2B enterprise customers enabled | **13,000+** at Ola Maps |
 | Engineers led | **200+** across Krutrim, Ola, HERE (US · Europe · India) |
-| Live demos on this portfolio | **13** (9 core platform + 4 labs) |
+| Live demos on this portfolio | **14** (10 core platform + 4 labs) |
 | Years of experience | **20+** |
 
 ---

@@ -263,8 +263,8 @@ export default function ForRecruitersPage() {
               number="2"
               heading="See the flagship demo"
               time="60 sec"
-              description="Watch the AI quality and governance pipeline in action — eval gating, drift detection, HITL checkpoint"
-              href="/demos/evaluation-showcase"
+              description="Run one governed agent task end to end — A2A delegation, gateway policy, human approval, trajectory-eval release gate"
+              href="/demos/governed-agent-platform"
             />
             <StepCard
               number="3"

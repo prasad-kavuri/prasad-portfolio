@@ -74,10 +74,11 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 
 ---
 
-## Portfolio Demos (13 Live Systems)
+## Portfolio Demos (14 Live Systems)
 
 | Demo | What It Shows | Engine |
 |------|---------------|--------|
+| Governed Agent Platform | Flagship: A2A v1.0 agent + MCP server, tool gateway, human approval, trajectory-eval release gate | A2A + MCP |
 | AI Evaluation Showcase | Rubric-scored evals, guardrail screening, release gating, CI eval suites | Server |
 | RAG Pipeline | In-browser embedding retrieval with citations | Browser WASM |
 | LLM Router | Model routing with live cost/latency trade-offs | Groq API |
@@ -108,4 +109,4 @@ All demos: https://www.prasadkavuri.com/demos
 **Seniority**: Head level (strategic + hands-on technical)
 **Geography**: Naperville, IL (Greater Chicago Area)
 **Differentiator**: Production governance, FinOps discipline, and agentic orchestration at enterprise scale
-**Active**: 13 live AI demos (9 core platform + 4 labs) with full source code available at https://www.prasadkavuri.com
+**Active**: 14 live AI demos (10 core platform + 4 labs) with full source code available at https://www.prasadkavuri.com

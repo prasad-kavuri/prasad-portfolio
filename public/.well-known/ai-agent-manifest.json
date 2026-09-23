@@ -15,7 +15,7 @@
   "description": [
     "Head of AI Platform & Agentic Solutions at Zip",
     "20+ years experience",
-    "13 live AI demos (9 core platform + 4 labs)"
+    "14 live AI demos (10 core platform + 4 labs)"
   ],
   "core_capabilities": [
     "Agentic AI Orchestration",
@@ -51,7 +51,7 @@
     "revenue_impact": "$10M+",
     "b2b_customers": "13000+",
     "engineers_led": "200+",
-    "production_ai_systems": 13,
+    "production_ai_systems": 14,
     "years_experience": 20,
     "call_center_seats_automated": "300",
     "pois_indexed": "35M+",
@@ -178,7 +178,7 @@
     "70pct-cost-reduction",
     "200-engineer-org"
   ],
-  "verified_demos": 13,
+  "verified_demos": 14,
   "reasoning": {
     "philosophy": [
       "AI FinOps",
@@ -226,6 +226,10 @@
     }
   },
   "demos": [
+    {
+      "name": "Governed Agent Platform",
+      "url": "https://www.prasadkavuri.com/demos/governed-agent-platform"
+    },
     {
       "name": "RAG Pipeline",
       "url": "https://www.prasadkavuri.com/demos/rag-pipeline"
@@ -278,5 +282,11 @@
       "name": "Constrained Generative UI",
       "url": "https://www.prasadkavuri.com/demos/generative-ui"
     }
-  ]
+  ],
+  "agent_endpoints": {
+    "mcp_server": "https://www.prasadkavuri.com/api/mcp",
+    "a2a_agent_card": "https://www.prasadkavuri.com/.well-known/agent-card.json",
+    "a2a_jsonrpc": "https://www.prasadkavuri.com/api/a2a",
+    "credentials": "https://www.prasadkavuri.com/auth.md"
+  }
 }

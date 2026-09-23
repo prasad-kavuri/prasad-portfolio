@@ -57,7 +57,7 @@ function buildPayload() {
         `${BASE_URL}/demos`,
         `${BASE_URL}/governance`,
       ],
-      flagship_demo: `${BASE_URL}/demos/evaluation-showcase`,
+      flagship_demo: `${BASE_URL}/demos/governed-agent-platform`,
       machine_readable_files: [
         `${BASE_URL}/llms.txt`,
         `${BASE_URL}/entity.json`,

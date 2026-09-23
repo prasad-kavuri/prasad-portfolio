@@ -34,7 +34,8 @@ const SKILL_AREAS = [
 ] as const;
 
 const EVIDENCE_TRAIL = [
-  { label: 'AI Evaluation Showcase', desc: 'Offline eval suites, drift detection, hallucination indicators, CI gating', href: '/demos/evaluation-showcase', tag: 'Flagship' },
+  { label: 'Governed Agent Platform', desc: 'A2A agent + MCP server, gateway policy, human approval, trajectory-eval release gate', href: '/demos/governed-agent-platform', tag: 'Flagship' },
+  { label: 'AI Evaluation Showcase', desc: 'Rubric scoring, guardrail screening, CI eval suites', href: '/demos/evaluation-showcase', tag: 'Evaluation' },
   { label: 'Enterprise Control Plane', desc: 'RBAC, group spend limits, token analytics, observability feed', href: '/demos/enterprise-control-plane', tag: 'Governance' },
   { label: 'Multi-Agent System', desc: 'Analyzer → Researcher → Strategist on Groq, human review step, audit trail', href: '/demos/multi-agent', tag: 'Agentic' },
   { label: 'MCP Tool Demo', desc: 'Model Context Protocol — real tool discovery and execution trace', href: '/demos/mcp-demo', tag: 'Protocol' },
@@ -319,7 +320,7 @@ export default function RecruiterDashboardPage() {
             </p>
             {[
               { n: '1', title: 'Capabilities map', time: '30s', desc: 'Leadership-level platform view. One page. Start here.', href: '/capabilities', external: false },
-              { n: '2', title: 'AI Evaluation Showcase', time: '60s', desc: 'The flagship: eval gating, drift detection, HITL, real LLM quality loop.', href: '/demos/evaluation-showcase', external: false },
+              { n: '2', title: 'Governed Agent Platform', time: '90s', desc: 'The flagship: one governed agent task end to end — delegation, gateway policy, approval, trace, evaluation-gated release.', href: '/demos/governed-agent-platform', external: false },
               { n: '3', title: 'Enterprise AI Operating Model', time: '45s', desc: 'Board-facing governance, budget discipline, ROI signals.', href: '/enterprise-ai-operating-model', external: false },
               { n: '4', title: 'Live Governance Dashboard', time: '30s', desc: 'Real telemetry: safety, cost controls, audit trail.', href: '/governance', external: false },
               { n: '5', title: 'Book a 30-minute call', time: '1 min', desc: "I'll walk you through any part of the platform on a live call.", href: CALENDLY_URLS.recruiters, external: true },

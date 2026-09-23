@@ -24,6 +24,24 @@ export type Demo = {
 
 export const demos: Demo[] = [
   {
+    id: "governed-agent-platform",
+    emoji: "Workflow",
+    title: "Governed Agent Platform",
+    description: "One synthetic finance-ops task end to end on real protocol endpoints: an A2A v1.0 agent, an MCP server, a policy-enforcing tool gateway, human approval, poisoned-data defense, a gateway trace, and a release gate driven by trajectory evaluation.",
+    businessImpact: "Shows the controls that make enterprise agents deployable: identity, per-tool authorization, approval, traceability, and evaluation-gated releases",
+    businessOutcome: "A working reference for how an enterprise agent platform discovers, authorizes, supervises, evaluates, and safely releases agents — not a slide.",
+    href: "/demos/governed-agent-platform",
+    tags: ["A2A v1.0", "MCP", "Tool Gateway", "Human Approval", "Trajectory Eval", "Canary Rollback"],
+    skills: ['hitl', 'guardrails', 'observability', 'eval-engine'],
+    status: "live",
+    mobileConfig: {
+      executionProfile: 'cloud-preferred',
+      supportsOffline: false,
+      fallbackMode: 'cloud',
+      cloudFallbackRoute: 'native',
+    },
+  },
+  {
     id: "rag-pipeline",
     emoji: "Database",
     title: "RAG Pipeline",

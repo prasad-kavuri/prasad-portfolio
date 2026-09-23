@@ -10,10 +10,11 @@ This document describes the real system architecture implemented in this reposit
 |---|---|---|
 | UI Layer | `src/app/page.tsx`, `src/components/sections/*`, `src/data/demos.ts` | Presents the portfolio, architecture section, and 13 live demos (9 core platform + 4 labs) |
 | Skills Layer | `src/data/skills.ts`, `src/app/skills/` | Reusable capability modules (guardrails, observability, eval, drift, HITL, planning) wired to demos |
-| Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance |
+| Gateway Layer | `src/lib/registry.ts`, `src/app/demos/enterprise-control-plane` | Unified Tool Gateway for discovery, execution, and capability governance; `src/lib/tool-gateway.ts` enforces default-deny per-tool scopes, approval refs, and output screening for the flagship |
 | API and Reliability Layer | `src/app/api/*/route.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`, `src/lib/observability.ts` | Standardizes validation, rate limits, tracing, error responses, and structured logs |
+| Agent Protocol Layer | `/api/a2a` (A2A v1.0 JSON-RPC via `@a2a-js/sdk`), `/api/mcp` (MCP 2025-11-25 Streamable HTTP via `@modelcontextprotocol/sdk`), `public/.well-known/agent-card.json`, `src/lib/a2a/*` | Standards-based agent interoperability: discovery via Agent Card, bearer-scoped identity, durable task state |
 | Agentic Orchestration Layer | `/api/multi-agent`, `/api/mcp-demo`, `src/app/demos/multi-agent`, `src/app/demos/mcp-demo` | Demonstrates agent coordination, tool discovery, specialist roles, and guarded execution patterns |
-| AI Services Layer | LLM Router, RAG, AI Portfolio Assistant, Resume Generator, Multimodal, Quantization | Hosts the live AI capabilities shown on the site |
+| AI Services Layer | LLM Router, RAG, AI Portfolio Assistant, Quantization, STORM Research | Hosts the live AI capabilities shown on the site |
 | Data Layer | `src/data/profile.json`, `src/data/demos.ts`, browser embeddings, retrieved context, static public assets | Supplies profile data, demo metadata, embeddings, and knowledge context |
 | External Services | Groq, Hugging Face models/Spaces, Upstash Redis, Vercel Analytics and Speed Insights | Provides hosted inference, agent backends, distributed rate limiting, and telemetry |
 
@@ -55,6 +56,9 @@ The current API surface is:
 | `/api/mcp-demo` | MCP-style tool calling | Lets Groq select and execute profile tools via a JSON-RPC-like tool schema |
 | `/api/generative-ui` | Constrained generative UI | Validates model output against a fixed component catalog before returning it (no markup ever emitted) |
 | `/api/storm-research` | Multi-perspective research synthesis | Streams STORM-style perspectives, questions, research notes, and executive brief synthesis |
+| `/api/a2a` | A2A v1.0 agent endpoint | Official `@a2a-js/sdk` JSON-RPC handler (`SendMessage`, `GetTask`), `A2A-Version: 1.0` required, durable task store, human-approval via INPUT_REQUIRED |
+| `/api/mcp` | MCP server (Streamable HTTP) | Official `@modelcontextprotocol/sdk`, stateless JSON responses, zod-typed profile tools routed through the tool gateway, bearer scopes per tool |
+| `/api/flagship/release-gate` | Trajectory-eval release gate | Scores agent versions on the golden scenario set and returns promote/rollback |
 | `/api/resume-download` | Resume redirect | Rate-limited redirect to the public PDF asset |
 
 All routes use the shared helpers in `src/lib/api.ts` for request context, errors, rate-limit headers, and response finalization.
@@ -76,6 +80,7 @@ The AI services layer contains both server-side and browser-side demos:
 
 | Demo | Path | Execution mode |
 |---|---|---|
+| Governed Agent Platform (flagship) | `/demos/governed-agent-platform` | A2A + MCP endpoints, tool gateway, human approval, trajectory eval, canary rollback |
 | RAG Pipeline | `/demos/rag-pipeline` | Browser embeddings and retrieval |
 | LLM Router | `/demos/llm-router` | Server route calling Groq |
 | AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |

@@ -249,7 +249,7 @@ export default function AgentPage() {
             <EntryLink href="/" label="/" note="Portfolio home" />
             <EntryLink href="/for-recruiters" label="/for-recruiters" note="Executive summary & resume" />
             <EntryLink href="/demos" label="/demos" note={`All ${PORTFOLIO_FACTS.productionDemoCount} AI demos`} />
-            <EntryLink href="/demos/evaluation-showcase" label="/demos/evaluation-showcase" note="Flagship demo" />
+            <EntryLink href="/demos/governed-agent-platform" label="/demos/governed-agent-platform" note="Flagship demo" />
             <EntryLink href="/governance" label="/governance" note="AI governance & HITL patterns" />
           </div>
 

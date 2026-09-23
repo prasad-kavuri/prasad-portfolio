@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  enforceDailyBudget,
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
@@ -85,6 +86,9 @@ export async function POST(req: NextRequest) {
     return finalizeApiResponse(jsonError('AI request limit exceeded. Please shorten the prompt or try again shortly.', 429, { context }), context);
   }
   const effectiveModel = MODELS.find(m => m.id === costControl.fallbackModel) ?? model;
+
+  const overBudget = await enforceDailyBudget(context);
+  if (overBudget) return overBudget;
 
   if (!process.env.GROQ_API_KEY) {
     captureAndLogApiError('api.configuration_error', new Error('Missing GROQ_API_KEY'), { route: ROUTE, traceId: context.traceId, status: 500 });

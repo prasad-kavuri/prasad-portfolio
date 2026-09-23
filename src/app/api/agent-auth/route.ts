@@ -9,8 +9,10 @@ import {
   ANON_TTL_S,
   CLAIM_TTL_S,
   CLAIMED_TTL_S,
+  isAgentAuthConfigured,
 } from '@/lib/agent-auth';
 import {
+  captureAndLogApiError,
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
@@ -29,6 +31,11 @@ export async function POST(request: NextRequest) {
   const context = createRequestContext(request, ROUTE);
   const rateLimited = await enforceRateLimit(request, 'anonymous', { context });
   if (rateLimited) return rateLimited;
+
+  if (!isAgentAuthConfigured()) {
+    captureAndLogApiError('api.configuration_error', new Error('Missing AGENT_AUTH_SECRET'), { route: ROUTE, traceId: context.traceId, status: 503 });
+    return finalizeApiResponse(jsonError('Agent auth is not configured', 503, { context }), context);
+  }
 
   const elapsed = startTimer();
 

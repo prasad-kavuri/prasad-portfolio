@@ -8,6 +8,7 @@ import {
   type UiSpec,
 } from '@/lib/generativeUiCatalog';
 import {
+  enforceDailyBudget,
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
@@ -106,6 +107,9 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'disallowed_characters', status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
+
+    const overBudget = await enforceDailyBudget(context);
+    if (overBudget) return overBudget;
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {

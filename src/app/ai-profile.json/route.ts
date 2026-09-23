@@ -72,7 +72,7 @@ function buildPayload() {
         tools: [
           'get_experience(company)',
           'search_skills(category)',
-          'get_achievements(company?)',
+          'get_achievements(company?) — requires read:profile credential',
         ],
         example_query: "What is Prasad's current role and experience with multi-agent systems and LLM cost optimization?",
       },

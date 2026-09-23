@@ -15,7 +15,7 @@ GET https://www.prasadkavuri.com/.well-known/oauth-protected-resource
 
 | Scope | Description |
 |-------|-------------|
-| `read:profile` | Read profile, experience, skills, and achievements data |
+| `read:profile` | Read profile data. Required for the `get_achievements` tool (enforced per tool, default deny) |
 | `call:mcp-tools` | Execute MCP tool calls (`get_experience`, `search_skills`, `get_achievements`) |
 
 ## Step 1 — Register (Anonymous Start)

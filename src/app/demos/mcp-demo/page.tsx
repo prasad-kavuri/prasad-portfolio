@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, CheckCircle2, ChevronRight, Loader2, Network, Plug, Server, Terminal, Zap } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronRight, Loader2, Lock, Network, Plug, Server, ShieldAlert, Terminal, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,9 +10,12 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 interface ToolCall {
   tool: string;
-  args: Record<string, unknown>;
+  args?: Record<string, unknown>;
   result: string;
   duration_ms: number;
+  /** Server-side authorization / screening outcome (SPEC-0020). */
+  decision?: 'allowed' | 'denied' | 'blocked';
+  reason?: string;
 }
 
 interface MCPResponse {
@@ -108,8 +111,19 @@ function ToolCard({ call, expanded, onToggle }: {
         onClick={onToggle}
         className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/30 transition-colors"
       >
-        <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+        {call.decision === 'denied' ? (
+          <Lock className="w-4 h-4 text-amber-500 shrink-0" aria-label="denied" />
+        ) : call.decision === 'blocked' ? (
+          <ShieldAlert className="w-4 h-4 text-red-500 shrink-0" aria-label="blocked" />
+        ) : (
+          <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+        )}
         <code className="text-sm font-mono" style={{ color: 'var(--accent-brand)' }}>{call.tool}</code>
+        {call.decision && call.decision !== 'allowed' && (
+          <span className={`text-[10px] font-semibold uppercase tracking-widest ${call.decision === 'denied' ? 'text-amber-500' : 'text-red-500'}`}>
+            {call.decision === 'denied' ? `denied · ${call.reason === 'missing_scope' ? 'missing scope' : 'unknown tool'}` : 'blocked · output screening'}
+          </span>
+        )}
         <span className="ml-auto text-xs text-muted-foreground font-mono">{call.duration_ms}ms</span>
         <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${expanded ? 'rotate-90' : ''}`} />
       </button>
@@ -118,7 +132,7 @@ function ToolCard({ call, expanded, onToggle }: {
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Input args</p>
             <pre className="text-xs font-mono bg-muted/40 rounded p-2 overflow-auto max-h-24 text-foreground/80">
-              {JSON.stringify(call.args, null, 2)}
+              {JSON.stringify(call.args ?? {}, null, 2)}
             </pre>
           </div>
           <div>
@@ -141,13 +155,13 @@ const EXAMPLE_QUERIES = [
   "Which agentic AI platforms has Prasad led, and at what scale?",
   "What are Prasad's cloud infrastructure skills?",
   "Show Krutrim achievements and metrics",
-  "Compare Prasad's skills to a CTO role requiring: strategy, AI, cloud, leadership",
+  "What AI governance and platform work has Prasad led?",
 ];
 
 const TOOLS_REGISTRY = [
-  { name: 'get_experience', desc: 'Retrieves work history, roles, and tenure context', schema: '(query?: string) → ExperienceRecord[]' },
-  { name: 'search_skills', desc: 'Semantic search over skills and technology stack', schema: '(skill: string, minLevel?: number) → SkillRecord[]' },
-  { name: 'get_achievements', desc: 'Returns quantified business outcomes by context', schema: '(context?: string) → Achievement[]' },
+  { name: 'get_experience', desc: 'Retrieves work history, roles, and tenure context', schema: '(company: string) → ExperienceRecord', access: 'public' },
+  { name: 'search_skills', desc: 'Returns skills for a category', schema: '(category: string) → SkillRecord[]', access: 'public' },
+  { name: 'get_achievements', desc: 'Returns quantified business outcomes — requires an agent credential', schema: '(company?: string) → Achievement[]', access: 'scope: read:profile' },
 ];
 
 export default function MCPDemoPage() {
@@ -280,11 +294,19 @@ export default function MCPDemoPage() {
                     <code className="text-xs font-mono font-semibold text-foreground">{tool.name}</code>
                     <p className="text-[11px] text-muted-foreground mt-0.5">{tool.desc}</p>
                     <p className="text-[10px] font-mono text-muted-foreground/50 mt-1">{tool.schema}</p>
+                    <p className={`text-[10px] font-mono mt-1 ${tool.access === 'public' ? 'text-muted-foreground/70' : 'text-amber-500'}`}>access: {tool.access}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+          <p className="mt-3 text-[11px] text-muted-foreground leading-relaxed">
+            Per-tool authorization is enforced on the server with default deny. Ask for achievements without a
+            credential to see a denied call in the log; the{" "}
+            <Link href="/demos/agent-auth" className="underline" style={{ color: 'var(--accent-brand)' }}>Agent Auth demo</Link>{" "}
+            issues a <code className="font-mono">read:profile</code> credential that unlocks it. Tool outputs are
+            screened for injected instructions before the model sees them.
+          </p>
         </div>
 
         {/* Query input */}

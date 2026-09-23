@@ -151,20 +151,15 @@ describe('advanced reliability controls', () => {
     expect(body.error).toMatch(/request limit exceeded/i);
   });
 
-  it('validates HITL approval state on the multi-agent route', async () => {
+  it('rejects a client-asserted approval decision without a server-staged approval', async () => {
     const { POST } = await import('@/app/api/multi-agent/route');
     const res = await POST(new Request('http://localhost/api/multi-agent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-forwarded-for': '10.10.10.10' },
-      body: JSON.stringify({
-        website_url: 'https://example.com',
-        approvalState: 'maybe',
-      }),
+      body: JSON.stringify({ action: 'decide', decision: 'approve', approvalId: `apr_${'b'.repeat(32)}` }),
     }) as any);
 
-    expect(res.status).toBe(400);
-    const body = await res.json();
-    expect(body.error).toBe('Invalid approval state');
+    expect(res.status).toBe(404);
   });
 
   it('blocks adversarial prompt attempts before calling the model', async () => {

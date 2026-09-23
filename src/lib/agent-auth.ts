@@ -13,7 +13,31 @@ import { Redis } from '@upstash/redis';
 // Config
 // ---------------------------------------------------------------------------
 
-const SECRET = process.env.AGENT_AUTH_SECRET ?? 'portfolio-demo-secret-dev-only-not-for-prod';
+const DEV_ONLY_SECRET = 'portfolio-demo-secret-dev-only-not-for-prod';
+
+/** Thrown when token signing is attempted in production without AGENT_AUTH_SECRET. */
+export class AgentAuthConfigError extends Error {
+  constructor() {
+    super('AGENT_AUTH_SECRET is not configured');
+    this.name = 'AgentAuthConfigError';
+  }
+}
+
+/**
+ * The dev fallback secret is public (it is in this repo), so tokens signed with it are forgeable.
+ * Fail closed in production rather than silently accept that.
+ */
+/** False only in production when AGENT_AUTH_SECRET is missing — routes should return 503. */
+export function isAgentAuthConfigured(): boolean {
+  return Boolean(process.env.AGENT_AUTH_SECRET) || process.env.VERCEL_ENV !== 'production';
+}
+
+function getSigningSecret(): string {
+  const secret = process.env.AGENT_AUTH_SECRET;
+  if (secret) return secret;
+  if (process.env.VERCEL_ENV === 'production') throw new AgentAuthConfigError();
+  return DEV_ONLY_SECRET;
+}
 export const DEMO_SCOPES = ['read:profile', 'call:mcp-tools'];
 
 const ANON_TTL_S = 3600;    // 1 hour
@@ -92,7 +116,7 @@ export async function popClaimEntry(claimId: string): Promise<ClaimEntry | null>
 // ---------------------------------------------------------------------------
 
 async function hmacSign(data: string): Promise<string> {
-  const keyMaterial = new TextEncoder().encode(SECRET);
+  const keyMaterial = new TextEncoder().encode(getSigningSecret());
   const key = await crypto.subtle.importKey(
     'raw', keyMaterial,
     { name: 'HMAC', hash: 'SHA-256' },
@@ -102,6 +126,15 @@ async function hmacSign(data: string): Promise<string> {
   const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
   return btoa(String.fromCharCode(...new Uint8Array(sig)))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+/** Compare signatures without leaking where they first differ. */
+function constantTimeEqual(a: string, b: string): boolean {
+  let diff = a.length ^ b.length;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  }
+  return diff === 0;
 }
 
 function base64urlEncode(data: string): string {
@@ -137,7 +170,7 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
   const encoded = token.slice(0, dot);
   const sig = token.slice(dot + 1);
   const expected = await hmacSign(encoded);
-  if (sig !== expected) return null;
+  if (!constantTimeEqual(sig, expected)) return null;
   try {
     const payload = JSON.parse(base64urlDecode(encoded)) as TokenPayload;
     if (Math.floor(Date.now() / 1000) > payload.exp) return null;

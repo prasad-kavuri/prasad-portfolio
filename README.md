@@ -47,7 +47,7 @@ evaluation, and drift monitoring at the platform layer.
 | Demo | Category | Signal |
 |------|----------|--------|
 | [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Flagship | Rubric-scored evals, release gating, CI eval suites |
-| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq agents, human review step, audit trails |
+| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq agents, server-enforced release approval, audit trails |
 | [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Infrastructure | Transformers.js embeddings, in-browser retrieval, citations |
 | [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | FinOps | Multi-model routing, live cost/latency tradeoffs |
 | [Enterprise Control Plane](https://www.prasadkavuri.com/demos/enterprise-control-plane) | Governance | RBAC, spend limits, structured observability |

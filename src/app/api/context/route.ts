@@ -82,7 +82,7 @@ function buildContext() {
       tools: [
         'get_experience(company: "krutrim"|"ola"|"here")',
         'search_skills(category: "ai_ml"|"cloud_infrastructure"|"leadership"|"industry"|"core")',
-        'get_achievements(company?: string)',
+        'get_achievements(company?: string) — requires Bearer credential with read:profile scope',
       ],
       example: `POST ${BASE_URL}/api/mcp-demo { "query": "What agentic AI and multi-agent platforms has Prasad led?" }`,
     },

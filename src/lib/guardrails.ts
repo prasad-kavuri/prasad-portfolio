@@ -281,3 +281,65 @@ export function enforceGuardrails(
   }
   return checkOutput(output, traceId);
 }
+
+// ---------------------------------------------------------------------------
+// Tool-output screening (tool poisoning defense)
+// ---------------------------------------------------------------------------
+
+export const BLOCKED_TOOL_OUTPUT =
+  '[blocked: tool output failed injection screening and was withheld from the model]';
+
+/**
+ * Tool results and remote-agent outputs are untrusted data: a poisoned tool can smuggle
+ * instructions into the model's context. Screen them with the same injection signatures used for
+ * user input before they reach a model or a user.
+ */
+export function screenToolOutput(output: string): { safe: boolean; issues: string[] } {
+  const issues = detectPromptInjection(output).filter((issue) => issue !== 'template_injection');
+  return { safe: issues.length === 0, issues };
+}
+
+// ---------------------------------------------------------------------------
+// Structured PII detection (server-side re-check of client-redacted payloads)
+// ---------------------------------------------------------------------------
+
+export type StructuredPiiType = 'EMAIL' | 'PHONE' | 'SSN' | 'CREDIT_CARD' | 'ACCOUNT_NUMBER';
+
+const PII_PATTERNS: { type: StructuredPiiType; pattern: RegExp }[] = [
+  { type: 'EMAIL', pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/ },
+  { type: 'SSN', pattern: /\b\d{3}-\d{2}-\d{4}\b/ },
+  { type: 'PHONE', pattern: /(?:\+?1[\s.-]?)?\(?\b\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b/ },
+  { type: 'ACCOUNT_NUMBER', pattern: /\bACC-[A-Z0-9-]+\b|\b\d{9,17}\b/ },
+];
+
+function passesLuhn(digits: string): boolean {
+  let sum = 0;
+  let double = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let d = Number(digits[i]);
+    if (double) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+    double = !double;
+  }
+  return sum % 10 === 0;
+}
+
+/**
+ * Structural PII the server can detect reliably with patterns. Names and other free-text PII
+ * cannot be caught this way — they depend on the edge NER model — so this is a backstop, not a
+ * replacement, for client-side redaction.
+ */
+export function detectStructuredPII(text: string): StructuredPiiType[] {
+  const found = new Set<StructuredPiiType>();
+  for (const { type, pattern } of PII_PATTERNS) {
+    if (pattern.test(text)) found.add(type);
+  }
+  for (const match of text.matchAll(/\b(?:\d[ -]?){13,19}\b/g)) {
+    const digits = match[0].replace(/[ -]/g, '');
+    if (digits.length >= 13 && digits.length <= 19 && passesLuhn(digits)) found.add('CREDIT_CARD');
+  }
+  return [...found];
+}

@@ -81,7 +81,7 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 | AI Evaluation Showcase | Rubric-scored evals, guardrail screening, release gating, CI eval suites | Server |
 | RAG Pipeline | In-browser embedding retrieval with citations | Browser WASM |
 | LLM Router | Model routing with live cost/latency trade-offs | Groq API |
-| Multi-Agent System | Analyzer → Researcher → Strategist with a human review step and audit trail | Groq API |
+| Multi-Agent System | Analyzer → Researcher → Strategist with server-enforced, single-use release approval and audit trail | Groq API |
 | MCP Tool Demo | MCP-style JSON-Schema tool calling with a protocol-flow visualizer | Groq API |
 | Agent Auth Demo | auth.md agent identity: anonymous → claimed → Bearer-authenticated tool calls | Server |
 | Edge Agent + Cloud Agent Collaboration | Browser BERT NER PII redaction + human approval + cloud summary | Browser WASM + Groq |

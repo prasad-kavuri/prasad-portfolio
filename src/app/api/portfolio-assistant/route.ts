@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
 import {
+  enforceDailyBudget,
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
@@ -128,6 +129,9 @@ export async function POST(req: NextRequest) {
         return finalizeApiResponse(jsonError('AI request limit exceeded. Please shorten the prompt or try again shortly.', 429, { context }), context);
       }
     }
+
+    const overBudget = await enforceDailyBudget(context);
+    if (overBudget) return overBudget;
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {

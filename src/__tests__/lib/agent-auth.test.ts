@@ -127,4 +127,32 @@ describe('agent auth utilities', () => {
     expect(hex).toMatch(/^[a-f0-9]{16}$/);
     expect(otp).toMatch(/^\d{6}$/);
   });
+
+  it('fails closed in production when AGENT_AUTH_SECRET is missing', async () => {
+    const { AgentAuthConfigError, isAgentAuthConfigured } = await import('@/lib/agent-auth');
+    const saved = { secret: process.env.AGENT_AUTH_SECRET, env: process.env.VERCEL_ENV };
+    delete process.env.AGENT_AUTH_SECRET;
+    process.env.VERCEL_ENV = 'production';
+    try {
+      expect(isAgentAuthConfigured()).toBe(false);
+      await expect(issueToken({ sub: 's', type: 'anonymous', scopes: DEMO_SCOPES }, 60)).rejects.toBeInstanceOf(AgentAuthConfigError);
+    } finally {
+      if (saved.secret === undefined) delete process.env.AGENT_AUTH_SECRET; else process.env.AGENT_AUTH_SECRET = saved.secret;
+      if (saved.env === undefined) delete process.env.VERCEL_ENV; else process.env.VERCEL_ENV = saved.env;
+    }
+  });
+
+  it('signs with AGENT_AUTH_SECRET when set, so tokens from another secret do not verify', async () => {
+    const saved = process.env.AGENT_AUTH_SECRET;
+    process.env.AGENT_AUTH_SECRET = 'secret-a';
+    try {
+      const token = await issueToken({ sub: 's', type: 'anonymous', scopes: DEMO_SCOPES }, 60);
+      expect(await verifyToken(token)).not.toBeNull();
+      process.env.AGENT_AUTH_SECRET = 'secret-b';
+      expect(await verifyToken(token)).toBeNull();
+      expect(await verifyToken(`${token}x`)).toBeNull();
+    } finally {
+      if (saved === undefined) delete process.env.AGENT_AUTH_SECRET; else process.env.AGENT_AUTH_SECRET = saved;
+    }
+  });
 });

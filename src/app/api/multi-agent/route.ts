@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkOutput, sanitizeLLMOutput, validateAgentHandoff } from '@/lib/guardrails';
+import { BLOCKED_TOOL_OUTPUT, checkInput, checkOutput, sanitizeLLMOutput, screenToolOutput, validateAgentHandoff } from '@/lib/guardrails';
+import { APPROVAL_ERROR_MESSAGES, createPendingApproval, decideApproval } from '@/lib/approvals';
 import {
+  enforceDailyBudget,
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
@@ -9,6 +11,7 @@ import {
   logApiEvent,
   logApiWarning,
   readJsonObject,
+  type RequestContext,
 } from '@/lib/api';
 import { trackModelOutput } from '@/lib/drift-monitor';
 import { isBlockedOutboundUrl } from '@/lib/url-security';
@@ -16,6 +19,13 @@ import { assertSafeFetchTarget, safeServerFetch } from '@/lib/safe-fetch';
 
 const HF_SPACE_URL = 'https://prasadkavuri-multi-agent-demo.hf.space';
 const ROUTE = '/api/multi-agent';
+const APPROVAL_KIND = 'multi-agent.release' as const;
+const MAX_REVISION_LENGTH = 2000;
+
+interface StagedRelease {
+  recommendation: string;
+  target: string;
+}
 
 interface AgentResult {
   findings?: unknown;
@@ -36,16 +46,16 @@ export async function POST(req: NextRequest) {
   const body = await readJsonObject(req, { context });
   if (!body.ok) return body.response;
 
-  const { website_url, approvalState } = body.data;
+  // Step 2 of the governed workflow: a human decision on the staged Strategist release.
+  if (body.data.action === 'decide') {
+    return decideRelease(body.data, context);
+  }
+
+  const { website_url } = body.data;
 
   if (!website_url) {
     logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'missing_website_url', status: 400 });
     return finalizeApiResponse(jsonError('website_url is required', 400, { context }), context);
-  }
-
-  if (approvalState !== undefined && approvalState !== 'pending' && approvalState !== 'approved') {
-    logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_approval_state', status: 400 });
-    return finalizeApiResponse(jsonError('Invalid approval state', 400, { context }), context);
   }
 
   if (typeof website_url !== 'string') {
@@ -93,6 +103,9 @@ export async function POST(req: NextRequest) {
     return finalizeApiResponse(jsonError('URL not allowed', 400, { context }), context);
   }
 
+  const overBudget = await enforceDailyBudget(context);
+  if (overBudget) return overBudget;
+
   try {
     const response = await safeServerFetch(`${HF_SPACE_URL}/analyze`, {
       method: 'POST',
@@ -116,17 +129,28 @@ export async function POST(req: NextRequest) {
 
     const data = (await response.json()) as AgentBackendResponse;
 
-    // Sanitize LLM-generated string fields from the agent backend
+    // Sanitize LLM-generated string fields from the agent backend, and withhold any text that
+    // fails injection screening — remote agent output is untrusted data (SPEC-0020).
+    let withheld = 0;
+    const screen = (text: string): string => {
+      const clean = sanitizeLLMOutput(text);
+      if (screenToolOutput(clean).safe) return clean;
+      withheld += 1;
+      return BLOCKED_TOOL_OUTPUT;
+    };
     if (data?.agents && Array.isArray(data.agents)) {
       data.agents = data.agents.map((agent: AgentResult) => ({
         ...agent,
         findings: Array.isArray(agent.findings)
-          ? agent.findings.map((f: string) => sanitizeLLMOutput(f))
+          ? agent.findings.map((f: unknown) => (typeof f === 'string' ? screen(f) : f))
           : agent.findings,
         recommendation: typeof agent.recommendation === 'string'
-          ? sanitizeLLMOutput(agent.recommendation)
+          ? screen(agent.recommendation)
           : agent.recommendation,
       }));
+      if (withheld > 0) {
+        logApiWarning('api.agent_output_withheld', { route: ROUTE, traceId: context.traceId, withheld, status: 200 });
+      }
 
       // Agent-to-agent trust boundary validation
       const agentNames = ['Analyzer', 'Researcher', 'Strategist'];
@@ -172,6 +196,20 @@ export async function POST(req: NextRequest) {
 
     trackModelOutput(ROUTE, fullOutput, 'success');
 
+    // Stage the Strategist's recommendation as a pending approval. It is only "released" through
+    // a server-recorded decision; the client cannot mark it approved on its own.
+    const strategist = Array.isArray(data.agents)
+      ? (data.agents as AgentResult[]).find((a) => typeof a.name === 'string' && a.name.toLowerCase().includes('strategist'))
+      : undefined;
+    const approval =
+      strategist && typeof strategist.recommendation === 'string' && strategist.recommendation !== BLOCKED_TOOL_OUTPUT
+        ? await createPendingApproval<StagedRelease>(
+            APPROVAL_KIND,
+            { recommendation: strategist.recommendation, target: parsedUrl.hostname },
+            context.traceId,
+          )
+        : null;
+
     logApiEvent('api.request_completed', {
       route: ROUTE,
       traceId: context.traceId,
@@ -181,7 +219,15 @@ export async function POST(req: NextRequest) {
       agentsReturned: Array.isArray(data.agents) ? data.agents.length : 0,
     });
 
-    return finalizeApiResponse(NextResponse.json(data), context);
+    return finalizeApiResponse(
+      NextResponse.json({
+        ...data,
+        approval: approval
+          ? { status: 'pending', approvalId: approval.approvalId, expiresAt: approval.expiresAt, payloadHash: approval.payloadHash }
+          : null,
+      }),
+      context
+    );
   } catch (error) {
     trackModelOutput(ROUTE, error instanceof Error ? error.name : 'agent_backend_error', 'error');
     captureAndLogApiError('api.request_failed', error, {
@@ -192,4 +238,61 @@ export async function POST(req: NextRequest) {
     });
     return finalizeApiResponse(jsonError('Failed to connect to agent backend', 502, { context }), context);
   }
+}
+
+async function decideRelease(data: Record<string, unknown>, context: RequestContext) {
+  const { approvalId, decision, revisedRecommendation, approvalMode } = data;
+
+  if (decision !== 'approve' && decision !== 'reject') {
+    logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_decision', status: 400 });
+    return finalizeApiResponse(jsonError('decision must be approve or reject', 400, { context }), context);
+  }
+
+  let revision: string | null = null;
+  if (revisedRecommendation !== undefined && revisedRecommendation !== null && revisedRecommendation !== '') {
+    if (typeof revisedRecommendation !== 'string' || revisedRecommendation.length > MAX_REVISION_LENGTH) {
+      logApiWarning('api.validation_failed', { route: ROUTE, traceId: context.traceId, reason: 'invalid_revision', status: 400 });
+      return finalizeApiResponse(jsonError('Invalid revised recommendation', 400, { context }), context);
+    }
+    const revisionCheck = checkInput(revisedRecommendation);
+    if (!revisionCheck.isSafe) {
+      logApiWarning('api.guardrail_input_triggered', { route: ROUTE, traceId: context.traceId, issues: revisionCheck.issues.join(','), status: 400 });
+      return finalizeApiResponse(jsonError('Invalid revised recommendation', 400, { context }), context);
+    }
+    revision = sanitizeLLMOutput(revisedRecommendation.trim());
+  }
+
+  const decided = await decideApproval<StagedRelease>(APPROVAL_KIND, approvalId, decision === 'approve' ? 'approved' : 'rejected');
+  if (!decided.ok) {
+    logApiWarning('api.approval_rejected', { route: ROUTE, traceId: context.traceId, reason: decided.code, status: decided.status });
+    return finalizeApiResponse(jsonError(APPROVAL_ERROR_MESSAGES[decided.code], decided.status, { context }), context);
+  }
+
+  const mode = approvalMode === 'auto' ? 'auto' : 'human';
+  logApiEvent('api.approval_decided', {
+    route: ROUTE,
+    traceId: context.traceId,
+    status: 200,
+    approvalId: decided.receipt.approvalId,
+    decision: decided.receipt.decision,
+    mode,
+    edited: revision !== null,
+  });
+
+  if (decision === 'reject') {
+    return finalizeApiResponse(NextResponse.json({ status: 'rejected', receipt: decided.receipt, approvalMode: mode }), context);
+  }
+
+  const staged = decided.pending.payload.recommendation;
+  const released = revision ?? staged;
+  return finalizeApiResponse(
+    NextResponse.json({
+      status: 'released',
+      receipt: decided.receipt,
+      releasedRecommendation: released,
+      edited: revision !== null && revision !== staged,
+      approvalMode: mode,
+    }),
+    context
+  );
 }

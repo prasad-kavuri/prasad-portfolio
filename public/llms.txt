@@ -67,10 +67,10 @@ Core AI Platform:
 - /demos/llm-router            — Multi-model routing with live cost/latency trade-offs
 
 Agentic Systems & Governance:
-- /demos/multi-agent           — Analyzer → Researcher → Strategist with a human review step
-- /demos/mcp-demo              — MCP-style JSON-Schema tool calling with a protocol-flow visualizer
+- /demos/multi-agent           — Analyzer → Researcher → Strategist; release requires a server-recorded, single-use approval
+- /demos/mcp-demo              — MCP-style tool calling with per-tool authorization (default deny) and tool-output screening
 - /demos/agent-auth            — auth.md agent identity: anonymous → claimed → Bearer
-- /demos/edge-agent-collaboration — Browser PII redaction + human approval + cloud summary
+- /demos/edge-agent-collaboration — Browser PII redaction + server PII re-check + single-use approval before cloud summary
 - /demos/enterprise-control-plane — RBAC, spend limits, observability (seeded simulation)
 - /demos/generative-ui         — Catalog-constrained, server-validated generative UI
 
@@ -108,7 +108,7 @@ Protocol:   JSON { "query": "..." } — LLM tool calling over JSON-Schema tools 
 Tools available:
   get_experience(company)              — work history by company
   search_skills(category)             — skills by category (ai_ml, cloud_infrastructure, leadership, industry, core)
-  get_achievements(company?)          — quantified impact metrics
+  get_achievements(company?)          — quantified impact metrics; requires a Bearer credential with the read:profile scope (see /auth.md)
 Usage: POST { "query": "What is Prasad's current role and experience with agentic AI?" }
 
 ## WHAT'S NEW (SEPTEMBER 2026)

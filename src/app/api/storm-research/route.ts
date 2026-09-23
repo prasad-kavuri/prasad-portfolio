@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import profile from '@/data/profile.json';
 import {
+  enforceDailyBudget,
   enforceRateLimit,
   createRequestContext,
   finalizeApiResponse,
@@ -116,6 +117,9 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
+
+    const overBudget = await enforceDailyBudget(context);
+    if (overBudget) return overBudget;
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {

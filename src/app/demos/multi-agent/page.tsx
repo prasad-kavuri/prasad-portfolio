@@ -51,6 +51,24 @@ interface AnalysisResult {
   agents: AgentResult[];
   total_duration_ms: number;
   total_tokens: number;
+  /** Server-staged approval for releasing the Strategist recommendation (SPEC-0020). */
+  approval?: { status: "pending"; approvalId: string; expiresAt: string; payloadHash: string } | null;
+}
+
+interface ReleaseReceipt {
+  approvalId: string;
+  decision: "approved" | "rejected";
+  payloadHash: string;
+  decidedAt: string;
+}
+
+interface ReleaseResponse {
+  status: "released" | "rejected";
+  receipt: ReleaseReceipt;
+  releasedRecommendation?: string;
+  edited?: boolean;
+  approvalMode: "human" | "auto";
+  error?: string;
 }
 
 type StageState = "idle" | "running" | "completed" | "paused" | "failed";
@@ -241,6 +259,7 @@ export default function MultiAgentPage() {
   const [runtimeSeconds, setRuntimeSeconds] = useState(0);
   const [usedFallback, setUsedFallback] = useState(false);
   const [workflowStartAt, setWorkflowStartAt] = useState<number | null>(null);
+  const [releaseReceipt, setReleaseReceipt] = useState<(ReleaseReceipt & { approvalMode: "human" | "auto"; edited: boolean }) | null>(null);
 
   const [orchState, dispatch] = useReducer(orchestrationReducer, INITIAL_ORCHESTRATION_STATE);
   const orchStateRef = useRef(orchState);
@@ -487,6 +506,7 @@ export default function MultiAgentPage() {
     setReviewDraft("");
     setReviewNote("");
     setUsedFallback(false);
+    setReleaseReceipt(null);
     setWorkflowStartAt(Date.now());
 
     dispatch({ type: "START_WORKFLOW", traceId: newTraceId });
@@ -496,10 +516,7 @@ export default function MultiAgentPage() {
       const response = await tracedFetch.current("/api/multi-agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          website_url: url,
-          approvalState: reviewMode ? "pending" : "approved",
-        }),
+        body: JSON.stringify({ website_url: url }),
       });
 
       if (!response.ok) {
@@ -577,8 +594,54 @@ export default function MultiAgentPage() {
     }
 
     dispatch({ type: "REQUEST_APPROVAL", handoffId: strategistHandoffId });
+    // Review mode off: the release is still recorded by the server, as an auto-approval.
+    const released = await releaseOnServer(data, "approve", "auto");
+    if (released === "failed") return;
     dispatch({ type: "GRANT_APPROVAL", handoffId: strategistHandoffId });
-    await continueToCompletion(runId, data);
+    await continueToCompletion(runId, released ?? data);
+  };
+
+  /**
+   * Record the human (or auto) decision on the server. Returns the result with the server-released
+   * recommendation, null when there is nothing to record (offline fallback), or "failed".
+   */
+  const releaseOnServer = async (
+    data: AnalysisResult,
+    decision: "approve" | "reject",
+    approvalMode: "human" | "auto",
+    revisedRecommendation?: string,
+  ): Promise<AnalysisResult | null | "failed"> => {
+    if (!data.approval) return null;
+    try {
+      const response = await tracedFetch.current("/api/multi-agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "decide",
+          approvalId: data.approval.approvalId,
+          decision,
+          approvalMode,
+          ...(revisedRecommendation ? { revisedRecommendation } : {}),
+        }),
+      });
+      const body = (await response.json()) as ReleaseResponse;
+      if (!response.ok) {
+        setError(body.error ?? "The server did not record the approval decision.");
+        return "failed";
+      }
+      setReleaseReceipt({ ...body.receipt, approvalMode: body.approvalMode, edited: Boolean(body.edited) });
+      const releasedRecommendation = body.releasedRecommendation;
+      if (decision === "reject" || !releasedRecommendation) return data;
+      return {
+        ...data,
+        agents: data.agents.map((agent) =>
+          agent.name === "Strategist" ? { ...agent, recommendation: releasedRecommendation } : agent
+        ),
+      };
+    } catch {
+      setError("The server did not record the approval decision.");
+      return "failed";
+    }
   };
 
   const handleApprovePending = async () => {
@@ -591,7 +654,7 @@ export default function MultiAgentPage() {
     }
 
     const revised = reviewDraft.trim();
-    const nextResult = revised
+    const localResult = revised
       ? {
           ...pendingResult,
           agents: pendingResult.agents.map((agent) =>
@@ -599,6 +662,11 @@ export default function MultiAgentPage() {
           ),
         }
       : pendingResult;
+
+    // The release happens on the server: approval is single use and bound to the staged output.
+    const released = await releaseOnServer(pendingResult, "approve", "human", revised || undefined);
+    if (released === "failed") return;
+    const nextResult = released ?? localResult;
 
     const runId = activeRunRef.current;
     dispatch({ type: "GRANT_APPROVAL", handoffId: strategistToHitl.id });
@@ -625,12 +693,17 @@ export default function MultiAgentPage() {
     setReviewNote("Revision applied. Approve to release strategist output.");
   };
 
-  const handleCancelPending = () => {
+  const handleCancelPending = async () => {
     const strategistToHitl = getLatestHandoff(orchState.handoffs, "strategist", "hitl");
+    if (pendingResult) {
+      const rejected = await releaseOnServer(pendingResult, "reject", "human");
+      if (rejected === "failed") return;
+      setPendingResult(null);
+    }
     if (strategistToHitl) {
       dispatch({ type: "DENY_APPROVAL", handoffId: strategistToHitl.id });
     }
-    setReviewNote("Approval denied. You can revise or restart the workflow.");
+    setReviewNote("Approval denied and recorded on the server. Restart the workflow to try again.");
   };
 
   const strategist = activeData?.agents.find((a) => a.name === "Strategist");
@@ -750,7 +823,14 @@ export default function MultiAgentPage() {
               </Button>
               <p className="text-xs text-muted-foreground">Trace ID: <span className={traceId ? "font-mono text-blue-400" : "text-slate-500"}>{traceId || "— run workflow to generate —"}</span></p>
               {usedFallback ? (
-                <p className="text-xs text-amber-500">Fallback mode active: running deterministic local orchestration because backend execution was unavailable.</p>
+                <p className="text-xs text-amber-500">Fallback mode active: running deterministic local orchestration because backend execution was unavailable. Approvals in this mode are not server-recorded.</p>
+              ) : null}
+              {releaseReceipt ? (
+                <p className="text-xs text-muted-foreground" data-testid="release-receipt">
+                  Server approval receipt <span className="font-mono">{releaseReceipt.approvalId.slice(0, 16)}…</span> ·{" "}
+                  {releaseReceipt.decision} ({releaseReceipt.approvalMode}{releaseReceipt.edited ? ", edited by reviewer" : ""}) at{" "}
+                  {new Date(releaseReceipt.decidedAt).toLocaleTimeString()} · single use, cannot be replayed
+                </p>
               ) : null}
             </div>
           </div>

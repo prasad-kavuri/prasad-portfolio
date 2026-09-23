@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, type RateLimitResult } from '@/lib/rate-limit';
+import { kvIncrWithTtl } from '@/lib/durable-store';
 import {
   captureAPIError,
   categorizeError,
@@ -202,6 +203,54 @@ export async function enforceRateLimit(
     });
     const response = jsonError('Too many requests', 429, meta);
     return meta.context ? finalizeApiResponse(response, meta.context, 429) as NextResponse : response;
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Daily LLM spend caps (SPEC-0020)
+// ---------------------------------------------------------------------------
+
+/** Max LLM-backed calls per route per UTC day. Override with DAILY_LLM_CALL_CAP. */
+export const DAILY_LLM_CALL_CAP_DEFAULT = 500;
+/** Max LLM-backed calls per client per UTC day across all routes — stops one client exhausting a route's cap. */
+export const DAILY_LLM_CALLS_PER_CLIENT = 60;
+
+function positiveIntFromEnv(name: string, fallback: number): number {
+  const value = Number(process.env[name]);
+  return Number.isInteger(value) && value > 0 ? value : fallback;
+}
+
+/**
+ * Bound worst-case model spend on public demo routes. Call after `enforceRateLimit` (which sets
+ * `context.userHash`) and before any model call. Returns a 503 response when a cap is reached.
+ */
+export async function enforceDailyBudget(context: RequestContext): Promise<NextResponse | null> {
+  const day = new Date().toISOString().slice(0, 10);
+  const routeCap = positiveIntFromEnv('DAILY_LLM_CALL_CAP', DAILY_LLM_CALL_CAP_DEFAULT);
+  const clientCap = positiveIntFromEnv('DAILY_LLM_CALLS_PER_CLIENT', DAILY_LLM_CALLS_PER_CLIENT);
+  const ttl = 26 * 60 * 60;
+
+  const clientCount = context.userHash
+    ? await kvIncrWithTtl(`llm-budget:client:${context.userHash}:${day}`, ttl)
+    : 0;
+  if (clientCount > clientCap) {
+    logApiWarning('api.daily_client_budget_exhausted', { route: context.route, traceId: context.traceId, cap: clientCap, status: 429 });
+    return finalizeApiResponse(
+      jsonError('Daily demo limit reached for this client. It resets at midnight UTC.', 429, { context }),
+      context,
+      429,
+    ) as NextResponse;
+  }
+
+  const routeCount = await kvIncrWithTtl(`llm-budget:route:${context.route}:${day}`, ttl);
+  if (routeCount > routeCap) {
+    logApiWarning('api.daily_budget_exhausted', { route: context.route, traceId: context.traceId, cap: routeCap, status: 503 });
+    return finalizeApiResponse(
+      jsonError('This demo is paused for today — its daily usage budget is used up. It resets at midnight UTC.', 503, { context }),
+      context,
+      503,
+    ) as NextResponse;
   }
   return null;
 }

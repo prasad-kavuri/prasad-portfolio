@@ -24,7 +24,7 @@ Request:    JSON { "query": "<natural language question about Prasad>" } — no 
 Tools the model can call:
   get_experience(company: "krutrim"|"ola"|"here")     — work history, highlights, and tags for a company
   search_skills(category: "ai_ml"|"cloud_infrastructure"|"leadership"|"industry"|"core") — skills by category
-  get_achievements(company?: string)                   — quantified impact metrics, optionally filtered by company
+  get_achievements(company?: string)                   — quantified impact metrics; requires a Bearer credential with read:profile (see /auth.md)
 Example: POST /api/mcp-demo { "query": "What agentic AI platforms has Prasad led, and at what scale?" }
 Returns a natural-language answer plus a structured tool call log.
 Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a compact agent-optimized context object.
@@ -37,7 +37,9 @@ Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a com
 
 --- PLATFORM PATTERNS DEMONSTRATED ON THIS PORTFOLIO ---
 - Evaluation: deterministic rubric scoring (required coverage, forbidden topics) with eval suites run in CI on every push
-- Human-in-the-loop checkpoints in the Multi-Agent and Edge Agent demos (server-enforced approval is on the roadmap)
+- Server-enforced human approval in the Multi-Agent and Edge Agent demos: single-use, 15-minute expiry, bound to a hash of the staged action, replays rejected
+- Per-tool authorization with default deny on the profile query tools; tool and remote-agent outputs screened for injected instructions
+- Daily spend caps per AI route and per client
 - Drift monitoring and structured observability with trace-ID propagation
 - LLM FinOps: cost/latency/quality routing across model tiers (LLM Router demo)
 - Governance as code: guardrails, rate limiting, observability, and eval checks ship with every API route
@@ -431,7 +433,8 @@ CORE AI PLATFORM
 AGENTIC SYSTEMS & GOVERNANCE
 4. MULTI-AGENT SYSTEM
    URL: /demos/multi-agent | Engine: Groq via FastAPI backend (server)
-   Analyzer → Researcher → Strategist with real LLM calls, a human review step, and an audit trail.
+   Analyzer → Researcher → Strategist with real LLM calls. The Strategist's recommendation is released only through a
+   server-recorded, single-use approval (receipt bound to a hash of the staged output); poisoned agent output is withheld.
 5. MCP TOOL DEMO
    URL: /demos/mcp-demo | Engine: Groq function calling (server)
    MCP-style tool use: JSON-Schema tool definitions the model selects and calls; protocol-flow visualizer.

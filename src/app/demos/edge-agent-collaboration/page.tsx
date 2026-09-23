@@ -28,11 +28,25 @@ Request: Requesting upgrade to Enterprise tier — Q2 budget approved for $48,00
 
 type Stage = 'idle' | 'edge-running' | 'edge-done' | 'cloud-running' | 'cloud-done';
 
+interface ApprovalReceipt {
+  approvalId: string;
+  decision: 'approved' | 'rejected';
+  payloadHash: string;
+  decidedAt: string;
+}
+
 interface CloudResult {
   summary: string;
   traceId: string;
   tier: 'cloud';
   model: string;
+  receipt?: ApprovalReceipt;
+}
+
+interface StagedApproval {
+  approvalId: string;
+  expiresAt: string;
+  payloadHash: string;
 }
 
 const jsonLd = {
@@ -59,6 +73,11 @@ export default function EdgeAgentCollaborationPage() {
   const [edgeResult, setEdgeResult] = useState<RedactionResult | null>(null);
   const [cloudResult, setCloudResult] = useState<CloudResult | null>(null);
   const [error, setError] = useState<string>('');
+  // Server-side approval state (SPEC-0020): the payload is staged and re-checked on the server
+  // before the gate can be approved; approval is consumed there exactly once.
+  const [approval, setApproval] = useState<StagedApproval | null>(null);
+  const [serverBlockedPii, setServerBlockedPii] = useState<string[] | null>(null);
+  const [rejectedReceipt, setRejectedReceipt] = useState<ApprovalReceipt | null>(null);
 
   const isEdgeRunning = stage === 'edge-running';
   const isEdgeDone =
@@ -67,23 +86,62 @@ export default function EdgeAgentCollaborationPage() {
   const isCloudDone = stage === 'cloud-done';
   const isWorking = isEdgeRunning || isCloudRunning;
 
+  const stageHandoff = async (redacted: string) => {
+    const tracedFetch = createTracedFetch(generateClientTraceId());
+    const res = await tracedFetch('/api/edge-agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'stage', sanitizedPayload: redacted }),
+    });
+    const data = (await res.json()) as StagedApproval & { error?: string; piiTypes?: string[] };
+    if (res.status === 422) {
+      setServerBlockedPii(data.piiTypes ?? []);
+      return;
+    }
+    if (!res.ok) throw new Error(data.error ?? 'Could not stage the handoff for approval');
+    setApproval({ approvalId: data.approvalId, expiresAt: data.expiresAt, payloadHash: data.payloadHash });
+  };
+
   const handleRunEdgeAgent = async () => {
     setStage('edge-running');
     setEdgeResult(null);
     setCloudResult(null);
+    setApproval(null);
+    setServerBlockedPii(null);
+    setRejectedReceipt(null);
     setError('');
     try {
       const result = await classifyPII(document);
       setEdgeResult(result);
       setStage('edge-done');
+      await stageHandoff(result.redacted);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Edge inference failed');
-      setStage('idle');
+      setStage((current) => (current === 'edge-done' ? current : 'idle'));
+    }
+  };
+
+  const handleReject = async () => {
+    if (!approval) return;
+    setError('');
+    const tracedFetch = createTracedFetch(generateClientTraceId());
+    try {
+      const res = await tracedFetch('/api/edge-agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reject', approvalId: approval.approvalId }),
+      });
+      const data = (await res.json()) as { receipt?: ApprovalReceipt; error?: string };
+      if (!res.ok || !data.receipt) throw new Error(data.error ?? 'Reject failed');
+      setRejectedReceipt(data.receipt);
+      setApproval(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Reject failed');
     }
   };
 
   const handleApproveAndSend = async () => {
-    if (!edgeResult) return;
+    if (!edgeResult || !approval) return;
     setStage('cloud-running');
     setError('');
 
@@ -93,10 +151,7 @@ export default function EdgeAgentCollaborationPage() {
       const res = await tracedFetch('/api/edge-agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sanitizedPayload: edgeResult.redacted,
-          approvedByUser: true,
-        }),
+        body: JSON.stringify({ action: 'approve', approvalId: approval.approvalId }),
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
@@ -104,6 +159,7 @@ export default function EdgeAgentCollaborationPage() {
       }
       const data = (await res.json()) as CloudResult;
       setCloudResult(data);
+      setApproval(null);
       setStage('cloud-done');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Cloud request failed');
@@ -115,6 +171,9 @@ export default function EdgeAgentCollaborationPage() {
     setStage('idle');
     setEdgeResult(null);
     setCloudResult(null);
+    setApproval(null);
+    setServerBlockedPii(null);
+    setRejectedReceipt(null);
     setError('');
   };
 
@@ -426,10 +485,35 @@ export default function EdgeAgentCollaborationPage() {
                 </div>
               </div>
 
-              <div>
+              <div className="rounded-lg border border-border bg-background/60 p-3 text-xs" data-testid="server-approval-state">
+                {serverBlockedPii ? (
+                  <p className="text-red-600 dark:text-red-400">
+                    <span className="font-semibold">Server re-check blocked this handoff:</span> the payload still
+                    contains {serverBlockedPii.join(', ')}. Nothing was sent to the cloud.
+                  </p>
+                ) : rejectedReceipt ? (
+                  <p className="text-muted-foreground">
+                    <span className="font-semibold text-foreground">Rejected.</span> Nothing was sent to the cloud.
+                    Server receipt <span className="font-mono">{rejectedReceipt.approvalId.slice(0, 16)}…</span>
+                  </p>
+                ) : approval ? (
+                  <p className="text-muted-foreground">
+                    <span className="font-semibold text-green-600 dark:text-green-400">Server re-check passed.</span>{' '}
+                    Payload staged as pending approval{' '}
+                    <span className="font-mono">{approval.approvalId.slice(0, 16)}…</span> (single use, expires{' '}
+                    {new Date(approval.expiresAt).toLocaleTimeString()}). The server will send only this exact payload.
+                  </p>
+                ) : isCloudDone ? (
+                  <p className="text-muted-foreground">Approval consumed by the server — it cannot be replayed.</p>
+                ) : (
+                  <p className="text-muted-foreground">Staging payload on the server for approval…</p>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-start gap-3">
                 <Button
                   onClick={() => void handleApproveAndSend()}
-                  disabled={isCloudRunning || isCloudDone}
+                  disabled={!approval || isCloudRunning || isCloudDone}
                   className="min-h-[44px] bg-green-600 hover:bg-green-700"
                   aria-label="Approve and send sanitized payload to cloud agent"
                 >
@@ -447,8 +531,19 @@ export default function EdgeAgentCollaborationPage() {
                     'Approve & Send to Cloud Agent'
                   )}
                 </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => void handleReject()}
+                  disabled={!approval || isCloudRunning || isCloudDone}
+                  className="min-h-[44px]"
+                  aria-label="Reject the cloud handoff"
+                >
+                  Reject
+                </Button>
+              </div>
+              <div>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  This approval checkpoint mirrors enterprise HITL governance patterns.
+                  Approval is enforced on the server: single use, 15-minute expiry, bound to the exact staged payload. In this public demo you act as the approver.
                 </p>
               </div>
             </CardContent>
@@ -481,6 +576,13 @@ export default function EdgeAgentCollaborationPage() {
                   traceId:{' '}
                   <span className="font-mono text-blue-400">{cloudResult.traceId}</span>
                 </span>
+                {cloudResult.receipt && (
+                  <span>
+                    approval receipt:{' '}
+                    <span className="font-mono">{cloudResult.receipt.approvalId.slice(0, 16)}…</span> ·{' '}
+                    payload sha256 <span className="font-mono">{cloudResult.receipt.payloadHash.slice(0, 12)}…</span>
+                  </span>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -503,8 +605,8 @@ export default function EdgeAgentCollaborationPage() {
                 <h3 className="text-sm font-semibold">Privacy by Design</h3>
               </div>
               <p className="text-xs text-muted-foreground">
-                PII never leaves the browser. Cloud receives only business context. Data residency
-                is enforced architecturally, not by policy alone.
+                PII is redacted in the browser, then re-checked on the server before a single-use
+                approval can release the payload. The cloud model receives only what was staged.
               </p>
             </Card>
             <Card className="border-border bg-card/70 p-4">

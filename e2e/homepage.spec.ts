@@ -98,8 +98,8 @@ test.describe('Homepage', () => {
     await expect(contact.getByRole('link', { name: /Connect on LinkedIn/i }).first()).toBeVisible();
   });
 
-  test('recruiter strip is visible with all 3 buttons', async ({ page }) => {
-    const recruiterStrip = page.getByText('For Recruiters and Hiring Managers', { exact: true }).locator('../..');
+  test('executive briefing strip is visible with all 3 buttons', async ({ page }) => {
+    const recruiterStrip = page.getByText('Executive Briefing', { exact: true }).locator('../..');
     await expect(recruiterStrip).toBeVisible();
     await expect(recruiterStrip.getByRole('link', { name: /View LinkedIn/i })).toBeVisible();
     await expect(recruiterStrip.getByRole('link', { name: /Start a Conversation/i })).toBeVisible();

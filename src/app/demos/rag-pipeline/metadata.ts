@@ -17,6 +17,6 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'RAG Pipeline — Browser-Native Vector Embeddings',
     description:
-      'Real RAG with WASM embeddings in the browser — no API key needed. Production AI pattern demo by VP of AI Engineering Prasad Kavuri.',
+      'Real RAG with WASM embeddings in the browser — no API key needed. Production AI pattern demo by AI platform leader Prasad Kavuri.',
   },
 };

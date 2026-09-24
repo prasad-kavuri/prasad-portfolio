@@ -83,6 +83,8 @@ Labs:
 
 ## ENTRY POINTS
 Homepage:          /
+Operating model:   /enterprise-ai-operating-model  (operating system, maturity model, NIST AI RMF + ISO/IEC 42001 alignment map)
+Perspectives:      /perspectives
 Recruiter brief:   /for-recruiters
 Recruiter dashboard: /recruiter-dashboard (skills map, evidence, review path)
 Agent marketplace: /agent-marketplace
@@ -99,6 +101,7 @@ Agent entry:       /agent
 Full context:      /llms-full.txt
 
 ## THOUGHT LEADERSHIP
+- /perspectives (index)
 - /perspectives/why-enterprise-ai-stalls
 - /perspectives/agentic-ai-changes-how-work-gets-done
 - /perspectives/real-work-in-production-ai
@@ -120,9 +123,10 @@ Tools available:
 Usage: POST { "query": "What is Prasad's current role and experience with agentic AI?" }
 
 ## WHAT'S NEW (SEPTEMBER 2026)
+- Executive layer: leadership-first homepage, verified case studies, operating model mapped to NIST AI RMF and ISO/IEC 42001, /perspectives index
 - Flagship: Governed Agent Platform (/demos/governed-agent-platform) — real A2A v1.0 agent, MCP server, tool gateway, approval, trajectory-eval release gate
 - Server-enforced human approval, per-tool authorization, tool-output screening, daily spend caps
-- Demo catalog consolidated to 9 core platform demos + 4 labs; every claim aligned with the implementation
+- Demo catalog consolidated to 10 core platform demos + 4 labs; every claim aligned with the implementation
 - Retired: Vector Search (folded into RAG Pipeline), Multimodal Assistant, Native Browser AI Skill, AI Hiring Intelligence
 - Constrained Generative UI demo (/demos/generative-ui)
 - Agent readiness page (/agent-readiness)

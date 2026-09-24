@@ -11,9 +11,13 @@ interface CaseStudy {
   whatILed: string[];
   keyDecisions: string[];
   impact: string[];
-  roi: string;
 }
 
+/**
+ * Every line below is grounded in src/data/profile.json (the verified resume record).
+ * Do not add ROI figures, trade-off rationale, or outcomes that are not in profile.json —
+ * new claims go through the case-study questionnaire first (SPEC-0022).
+ */
 const caseStudies: CaseStudy[] = [
   {
     badge: "Krutrim",
@@ -21,27 +25,24 @@ const caseStudies: CaseStudy[] = [
     period: "March 2025 – June 2026",
     title: "Building India's First Agentic AI Platform",
     challenge:
-      "Build a production-scale Agentic AI platform for mobility, commerce, and payments while unifying fragmented models, vendors, and workflows into one reliable operating system.",
+      "Deliver a production agentic AI platform (Kruti.ai) across mobility, commerce, and payments while integrating diverse AI models and vendors into one reliable, 24/7 production ecosystem.",
     whatILed: [
-      "End-to-end architecture and delivery for Kruti.ai across orchestration, RAG, vector search, and real-time personalization",
-      "Scaled a 200+ global engineering organization delivering 24/7 enterprise PaaS capabilities",
-      "Owned $10M–$20M annual engineering budget across AI infrastructure and global platform operations",
-      "Launched domain-specific AI agents for cab booking, food ordering, bill payments, and image generation",
-      "Defined SDK/API integration strategy to accelerate partner and enterprise adoption",
+      "End-to-end architecture and delivery of Kruti.ai: multi-model LLM orchestration, RAG pipelines, vector search, and real-time personalization",
+      "A 200+ global engineering organization delivering enterprise-grade 24/7 PaaS capabilities",
+      "$10M–$20M annual engineering budget across AI infrastructure, platform operations, and global delivery",
+      "Domain-specific AI agents for cab booking, food ordering, bill payments, and image generation",
     ],
     keyDecisions: [
-      "Vendor-agnostic architecture to avoid lock-in",
-      "Latency vs cost tradeoff framework per use case",
-      "Built for production workflows, not demos",
-      "Unified platform over point solutions",
+      "Multi-model orchestration with intelligent model routing rather than a single model",
+      "One unified production ecosystem across diverse AI models and vendors",
+      "SDK/API integration strategy to grow the agent ecosystem across external partners",
     ],
     impact: [
       "50% latency reduction",
       "40% cost savings",
       "New B2B and B2C revenue streams at national scale",
-      "India's first production-scale agentic AI ecosystem",
+      "Accelerated enterprise client adoption through the SDK/API strategy",
     ],
-    roi: "Delivered ~2-3x ROI within 12 months through platform consolidation",
   },
   {
     badge: "Ola",
@@ -49,55 +50,48 @@ const caseStudies: CaseStudy[] = [
     period: "Sept 2023 – Feb 2025",
     title: "Scaling AI-Powered Mapping to 13,000+ Enterprise Customers",
     challenge:
-      "Scale Ola Maps into a core cloud-native mobility platform serving enterprise customers at high reliability while materially reducing infrastructure spend.",
+      "Turn Ola Maps into a core cloud-native mobility layer for enterprise customers while materially reducing infrastructure spend and keeping reliability high.",
     whatILed: [
       "Platform transformation across cloud-native infrastructure, LLM-powered routing, and B2B APIs",
-      "Directed $8M–$15M annual engineering budget — cut infrastructure costs 70% while expanding platform scope",
+      "$8M–$15M annual engineering budget",
+      "Cross-functional engineering teams across the US and India",
       "AI-powered real-time route optimization for fleet management",
-      "Cross-functional engineering leadership across the US and India",
-      "Delivery acceleration across electric mobility and transport sectors",
     ],
     keyDecisions: [
-      "Cloud-native over lift-and-shift migration",
-      "B2B API-first go-to-market",
-      "AI routing over rule-based optimization",
-      "Electric mobility infrastructure investment",
+      "Cloud-native architectural overhaul to take out infrastructure cost",
+      "B2B APIs as the core mobility layer for enterprise customers",
+      "AI-powered route optimization for fleet management",
     ],
     impact: [
-      "13,000+ B2B enterprise customers",
       "70% infrastructure cost reduction",
-      "Millions of daily API calls",
+      "13,000+ B2B enterprise customers",
+      "Reliability maintained across millions of daily API calls",
       "Improved ETA accuracy and customer satisfaction",
     ],
-    roi: "Enabled new recurring revenue through B2B API subscriptions",
   },
   {
     badge: "HERE Technologies",
     role: "Director of Engineering — Highly Automated Driving",
-    period: "July 2021 – June 2023 · 18-year tenure at HERE (Sr Engineer → Director)",
+    period: "July 2021 – June 2023 · 18+ years at HERE (Sr Engineer → Director)",
     title: "Delivering AI/ML Infrastructure for Autonomous Driving at Global Scale",
     challenge:
-      "Building production-grade AI/ML infrastructure for safety-critical autonomous driving systems, supporting major OEM partners across North America, Europe, and APAC.",
+      "Deliver AI-enhanced HD mapping and lane-level automation for major OEM autonomous driving platforms, in a safety-critical, regulated environment.",
     whatILed: [
-      "HD mapping and lane-level automation systems",
-      "Global engineering teams across NA, Europe, APAC — part of 200+ total org",
-      "Managed $10M–$20M annual engineering budget for AI infrastructure across safety-critical regulated programs",
-      "AI/ML infrastructure for ADAS platforms",
-      "18-year progression from Sr Engineer to Director at HERE Technologies",
+      "AI-enhanced HD mapping and lane-level automation systems",
+      "Global engineering teams across North America, Europe, and APAC",
+      "$10M–$20M annual engineering budget for HD mapping and autonomous driving AI infrastructure",
+      "Core infrastructure for ML/AI products as Head of Infrastructure and Services",
     ],
     keyDecisions: [
-      "Safety-first architecture for regulated environments",
-      "Global team distribution strategy",
-      "AI-enhanced precision over manual map processes",
-      "Long-term OEM partnership model",
+      "AI/ML advancements to improve map precision",
+      "Engineering practices built for safety-critical, regulated programs",
+      "Global delivery model across North America, Europe, and APAC",
     ],
     impact: [
-      "HD maps powering major OEM autonomous platforms",
-      "18-year tenure with consistent scope expansion",
-      "Sr Engineer → Director progression",
-      "Global engineering organization built from ground up",
+      "HD mapping supporting major OEM autonomous driving platforms",
+      "Improved map precision through AI/ML",
+      "18+ year progression from Sr Engineer to Director",
     ],
-    roi: "Safety-critical AI systems supporting global OEM production deployments",
   },
 ];
 
@@ -127,7 +121,7 @@ export function CaseStudies() {
             Where Strategy Met Execution
           </h2>
           <p className="text-muted-foreground">
-            Three flagship transformations — the challenge, the decisions, and the outcome. Each represents a deliberate step in a 20-year arc: from building the infrastructure behind autonomous driving at global OEM scale, to leading India&apos;s AI platform frontier at Krutrim and Ola.
+            Three transformations — the challenge, the decisions, and the outcome. Together they trace a 20-year arc: from infrastructure behind autonomous driving at global OEM scale, to cloud-native platforms at Ola, to India&apos;s first agentic AI platform at Krutrim.
           </p>
         </div>
 
@@ -195,10 +189,6 @@ export function CaseStudies() {
                             <span>{item}</span>
                           </li>
                         ))}
-                        <li className="flex gap-2 text-sm leading-relaxed font-semibold">
-                          <span className="text-indigo-500 flex-shrink-0">•</span>
-                          <span className="font-medium text-foreground">{study.roi}</span>
-                        </li>
                       </ul>
                     </div>
                   </div>

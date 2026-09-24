@@ -92,9 +92,11 @@ describe('Hero', () => {
     expect(links[0].getAttribute('href')).toBe('/demos/governed-agent-platform');
   });
 
-  it('renders recruiter brief CTA linking to recruiter dashboard', () => {
+  it('leads with the leadership CTA and keeps the executive brief as a secondary link', () => {
     render(<Hero />);
-    const link = screen.getByRole('link', { name: /View Recruiter Brief/i });
+    const lead = screen.getByRole('link', { name: /Leadership & Case Studies/i });
+    expect(lead.getAttribute('href')).toBe('#case-studies');
+    const link = screen.getByRole('link', { name: /Executive Brief/i });
     expect(link.getAttribute('href')).toBe('/recruiter-dashboard');
   });
 
@@ -131,11 +133,11 @@ describe('Hero', () => {
     expect(screen.getByText(/Agent-to-Agent/i)).toBeDefined();
   });
 
-  it('renders recruiter strip with role targeting', () => {
+  it('renders the executive briefing strip with role clarity', () => {
     render(<Hero />);
-    expect(screen.getByText(/Recruiters/i)).toBeDefined();
+    expect(screen.getByText(/Executive Briefing/i)).toBeDefined();
     expect(screen.getAllByText(/Head of AI Platform & Agentic Solutions at Zip/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Signature review artifact/i)).toBeDefined();
+    expect(screen.getByText(/Flagship review artifact/i)).toBeDefined();
   });
 
   it('renders trust and governance summary with responsible disclosure link', () => {

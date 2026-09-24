@@ -1,17 +1,14 @@
 import { MetadataRoute } from 'next';
 import { demos } from '@/data/demos';
 import { SITE_URL } from '@/data/site-config';
+import { PERSPECTIVES } from '@/data/perspectives';
 
 const FLAGSHIP_DEMO_ID = 'governed-agent-platform';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const perspectives = [
-    'why-enterprise-ai-stalls',
-    'agentic-ai-changes-how-work-gets-done',
-    'real-work-in-production-ai',
-  ];
+  const perspectives = PERSPECTIVES.map((article) => article.slug);
 
   return [
     // Tier 1 — homepage
@@ -66,6 +63,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
 
     // Tier 5 — perspectives / long-form thought leadership content
+    { url: `${SITE_URL}/perspectives`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.8 },
     ...perspectives.map((slug) => ({
       url: `${SITE_URL}/perspectives/${slug}`,
       lastModified: now,

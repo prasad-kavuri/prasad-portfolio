@@ -5,19 +5,18 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const primaryLinks = [
-  { href: "/for-recruiters", label: "For Recruiters" },
-  { href: "/demos", label: "Demos" },
-  { href: "#experience", label: "Experience" },
-  { href: "/governance", label: "Governance" },
-  { href: "/testimonials", label: "Testimonials" },
-  { href: "/prasad-kavuri-vp-ai-engineering-2026.pdf", label: "Resume" },
-  { href: "/contact", label: "Contact" },
+// Executive-first information architecture (SPEC-0022):
+// Leadership · Operating Model · Platform · Perspectives · About & Contact
+const leadLinks = [
+  { href: "/#experience", label: "Leadership" },
+  { href: "/enterprise-ai-operating-model", label: "Operating Model" },
 ];
 
-// Architecture / platform deep-dive pages — grouped under one "Platform" menu
-// instead of sitting inline, to keep the primary nav from overflowing.
+// Platform evidence — the flagship first, then the catalog and deep-dive pages.
 const platformLinks = [
+  { href: "/demos/governed-agent-platform", label: "Flagship: Governed Agent Platform" },
+  { href: "/demos", label: "All Demos" },
+  { href: "/governance", label: "Governance" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/agent-readiness", label: "Agent Readiness" },
   { href: "/skills", label: "Skills Catalog" },
@@ -25,16 +24,15 @@ const platformLinks = [
   { href: "/ai-finops", label: "AI FinOps" },
   { href: "/enterprise-agent-runtime", label: "Agent Runtime" },
   { href: "/adaptive-ai-governance", label: "Adaptive Governance" },
-  { href: "/enterprise-ai-operating-model", label: "Operating Model" },
 ];
 
-const allLinksForMobile = [
-  primaryLinks[0],
-  primaryLinks[1],
-  primaryLinks[2],
-  ...platformLinks,
-  ...primaryLinks.slice(3),
+const trailLinks = [
+  { href: "/perspectives", label: "Perspectives" },
+  { href: "/about", label: "About & Contact" },
+  { href: "/prasad-kavuri-vp-ai-engineering-2026.pdf", label: "Resume" },
 ];
+
+const allLinksForMobile = [...leadLinks, ...platformLinks, ...trailLinks];
 
 function PlatformMenu() {
   const [open, setOpen] = useState(false);
@@ -74,7 +72,7 @@ function PlatformMenu() {
         <div
           role="menu"
           aria-label="Platform pages"
-          className="absolute right-0 top-full z-50 mt-2 w-56 rounded-lg border border-border bg-background/95 p-1.5 shadow-lg backdrop-blur"
+          className="absolute right-0 top-full z-50 mt-2 w-64 rounded-lg border border-border bg-background/95 p-1.5 shadow-lg backdrop-blur"
         >
           {platformLinks.map((l) => (
             <Link
@@ -108,7 +106,7 @@ export function Navbar() {
         </Link>
         {/* Desktop nav */}
         <nav className="hidden items-center gap-5 lg:flex">
-          {primaryLinks.slice(0, 3).map((l) => (
+          {leadLinks.map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -118,7 +116,7 @@ export function Navbar() {
             </Link>
           ))}
           <PlatformMenu />
-          {primaryLinks.slice(3).map((l) => (
+          {trailLinks.map((l) => (
             <Link
               key={l.href}
               href={l.href}

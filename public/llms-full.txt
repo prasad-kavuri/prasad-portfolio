@@ -42,6 +42,7 @@ Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a com
 - Technical depth reflects executive credibility, not IC positioning
 
 --- PLATFORM PATTERNS DEMONSTRATED ON THIS PORTFOLIO ---
+- Operating model mapped to NIST AI RMF 1.0 (Govern, Map, Measure, Manage) and ISO/IEC 42001:2023 Annex A areas, with each control linked to code (alignment map, not a certification): /enterprise-ai-operating-model
 - Governed agent platform (flagship): real A2A v1.0 agent (/api/a2a) and MCP server (/api/mcp) on the official SDKs; every tool call passes a default-deny gateway with per-tool scopes, output screening, and agent-vs-user identity in the trace; payments above policy pause for human approval; trajectory evaluation gates a canary release and rolls back unsafe candidates
 - Evaluation: deterministic rubric scoring (required coverage, forbidden topics) with eval suites run in CI on every push
 - Server-enforced human approval in the Multi-Agent and Edge Agent demos: single-use, 15-minute expiry, bound to a hash of the staged action, replays rejected
@@ -248,6 +249,10 @@ https://www.prasadkavuri.com/contact
 https://www.prasadkavuri.com/testimonials
 https://www.prasadkavuri.com/capabilities
 https://www.prasadkavuri.com/enterprise-ai-operating-model
+https://www.prasadkavuri.com/perspectives
+https://www.prasadkavuri.com/perspectives/why-enterprise-ai-stalls
+https://www.prasadkavuri.com/perspectives/real-work-in-production-ai
+https://www.prasadkavuri.com/perspectives/agentic-ai-changes-how-work-gets-done
 https://www.prasadkavuri.com/ai-runtime-engineering
 https://www.prasadkavuri.com/ai-finops
 https://www.prasadkavuri.com/enterprise-agent-runtime

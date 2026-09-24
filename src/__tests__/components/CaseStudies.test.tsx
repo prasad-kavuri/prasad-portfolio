@@ -36,17 +36,18 @@ describe('CaseStudies', () => {
     expect(decisionsHeaders.length).toBe(3);
   });
 
-  it('renders ROI lines in impact sections', () => {
-    render(<CaseStudies />);
-    expect(screen.getByText(/2-3x ROI/i)).toBeDefined();
-    expect(screen.getByText(/recurring revenue/i)).toBeDefined();
-    expect(screen.getByText(/OEM production/i)).toBeDefined();
+  it('renders only verified impact lines (no unverified ROI claims)', () => {
+    const { container } = render(<CaseStudies />);
+    expect(screen.getByText('50% latency reduction')).toBeDefined();
+    expect(screen.getByText('70% infrastructure cost reduction')).toBeDefined();
+    expect(screen.getByText('HD mapping supporting major OEM autonomous driving platforms')).toBeDefined();
+    expect(container.textContent).not.toMatch(/ROI|recurring revenue|built from ground up/i);
   });
 
-  it('renders key decision bullets', () => {
+  it('renders key decision bullets grounded in the resume record', () => {
     render(<CaseStudies />);
-    expect(screen.getByText(/Vendor-agnostic architecture/i)).toBeDefined();
-    expect(screen.getByText(/Cloud-native over lift-and-shift/i)).toBeDefined();
-    expect(screen.getByText(/Safety-first architecture/i)).toBeDefined();
+    expect(screen.getByText(/intelligent model routing rather than a single model/i)).toBeDefined();
+    expect(screen.getByText(/Cloud-native architectural overhaul/i)).toBeDefined();
+    expect(screen.getByText(/safety-critical, regulated programs/i)).toBeDefined();
   });
 });

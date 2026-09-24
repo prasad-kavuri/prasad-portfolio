@@ -153,15 +153,15 @@ export function Hero() {
             ))}
           </div>
 
-          {/* Primary CTA row — recruiter-first hierarchy */}
+          {/* Primary CTA row — leadership-first hierarchy (SPEC-0022) */}
           <div className="mt-5 flex flex-wrap gap-2.5 sm:gap-3">
             <Link
-              href="/recruiter-dashboard"
+              href="#case-studies"
               className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
               style={{ background: 'var(--accent-brand)' }}
-              onClick={() => trackEvent('recruiter_dashboard_clicked_hero')}
+              onClick={() => trackEvent('leadership_story_clicked_hero')}
             >
-              View Recruiter Brief
+              Leadership &amp; Case Studies
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
@@ -183,11 +183,11 @@ export function Hero() {
               Download Resume
             </a>
             <Link
-              href="#experience"
+              href="/recruiter-dashboard"
               className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium"
-              onClick={() => trackEvent('leadership_story_clicked_hero')}
+              onClick={() => trackEvent('recruiter_dashboard_clicked_hero')}
             >
-              Leadership Story
+              Executive Brief
             </Link>
           </div>
 
@@ -231,11 +231,11 @@ export function Hero() {
               <div className="inline-flex flex-col rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
                 <span className="flex items-center gap-2">Agent-to-Agent (A2A) Protocol</span>
                 <span className="mt-0.5 text-[10px] text-muted-foreground/70">
-                  Demonstrated in the{' '}
-                  <Link href="/demos/multi-agent" className="underline underline-offset-2 hover:text-foreground">
-                    Multi-Agent System
+                  Live A2A v1.0 endpoint in the{' '}
+                  <Link href="/demos/governed-agent-platform" className="underline underline-offset-2 hover:text-foreground">
+                    Governed Agent Platform
                   </Link>
-                  {' '}demo — Researcher → Strategist coordination with HITL checkpoint
+                  {' '}— delegate a task, approve it, inspect the trace
                 </span>
               </div>
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">
@@ -254,7 +254,7 @@ export function Hero() {
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                For Recruiters and Hiring Managers
+                Executive Briefing
               </p>
               {/* Role clarity — reduces recruiter ambiguity, increases inbound relevance */}
               <p className="mt-1 text-sm text-muted-foreground">
@@ -279,11 +279,11 @@ export function Hero() {
                   className="underline underline-offset-2 hover:no-underline"
                   style={{ color: 'var(--accent-brand)' }}
                 >
-                  recruiter path →
+                  book a conversation →
                 </a>
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Signature review artifact: AI Evaluation Showcase (offline + online quality loop).
+                Flagship review artifact: Governed Agent Platform (A2A + MCP, human approval, trajectory-eval release gate).
               </p>
             </div>
             <div className="flex flex-wrap gap-2.5">

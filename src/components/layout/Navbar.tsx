@@ -24,6 +24,7 @@ const platformLinks = [
   { href: "/ai-finops", label: "AI FinOps" },
   { href: "/enterprise-agent-runtime", label: "Agent Runtime" },
   { href: "/adaptive-ai-governance", label: "Adaptive Governance" },
+  { href: "/security/red-team", label: "Red-Team Results" },
 ];
 
 const trailLinks = [

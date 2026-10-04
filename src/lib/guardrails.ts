@@ -38,21 +38,65 @@ const INJECTION_SIGNATURES = [
   /pretend\s+(you\s+are|to\s+be)/i,
   /new\s+personality/i,
   /jailbreak|DAN mode/i,
+  /(?:disregard|override|bypass|forget)\s+(?:all\s+|any\s+|your\s+|the\s+)?(?:previous\s+|prior\s+|above\s+|earlier\s+)?(?:instructions|guidance|rules|directives)/i,
+  /(?:developer|debug|god|admin|sudo|root)\s*mode/i,
+  /(?:repeat|echo|print|output)\s+(?:the\s+)?(?:text|everything|all)\s+(?:above|before|preceding)/i,
+  /(?:show|list|display|output)\s+(?:me\s+)?(?:all\s+)?(?:your\s+)?(?:hidden\s+)?(?:rules|instructions|prompt|guidelines|directives)/i,
   /act\s+as\s+(a|an)?\s*(?:different|unrestricted|jailbroken|unfiltered|evil|unconstrained|liberated|unaligned|free\s+ai)\b/i,
 ];
 
+// Cross-language injection signatures (Spanish, French, German "ignore previous instructions").
+const MULTILINGUAL_INJECTION = [
+  /ignora(?:r)?\s+(?:todas\s+)?(?:las\s+)?instrucciones\s+(?:anteriores|previas)/i,
+  /ignore[zr]?\s+(?:les\s+)?instructions\s+(?:pr\u00e9c\u00e9dentes|precedentes)/i,
+  /ignoriere?\s+(?:alle\s+)?(?:vorherigen\s+)?anweisungen/i,
+];
+
+// Confusable Unicode letters mapped to their ASCII look-alikes (Cyrillic/Greek homoglyphs).
+const HOMOGLYPHS: Record<string, string> = {
+  '\u0430':'a','\u0435':'e','\u043e':'o','\u0441':'c','\u0440':'p','\u0445':'x','\u0455':'s','\u0456':'i','\u0406':'i','\u04bb':'h','\u0501':'d','\u043d':'h','\u0443':'y','\u0391':'a','\u0395':'e','\u039f':'o','\u03bf':'o','\u0410':'a','\u0421':'c','\u0420':'p','\u0425':'x',
+};
+const ZERO_WIDTH = /[\u200b-\u200d\u2060\ufeff]/g;
+
+/**
+ * Attackers obfuscate the same instruction many ways (zero-width joins, homoglyphs, full-width
+ * characters, spacing, leetspeak, base64). Expand an input into the plain-text variants those
+ * tricks hide, so one signature set catches all of them. Returns the original plus each variant.
+ */
+export function normalizeForDetection(input: string): string[] {
+  const variants = new Set<string>([input]);
+  const nfkc = input.normalize('NFKC');           // folds full-width + compatibility forms to ASCII
+  variants.add(nfkc);
+  let cleaned = nfkc.replace(ZERO_WIDTH, '');
+  cleaned = cleaned.replace(/[^\x00-\x7F]/g, (ch) => HOMOGLYPHS[ch] ?? ch);
+  variants.add(cleaned);
+  // Collapse single-letter spacing: "i g n o r e" -> "ignore", keeping word gaps.
+  variants.add(cleaned.replace(/(?<=\b\w) (?=\w\b)/g, ''));
+  // De-leet common digit/symbol substitutions.
+  variants.add(cleaned.replace(/[0]/g, 'o').replace(/[1]/g, 'i').replace(/3/g, 'e').replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't').replace(/@/g, 'a').replace(/\$/g, 's'));
+  // Decode long base64-looking tokens and scan the plaintext too.
+  for (const m of nfkc.matchAll(/[A-Za-z0-9+/]{16,}={0,2}/g)) {
+    try {
+      const decoded = Buffer.from(m[0], 'base64').toString('utf8');
+      if (/[ -~]{8,}/.test(decoded)) variants.add(decoded);
+    } catch { /* not valid base64 */ }
+  }
+  return [...variants];
+}
+
 export function detectPromptInjection(input: string): string[] {
-  const issues: string[] = [];
-  for (const pattern of INJECTION_SIGNATURES) {
-    if (pattern.test(input)) {
-      issues.push(`injection_attempt:${pattern.source.slice(0, 40)}`);
+  const issues = new Set<string>();
+  const variants = normalizeForDetection(input);
+  for (const pattern of [...INJECTION_SIGNATURES, ...MULTILINGUAL_INJECTION]) {
+    if (variants.some((v) => pattern.test(v))) {
+      issues.add(`injection_attempt:${pattern.source.slice(0, 40)}`);
     }
   }
-  // Template injection
+  // Template injection (HTML tags, handlebars/jinja braces) in the original input.
   if (/<[^>]+>|{{|}}/.test(input)) {
-    issues.push('template_injection');
+    issues.add('template_injection');
   }
-  return issues;
+  return [...issues];
 }
 
 export function isPromptInjection(input: string): boolean {
@@ -62,9 +106,16 @@ export function isPromptInjection(input: string): boolean {
 /** Strip script tags, event handlers, and javascript: URIs from LLM output server-side. */
 export function sanitizeLLMOutput(text: string): string {
   return text
+    // Paired <script>...</script> blocks, including their contents.
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-    .replace(/javascript:/gi, '');
+    // Other dangerous elements (and any stray script tag), opening or closing.
+    .replace(/<\s*\/?\s*(?:script|iframe|object|embed|svg|link|meta|base|form|style)\b[^>]*>/gi, '')
+    // Inline event handlers, whether the attribute value is quoted or bare.
+    .replace(/on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    // Script-ish URL schemes, tolerating whitespace inside the scheme (java\tscript:).
+    .replace(/j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:/gi, '')
+    .replace(/vbscript\s*:/gi, '')
+    .replace(/data\s*:\s*text\/html/gi, '');
 }
 
 export function checkInput(input: string): GuardrailResult {

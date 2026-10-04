@@ -44,6 +44,7 @@ Context endpoint: GET https://www.prasadkavuri.com/api/context — returns a com
 --- PLATFORM PATTERNS DEMONSTRATED ON THIS PORTFOLIO ---
 - Operating model mapped to NIST AI RMF 1.0 (Govern, Map, Measure, Manage) and ISO/IEC 42001:2023 Annex A areas, with each control linked to code (alignment map, not a certification): /enterprise-ai-operating-model
 - Governed agent platform (flagship): real A2A v1.0 agent (/api/a2a) and MCP server (/api/mcp) on the official SDKs; every tool call passes a default-deny gateway with per-tool scopes, output screening, and agent-vs-user identity in the trace; payments above policy pause for human approval; trajectory evaluation gates a canary release and rolls back unsafe candidates
+- Red-team: this portfolio attacks its own AI surfaces in CI and on every deploy with a deterministic adversarial corpus (prompt injection incl. obfuscated and multilingual, tool-output poisoning, output XSS, tool misuse, privilege and approval abuse, unsafe agent rollout) mapped to the OWASP Top 10 for LLM and Agentic Applications; results at /security/red-team and /api/security/red-team
 - Evaluation: deterministic rubric scoring (required coverage, forbidden topics) with eval suites run in CI on every push
 - Server-enforced human approval in the Multi-Agent and Edge Agent demos: single-use, 15-minute expiry, bound to a hash of the staged action, replays rejected
 - Per-tool authorization with default deny on the profile query tools; tool and remote-agent outputs screened for injected instructions

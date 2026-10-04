@@ -200,3 +200,7 @@ _Avoid_: using it as if it is currently live (it is not)
 - "layer" in AIArchitecture and "layer" in Tailwind/CSS are different things. Context resolves which is meant.
 - "governance" refers to both the `/governance` page and the platform governance practices generally. Distinguish with **governance-demo** vs. "governance principles".
 - **storybook** is aspirational (not installed) — do not treat it as available unless a PR explicitly adds it.
+
+**red-team corpus**:
+The `src/lib/redteam/` corpus (SPEC-0023) — deterministic, model-free adversarial cases run against this portfolio's own guardrails, tool gateway, agent policy, approval flow, and release gate, tagged to the OWASP Top 10 for LLM (2025) and Agentic (2026) risks. CI (`npm run test:redteam`) fails on a newly missed attack or a benign false positive. Published at `/security/red-team` and `/api/security/red-team`.
+_Avoid_: "pen test demo", "security demo" (it is evidence, not a demo, and is not in the demo registry)

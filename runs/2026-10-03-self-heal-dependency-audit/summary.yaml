@@ -1,0 +1,31 @@
+run_id: 2026-10-03-self-heal-dependency-audit
+date: 2026-10-03
+skill: self-heal
+profile: testing
+failure_type: audit
+root_cause: Newly published dependency advisories block both CI and Dependency Check.
+files_changed:
+  - package.json
+  - package-lock.json
+updates:
+  next: 16.3.8
+  eslint-config-next: 16.3.8
+  brace-expansion: 5.0.12
+  dompurify: 3.4.16
+  transitive: [axios, undici, fast-uri]
+verification:
+  typecheck: passed
+  lint: passed_with_10_warnings
+  unit_and_coverage: passed_121_files_1167_tests
+  build: passed
+  audit: passed_with_owner_approved_temporary_exception
+  audit_policy_tests: passed_5_tests
+remaining_blocker:
+  advisory: GHSA-vfj7-8cjw-p6xm
+  package: braces
+  latest_available: 3.0.3
+  patched_version: null
+  dependency_paths: [eslint-config-next, shadcn]
+  effects: Eight high-severity audit entries derive from this one unpatched advisory.
+  decision: Owner approved an exact-advisory exception expiring after 2026-10-17 UTC.
+published: false

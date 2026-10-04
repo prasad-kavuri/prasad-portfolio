@@ -231,6 +231,7 @@ Dependabot: `.github/dependabot.yml` — major versions blocked, weekly minor/pa
 - New demos need entries in BOTH `src/data/demos.ts` AND `src/data/demo-groups.ts` (DEMO_GROUPS) — enforced by `src/__tests__/integration/demo-inventory-consistency.test.ts`
 - `react-hooks/set-state-in-effect` ESLint rule fires on `setState()` inside `useEffect` — use `// eslint-disable-next-line` when the pattern is intentional (e.g., client-only hydration-safe init with `useState(null)`)
 - Signature system (flagship) is `governed-agent-platform` (Governed Agent Platform, SPEC-0021) — `SIGNATURE_DEMO_ID` in `src/data/demo-groups.ts`; referenced in Hero, AITools featured card, DemosGallery, sitemap, ai-profile.json, llms files, and README
+- Red-team (SPEC-0023): `src/lib/redteam/` adversarial corpus runs in CI (`npm run test:redteam`, part of `test:coverage`); published at `/security/red-team` + `/api/security/red-team`. OWASP LLM 2025 + Agentic 2026. Guardrail/agent changes must keep it green (no new missed attack, no benign false positive).
 - Agent endpoints: `/api/mcp` (official MCP SDK), `/api/a2a` (official A2A SDK, requires `A2A-Version: 1.0`), Agent Card `public/.well-known/agent-card.json` must equal `agentCardJson()` (test-enforced). All agent tool calls go through `src/lib/tool-gateway.ts` (default deny)
 
 ## Enterprise Simulation Agent

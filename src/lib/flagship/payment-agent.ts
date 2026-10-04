@@ -165,6 +165,23 @@ export function startReview(params: { exceptionId: string; version: AgentVersion
     }
   }
 
+  // Defense in depth: a high-risk vendor always needs a human, even below the dollar threshold and
+  // even when the gateway found nothing to screen out. Amount is not the only risk signal.
+  const vendorRecord = vendor.decision === 'allowed' ? (JSON.parse(vendor.result) as { riskTier?: string }) : null;
+  if (vendorRecord?.riskTier === 'high') {
+    return done({
+      status: 'input_required',
+      outcome: 'held_for_approval',
+      summary: `Vendor ${exception.vendorId} is high-risk; payments to high-risk vendors require human approval regardless of amount.`,
+      approvalRequest: {
+        exceptionId,
+        amountUsd: exception.amountUsd,
+        thresholdUsd: null,
+        reason: 'High-risk vendor requires human approval',
+      },
+    });
+  }
+
   const policyCall = run.call('get_payment_policy', { category: exception.category }, caller);
   const policy = JSON.parse(policyCall.result) as { approvalThresholdUsd: number };
 

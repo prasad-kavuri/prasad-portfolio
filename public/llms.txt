@@ -123,6 +123,7 @@ Tools available:
 Usage: POST { "query": "What is Prasad's current role and experience with agentic AI?" }
 
 ## WHAT'S NEW (SEPTEMBER 2026)
+- Red-team results (/security/red-team): continuous adversarial testing of this portfolio's own AI guardrails and agent, OWASP LLM + Agentic, machine-readable at /api/security/red-team
 - Executive layer: leadership-first homepage, verified case studies, operating model mapped to NIST AI RMF and ISO/IEC 42001, /perspectives index
 - Flagship: Governed Agent Platform (/demos/governed-agent-platform) — real A2A v1.0 agent, MCP server, tool gateway, approval, trajectory-eval release gate
 - Server-enforced human approval, per-tool authorization, tool-output screening, daily spend caps

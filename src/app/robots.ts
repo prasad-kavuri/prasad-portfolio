@@ -35,7 +35,7 @@ export default function robots(): MetadataRoute.Robots {
       },
       ...AI_CRAWLERS.map((userAgent) => ({
         userAgent,
-        allow: ['/', '/api/context', '/api/mcp-demo'],
+        allow: ['/', '/api/context', '/api/mcp-demo', '/api/security/red-team'],
         disallow: ['/api/'],
       })),
     ],

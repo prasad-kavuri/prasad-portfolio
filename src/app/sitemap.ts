@@ -64,6 +64,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Tier 5 — perspectives / long-form thought leadership content
     { url: `${SITE_URL}/perspectives`, lastModified: now, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${SITE_URL}/security/red-team`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 },
     ...perspectives.map((slug) => ({
       url: `${SITE_URL}/perspectives/${slug}`,
       lastModified: now,

@@ -1,0 +1,25 @@
+{
+  "skill": "skills/prasad-portfolio",
+  "skill_sha256": "cb7cd4f29e157402021c4f236c720456058a929f8e19130ff23307d315845056",
+  "reference_lines": [52, 53, 58, 59, 61, 97, 98, 100, 101, 102, 103, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 130, 131, 132, 143, 144, 164, 165, 167, 169, 176],
+  "application_files": [
+    "src/hooks/useBrowserAI.ts",
+    "vercel.json",
+    "next.config.ts",
+    "src/lib/api.ts",
+    "src/lib/observability.ts",
+    "src/lib/guardrails.ts",
+    "src/proxy.ts",
+    "src/components/BrowserAIWarning.tsx",
+    "src/data/profile.json",
+    "src/lib/rate-limit.ts",
+    "src/lib/eval-engine.ts",
+    "src/lib/drift-monitor.ts",
+    "src/lib/cost-control.ts",
+    "src/lib/hitl.ts",
+    "src/data/demos.ts",
+    "src/components/sections/AITools.tsx",
+    "src/app/layout.tsx",
+    "public/.well-known/ai-agent-manifest.json"
+  ]
+}

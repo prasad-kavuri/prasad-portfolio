@@ -2,17 +2,22 @@ name: Skill Security Audit
 
 on:
   push:
+    branches: [main]
     paths:
       - 'skills/**'
       - '.claude-plugin/**'
       - '.github/workflows/skill-security.yml'
       - '.github/scripts/skill_security*.py'
+      - '.github/skill-security-scope.json'
+      - 'docs/SKILL_SECURITY_SCOPE.md'
   pull_request:
     paths:
       - 'skills/**'
       - '.claude-plugin/**'
       - '.github/workflows/skill-security.yml'
       - '.github/scripts/skill_security*.py'
+      - '.github/skill-security-scope.json'
+      - 'docs/SKILL_SECURITY_SCOPE.md'
   schedule:
     # Weekly scan every Monday 10:00 UTC — catches newly-published CVEs
     # even when skill files haven't changed (SkillSpector SC4 queries OSV.dev live)
@@ -84,7 +89,7 @@ jobs:
             --no-llm --fail-on-incomplete
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
-      - name: Validate report and enforce risk threshold
+      - name: Validate skill-only scope and enforce risk threshold
         if: always()
         env:
           SKILL_PATH: ${{ steps.skill-path.outputs.path }}

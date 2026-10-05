@@ -70,7 +70,7 @@ export function Hero() {
           </div>
 
           <p id="profile-summary" className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            20 years building AI platforms — now leading AI Platform and Agentic Solutions at Zip, after building Krutrim&apos;s agentic AI platform and scaling Ola Maps to 13,000+ B2B customers with 70% cost reduction.
+            20 years building AI platforms — now leading AI Platform &amp; Agentic Solutions at Zip, building an enterprise AI platform on Google Cloud and the Gemini Enterprise Agent Platform, after building Krutrim&apos;s agentic AI platform and scaling Ola Maps to 13,000+ B2B customers with 70% cost reduction.
           </p>
           <details className="mt-2 max-w-3xl">
             <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">Full background →</summary>

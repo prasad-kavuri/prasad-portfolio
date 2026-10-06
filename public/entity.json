@@ -41,7 +41,7 @@
     "title": "Head of AI Platform & Agentic Solutions",
     "company": "Zip",
     "period": "July 2026 - Present",
-    "summary": "Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment."
+    "summary": "Leading the strategy, architecture, and development of Zip's enterprise AI platform on Google Cloud and the Gemini Enterprise Agent Platform, for internal business workflows and customer-facing agent experiences. Remit spans reusable agent capabilities, a governed agent-building experience, secure enterprise integration, model selection, evaluation, observability, and AI FinOps, plus the roadmap for payment and support agents with policy controls and human oversight for consequential actions, in a regulated financial-services environment."
   },
   "prior_roles": [
     "Head of AI Engineering, Krutrim (March 2025 - June 2026)",
@@ -73,5 +73,5 @@
     "linkedin": "https://www.linkedin.com/in/pkavuri/",
     "github": "https://github.com/prasad-kavuri"
   },
-  "last_updated": "2026-09-23"
+  "last_updated": "2026-10-05"
 }

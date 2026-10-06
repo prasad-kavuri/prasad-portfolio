@@ -79,7 +79,7 @@ const currentRole = {
   title: 'Head of AI Platform & Agentic Solutions',
   company: 'Zip',
   period: 'July 2026 - Present',
-  summary: 'Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale.',
+  summary: 'Leading the strategy, architecture, and development of Zip\'s enterprise AI platform on Google Cloud and the Gemini Enterprise Agent Platform, for internal business workflows and customer-facing agent experiences. Remit spans reusable agent capabilities, a governed agent-building experience, secure enterprise integration, model selection, evaluation, observability, and AI FinOps, plus the roadmap for payment and support agents with policy controls and human oversight for consequential actions, in a regulated financial-services environment.',
 };
 
 const priorRoles = [
@@ -167,7 +167,9 @@ export default function AboutPage() {
         <p className="mt-2 text-lg text-foreground">Head of AI Platform & Agentic Solutions at Zip</p>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">
           AI Platform Executive focused on production AI platforms, agentic AI, AI governance,
-          AI FinOps, and enterprise adoption. Based in the Chicago area / Naperville, IL.
+          AI FinOps, and enterprise adoption. At Zip, leading an enterprise AI platform on Google Cloud
+          and the Gemini Enterprise Agent Platform for internal workflows and customer-facing agents.
+          Based in the Chicago area / Naperville, IL.
         </p>
 
         <div className="mt-8 grid gap-6 md:grid-cols-2">

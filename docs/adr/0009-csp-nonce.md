@@ -1,6 +1,6 @@
 # ADR-0009: CSP uses hash-based allowlisting for inline scripts, not nonces
 
-**Status**: Accepted  
+**Status**: Accepted; corrected 2026-10-12 (see note below)  
 **Date**: 2026-06
 
 ## Context
@@ -49,3 +49,18 @@ A nonce-based CSP was not implemented.
   CSP-compliant.
 - CSP changes require updates in BOTH `next.config.ts` AND `src/proxy.ts` — see ADR-0003.
 - Validate CSP after any change: use `https://csp-evaluator.withgoogle.com`.
+
+## Correction (2026-10-12)
+
+A review found three statements above that do not match the code or the Next.js 16 guide:
+
+- `'unsafe-inline'` is not development-only. Production `script-src` in `next.config.ts` and
+  `src/proxy.ts` includes `'unsafe-inline'` and `'unsafe-eval'` on every route.
+- The "No inline script restriction" alternative is described as rejected, yet that is the current
+  production behaviour for `script-src`.
+- The Next.js 16 guide documents nonces through the proxy for dynamically rendered pages, and an
+  experimental hash option (`experimental.sri`) that keeps static pages. Nonces cost static rendering;
+  they are not impossible.
+
+The decision to stay without a nonce stands for now. SPEC-0027 proposes staged hardening and a trial of
+both routes before `'unsafe-inline'` is removed.

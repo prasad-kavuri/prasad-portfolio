@@ -1,6 +1,6 @@
 # SPEC-0027: Harden the Content Security Policy in stages
 
-**Status**: Draft (proposal only; no CSP code is changed by this spec)
+**Status**: In Progress. Stage 1 implemented 2026-10-12; stages 2 to 4 are proposals.
 **Date**: 2026-10-12
 
 ## What
@@ -22,7 +22,7 @@ rolled back alone. Today every route gets the same policy: `script-src` allows `
 
 ## Stages
 
-1. **One source of truth (no behaviour change).** Build the policy string in one module used by both
+1. **One source of truth (no behaviour change). Done.** Build the policy string in one module used by both
    `next.config.ts` and `src/proxy.ts`. A test asserts both emit byte-identical policies, replacing the
    regex checks in `security-headers.test.ts`.
 2. **Per-route policy.** Pages outside the three demo routes drop `unsafe-eval`, `blob:`, the two CDN script
@@ -74,3 +74,13 @@ rolled back alone. Today every route gets the same policy: `script-src` allows `
 - Are there other pages that load the demo components, so the route list above is incomplete? Stage 2 must
   confirm this with a full crawl before enforcing.
 - Stage 4 route (nonce or SRI) is decided by the trial, not now.
+
+## Stage 1 result
+
+`src/lib/csp.ts` builds the policy once; `next.config.ts` and `src/proxy.ts` both import it.
+`src/__tests__/lib/csp.test.ts` holds a snapshot of the pre-refactor policy as directive sets and checks that
+the shared string equals it, and that each delivery point sends that exact string. Directive and source order
+changed (the two old copies differed in order and in a trailing semicolon); a browser treats the policies as
+equal. A production build served locally returned one policy header on `/`, `/demos/quantization`,
+`/api/context` and `/for-recruiters`, each equal as directive sets to the old policy.
+Not done: loading the demos in a real browser, which is not needed for a policy that did not change.

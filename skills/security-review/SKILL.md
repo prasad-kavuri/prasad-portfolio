@@ -78,7 +78,7 @@ Required headers and values:
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
 | `Permissions-Policy` | Restrict camera, microphone, geolocation |
 
-CSP changes require updates in BOTH `next.config.ts` AND `src/proxy.ts` — see ADR-0003.
+CSP changes are made in `src/lib/csp.ts` (sent by `src/proxy.ts`) — see ADR-0003 and SPEC-0027.
 Validate with: `https://csp-evaluator.withgoogle.com`
 
 ## Phase 5 — Application security checks

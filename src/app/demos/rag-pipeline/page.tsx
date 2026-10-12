@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { RequireFullCsp } from '@/components/RequireFullCsp';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -472,6 +473,7 @@ export default function RAGPipelinePage() {
 
   return (
     <div className="min-h-[100svh] bg-background p-6 text-foreground">
+      <RequireFullCsp />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">

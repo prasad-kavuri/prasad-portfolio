@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { RequireFullCsp } from '@/components/RequireFullCsp';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -179,6 +180,7 @@ export default function EdgeAgentCollaborationPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <RequireFullCsp />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Sticky header */}

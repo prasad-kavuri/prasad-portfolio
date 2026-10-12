@@ -7,7 +7,17 @@ import { describe, expect, it } from 'vitest';
 import { NextRequest } from 'next/server';
 import nextConfig from '../../../next.config';
 import { proxy } from '../../proxy';
-import { CONTENT_SECURITY_POLICY, CSP_DIRECTIVES, buildCsp } from '@/lib/csp';
+import { readdirSync, readFileSync, statSync } from 'fs';
+import { join } from 'path';
+import {
+  CONTENT_SECURITY_POLICY,
+  CSP_DIRECTIVES,
+  FULL_CSP_ROUTES,
+  STRICT_CONTENT_SECURITY_POLICY,
+  buildCsp,
+  cspForPath,
+  cspTierFor,
+} from '@/lib/csp';
 
 const BASELINE: Record<string, string> = {
   'default-src': "'self'",
@@ -62,17 +72,83 @@ describe('shared CSP (SPEC-0027 stage 1)', () => {
     expect(buildCsp([['a', ['x', 'y']], ['b', []]])).toBe('a x y; b');
   });
 
-  it('next.config.ts sends the shared policy on every route', async () => {
+  it('next.config.ts no longer sets a CSP, so a route never gets two different policies', async () => {
     const rules = await nextConfig.headers!();
-    const catchAll = rules.find((rule) => rule.source === '/(.*)');
-    const value = catchAll?.headers.find((h) => h.key === 'Content-Security-Policy')?.value;
-    expect(value).toBe(CONTENT_SECURITY_POLICY);
+    for (const rule of rules) {
+      expect(rule.headers.map((h) => h.key), rule.source).not.toContain('Content-Security-Policy');
+    }
   });
 
-  it('proxy.ts sends the same string on pages and on API routes', async () => {
-    const page = await proxy(new NextRequest('https://www.prasadkavuri.com/demos'));
-    const api = await proxy(new NextRequest('https://www.prasadkavuri.com/api/context', { headers: { 'x-forwarded-for': '203.0.113.77' } }));
-    expect(page.headers.get('Content-Security-Policy')).toBe(CONTENT_SECURITY_POLICY);
-    expect(api.headers.get('Content-Security-Policy')).toBe(CONTENT_SECURITY_POLICY);
+  it('proxy.ts sends the full policy on the three WASM demos and the strict policy elsewhere', async () => {
+    const get = async (path: string) =>
+      (await proxy(new NextRequest(`https://www.prasadkavuri.com${path}`, { headers: { 'x-forwarded-for': '203.0.113.77' } }))) as Response;
+    for (const route of FULL_CSP_ROUTES) {
+      const res = await get(route);
+      expect(res.headers.get('Content-Security-Policy'), route).toBe(CONTENT_SECURITY_POLICY);
+      expect(res.headers.get('Server-Timing'), route).toContain('csp;desc="full"');
+    }
+    for (const route of ['/', '/demos', '/demos/llm-router', '/demos/rag-pipeline-extra', '/governance']) {
+      const res = await get(route);
+      expect(res.headers.get('Content-Security-Policy'), route).toBe(STRICT_CONTENT_SECURITY_POLICY);
+      expect(res.headers.get('Server-Timing'), route).toContain('csp;desc="strict"');
+    }
+    const api = await get('/api/context');
+    expect(api.headers.get('Content-Security-Policy')).toBe(STRICT_CONTENT_SECURITY_POLICY);
+    expect(api.headers.get('Server-Timing') ?? '').not.toContain('csp;');
+  });
+
+  it('cspTierFor matches routes exactly, with sub-paths and a trailing slash', () => {
+    expect(cspTierFor('/demos/quantization')).toBe('full');
+    expect(cspTierFor('/demos/quantization/')).toBe('full');
+    expect(cspTierFor('/demos/quantization/x')).toBe('full');
+    expect(cspTierFor('/demos/quantization-x')).toBe('strict');
+    expect(cspTierFor('/')).toBe('strict');
+    expect(cspForPath('/about')).toBe(STRICT_CONTENT_SECURITY_POLICY);
+  });
+});
+
+describe('strict CSP (SPEC-0027 stage 2)', () => {
+  const strict = parse(STRICT_CONTENT_SECURITY_POLICY);
+  const full = parse(CONTENT_SECURITY_POLICY);
+
+  it('drops eval, WASM, blob script, CDN script origins and model hosts', () => {
+    const script = strict['script-src'].split(' ');
+    for (const banned of ["'unsafe-eval'", "'wasm-unsafe-eval'", 'blob:', 'https://cdn.jsdelivr.net', 'https://unpkg.com']) {
+      expect(script, banned).not.toContain(banned);
+    }
+    expect(strict['worker-src']).toBe("'self'");
+    expect(strict['connect-src']).not.toMatch(/huggingface|hf\.co|jsdelivr|unpkg|groq|blob:/);
+  });
+
+  it('never grants more than the full policy, directive by directive', () => {
+    for (const [name, value] of Object.entries(strict)) {
+      const allowed = new Set(full[name].split(' '));
+      for (const source of value.split(' ').filter(Boolean)) expect(allowed.has(source), `${name} ${source}`).toBe(true);
+    }
+  });
+
+  it('keeps the non-script hardening directives identical', () => {
+    for (const name of ['frame-ancestors', 'base-uri', 'form-action', 'object-src', 'upgrade-insecure-requests', 'default-src']) {
+      expect(strict[name]).toBe(full[name]);
+    }
+  });
+
+  it('every page that loads the browser model runtime is on the full-policy list', () => {
+    const walk = (dir: string): string[] =>
+      readdirSync(dir).flatMap((name) => {
+        const path = join(dir, name);
+        return statSync(path).isDirectory() ? walk(path) : [path];
+      });
+    const users = walk('src/app')
+      .filter((f) => /page\.tsx$/.test(f))
+      .filter((f) => /transformers-loader|edge-inference|@huggingface\/transformers|onnxruntime/.test(readFileSync(f, 'utf8')))
+      .map((f) => '/' + f.replace(/^src\/app\//, '').replace(/\/page\.tsx$/, ''));
+    expect(users.sort()).toEqual([...FULL_CSP_ROUTES].sort());
+  });
+
+  it('every full-policy page renders the reload guard', () => {
+    for (const route of FULL_CSP_ROUTES) {
+      expect(readFileSync(`src/app${route}/page.tsx`, 'utf8'), route).toContain('<RequireFullCsp />');
+    }
   });
 });

@@ -26,4 +26,4 @@ COOP/COEP headers and the CSP are defined in **both** `next.config.ts` (applied 
 
 ## Update (2026-10-12)
 
-The policy string now lives once in `src/lib/csp.ts` (SPEC-0027 stage 1) and both locations import it, so the two copies can no longer drift. The two delivery points remain.
+The policy now lives once in `src/lib/csp.ts` (SPEC-0027 stage 1). From stage 2 only `src/proxy.ts` sends it, per route, and `next.config.ts` no longer sets a CSP, so the two-location arrangement this ADR describes is superseded for the CSP. COOP and COEP are still set in both places.

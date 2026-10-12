@@ -327,14 +327,14 @@ export default function GovernancePage() {
             <div className="mt-4 border-t border-border pt-4 space-y-2 text-xs text-muted-foreground">
               <p>
                 <span className="font-semibold text-foreground">CSP note:</span>{" "}
-                One Content Security Policy currently applies to every route. It permits{" "}
-                <code className="rounded bg-muted px-1 py-0.5">unsafe-inline</code> (Next.js inline
-                scripts), <code className="rounded bg-muted px-1 py-0.5">unsafe-eval</code>, and WASM
-                execution; the last two exist for the browser-native AI demos (RAG Pipeline,
-                Quantization, and the Edge Agent&apos;s PII redaction), which run ONNX/Transformers.js
-                models via WebAssembly directly in the browser — no server inference. Limiting the looser
-                rules to those demo pages and then removing{" "}
-                <code className="rounded bg-muted px-1 py-0.5">unsafe-inline</code> is proposed in SPEC-0027.
+                The three browser-AI demo pages (RAG Pipeline, Quantization, and the Edge Agent&apos;s PII
+                redaction) run ONNX/Transformers.js models via WebAssembly directly in the browser — no server
+                inference — so they get a Content Security Policy that permits{" "}
+                <code className="rounded bg-muted px-1 py-0.5">unsafe-eval</code>, WASM execution, blob
+                workers and the model-hosting origins. Every other page gets a stricter policy without those.
+                Both policies still permit{" "}
+                <code className="rounded bg-muted px-1 py-0.5">unsafe-inline</code> scripts for Next.js, which
+                SPEC-0027 stage 4 aims to remove.
               </p>
               <p>
                 <span className="font-semibold text-foreground">CORS posture:</span>{" "}

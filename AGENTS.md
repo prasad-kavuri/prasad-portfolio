@@ -40,7 +40,7 @@ Read `CONTEXT.md` at the repo root before any coding session. It defines the can
 Key ADRs in `docs/adr/` explain the most surprising architectural decisions:
 - `0001` — LLM calls are server-only (never from the browser)
 - `0002` — Named exports only (no `export default` except page files)
-- `0003` — CSP/WASM headers live in both `next.config.ts` AND `src/proxy.ts`
+- `0003` — CSP is built in `src/lib/csp.ts` and sent per route by `src/proxy.ts`; COOP/COEP stay in both `next.config.ts` and the proxy
 - `0004` — `useBrowserAI` hook is mandatory for all browser demos
 - `0005` — LLM Router dispatches to Groq only (no multi-provider fan-out)
 - `0006` — `llms.txt` is the canonical plain-text portfolio for LLM crawlers
@@ -166,7 +166,7 @@ Definition of Done:
 3. Validate ALL inputs at route entry (length, type, schema) — reject before LLM call
 4. Run user input through `enforceGuardrails` (or `checkInput`) from `src/lib/guardrails.ts`
 5. Never add `output: 'export'` to next.config.ts (breaks API routes)
-6. Security headers live in BOTH `next.config.ts` AND `src/proxy.ts` — update both if needed
+6. The CSP lives in `src/lib/csp.ts` and is sent only by `src/proxy.ts`, with a stricter policy on every page except the three browser-WASM demos (SPEC-0027). Other security headers live in BOTH `next.config.ts` AND `src/proxy.ts` — update both if needed
 7. Middleware export is named `proxy` in `src/proxy.ts` (non-standard — check before editing)
 
 ## Security Scope

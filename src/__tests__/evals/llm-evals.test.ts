@@ -88,9 +88,11 @@ describe('LLM Eval: Portfolio Assistant', () => {
     expect(src).toMatch(/import profile from/);
   });
 
-  it('prompt injection guard: route calls detectPromptInjection on user input', () => {
+  it('prompt injection guard: route screens the whole conversation, built on detectPromptInjection', () => {
+    // SPEC-0024: the route screens the full client-supplied history, not just the newest message.
     const src = readSource('src/app/api/portfolio-assistant/route.ts');
-    expect(src).toMatch(/detectPromptInjection/);
+    expect(src).toMatch(/screenConversation\(messages\)/);
+    expect(readSource('src/lib/conversation-guard.ts')).toMatch(/detectPromptInjection/);
   });
 
   it('input length validated: message content >1000 chars returns 400', async () => {

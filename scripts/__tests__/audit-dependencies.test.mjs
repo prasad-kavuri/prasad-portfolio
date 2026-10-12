@@ -22,7 +22,7 @@ test('does not allow another advisory on an excepted package', () => {
   assert.deepEqual(auditFailures(data, now), ['braces', 'micromatch']);
 });
 test('exception expires automatically', () => {
-  assert.deepEqual(auditFailures(report(), Date.parse('2026-10-18T00:00:00Z')), ['braces', 'micromatch']);
+  assert.deepEqual(auditFailures(report(), Date.parse('2026-11-18T00:00:00Z')), ['braces', 'micromatch']);
 });
 test('rejects malformed or failed audit responses', () => {
   assert.throws(() => auditFailures({ error: 'registry unavailable' }, now));

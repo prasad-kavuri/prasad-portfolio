@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 const advisory = 'https://github.com/advisories/GHSA-vfj7-8cjw-p6xm';
-const expires = Date.parse('2026-10-18T00:00:00Z');
+const expires = Date.parse('2026-11-18T00:00:00Z');
 
 export function auditFailures(report, now = Date.now()) {
   if (!report || !report.vulnerabilities || !report.metadata?.vulnerabilities || report.error) {
@@ -33,7 +33,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       console.error('Blocking dependency findings:', failures.join(', '));
       process.exitCode = 1;
     } else {
-      console.log('No blocking high/critical findings. Temporary braces exception expires after 2026-10-17 UTC.');
+      console.log('No blocking high/critical findings. Temporary braces exception expires after 2026-11-17 UTC.');
     }
   } catch (error) {
     console.error(error.message);

@@ -14,6 +14,8 @@ export interface RedTeamCaseReport {
   risks: string[];
   expected: RedTeamExpectation;
   result: RedTeamResult;
+  /** Conversation length for multi-turn cases (SPEC-0024); absent for single-shot cases. */
+  turns?: number;
   /** True when the result matches the expectation (a documented known gap that still misses counts as passing). */
   asExpected: boolean;
   mitigation?: string;
@@ -30,6 +32,8 @@ export interface RedTeamReport {
     benign: number;
     falsePositives: number;
     unexpected: number;
+    /** The multi-turn subset (SPEC-0024): conversations where any turn that gets through fails the whole case. */
+    multiTurn: { cases: number; attacks: number; attacksBlocked: number; knownGaps: number };
   };
   byLayer: Record<string, { attacks: number; blocked: number }>;
   byRisk: Record<string, { attacks: number; blocked: number }>;
@@ -58,6 +62,7 @@ function runCase(c: RedTeamCase): RedTeamCaseReport {
     expected: c.expected,
     result,
     asExpected,
+    ...(c.turns ? { turns: c.turns } : {}),
     ...(c.mitigation ? { mitigation: c.mitigation } : {}),
   };
 }
@@ -74,6 +79,8 @@ export function runRedTeam(cases: RedTeamCase[] = RED_TEAM_CASES): RedTeamReport
       byRisk[risk] = { attacks: (byRisk[risk]?.attacks ?? 0) + 1, blocked: (byRisk[risk]?.blocked ?? 0) + blocked };
     }
   }
+  const multi = reports.filter((r) => r.turns !== undefined);
+  const multiAttacks = multi.filter((r) => r.expected !== 'allowed');
   return {
     suite: 'prasadkavuri.com red-team corpus (SPEC-0023)',
     frameworks: ['OWASP Top 10 for LLM Applications 2025', 'OWASP Top 10 for Agentic Applications 2026'],
@@ -85,6 +92,12 @@ export function runRedTeam(cases: RedTeamCase[] = RED_TEAM_CASES): RedTeamReport
       benign: reports.length - attacks.length,
       falsePositives: reports.filter((r) => r.result === 'false_positive').length,
       unexpected: reports.filter((r) => !r.asExpected).length,
+      multiTurn: {
+        cases: multi.length,
+        attacks: multiAttacks.length,
+        attacksBlocked: multiAttacks.filter((r) => r.result === 'blocked').length,
+        knownGaps: multi.filter((r) => r.expected === 'known_gap').length,
+      },
     },
     byLayer,
     byRisk,

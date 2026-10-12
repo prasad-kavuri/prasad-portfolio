@@ -28,6 +28,8 @@ const LAYER_LABELS: Record<string, string> = {
   'agent-policy': 'Agent policy',
   'human-approval': 'Human approval',
   'release-gate': 'Release gate',
+  'conversation-guard': 'Conversation guard',
+  'multi-turn-agent': 'Multi-turn agent workflow',
 };
 
 const RESULT_STYLE: Record<RedTeamCaseReport['result'], { label: string; cls: string }> = {
@@ -40,6 +42,7 @@ const RESULT_STYLE: Record<RedTeamCaseReport['result'], { label: string; cls: st
 export default function RedTeamPage() {
   const report = runRedTeam();
   const { totals, byLayer, byRisk } = report;
+  const { multiTurn } = totals;
   const blockRate = totals.attacks ? Math.round((totals.attacksBlocked / totals.attacks) * 100) : 0;
   const attacks = report.cases.filter((c) => c.expected !== 'allowed');
   const risks = Object.entries(byRisk).sort(([a], [b]) => a.localeCompare(b));
@@ -104,6 +107,25 @@ export default function RedTeamPage() {
           </section>
 
           <section className="mb-10">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Multi-turn conversations</h2>
+            <p className="mb-3 max-w-3xl text-sm text-muted-foreground">
+              A refusal on the first prompt proves little. {multiTurn.attacks} scripted scenarios build rapport,
+              split a payload across turns, plant an injection early and ask something harmless last, forge
+              assistant history, or keep pushing on an approval after being told no. Two rules apply: any turn that
+              gets through fails the whole conversation, and the check is state (what text reached the model, whether
+              a payment was released), never what an agent said about it.
+            </p>
+            <Card className="max-w-md border-border bg-card p-4">
+              <p className="text-2xl font-semibold">{multiTurn.attacksBlocked}/{multiTurn.attacks}</p>
+              <p className="text-sm font-medium">Multi-turn attacks blocked</p>
+              <p className="text-xs text-muted-foreground">
+                {multiTurn.knownGaps} documented gaps. Before the assistant screened its whole history, 8 of 8
+                conversation attacks reached the model.
+              </p>
+            </Card>
+          </section>
+
+          <section className="mb-10">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">OWASP coverage</h2>
             <div className="flex flex-wrap gap-2">
               {risks.filter(([id]) => id !== 'false-positive').map(([id, v]) => (
@@ -124,6 +146,7 @@ export default function RedTeamPage() {
                     <th className="px-3 py-2 font-medium">ID</th>
                     <th className="px-3 py-2 font-medium">Attack</th>
                     <th className="px-3 py-2 font-medium">Layer</th>
+                    <th className="px-3 py-2 font-medium">Turns</th>
                     <th className="px-3 py-2 font-medium">OWASP</th>
                     <th className="px-3 py-2 font-medium">Result</th>
                   </tr>
@@ -137,6 +160,7 @@ export default function RedTeamPage() {
                         {c.mitigation && <span className="mt-0.5 block text-xs text-muted-foreground">Backstop: {c.mitigation}</span>}
                       </td>
                       <td className="px-3 py-2 text-xs text-muted-foreground">{LAYER_LABELS[c.layer] ?? c.layer}</td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground">{c.turns ?? 1}</td>
                       <td className="px-3 py-2 text-xs text-muted-foreground">{c.risks.filter((r) => r !== 'false-positive').join(', ')}</td>
                       <td className={`px-3 py-2 text-xs font-medium ${RESULT_STYLE[c.result].cls}`}>{RESULT_STYLE[c.result].label}</td>
                     </tr>
@@ -149,7 +173,7 @@ export default function RedTeamPage() {
           <section className="mb-10">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Notes</h2>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>The two documented gaps are semantic attacks a pattern guard cannot catch. Each lists the control that still prevents harm — payment release is decided by deterministic policy and a credentialed human approval, never by text in a request.</li>
+              <li>The {totals.knownGaps} documented gaps are semantic attacks a pattern guard cannot catch. Each lists the control that still prevents harm: payment release is decided by deterministic policy and a credentialed human approval, never by text in a request, and the public assistant has no tools and holds only public profile data.</li>
               <li>This corpus runs against the portfolio&apos;s own code. Scanning a live site with an external tool against production targets is only done against a preview deployment, with authorization, never against third-party systems.</li>
               <li>Machine-readable: <Link className="underline underline-offset-2" href="/api/security/red-team">/api/security/red-team</Link>. Related: <Link className="underline underline-offset-2" href="/enterprise-ai-operating-model">operating model</Link>, <Link className="underline underline-offset-2" href="/governance">governance</Link>, <Link className="underline underline-offset-2" href="/demos/governed-agent-platform">flagship agent</Link>.</li>
             </ul>

@@ -16,7 +16,8 @@ import { detectAnomaly, logAPIEvent, startTimer, recordSkillInvocation, createSp
 import { maybeCompact, type Message as CompactionMessage } from '@/lib/compaction';
 import { enforceCostControls } from '@/lib/cost-control';
 import { trackModelOutput } from '@/lib/drift-monitor';
-import { checkOutput, detectPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
+import { checkOutput, sanitizeLLMOutput } from '@/lib/guardrails';
+import { screenConversation } from '@/lib/conversation-guard';
 import { logQueryForEval } from '@/lib/query-log';
 import { makeCacheKey, getResponseCache, setResponseCache } from '@/lib/response-cache';
 
@@ -106,10 +107,17 @@ export async function POST(req: NextRequest) {
       logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'message_too_long', messageLength: lastUserMessage.content.length, status: 400 });
       return finalizeApiResponse(jsonError('Input too long', 400, { context }), context);
     }
-    if (lastUserMessage && detectPromptInjection(lastUserMessage.content).length > 0) {
-      logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
+    // The client supplies the whole history, so screen all of it (SPEC-0024): refuse when the newest
+    // message is at fault, and drop flagged earlier turns instead of forwarding them to the model.
+    const screening = screenConversation(messages);
+    if (screening.rejectCurrent && lastUserMessage) {
+      logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: screening.reason === 'split_payload' ? 'prompt_injection_split' : 'prompt_injection', messageLength: lastUserMessage.content.length, status: 400 });
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
     }
+    if (screening.dropped.length > 0) {
+      logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'history_sanitized', droppedTurns: screening.dropped.length });
+    }
+    const conversation = screening.messages as Message[];
     if (lastUserMessage) {
       const costControl = enforceCostControls({
         route: ROUTE,
@@ -184,7 +192,7 @@ ${fullContext}`;
     // Strategic compaction: summarise old turns after COMPACTION_TURN_THRESHOLD
     // to keep the context window lean and prevent hallucination drift.
     const compactionResult = await maybeCompact(
-      messages as CompactionMessage[],
+      conversation as CompactionMessage[],
       async (prompt: string) => {
         const compResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',

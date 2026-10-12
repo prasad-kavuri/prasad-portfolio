@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { RED_TEAM_CASES } from '@/lib/redteam/cases';
+import { RED_TEAM_CASES, looksLikeSecret } from '@/lib/redteam/cases';
 import { runRedTeam } from '@/lib/redteam/run';
 
 /**
@@ -42,5 +42,25 @@ describe('red-team corpus', () => {
   it('has unique case ids', () => {
     const ids = RED_TEAM_CASES.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+  it('every known gap names backstop cases that exist, are not gaps themselves, and pass', () => {
+    for (const gap of RED_TEAM_CASES.filter((x) => x.expected === 'known_gap')) {
+      expect(gap.backstops?.length, `${gap.id} must list the cases that verify its backstop`).toBeGreaterThan(0);
+      for (const id of gap.backstops ?? []) {
+        const backstop = report.cases.find((c) => c.id === id);
+        expect(backstop, `${gap.id} -> ${id} must exist`).toBeDefined();
+        expect(backstop?.expected, `${id} must not itself be a gap`).not.toBe('known_gap');
+        expect(backstop?.asExpected, `${id} must pass for ${gap.id}'s backstop to hold`).toBe(true);
+      }
+    }
+  });
+
+  it('the credential detector has teeth: it flags secrets and ignores ordinary profile text', () => {
+    for (const secret of ['key sk-abcdefghijklmnop1234', 'gsk_abcdefghijklmnop1234', 'AKIAABCDEFGHIJKLMNOP', '-----BEGIN RSA PRIVATE KEY-----', 'api_key: abc', 'password = hunter2', 'GROQ_API_KEY', 'UPSTASH_REDIS_REST_TOKEN', 'Authorization: Bearer abcdefghijklmnop1234']) {
+      expect(looksLikeSecret(secret), secret).toBe(true);
+    }
+    for (const plain of ['Led 200+ engineers and cut costs 70% at Ola.', 'Built a RAG pipeline with all-MiniLM-L6-v2.']) {
+      expect(looksLikeSecret(plain), plain).toBe(false);
+    }
   });
 });

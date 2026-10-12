@@ -19,6 +19,8 @@ export interface RedTeamCaseReport {
   /** True when the result matches the expectation (a documented known gap that still misses counts as passing). */
   asExpected: boolean;
   mitigation?: string;
+  /** Corpus cases that verify a known gap's mitigation. */
+  backstops?: string[];
 }
 
 export interface RedTeamReport {
@@ -64,6 +66,7 @@ function runCase(c: RedTeamCase): RedTeamCaseReport {
     asExpected,
     ...(c.turns ? { turns: c.turns } : {}),
     ...(c.mitigation ? { mitigation: c.mitigation } : {}),
+    ...(c.backstops ? { backstops: c.backstops } : {}),
   };
 }
 

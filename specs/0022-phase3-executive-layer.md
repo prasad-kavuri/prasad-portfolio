@@ -7,8 +7,8 @@
 
 1. **Leadership-first information architecture.**
    - Primary nav: Leadership · Operating Model · Platform (flagship first, then catalog and deep dives) ·
-     Perspectives · About & Contact · Resume. "For Recruiters" stays reachable from the footer and the
-     recruiter pages, not the primary nav.
+     Perspectives · About & Contact · Resume. "For Recruiters" was kept out of the primary nav here;
+     SPEC-0026 later added it after About & Contact.
    - Homepage order: Hero → Experience → Case Studies → Transformation → AI Tools → Architecture →
      Expertise → Perspectives → Testimonials → Contact.
    - Hero: primary CTA is "Leadership & Case Studies"; the recruiter dashboard becomes a secondary

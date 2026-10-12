@@ -30,6 +30,7 @@ const LAYER_LABELS: Record<string, string> = {
   'release-gate': 'Release gate',
   'conversation-guard': 'Conversation guard',
   'multi-turn-agent': 'Multi-turn agent workflow',
+  'data-boundary': 'Data boundary',
 };
 
 const RESULT_STYLE: Record<RedTeamCaseReport['result'], { label: string; cls: string }> = {
@@ -157,7 +158,7 @@ export default function RedTeamPage() {
                       <td className="px-3 py-2 font-mono text-xs">{c.id}</td>
                       <td className="px-3 py-2">
                         {c.title}
-                        {c.mitigation && <span className="mt-0.5 block text-xs text-muted-foreground">Backstop: {c.mitigation}</span>}
+                        {c.mitigation && <span className="mt-0.5 block text-xs text-muted-foreground">Backstop: {c.mitigation}{c.backstops && ` Verified by ${c.backstops.join(', ')}.`}</span>}
                       </td>
                       <td className="px-3 py-2 text-xs text-muted-foreground">{LAYER_LABELS[c.layer] ?? c.layer}</td>
                       <td className="px-3 py-2 text-xs text-muted-foreground">{c.turns ?? 1}</td>

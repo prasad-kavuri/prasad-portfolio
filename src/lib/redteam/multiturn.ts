@@ -70,7 +70,7 @@ function conversationGap(
   risks = ['LLM01'],
 ): RedTeamCase {
   return {
-    id, title, layer: 'conversation-guard', technique, risks, expected: 'known_gap', mitigation, turns: script.length,
+    id, title, layer: 'conversation-guard', technique, risks, expected: 'known_gap', mitigation, backstops: ['BK-01'], turns: script.length,
     probe: () => neverForwarded(replay(script), marker),
   };
 }
@@ -85,7 +85,7 @@ function conversationBenign(
 }
 
 const NO_SECRETS =
-  'The assistant has no tools and its context holds only public profile data, so there is nothing to exfiltrate or act on; its output still passes the output guard and sanitizer.';
+  'The assistant has no tools and its context holds only public profile data, so there is nothing to exfiltrate or act on (BK-01; the no-tools claim is asserted in the portfolio-assistant route test); its output still passes the output guard and sanitizer.';
 
 // Conversation scripts shared by an attack and its benign counterpart.
 const RAPPORT = [

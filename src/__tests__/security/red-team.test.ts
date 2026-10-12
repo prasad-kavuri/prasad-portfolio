@@ -56,7 +56,9 @@ describe('red-team corpus', () => {
   });
 
   it('the credential detector has teeth: it flags secrets and ignores ordinary profile text', () => {
-    for (const secret of ['key sk-abcdefghijklmnop1234', 'gsk_abcdefghijklmnop1234', 'AKIAABCDEFGHIJKLMNOP', '-----BEGIN RSA PRIVATE KEY-----', 'api_key: abc', 'password = hunter2', 'GROQ_API_KEY', 'UPSTASH_REDIS_REST_TOKEN', 'Authorization: Bearer abcdefghijklmnop1234']) {
+    // Assemble the synthetic AWS fixture so repository scanners do not flag it.
+    const fakeAwsKey = ['AKIA', 'ABCDEFGHIJKLMNOP'].join('');
+    for (const secret of ['key sk-abcdefghijklmnop1234', 'gsk_abcdefghijklmnop1234', fakeAwsKey, '-----BEGIN RSA PRIVATE KEY-----', 'api_key: abc', 'password = hunter2', 'GROQ_API_KEY', 'UPSTASH_REDIS_REST_TOKEN', 'Authorization: Bearer abcdefghijklmnop1234']) {
       expect(looksLikeSecret(secret), secret).toBe(true);
     }
     for (const plain of ['Led 200+ engineers and cut costs 70% at Ola.', 'Built a RAG pipeline with all-MiniLM-L6-v2.']) {

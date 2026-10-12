@@ -6,7 +6,8 @@ import { ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 // Executive-first information architecture (SPEC-0022):
-// Leadership · Operating Model · Platform · Perspectives · About & Contact
+// Leadership · Operating Model · Platform · Perspectives · About & Contact · For Recruiters · Resume
+// (For Recruiters added by SPEC-0026: recruiters and hiring managers were not finding it in the footer.)
 const leadLinks = [
   { href: "/#experience", label: "Leadership" },
   { href: "/enterprise-ai-operating-model", label: "Operating Model" },
@@ -30,6 +31,7 @@ const platformLinks = [
 const trailLinks = [
   { href: "/perspectives", label: "Perspectives" },
   { href: "/about", label: "About & Contact" },
+  { href: "/for-recruiters", label: "For Recruiters" },
   { href: "/prasad-kavuri-vp-ai-engineering-2026.pdf", label: "Resume" },
 ];
 

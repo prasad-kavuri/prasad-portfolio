@@ -26,7 +26,11 @@ describe('executive layer (SPEC-0022)', () => {
     const order = ['"Leadership"', '"Operating Model"', 'Flagship: Governed Agent Platform', '"Perspectives"', '"About & Contact"'].map((l) => nav.indexOf(l));
     expect(order.every((i) => i >= 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
-    expect(nav).not.toContain('"For Recruiters"');
+    // SPEC-0026: recruiters get a plain link, placed after the executive items and before the resume.
+    const tail = ['"About & Contact"', '"For Recruiters"', '"Resume"'].map((l) => nav.indexOf(l));
+    expect(tail.every((i) => i >= 0)).toBe(true);
+    expect([...tail].sort((a, b) => a - b)).toEqual(tail);
+    expect(nav).toContain('href: "/for-recruiters"');
   });
 
   it('no page claims a title Prasad does not hold', () => {

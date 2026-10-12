@@ -20,8 +20,11 @@ enterprise reliability — ships AI systems that are observable, governed, and c
 ## Strategic Impact
 
 ### Zip — Head of AI Platform & Agentic Solutions (July 2026 - Present)
-- Leading enterprise AI platform strategy and agentic AI capability development at Zip
-- Partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment
+- Leading the strategy, architecture, and development of Zip's enterprise AI platform on Google Cloud and the Gemini Enterprise Agent Platform, supporting internal business workflows and customer-facing agent experiences.
+- Building reusable platform foundations for agent orchestration, enterprise knowledge and tool integration, model selection, evaluation, observability, and AI FinOps.
+- Developing a governed agent-building experience that connects specification, planning, implementation, and sandbox validation through reusable capabilities and patterns.
+- Defining the roadmap for customer-facing payment and support agents that combine deterministic business rules with model reasoning, authorization, human oversight, and controlled execution of consequential actions.
+- Partnering across Engineering, Product, Data, Risk, and Security to align platform delivery, adoption, and specialist engineering capabilities in a regulated financial-services environment.
 
 ### Krutrim — Head of AI Engineering (March 2025 - June 2026)
 - Architected India's first Agentic AI platform (Kruti.ai) from zero to production

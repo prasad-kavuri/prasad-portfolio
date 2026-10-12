@@ -8,16 +8,38 @@
     "linkedin": "https://linkedin.com/in/pkavuri",
     "portfolio": "https://www.prasadkavuri.com",
     "github": "https://github.com/prasad-kavuri",
-    "languages": ["English", "Hindi", "Telugu", "Urdu"],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu",
+      "Urdu"
+    ],
     "summary": "I build production AI platforms that scale — not demos or isolated proofs of concept. Over 20 years, I have led global engineering organizations across enterprise platforms, distributed systems, autonomous driving, mapping, generative AI, and agentic systems spanning mobility and financial services. My work has focused on turning emerging technology into trusted production capabilities with measurable business outcomes. At Zip, I lead AI Platform and Agentic Solutions, building the platform foundations that enable AI systems, agents, intelligent workflows, and decision systems to operate safely and at scale in a regulated financial-services environment. Previously, at Krutrim and Ola, I led the architecture and delivery of agentic AI and large-scale platform capabilities spanning multi-model orchestration, multimodal systems, AI governance, evaluation frameworks, observability, and intelligent routing. Across my career, I have led organizations of more than 200 engineers and delivered major improvements in platform cost, reliability, adoption, and speed. I work at the intersection of AI platform strategy, agentic architecture, governance, FinOps, developer enablement, and organizational transformation. The problem I care most about is closing the gap between an impressive AI demonstration and a production system that people, businesses, and regulators can trust.",
-    "pills": ["Agentic AI", "Enterprise AI Platforms", "AI Governance", "AI FinOps"]
+    "pills": [
+      "Agentic AI",
+      "Enterprise AI Platforms",
+      "AI Governance",
+      "AI FinOps"
+    ]
   },
   "stats": [
-  { "value": "20+", "label": "Years Experience" },
-  { "value": "200+", "label": "Engineers Led" },
-  { "value": "13K+", "label": "B2B Customers Enabled" },
-  { "value": "Up to 70%", "label": "Cost Reduction Delivered" }
-],
+    {
+      "value": "20+",
+      "label": "Years Experience"
+    },
+    {
+      "value": "200+",
+      "label": "Engineers Led"
+    },
+    {
+      "value": "13K+",
+      "label": "B2B Customers Enabled"
+    },
+    {
+      "value": "Up to 70%",
+      "label": "Cost Reduction Delivered"
+    }
+  ],
   "experience": [
     {
       "id": "zip",
@@ -28,9 +50,20 @@
       "location": "Naperville, IL",
       "duration": "Present",
       "highlights": [
-        "Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale."
+        "Leading the strategy, architecture, and development of Zip's enterprise AI platform on Google Cloud and the Gemini Enterprise Agent Platform, supporting internal business workflows and customer-facing agent experiences.",
+        "Building reusable platform foundations for agent orchestration, enterprise knowledge and tool integration, model selection, evaluation, observability, and AI FinOps.",
+        "Developing a governed agent-building experience that connects specification, planning, implementation, and sandbox validation through reusable capabilities and patterns.",
+        "Defining the roadmap for customer-facing payment and support agents that combine deterministic business rules with model reasoning, authorization, human oversight, and controlled execution of consequential actions.",
+        "Partnering across Engineering, Product, Data, Risk, and Security to align platform delivery, adoption, and specialist engineering capabilities in a regulated financial-services environment."
       ],
-      "tags": ["Agentic AI", "Enterprise AI Platforms", "AI Governance", "AI FinOps"]
+      "tags": [
+        "Agentic AI",
+        "Enterprise AI Platforms",
+        "Google Cloud",
+        "Gemini Enterprise Agent Platform",
+        "AI Governance",
+        "AI FinOps"
+      ]
     },
     {
       "id": "krutrim",
@@ -48,7 +81,13 @@
         "Drove 50% latency reduction and 40% cost savings through multimodal Agentic AI architecture and intelligent model routing.",
         "Defined SDK/API integration strategy that accelerated enterprise client adoption and expanded the Kruti.ai agent ecosystem across external partners."
       ],
-      "tags": ["Agentic AI", "LLM Orchestration", "RAG", "Vector Search", "PaaS"]
+      "tags": [
+        "Agentic AI",
+        "LLM Orchestration",
+        "RAG",
+        "Vector Search",
+        "PaaS"
+      ]
     },
     {
       "id": "ola",
@@ -65,7 +104,12 @@
         "Built and led cross-functional engineering teams across the US and India, accelerating delivery velocity and driving adoption across electric mobility and transport sectors.",
         "Directed $8M–$15M annual engineering budget, achieving 70% infrastructure cost reduction while expanding platform capabilities and B2B customer reach."
       ],
-      "tags": ["B2B Platform", "Cloud-Native", "AI Route Optimization", "Fleet Management"]
+      "tags": [
+        "B2B Platform",
+        "Cloud-Native",
+        "AI Route Optimization",
+        "Fleet Management"
+      ]
     },
     {
       "id": "here-head",
@@ -79,7 +123,11 @@
         "Directed global engineering for AI/ML infrastructure enabling autonomous driving",
         "Led global team building core infrastructure for ML/AI products"
       ],
-      "tags": ["Infrastructure", "AI/ML", "Autonomous Driving"]
+      "tags": [
+        "Infrastructure",
+        "AI/ML",
+        "Autonomous Driving"
+      ]
     },
     {
       "id": "here-director",
@@ -95,7 +143,12 @@
         "Supported major OEM autonomous driving platforms",
         "Managed $10M–$20M annual engineering budget for global HD mapping and autonomous driving AI infrastructure programs."
       ],
-      "tags": ["Autonomous Driving", "HD Mapping", "Global Teams", "OEM"]
+      "tags": [
+        "Autonomous Driving",
+        "HD Mapping",
+        "Global Teams",
+        "OEM"
+      ]
     },
     {
       "id": "here-sr-manager",
@@ -109,7 +162,11 @@
         "Drove engineering transformation with Agile practices",
         "Adopted scalable infrastructure across teams"
       ],
-      "tags": ["Engineering Management", "Agile", "Infrastructure"]
+      "tags": [
+        "Engineering Management",
+        "Agile",
+        "Infrastructure"
+      ]
     },
     {
       "id": "here-manager",
@@ -123,7 +180,11 @@
         "Introduced Agile and cloud practices improving release cycles",
         "Transitioned to cloud-based pipelines"
       ],
-      "tags": ["Map Products", "Cloud", "Agile"]
+      "tags": [
+        "Map Products",
+        "Cloud",
+        "Agile"
+      ]
     },
     {
       "id": "here-lead",
@@ -136,7 +197,10 @@
         "Developed infrastructure and tools for scalable mapping products",
         "Supported transformation to new content delivery models"
       ],
-      "tags": ["Infrastructure", "Mapping"]
+      "tags": [
+        "Infrastructure",
+        "Mapping"
+      ]
     },
     {
       "id": "here-engineer",
@@ -148,7 +212,10 @@
       "highlights": [
         "Built foundational map data pipelines and tools powering navigation systems"
       ],
-      "tags": ["Map Data", "Navigation"]
+      "tags": [
+        "Map Data",
+        "Navigation"
+      ]
     },
     {
       "id": "paradigm",
@@ -161,7 +228,10 @@
         "Developed GUI and Middle Tier using C# on .NET architecture",
         "Participated in full development lifecycle from design to deployment"
       ],
-      "tags": ["C#", ".NET"]
+      "tags": [
+        "C#",
+        ".NET"
+      ]
     },
     {
       "id": "denizens",
@@ -174,7 +244,11 @@
         "Created and executed test plans for pharmacy applications",
         "Drove continuous integration for Shoppers Drug Mart web store"
       ],
-      "tags": ["QA", "Testing", "CI"]
+      "tags": [
+        "QA",
+        "Testing",
+        "CI"
+      ]
     },
     {
       "id": "evision",
@@ -186,7 +260,10 @@
       "highlights": [
         "Designed, implemented, supported, and managed complex data networks"
       ],
-      "tags": ["Networking", "Infrastructure"]
+      "tags": [
+        "Networking",
+        "Infrastructure"
+      ]
     }
   ],
   "education": [
@@ -229,7 +306,9 @@
       "LLM Ops & MLOps"
     ],
     "cloud_infrastructure": [
-      "AWS", "Azure", "GCP",
+      "AWS",
+      "Azure",
+      "GCP",
       "Kubernetes & Microservices",
       "CI/CD & DevOps",
       "Infrastructure as Code",

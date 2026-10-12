@@ -28,8 +28,14 @@
       "name": "Zip",
       "position": "Head of AI Platform & Agentic Solutions",
       "startDate": "2026-07-01",
-      "summary": "Leading enterprise AI platform strategy and agentic AI capability development at Zip, partnering across Engineering, Product, Data, Risk, and Security to operationalize AI safely and responsibly at scale in a regulated financial-services environment.",
-      "highlights": []
+      "summary": "Leading the strategy, architecture, and development of Zip's enterprise AI platform on Google Cloud and the Gemini Enterprise Agent Platform, for internal business workflows and customer-facing agent experiences. Remit spans reusable agent capabilities, a governed agent-building experience, secure enterprise integration, model selection, evaluation, observability, and AI FinOps, plus the roadmap for payment and support agents with policy controls and human oversight for consequential actions, in a regulated financial-services environment.",
+      "highlights": [
+        "Leading the strategy, architecture, and development of Zip's enterprise AI platform on Google Cloud and the Gemini Enterprise Agent Platform, supporting internal business workflows and customer-facing agent experiences.",
+        "Building reusable platform foundations for agent orchestration, enterprise knowledge and tool integration, model selection, evaluation, observability, and AI FinOps.",
+        "Developing a governed agent-building experience that connects specification, planning, implementation, and sandbox validation through reusable capabilities and patterns.",
+        "Defining the roadmap for customer-facing payment and support agents that combine deterministic business rules with model reasoning, authorization, human oversight, and controlled execution of consequential actions.",
+        "Partnering across Engineering, Product, Data, Risk, and Security to align platform delivery, adoption, and specialist engineering capabilities in a regulated financial-services environment."
+      ]
     },
     {
       "name": "Krutrim",
@@ -126,7 +132,12 @@
   "interests": [
     {
       "name": "Applied AI",
-      "keywords": ["Production AI", "Agentic Systems", "Responsible AI", "AI Governance"]
+      "keywords": [
+        "Production AI",
+        "Agentic Systems",
+        "Responsible AI",
+        "AI Governance"
+      ]
     }
   ],
   "meta": {

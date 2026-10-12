@@ -1,0 +1,31 @@
+run_id: 2026-10-04-self-heal-skill-security
+date: '2026-10-04'
+skill: self-heal
+profile: testing
+failure_type: security-workflow
+root_cause: SkillSpector treats repository references outside the skill bundle as incomplete analysis.
+decision: Separate skill and application scan scopes, approved by repository owner.
+files_changed:
+  - .github/workflows/skill-security.yml
+  - .github/scripts/skill_security.py
+  - .github/scripts/skill_security_test.py
+  - .github/skill-security-scope.json
+  - docs/SKILL_SECURITY_SCOPE.md
+verification:
+  gate_regression_tests: 17 passed
+  real_scoped_scan: passed with 32 reviewed reference exceptions and 2 medium findings
+  sarif_completeness: partial, preserved unchanged
+  sarif_schema: valid
+  workflow_yaml: valid
+  typescript: passed
+  lint: 0 errors, 10 existing warnings
+  unit_tests: 1178 passed in 123 files
+  build: passed with webpack; local Turbopack blocked by OS permission in prior attempt
+  dependency_policy: passed, existing braces exception expires after 2026-10-17 UTC
+  raw_npm_audit: 8 existing high findings in braces dependency chain, not fixed here
+  remote_ci: pending push
+production_changes: none
+limitations:
+  - SkillSpector does not inspect application code under this scoped policy.
+  - Separate application CI checks must also pass before merge.
+  - No branch-protection settings changed.

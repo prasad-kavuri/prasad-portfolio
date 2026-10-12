@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { CONTENT_SECURITY_POLICY } from "./src/lib/csp";
 import { LEGACY_HTML_REDIRECTS, RETIRED_DEMO_REDIRECTS } from "./src/data/legacy-routes";
 
 const nextConfig: NextConfig = {
@@ -53,26 +54,8 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              // unsafe-eval required for WASM JIT compilation (Transformers.js / ONNX Runtime Web)
-              // blob: required for Transformers.js WASM worker bootstrap
-              "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net https://unpkg.com",
-              // worker-src blob: required for WASM web workers spun up by @xenova/transformers
-              "worker-src 'self' blob:",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https:",
-              // huggingface.co for model weights; api.groq.com for server demo calls; blob: for local object-URL fetches
-              // xethub.hf.co: HuggingFace migrated model CDN to XetHub (2025)
-              "connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://cdn-lfs-us-1.huggingface.co https://xethub.hf.co https://*.xethub.hf.co https://cdn.jsdelivr.net https://unpkg.com https://va.vercel-scripts.com blob:",
-              "font-src 'self' data:",
-              "frame-ancestors 'none'",
-              // Additional hardening directives
-              "base-uri 'self'",
-              "form-action 'self'",
-              "object-src 'none'",
-              "upgrade-insecure-requests",
-            ].join("; "),
+            // Built in src/lib/csp.ts and shared with src/proxy.ts (SPEC-0027 stage 1).
+            value: CONTENT_SECURITY_POLICY,
           },
           // Required for SharedArrayBuffer (used by WASM multi-threading)
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },

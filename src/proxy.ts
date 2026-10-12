@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { resolveLegacyHtmlPath } from '@/data/legacy-routes';
+import { CONTENT_SECURITY_POLICY } from '@/lib/csp';
 
 const WINDOW_MS = 60_000;
 const MAX_API_REQUESTS = 60;
@@ -35,10 +36,7 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()');
-  response.headers.set(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net https://unpkg.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.groq.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://cdn-lfs-us-1.huggingface.co https://xethub.hf.co https://*.xethub.hf.co https://cdn.jsdelivr.net https://unpkg.com https://va.vercel-scripts.com blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;"
-  );
+  response.headers.set('Content-Security-Policy', CONTENT_SECURITY_POLICY);
   response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
   // credentialless required: HuggingFace CDN does not send CORP headers;
   // require-corp blocks cross-origin model weight fetches on desktop Chrome

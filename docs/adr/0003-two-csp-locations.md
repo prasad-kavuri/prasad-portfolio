@@ -22,3 +22,8 @@ COOP/COEP headers and the CSP are defined in **both** `next.config.ts` (applied 
 - **Never touch** `next.config.ts` CSP or `src/proxy.ts` headers without updating both files simultaneously.
 - Any PR that changes one must change both — this is called out explicitly in CLAUDE.md.
 - Adding a new `connect-src` or `script-src` directive requires changes in two places.
+
+
+## Update (2026-10-12)
+
+The policy string now lives once in `src/lib/csp.ts` (SPEC-0027 stage 1) and both locations import it, so the two copies can no longer drift. The two delivery points remain.

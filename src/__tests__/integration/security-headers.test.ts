@@ -21,26 +21,25 @@ function assertParsedObjectsHaveUniqueKeys(value: unknown) {
 }
 
 describe('Security configuration integrity', () => {
-  it('next.config.ts sets Content-Security-Policy with blob: for WASM', () => {
-    const config = readFileSync('next.config.ts', 'utf8');
-    expect(config).toMatch(/Content-Security-Policy/);
-    expect(config).toMatch(/blob:/);
-  });
-
-  it('CSP connect-src does not include a broad https: wildcard', () => {
+  it('both delivery points use the shared CSP module (SPEC-0027 stage 1)', () => {
     const config = readFileSync('next.config.ts', 'utf8');
     const proxy = readFileSync('src/proxy.ts', 'utf8');
-    const configConnectSrc = config.match(/"connect-src ([^"]+)"/)?.[1] ?? '';
-    const proxyConnectSrc = proxy.match(/connect-src ([^;]+);/)?.[1] ?? '';
-    expect(configConnectSrc.split(/\s+/)).not.toContain('https:');
-    expect(proxyConnectSrc.split(/\s+/)).not.toContain('https:');
-    expect(config).toMatch(/https:\/\/api\.groq\.com/);
-    expect(config).toMatch(/https:\/\/cdn-lfs\.huggingface\.co/);
+    for (const [name, source] of [['next.config.ts', config], ['src/proxy.ts', proxy]]) {
+      expect(source, name).toMatch(/Content-Security-Policy/);
+      expect(source, name).toMatch(/CONTENT_SECURITY_POLICY/);
+      // No second hand-written copy of the policy may reappear.
+      expect(source, name).not.toMatch(/default-src/);
+    }
   });
 
-  it('next.config.ts sets worker-src for WASM web workers', () => {
-    const config = readFileSync('next.config.ts', 'utf8');
-    expect(config).toMatch(/worker-src/);
+  it('shared CSP allows blob: and worker-src for WASM, and connect-src has no broad https: wildcard', () => {
+    const csp = readFileSync('src/lib/csp.ts', 'utf8');
+    expect(csp).toMatch(/blob:/);
+    expect(csp).toMatch(/'worker-src'/);
+    expect(csp).toMatch(/https:\/\/api\.groq\.com/);
+    expect(csp).toMatch(/https:\/\/cdn-lfs\.huggingface\.co/);
+    const connect = csp.match(/'connect-src',\s*\[([\s\S]*?)\n\s*\],/)?.[1] ?? '';
+    expect(connect).not.toMatch(/'https:'/);
   });
 
   it('next.config.ts sets Cross-Origin-Opener-Policy for SharedArrayBuffer', () => {
@@ -57,7 +56,6 @@ describe('Security configuration integrity', () => {
     const proxy = readFileSync('src/proxy.ts', 'utf8');
     expect(proxy).toMatch(/Content-Security-Policy/);
     expect(proxy).toMatch(/Cross-Origin-Opener-Policy/);
-    expect(proxy).toMatch(/worker-src/);
   });
 
   it('no Groq API keys hardcoded in LLM API routes', () => {

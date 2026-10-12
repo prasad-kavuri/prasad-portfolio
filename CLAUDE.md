@@ -200,7 +200,7 @@ add simulated fallback path for mobile/low-memory devices.
 ## Architecture Constraints
 
 - **Vercel deployment** — static assets + serverless API routes. No long-running processes.
-- WASM headers (`COOP`, `COEP`, `blob:` CSP) are set in `next.config.ts` AND `src/proxy.ts`. Both must be consistent.
+- `COOP` and `COEP` are set in `next.config.ts` AND `src/proxy.ts`; keep them consistent. The CSP is built in `src/lib/csp.ts` and sent only by `src/proxy.ts`: the full policy (with `blob:`/WASM) on the three browser-WASM demo routes in `FULL_CSP_ROUTES`, a stricter one everywhere else (SPEC-0027). A new browser-WASM demo must be added to that list, or the test in `csp.test.ts` fails.
 - `public/.well-known/ai-agent-manifest.json` — AI recruiter manifest. Keep valid JSON after any edit: `node -e "JSON.parse(require('fs').readFileSync('public/.well-known/ai-agent-manifest.json','utf8'))"`
 - No legacy `.html` files in `public/` — Next.js serves them verbatim. Delete any found.
 - `profile.personal.title` = "Head of AI Platform & Agentic Solutions" — do not change without updating `layout.tsx`
@@ -221,7 +221,7 @@ To add new teams: edit `src/lib/enterpriseMockData.ts`. Types in `src/components
 ---
 
 ## Security Posture
-CSP (`next.config.ts` + `proxy.ts`), middleware and route rate limiting,
+CSP (`src/lib/csp.ts`, sent by `proxy.ts`), middleware and route rate limiting,
 prompt injection detection, competitor mention redaction, hallucination heuristics,
 regex-based LLM output sanitization, input validation, IP SHA-256 hashing, HITL checkpoint (multi-agent), eval
 regression gate in CI, `npm audit` in CI.

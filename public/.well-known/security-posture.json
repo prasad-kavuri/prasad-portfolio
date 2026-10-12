@@ -4,7 +4,7 @@
   "contact": "vbkpkavuri@gmail.com",
   "last_reviewed": "2026-05-06",
   "controls": {
-    "csp": "Allowlisted Content-Security-Policy in next.config.ts and src/proxy.ts; hardened with base-uri, form-action, object-src, and upgrade-insecure-requests directives",
+    "csp": "Per-route Content-Security-Policy built in src/lib/csp.ts and sent by src/proxy.ts (stricter on every page except the three browser-WASM demos); hardened with base-uri, form-action, object-src, and upgrade-insecure-requests directives",
     "isolation_headers": "COOP/COEP configured for browser WASM/WebGPU requirements",
     "rate_limiting": "Proxy-level API rate limiting plus route-level limits",
     "ssrf": "safeServerFetch validates URLs, DNS resolution, private IP ranges, and redirects",

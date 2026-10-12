@@ -43,7 +43,7 @@ Out of scope: third-party model providers, browser extension behavior, local dev
 
 ## Current Controls
 
-- CSP is configured in both `next.config.ts` and `src/proxy.ts`, with allowlisted script/connect origins for the deployed browser AI and analytics requirements.
+- CSP is built in `src/lib/csp.ts` and sent per route by `src/proxy.ts`: the three browser-AI demo pages get the allowlisted script/connect origins they need, every other page a stricter policy (SPEC-0027).
 - COOP/COEP headers support browser WASM/WebGPU isolation where required.
 - Proxy-level API rate limiting and route-level rate limiting provide layered abuse and denial-of-wallet controls.
 - `src/lib/safe-fetch.ts` and `src/lib/url-security.ts` validate URLs, resolve DNS where Node APIs are available, block private/internal IPs, and re-check redirect targets.

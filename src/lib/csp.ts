@@ -1,8 +1,9 @@
 /**
  * Single source of truth for the Content Security Policy (SPEC-0027, stage 1).
  *
- * `next.config.ts` and `src/proxy.ts` both send this exact string, so the two delivery points cannot drift.
- * This file must stay dependency-free and use relative imports only: `next.config.ts` loads it directly.
+ * Single source of truth for both policies. `src/proxy.ts` is the only place that sends them, chosen per route;
+ * `next.config.ts` sends no CSP, so a route can never receive two different policies.
+ * Keep this file dependency-free.
  * Changing a directive here changes the policy on every route; see SPEC-0027 before narrowing anything.
  */
 
@@ -54,8 +55,48 @@ export const CSP_DIRECTIVES: ReadonlyArray<readonly [string, readonly string[]]>
   ['upgrade-insecure-requests', []],
 ];
 
+/**
+ * Stage 2: a stricter policy for every page except the three that run WebAssembly models in the browser.
+ * It drops 'unsafe-eval', 'wasm-unsafe-eval', blob:, the two CDN script origins and the model-hosting
+ * connect-src entries. 'unsafe-inline' stays for Next.js inline bootstrap scripts until stage 4.
+ * Server-side calls (for example to api.groq.com) are not governed by the browser's connect-src.
+ */
+export const STRICT_CSP_DIRECTIVES: typeof CSP_DIRECTIVES = [
+  ['default-src', ["'self'"]],
+  ['script-src', ["'self'", "'unsafe-inline'", 'https://va.vercel-scripts.com']],
+  ['worker-src', ["'self'"]],
+  ['style-src', ["'self'", "'unsafe-inline'"]],
+  ['img-src', ["'self'", 'data:', 'blob:', 'https:']],
+  ['connect-src', ["'self'", 'https://va.vercel-scripts.com']],
+  ['font-src', ["'self'", 'data:']],
+  ['frame-ancestors', ["'none'"]],
+  ['base-uri', ["'self'"]],
+  ['form-action', ["'self'"]],
+  ['object-src', ["'none'"]],
+  ['upgrade-insecure-requests', []],
+];
+
+/** Pages that load Transformers.js / ONNX Runtime Web and therefore keep the full policy. */
+export const FULL_CSP_ROUTES = [
+  '/demos/rag-pipeline',
+  '/demos/quantization',
+  '/demos/edge-agent-collaboration',
+] as const;
+
+export type CspTier = 'full' | 'strict';
+
+export function cspTierFor(pathname: string): CspTier {
+  const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  return FULL_CSP_ROUTES.some((route) => path === route || path.startsWith(`${route}/`)) ? 'full' : 'strict';
+}
+
 export function buildCsp(directives: typeof CSP_DIRECTIVES = CSP_DIRECTIVES): string {
   return directives.map(([name, sources]) => [name, ...sources].join(' ')).join('; ');
 }
 
 export const CONTENT_SECURITY_POLICY = buildCsp();
+export const STRICT_CONTENT_SECURITY_POLICY = buildCsp(STRICT_CSP_DIRECTIVES);
+
+export function cspForPath(pathname: string): string {
+  return cspTierFor(pathname) === 'full' ? CONTENT_SECURITY_POLICY : STRICT_CONTENT_SECURITY_POLICY;
+}

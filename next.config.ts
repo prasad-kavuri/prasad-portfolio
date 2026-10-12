@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { CONTENT_SECURITY_POLICY } from "./src/lib/csp";
 import { LEGACY_HTML_REDIRECTS, RETIRED_DEMO_REDIRECTS } from "./src/data/legacy-routes";
 
 const nextConfig: NextConfig = {
@@ -52,11 +51,7 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          {
-            key: "Content-Security-Policy",
-            // Built in src/lib/csp.ts and shared with src/proxy.ts (SPEC-0027 stage 1).
-            value: CONTENT_SECURITY_POLICY,
-          },
+          // Content-Security-Policy is set per route in src/proxy.ts (SPEC-0027 stage 2).
           // Required for SharedArrayBuffer (used by WASM multi-threading)
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
           // credentialless required: HuggingFace CDN does not send CORP headers;

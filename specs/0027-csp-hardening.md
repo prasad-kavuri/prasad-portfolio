@@ -1,6 +1,6 @@
 # SPEC-0027: Harden the Content Security Policy in stages
 
-**Status**: In Progress. Stage 1 implemented 2026-10-12; stages 2 to 4 are proposals.
+**Status**: In Progress. Stages 1 and 2 implemented 2026-10-12; stages 3 and 4 are proposals.
 **Date**: 2026-10-12
 
 ## What
@@ -25,7 +25,7 @@ rolled back alone. Today every route gets the same policy: `script-src` allows `
 1. **One source of truth (no behaviour change). Done.** Build the policy string in one module used by both
    `next.config.ts` and `src/proxy.ts`. A test asserts both emit byte-identical policies, replacing the
    regex checks in `security-headers.test.ts`.
-2. **Per-route policy.** Pages outside the three demo routes drop `unsafe-eval`, `blob:`, the two CDN script
+2. **Per-route policy. Done.** Pages outside the three demo routes drop `unsafe-eval`, `blob:`, the two CDN script
    origins, the Hugging Face and CDN `connect-src` entries and `worker-src blob:`. The demo routes keep
    today's policy. COOP and COEP stay as they are. The proxy chooses the policy by path, and the
    `next.config.ts` header is removed so a route is never given two different policies.
@@ -84,3 +84,33 @@ changed (the two old copies differed in order and in a trailing semicolon); a br
 equal. A production build served locally returned one policy header on `/`, `/demos/quantization`,
 `/api/context` and `/for-recruiters`, each equal as directive sets to the old policy.
 Not done: loading the demos in a real browser, which is not needed for a policy that did not change.
+
+## Stage 2 result
+
+`src/proxy.ts` now sends the full policy only on `FULL_CSP_ROUTES` (`/demos/rag-pipeline`,
+`/demos/quantization`, `/demos/edge-agent-collaboration`) and a strict policy elsewhere: no `unsafe-eval`,
+`wasm-unsafe-eval`, `blob:` scripts or workers, `cdn.jsdelivr.net`, `unpkg.com`, or model-host `connect-src`.
+`unsafe-inline` stays until stage 4. `next.config.ts` no longer sets a CSP, so a route never gets two policies.
+Server-side calls to Groq are not governed by the browser and were never needed in `connect-src` for pages.
+
+**A catch the spec did not anticipate.** A page's policy is fixed when its document loads. Reaching a demo
+through an in-app (`next/link`) click keeps the strict policy of the page the visitor came from, so the model
+runtime would be blocked. The proxy now adds `Server-Timing: csp;desc="full|strict"` to page responses, and the
+three demo pages render `RequireFullCsp`, which reloads once when its document was served the strict policy
+(guarded against loops). Tested in a browser by clicking from `/demos` into each demo.
+
+**Verification (production build, real Chromium):**
+
+- Crawled all 39 routes from the sitemap plus a 404 and an unlisted route: 0 `securitypolicyviolation` events.
+- A page-script instrument recorded no `eval`, `Function`, string timers, `WebAssembly.*` or `Worker` use on any
+  route at load, so nothing on a strict page depends on the removed directives.
+- Negative control: a script from `cdn.jsdelivr.net` on a strict page was blocked and reported.
+- Raw Chrome with the two real header strings: strict blocks `eval` and WebAssembly; full allows both.
+- In-app navigation from `/demos` into each of the three demos reloaded once and ended on the full policy.
+- Tests: exact route matching, both policies per path through the proxy, strict never grants more than full,
+  a drift test that every page importing the model runtime is on the full list, and the reload guard.
+
+**Not verified:** loading and running the actual models in the demos. The test environment could not reach the
+model host, so the demos were checked up to page load and the reload guard, not inference. The demo pages keep
+the same policy as before, so this should be unchanged, but run each demo once on the Vercel preview. Playwright
+does not enforce `eval` blocking, so that check used raw Chrome and the instrument above.

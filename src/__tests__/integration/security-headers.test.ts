@@ -21,15 +21,15 @@ function assertParsedObjectsHaveUniqueKeys(value: unknown) {
 }
 
 describe('Security configuration integrity', () => {
-  it('both delivery points use the shared CSP module (SPEC-0027 stage 1)', () => {
+  it('the CSP is set once, in src/proxy.ts, from the shared module (SPEC-0027 stage 2)', () => {
     const config = readFileSync('next.config.ts', 'utf8');
     const proxy = readFileSync('src/proxy.ts', 'utf8');
-    for (const [name, source] of [['next.config.ts', config], ['src/proxy.ts', proxy]]) {
-      expect(source, name).toMatch(/Content-Security-Policy/);
-      expect(source, name).toMatch(/CONTENT_SECURITY_POLICY/);
-      // No second hand-written copy of the policy may reappear.
-      expect(source, name).not.toMatch(/default-src/);
-    }
+    expect(proxy).toMatch(/Content-Security-Policy/);
+    expect(proxy).toMatch(/cspForPath/);
+    // No hand-written copy of the policy may reappear, and next.config.ts must not send a second one.
+    expect(proxy).not.toMatch(/default-src/);
+    expect(config).not.toMatch(/key:\s*"Content-Security-Policy"/);
+    expect(config).not.toMatch(/default-src/);
   });
 
   it('shared CSP allows blob: and worker-src for WASM, and connect-src has no broad https: wildcard', () => {
@@ -52,9 +52,8 @@ describe('Security configuration integrity', () => {
     expect(config).toMatch(/Cross-Origin-Embedder-Policy/);
   });
 
-  it('proxy.ts also sets CSP and COOP headers (belt-and-suspenders)', () => {
+  it('proxy.ts also sets COOP', () => {
     const proxy = readFileSync('src/proxy.ts', 'utf8');
-    expect(proxy).toMatch(/Content-Security-Policy/);
     expect(proxy).toMatch(/Cross-Origin-Opener-Policy/);
   });
 

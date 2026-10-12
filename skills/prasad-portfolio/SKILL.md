@@ -99,7 +99,7 @@ For every non-trivial coding task, state before editing:
 3. Validate ALL inputs at route entry (length, type, schema) — reject before LLM call
 4. Run user input through `enforceGuardrails` from `src/lib/guardrails.ts`
 5. Never add `output: 'export'` to `next.config.ts` — breaks API routes
-6. Security headers live in BOTH `next.config.ts` AND `src/proxy.ts` — update both if needed
+6. The CSP lives in `src/lib/csp.ts` and is sent only by `src/proxy.ts` (SPEC-0027); COOP/COEP and other headers live in BOTH `next.config.ts` AND `src/proxy.ts`
 7. Middleware export is named `proxy` in `src/proxy.ts` (non-standard)
 
 ---

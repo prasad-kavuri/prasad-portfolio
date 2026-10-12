@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { resolveLegacyHtmlPath } from '@/data/legacy-routes';
-import { CONTENT_SECURITY_POLICY } from '@/lib/csp';
+import { cspForPath, cspTierFor } from '@/lib/csp';
 
 const WINDOW_MS = 60_000;
 const MAX_API_REQUESTS = 60;
@@ -27,7 +27,7 @@ async function hashClient(value: string): Promise<string> {
     .join('');
 }
 
-function applySecurityHeaders(response: NextResponse): NextResponse {
+function applySecurityHeaders(response: NextResponse, pathname: string): NextResponse {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   // X-XSS-Protection: disabled per modern security guidance; CSP covers XSS
@@ -36,7 +36,12 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()');
-  response.headers.set('Content-Security-Policy', CONTENT_SECURITY_POLICY);
+  response.headers.set('Content-Security-Policy', cspForPath(pathname));
+  // Readable by the page (PerformanceNavigationTiming.serverTiming) so a WASM demo reached by an in-app
+  // link, which keeps the strict policy of the page it came from, can reload itself once (SPEC-0027 stage 2).
+  if (!pathname.startsWith('/api/')) {
+    response.headers.append('Server-Timing', `csp;desc="${cspTierFor(pathname)}"`);
+  }
   response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
   // credentialless required: HuggingFace CDN does not send CORP headers;
   // require-corp blocks cross-origin model weight fetches on desktop Chrome
@@ -100,11 +105,11 @@ export function proxy(request: NextRequest) {
 
   if (pathname.startsWith('/api/')) {
     return applyApiRateLimit(request).then((limited) =>
-      applySecurityHeaders(limited ?? NextResponse.next())
+      applySecurityHeaders(limited ?? NextResponse.next(), pathname)
     );
   }
 
-  return applySecurityHeaders(NextResponse.next());
+  return applySecurityHeaders(NextResponse.next(), pathname);
 }
 
 export const config = {

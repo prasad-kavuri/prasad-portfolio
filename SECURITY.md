@@ -84,7 +84,7 @@ These defenses run before each outbound request. DNS validation materially reduc
 
 Current controls implemented in this repo include:
 - centralized guardrails (`src/lib/guardrails.ts`) for prompt-injection heuristics, competitor mention redaction, output checks, and regex-based output filtering,
-- CSP in both `next.config.ts` and `src/proxy.ts`, including restricted `connect-src` origins for Groq, Hugging Face model assets, Vercel analytics, and blob workers,
+- Per-route CSP built in `src/lib/csp.ts` and sent by `src/proxy.ts`: the three browser-WASM demo pages keep `connect-src` origins for Hugging Face model assets and blob workers; every other page drops eval, WASM, blob and CDN script origins,
 - API-only proxy-layer rate limiting plus route-level validation/rate limiting as deeper defense (`src/proxy.ts`, `src/lib/api.ts`, `src/lib/rate-limit.ts`),
 - outbound URL hardening (`src/lib/url-security.ts`) and DNS-aware safe server-side fetch behavior (`src/lib/safe-fetch.ts`),
 - eval/query log redaction before snippets are stored (`src/lib/query-log.ts`),

@@ -1,6 +1,6 @@
 # SPEC-0027: Harden the Content Security Policy in stages
 
-**Status**: In Progress. Stages 1 and 2 implemented 2026-10-12; stages 3 and 4 are proposals.
+**Status**: In Progress. Stages 1 to 3 implemented 2026-10-12; stage 4 is a proposal.
 **Date**: 2026-10-12
 
 ## What
@@ -30,7 +30,7 @@ rolled back alone. Today every route gets the same policy: `script-src` allows `
    today's policy. COOP and COEP stay as they are. The proxy chooses the policy by path, and the
    `next.config.ts` header is removed so a route is never given two different policies.
    Fix the Governance page wording in the same change so it matches what ships.
-3. **Pin the CDN fallback.** The quantization demo falls back to `cdn.jsdelivr.net` and `unpkg.com` for
+3. **Pin the CDN fallback. Done (narrowed, not self-hosted).** The quantization demo falls back to `cdn.jsdelivr.net` and `unpkg.com` for
    `onnxruntime-web`. Narrow those entries to the exact package path and version, or self-host the files and
    remove both origins.
 4. **Remove `unsafe-inline` from `script-src` (the hard part).** Two routes, to be chosen by a trial:
@@ -114,3 +114,22 @@ three demo pages render `RequireFullCsp`, which reloads once when its document w
 model host, so the demos were checked up to page load and the reload guard, not inference. The demo pages keep
 the same policy as before, so this should be unchanged, but run each demo once on the Vercel preview. Playwright
 does not enforce `eval` blocking, so that check used raw Chrome and the instrument above.
+
+## Stage 3 result
+
+Self-hosting was rejected: the runtime's WebAssembly files are 14 to 28 MB each in several variants, which would
+bloat the repo and need manual refreshes. Instead the CSP allows one location,
+`https://cdn.jsdelivr.net/npm/onnxruntime-web@<installed version>/dist/`, in `script-src` and `connect-src` of the
+full policy. `unpkg.com` and the rest of `cdn.jsdelivr.net` are gone. Hugging Face Transformers 4.3.0 builds exactly
+that address from its pinned `onnxruntime-web`, so the RAG and Edge Agent demos need no code change. The Quantization
+demo's two unversioned fallback URLs (which resolve to the stable release, binary-incompatible with the installed
+dev build) are replaced by the single pinned address.
+
+`ORT_WEB_VERSION` in `src/lib/csp.ts` is the one place the version lives. Tests fail when the installed
+`onnxruntime-web` version changes, when Transformers.js stops pinning that version or builds a different address,
+or when the Quantization page strays from the pinned constant. The dependency audit script is unchanged.
+
+Verified in Chromium against the served full policy: the pinned path (script and fetch) raised no CSP violation;
+the unversioned path, another package on the same CDN, another version of the package, and unpkg were all blocked.
+Not verified: loading the runtime and running a model, because this sandbox cannot reach the CDN or the model host.
+Run each of the three demos once on the Vercel preview before merging.

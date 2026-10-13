@@ -1,7 +1,7 @@
 /**
  * SPEC-0027 stage 1: the Content Security Policy is built once (src/lib/csp.ts) and both delivery points
- * send exactly that string. BASELINE is the policy that shipped before the refactor, as directive sets
- * (source order is irrelevant to a browser), so this stage cannot silently change behaviour.
+ * send exactly that string. BASELINE is the full policy as directive sets (source order is irrelevant to a
+ * browser). Stage 1 pinned it to what shipped before; stage 3 narrowed the two CDN hosts to one package path.
  */
 import { describe, expect, it } from 'vitest';
 import { NextRequest } from 'next/server';
@@ -13,6 +13,8 @@ import {
   CONTENT_SECURITY_POLICY,
   CSP_DIRECTIVES,
   FULL_CSP_ROUTES,
+  ORT_WASM_BASE,
+  ORT_WEB_VERSION,
   STRICT_CONTENT_SECURITY_POLICY,
   buildCsp,
   cspForPath,
@@ -21,11 +23,11 @@ import {
 
 const BASELINE: Record<string, string> = {
   'default-src': "'self'",
-  'script-src': "'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net https://unpkg.com https://va.vercel-scripts.com",
+  'script-src': `'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' blob: ${ORT_WASM_BASE} https://va.vercel-scripts.com`,
   'worker-src': "'self' blob:",
   'style-src': "'self' 'unsafe-inline'",
   'img-src': "'self' blob: data: https:",
-  'connect-src': "'self' blob: https://*.huggingface.co https://*.xethub.hf.co https://api.groq.com https://cdn-lfs-us-1.huggingface.co https://cdn-lfs.huggingface.co https://cdn.jsdelivr.net https://huggingface.co https://unpkg.com https://va.vercel-scripts.com https://xethub.hf.co",
+  'connect-src': `'self' blob: https://*.huggingface.co https://*.xethub.hf.co https://api.groq.com https://cdn-lfs-us-1.huggingface.co https://cdn-lfs.huggingface.co ${ORT_WASM_BASE} https://huggingface.co https://va.vercel-scripts.com https://xethub.hf.co`,
   'font-src': "'self' data:",
   'frame-ancestors': "'none'",
   'base-uri': "'self'",
@@ -104,6 +106,37 @@ describe('shared CSP (SPEC-0027 stage 1)', () => {
     expect(cspTierFor('/demos/quantization-x')).toBe('strict');
     expect(cspTierFor('/')).toBe('strict');
     expect(cspForPath('/about')).toBe(STRICT_CONTENT_SECURITY_POLICY);
+  });
+});
+
+describe('narrowed CDN allowance (SPEC-0027 stage 3)', () => {
+  it('allows the CDN only at the pinned onnxruntime-web path, never the whole host', () => {
+    const parsed = parse(CONTENT_SECURITY_POLICY);
+    for (const name of ['script-src', 'connect-src']) {
+      const sources = parsed[name].split(' ');
+      expect(sources, name).toContain(ORT_WASM_BASE);
+      expect(sources, name).not.toContain('https://cdn.jsdelivr.net');
+      expect(sources, name).not.toContain('https://unpkg.com');
+    }
+    expect(CONTENT_SECURITY_POLICY).not.toMatch(/unpkg/);
+  });
+
+  it('ORT_WEB_VERSION equals the installed onnxruntime-web (update csp.ts when you upgrade Transformers.js)', () => {
+    const installed = JSON.parse(readFileSync('node_modules/onnxruntime-web/package.json', 'utf8')).version;
+    expect(ORT_WEB_VERSION).toBe(installed);
+  });
+
+  it('Transformers.js still loads its runtime from the address the CSP allows', () => {
+    const lib = readFileSync('node_modules/@huggingface/transformers/dist/transformers.js', 'utf8');
+    expect(lib).toContain('https://cdn.jsdelivr.net/npm/onnxruntime-web@${ONNX_ENV.versions.web}/dist/');
+    const pinned = JSON.parse(readFileSync('node_modules/@huggingface/transformers/package.json', 'utf8')).dependencies['onnxruntime-web'];
+    expect(pinned).toBe(ORT_WEB_VERSION);
+  });
+
+  it('the Quantization demo probes only the pinned address', () => {
+    const page = readFileSync('src/app/demos/quantization/page.tsx', 'utf8');
+    expect(page).toContain('[ORT_WASM_BASE]');
+    expect(page).not.toMatch(/unpkg|cdn\.jsdelivr\.net/);
   });
 });
 

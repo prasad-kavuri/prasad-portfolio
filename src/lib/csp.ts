@@ -7,6 +7,15 @@
  * Changing a directive here changes the policy on every route; see SPEC-0027 before narrowing anything.
  */
 
+/**
+ * The only CDN location the browser demos may load the ONNX Runtime Web files from (SPEC-0027 stage 3).
+ * Hugging Face Transformers builds exactly this address from its pinned onnxruntime-web version, so the CSP
+ * allows that one package path and version instead of the whole CDN. A test fails when the installed
+ * onnxruntime-web version changes, so this constant cannot silently go stale.
+ */
+export const ORT_WEB_VERSION = '1.31.0-dev.20260914-8d85527a0';
+export const ORT_WASM_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_WEB_VERSION}/dist/`;
+
 export const CSP_DIRECTIVES: ReadonlyArray<readonly [string, readonly string[]]> = [
   ['default-src', ["'self'"]],
   [
@@ -20,8 +29,7 @@ export const CSP_DIRECTIVES: ReadonlyArray<readonly [string, readonly string[]]>
       // blob: Transformers.js WASM worker bootstrap
       'blob:',
       'https://va.vercel-scripts.com',
-      'https://cdn.jsdelivr.net',
-      'https://unpkg.com',
+      ORT_WASM_BASE,
     ],
   ],
   // worker-src blob: WASM web workers spun up by the Transformers.js runtime
@@ -41,8 +49,7 @@ export const CSP_DIRECTIVES: ReadonlyArray<readonly [string, readonly string[]]>
       // xethub.hf.co: Hugging Face migrated its model CDN to XetHub (2025)
       'https://xethub.hf.co',
       'https://*.xethub.hf.co',
-      'https://cdn.jsdelivr.net',
-      'https://unpkg.com',
+      ORT_WASM_BASE,
       'https://va.vercel-scripts.com',
       'blob:',
     ],

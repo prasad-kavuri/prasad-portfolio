@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Loader, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import { ORT_WASM_BASE } from '@/lib/csp';
 import { RequireFullCsp } from '@/components/RequireFullCsp';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -59,10 +60,9 @@ const EXAMPLE_TEXTS = [
 const MODEL_NAME = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
 const FP32_SIZE_MB = 268;
 const INT8_SIZE_MB = 67;
-const WASM_PATH_CANDIDATES = [
-  'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/',
-  'https://unpkg.com/onnxruntime-web/dist/',
-] as const;
+// Pinned to the installed onnxruntime-web version and the one CDN path the CSP allows (SPEC-0027 stage 3).
+// Unversioned URLs return the stable release, which is binary-incompatible with the installed dev build.
+const WASM_PATH_CANDIDATES = [ORT_WASM_BASE] as const;
 
 function logInit(event: string, details?: Record<string, unknown>) {
   if (process.env.NODE_ENV === 'test') return;

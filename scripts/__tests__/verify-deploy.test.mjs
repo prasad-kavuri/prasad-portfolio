@@ -1,0 +1,74 @@
+import { test } from 'vitest';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { checkPage, checkApi, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES } from '../verify-deploy.mjs';
+
+const STRICT = "default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com";
+const FULL = "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net";
+function hdrs(csp, tier, extra = {}) {
+  const m = new Map(Object.entries({
+    'content-security-policy': csp, 'server-timing': tier ? `csp;desc="${tier}"` : '',
+    'strict-transport-security': 'max-age=63072000', 'x-content-type-options': 'nosniff',
+    'x-frame-options': 'DENY', 'cross-origin-opener-policy': 'same-origin', ...extra,
+  }));
+  return { get: (k) => m.get(k) ?? null };
+}
+
+test('accepts correct strict and full pages', () => {
+  assert.deepEqual(checkPage('/', 200, hdrs(STRICT, 'strict'), 'strict'), []);
+  assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(FULL, 'full'), 'full'), []);
+});
+test('flags a strict page that received the full policy', () => {
+  const errs = checkPage('/', 200, hdrs(FULL, 'strict'), 'strict');
+  assert.ok(errs.some((e) => e.includes("'unsafe-eval'")));
+  assert.ok(errs.some((e) => e.includes('blob:')));
+});
+test('flags a demo that received the strict policy or the wrong tier header', () => {
+  const errs = checkPage('/demos/rag-pipeline', 200, hdrs(STRICT, 'strict'), 'full');
+  assert.ok(errs.some((e) => e.includes('Server-Timing')));
+  assert.ok(errs.some((e) => e.includes('wasm-unsafe-eval')));
+});
+test('flags bad status and missing baseline headers', () => {
+  const errs = checkPage('/', 404, hdrs(STRICT, 'strict', { 'x-frame-options': 'SAMEORIGIN', 'strict-transport-security': '' }), 'strict');
+  assert.equal(errs.length, 3);
+});
+test('api responses must not carry csp server-timing', () => {
+  assert.deepEqual(checkApi('/api/context', hdrs(STRICT, '')), []);
+  assert.equal(checkApi('/api/context', hdrs(STRICT, 'strict')).length, 1);
+});
+test('header link check ignores the footer', () => {
+  assert.equal(headerLinks('<header><a href="/for-recruiters">x</a></header>', '/for-recruiters'), true);
+  assert.equal(headerLinks('<header><a href="/about">x</a></header><footer><a href="/for-recruiters">x</a></footer>', '/for-recruiters'), false);
+  assert.equal(headerLinks('<div></div>', '/for-recruiters'), false);
+});
+
+function fakeFetch({ strictPolicyOnDemo = false, link = true } = {}) {
+  return async (url) => {
+    const path = new URL(url).pathname;
+    const isFull = FULL_ROUTES.includes(path);
+    const tier = isFull ? 'full' : 'strict';
+    const h = path.startsWith('/api/') ? hdrs(STRICT, '')
+      : hdrs(isFull && !strictPolicyOnDemo ? FULL : STRICT, tier);
+    return { status: 200, headers: h, text: async () => `<header>${link ? '<a href="/for-recruiters">r</a>' : ''}</header>` };
+  };
+}
+test('verify passes on a healthy site and fails on regressions', async () => {
+  assert.deepEqual(await verify('https://x.test', fakeFetch()), []);
+  assert.ok((await verify('https://x.test', fakeFetch({ strictPolicyOnDemo: true }))).length > 0);
+  assert.deepEqual(await verify('https://x.test', fakeFetch({ link: false })), ['/: header has no link to /for-recruiters']);
+});
+test('main retries then reports failure, and returns 0 on success', async () => {
+  let waits = 0;
+  const log = console.error; console.error = () => {};
+  const code = await main(['--base', 'https://x.test'], fakeFetch({ link: false }), async () => { waits++; });
+  console.error = log;
+  assert.equal(code, 1); assert.equal(waits, 2);
+  assert.equal(await main(['--base', 'https://x.test/'], fakeFetch(), async () => {}), 0);
+});
+test('route lists match src/lib/csp.ts', () => {
+  const src = readFileSync(path.resolve(process.cwd(), 'src/lib/csp.ts'), 'utf8');
+  const listed = [...src.match(/FULL_CSP_ROUTES = \[([\s\S]*?)\]/)[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+  assert.deepEqual(FULL_ROUTES, listed);
+  assert.ok(STRICT_ROUTES.every((r) => !listed.includes(r)));
+});

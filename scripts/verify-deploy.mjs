@@ -2,12 +2,15 @@
 // Post-deploy verification (SPEC-0028). Pure checks are exported for tests; the CLI fetches the live site.
 import { pathToFileURL } from 'node:url';
 
+// Must equal ORT_WASM_BASE in src/lib/csp.ts (guarded by a test).
+export const ORT_WASM_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';
 export const DEFAULT_BASE = 'https://www.prasadkavuri.com';
 export const FULL_ROUTES = ['/demos/rag-pipeline', '/demos/quantization', '/demos/edge-agent-collaboration'];
 export const STRICT_ROUTES = ['/', '/about', '/for-recruiters', '/governance'];
 export const LINK_TARGETS = ['/for-recruiters', '/about', '/governance', '/status'];
 
-const tokens = (csp) => csp.split(/\s+/);
+// Split on ';' too, so the last source of a directive is not read as "source;".
+const tokens = (csp) => csp.split(/[\s;]+/).filter(Boolean);
 
 /** Header checks for one page response. `headers` is a Headers-like object with get(). */
 export function checkPage(path, status, headers, tier) {
@@ -23,8 +26,13 @@ export function checkPage(path, status, headers, tier) {
     for (const bad of ["'unsafe-eval'", "'wasm-unsafe-eval'", 'blob:', 'https://cdn.jsdelivr.net', 'https://unpkg.com']) {
       if (t.includes(bad)) fail(`strict policy contains ${bad}`);
     }
-  } else if (!t.includes("'wasm-unsafe-eval'")) {
-    fail("full policy lacks 'wasm-unsafe-eval'");
+  } else {
+    if (!t.includes("'wasm-unsafe-eval'")) fail("full policy lacks 'wasm-unsafe-eval'");
+    // SPEC-0027 stage 3: the CDN is allowed only at the pinned onnxruntime-web path.
+    if (!t.includes(ORT_WASM_BASE)) fail('full policy lacks the pinned onnxruntime-web path');
+    for (const bad of ['https://cdn.jsdelivr.net', 'https://unpkg.com']) {
+      if (t.includes(bad)) fail(`full policy still allows the whole origin ${bad}`);
+    }
   }
   if (!(headers.get('strict-transport-security') ?? '').includes('max-age=')) fail('missing HSTS');
   if (headers.get('x-content-type-options') !== 'nosniff') fail('X-Content-Type-Options is not nosniff');

@@ -2,10 +2,10 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { checkPage, checkApi, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES } from '../verify-deploy.mjs';
+import { checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES } from '../verify-deploy.mjs';
 
 const STRICT = "default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com";
-const FULL = "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net";
+const FULL = `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: ${ORT_WASM_BASE}`;
 function hdrs(csp, tier, extra = {}) {
   const m = new Map(Object.entries({
     'content-security-policy': csp, 'server-timing': tier ? `csp;desc="${tier}"` : '',
@@ -28,6 +28,16 @@ test('flags a demo that received the strict policy or the wrong tier header', ()
   const errs = checkPage('/demos/rag-pipeline', 200, hdrs(STRICT, 'strict'), 'full');
   assert.ok(errs.some((e) => e.includes('Server-Timing')));
   assert.ok(errs.some((e) => e.includes('wasm-unsafe-eval')));
+});
+test('flags a full page that allows a whole CDN origin or lacks the pinned path', () => {
+  const broad = hdrs(`${FULL} https://cdn.jsdelivr.net https://unpkg.com`, 'full');
+  assert.equal(checkPage('/demos/quantization', 200, broad, 'full').length, 2);
+  const none = hdrs("script-src 'self' 'wasm-unsafe-eval'", 'full');
+  assert.deepEqual(checkPage('/demos/quantization', 200, none, 'full'), ['/demos/quantization: full policy lacks the pinned onnxruntime-web path']);
+});
+test('accepts the real production header for a demo (sources end with a semicolon)', () => {
+  const real = `default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com ${ORT_WASM_BASE}; worker-src 'self' blob:; connect-src 'self' ${ORT_WASM_BASE} blob:`;
+  assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(real, 'full'), 'full'), []);
 });
 test('flags bad status and missing baseline headers', () => {
   const errs = checkPage('/', 404, hdrs(STRICT, 'strict', { 'x-frame-options': 'SAMEORIGIN', 'strict-transport-security': '' }), 'strict');
@@ -65,6 +75,11 @@ test('main retries then reports failure, and returns 0 on success', async () => 
   console.error = log;
   assert.equal(code, 1); assert.equal(waits, 2);
   assert.equal(await main(['--base', 'https://x.test/'], fakeFetch(), async () => {}), 0);
+});
+test('pinned onnxruntime-web path matches src/lib/csp.ts', () => {
+  const src = readFileSync(path.resolve(process.cwd(), 'src/lib/csp.ts'), 'utf8');
+  const v = src.match(/ORT_WEB_VERSION = '([^']+)'/)[1];
+  assert.equal(ORT_WASM_BASE, `https://cdn.jsdelivr.net/npm/onnxruntime-web@${v}/dist/`);
 });
 test('route lists match src/lib/csp.ts', () => {
   const src = readFileSync(path.resolve(process.cwd(), 'src/lib/csp.ts'), 'utf8');

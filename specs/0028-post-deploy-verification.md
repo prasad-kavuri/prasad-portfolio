@@ -15,7 +15,9 @@ manual dispatch, and on a daily schedule (to catch drift without a deploy).
   match the tier, and the `Content-Security-Policy` header must agree with it:
   - strict pages (`/`, `/about`, `/for-recruiters`, `/governance`): no `unsafe-eval`, no `wasm-unsafe-eval`, no `blob:`,
     no CDN script origin.
-  - full pages (the three WASM demos): `wasm-unsafe-eval` present.
+  - full pages (the three WASM demos): `wasm-unsafe-eval` present, the pinned onnxruntime-web CDN path present, and
+    no whole-origin `cdn.jsdelivr.net` or `unpkg.com` (SPEC-0027 stage 3). Bumping `ORT_WEB_VERSION` means bumping the
+    constant in the script too; a test fails until both match.
 - `/api/*` responses carry a CSP but no `Server-Timing: csp` (the proxy skips it there).
 - Baseline headers on every route: HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
   `Cross-Origin-Opener-Policy: same-origin`.

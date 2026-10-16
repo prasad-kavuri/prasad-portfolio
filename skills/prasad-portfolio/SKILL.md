@@ -4,7 +4,7 @@ description: >
   Baseline security, CSP/WASM, and coding-convention invariants for the prasad-portfolio
   repository at prasadkavuri.com — the contract every code change here must satisfy,
   regardless of which other skill (add-demo, testing, security-review, etc.) is also in use.
-  Use alongside a task-specific skill, or on its own for a small edit that doesn't need one.
+  Use when making any change in this repository, alongside a task-specific skill or on its own for a small edit.
 ---
 
 # Prasad Portfolio — Agent Skill

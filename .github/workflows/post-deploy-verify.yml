@@ -1,0 +1,27 @@
+name: Post-deploy verification
+
+on:
+  deployment_status:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify production
+    # For deployment_status runs, only a successful Production deploy qualifies.
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check CSP tiers, headers and key links
+        run: node scripts/verify-deploy.mjs --base https://www.prasadkavuri.com

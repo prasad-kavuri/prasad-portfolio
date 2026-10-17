@@ -20,6 +20,7 @@ import { checkOutput, sanitizeLLMOutput } from '@/lib/guardrails';
 import { screenConversation } from '@/lib/conversation-guard';
 import { logQueryForEval } from '@/lib/query-log';
 import { makeCacheKey, getResponseCache, setResponseCache } from '@/lib/response-cache';
+import { FAST_MODEL, completionBudget, fetchWithModelFallback, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/portfolio-assistant';
 
@@ -123,7 +124,7 @@ export async function POST(req: NextRequest) {
         route: ROUTE,
         userKey: getClientIp(req, 'anonymous'),
         prompt: lastUserMessage.content,
-        requestedModel: 'llama-3.1-8b-instant',
+        requestedModel: FAST_MODEL.id,
         maxTokens: 100,
       });
       if (!costControl.allowed) {
@@ -194,20 +195,23 @@ ${fullContext}`;
     const compactionResult = await maybeCompact(
       conversation as CompactionMessage[],
       async (prompt: string) => {
-        const compResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'llama-3.1-8b-instant',
-            messages: [{ role: 'user', content: prompt }],
-            stream: false,
-            max_tokens: 256,
+        const { response: compResp } = await fetchWithModelFallback(FAST_MODEL.id, (model) =>
+          fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model,
+              messages: [{ role: 'user', content: prompt }],
+              stream: false,
+              max_tokens: completionBudget(model, 256),
+              ...reasoningParams(model),
+            }),
+            signal: AbortSignal.timeout(10000),
           }),
-          signal: AbortSignal.timeout(10000),
-        });
+        );
         if (!compResp.ok) return '';
         const d = await compResp.json() as { choices?: Array<{ message?: { content?: string } }> };
-        return d.choices?.[0]?.message?.content ?? '';
+        return stripReasoning(d.choices?.[0]?.message?.content ?? '');
       }
     );
 
@@ -286,21 +290,27 @@ ${fullContext}`;
     // ── end cache check ──────────────────────────────────────────────────────
 
     // Call Groq API with streaming
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
-        messages: groqMessages,
-        stream: true,
-        temperature: 0.7,
-        max_tokens: 1024,
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
+    const { response } = await fetchWithModelFallback(
+      FAST_MODEL.id,
+      (model) =>
+        fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model,
+            messages: groqMessages,
+            stream: true,
+            temperature: 0.7,
+            max_tokens: completionBudget(model, 1024),
+            ...reasoningParams(model),
+          }),
+          signal: AbortSignal.timeout(30000),
+        }),
+      (from, to, status) => logApiWarning('api.model_fallback', { route: ROUTE, traceId: context.traceId, from, to, upstreamStatus: status }),
+    );
 
     if (!response.ok) {
       await response.text().catch(() => '');

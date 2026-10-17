@@ -14,11 +14,12 @@ import {
 import { startTimer, detectAnomaly, logAPIEvent } from '@/lib/observability';
 import { detectPromptInjection, sanitizeLLMOutput, checkOutput } from '@/lib/guardrails';
 import { trackModelOutput } from '@/lib/drift-monitor';
+import { CAPABLE_MODEL, completionBudget, fetchWithModelFallback, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/storm-research';
 const MAX_TOPIC_LENGTH = 200;
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = CAPABLE_MODEL.id;
 
 interface ProfileExperience {
   title: string;
@@ -37,21 +38,24 @@ function buildProfileContext(): string {
 }
 
 async function callGroq(apiKey: string, system: string, user: string, maxTokens = 1024): Promise<string> {
-  const res = await fetch(GROQ_URL, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
-      stream: false,
-      temperature: 0.7,
-      max_tokens: maxTokens,
+  const { response: res } = await fetchWithModelFallback(MODEL, (model) =>
+    fetch(GROQ_URL, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+        stream: false,
+        temperature: 0.7,
+        max_tokens: completionBudget(model, maxTokens),
+        ...reasoningParams(model),
+      }),
+      signal: AbortSignal.timeout(30000),
     }),
-    signal: AbortSignal.timeout(30000),
-  });
+  );
   if (!res.ok) throw new Error(`Groq API error: ${res.status}`);
   const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
-  return data.choices?.[0]?.message?.content ?? '';
+  return stripReasoning(data.choices?.[0]?.message?.content ?? '');
 }
 
 function parseJsonArray(text: string, fallback: string[]): string[] {

@@ -405,7 +405,7 @@ export default function StormResearchPage() {
       <div className="border-t border-border mt-12 py-4">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-xs text-muted-foreground">
-            Powered by Groq · Llama 3.3 70B · Inspired by{' '}
+            Powered by Groq · GPT-OSS 120B · Inspired by{' '}
             <a
               href="https://github.com/stanford-oval/storm"
               target="_blank"

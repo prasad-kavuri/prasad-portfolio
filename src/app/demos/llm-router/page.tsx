@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getRoutingRecommendation } from '@/lib/llm-routing';
+import { MODEL_CATALOG } from '@/lib/groq-models';
 import { classifyRequestRisk, type RiskClassification } from '@/lib/risk-classifier';
 
 interface ModelResult {
@@ -23,51 +24,23 @@ interface ModelResult {
   isFallback?: boolean;
 }
 
-const MODEL_IDS = [
-  'llama-3.1-8b-instant',
-  'llama-3.3-70b-versatile',
-  'meta-llama/llama-4-scout-17b-16e-instruct',
-  'qwen/qwen3-32b',
-];
+const MODEL_IDS = MODEL_CATALOG.map((m) => m.id);
 
-const MODEL_ESTIMATES: Record<string, Omit<ModelResult, 'response'>> = {
-  'llama-3.1-8b-instant': {
-    model: 'llama-3.1-8b-instant',
-    modelName: 'Llama 3.1 8B',
-    provider: 'Meta · Groq',
-    latency_ms: 280,
-    input_tokens: 25,
-    output_tokens: 80,
-    cost_usd: 0.000008,
-  },
-  'llama-3.3-70b-versatile': {
-    model: 'llama-3.3-70b-versatile',
-    modelName: 'Llama 3.3 70B',
-    provider: 'Meta · Groq',
-    latency_ms: 840,
-    input_tokens: 25,
-    output_tokens: 120,
-    cost_usd: 0.00011,
-  },
-  'meta-llama/llama-4-scout-17b-16e-instruct': {
-    model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-    modelName: 'Llama 4 Scout',
-    provider: 'Meta · Groq',
-    latency_ms: 520,
-    input_tokens: 25,
-    output_tokens: 95,
-    cost_usd: 0.000035,
-  },
-  'qwen/qwen3-32b': {
-    model: 'qwen/qwen3-32b',
-    modelName: 'Qwen3 32B',
-    provider: 'Alibaba · Groq',
-    latency_ms: 680,
-    input_tokens: 25,
-    output_tokens: 110,
-    cost_usd: 0.000072,
-  },
-};
+// Illustrative numbers for the simulated path, derived from the shared catalog so they cannot drift from it.
+const MODEL_ESTIMATES: Record<string, Omit<ModelResult, 'response'>> = Object.fromEntries(
+  MODEL_CATALOG.map((m) => [
+    m.id,
+    {
+      model: m.id,
+      modelName: m.name,
+      provider: m.provider,
+      latency_ms: m.estimate.latencyMs,
+      input_tokens: 25,
+      output_tokens: m.estimate.outputTokens,
+      cost_usd: (25 * m.inputCost + m.estimate.outputTokens * m.outputCost) / 1_000_000,
+    },
+  ]),
+);
 
 const MID_TIER_MODELS = [
   {
@@ -114,7 +87,7 @@ const QWEN_MOE_FALLBACK: ModelResult = {
   isFallback: true,
   error:
     'Qwen MoE local inference unavailable — requires local vllm server. ' +
-    'This demo shows the routing architecture; switch to Llama or Mixtral for live output.',
+    'This demo shows the routing architecture; switch to a Groq-hosted model for live output.',
 };
 
 const EXAMPLE_PROMPTS = [
@@ -259,7 +232,7 @@ export default function LLMRouterDemo() {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: 'LLM Router',
-    description: 'Real multi-model routing across Llama 3.1 8B, 70B, and Mixtral — see live latency, cost, and quality trade-offs.',
+    description: 'Real multi-model routing across GPT-OSS 20B, GPT-OSS 120B, and Qwen3.8 27B — see live latency, cost, and quality trade-offs.',
     keywords: 'Groq, Multi-model, Live latency',
     url: 'https://www.prasadkavuri.com/demos/llm-router',
     author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },

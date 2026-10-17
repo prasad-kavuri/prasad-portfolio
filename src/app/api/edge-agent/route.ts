@@ -15,9 +15,10 @@ import {
 import { checkInput, detectStructuredPII, sanitizeLLMOutput } from '@/lib/guardrails';
 import { detectAnomaly, startTimer } from '@/lib/observability';
 import { APPROVAL_ERROR_MESSAGES, createPendingApproval, decideApproval } from '@/lib/approvals';
+import { CAPABLE_MODEL, callWithModelFallback, completionBudget, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/edge-agent';
-const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = CAPABLE_MODEL.id;
 const MAX_PAYLOAD_LENGTH = 2000;
 const APPROVAL_KIND = 'edge-agent.cloud-handoff' as const;
 
@@ -147,37 +148,43 @@ async function decideHandoff(approvalId: unknown, action: 'approve' | 'reject', 
   const elapsed = startTimer();
 
   try {
-    const completion = await groq.chat.completions.create({
-      model: MODEL,
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You are an enterprise AI assistant. The payload you receive has already been privacy-screened: PII was redacted at the edge and re-checked on the server before reaching you. Produce a concise executive summary (3-5 sentences) of the business request. Focus on the action being requested, the business context, and any timeline or budget signals.',
-        },
-        { role: 'user', content: payload },
-      ],
-      max_tokens: 512,
-      temperature: 0.3,
-    });
+    const { result: completion, model: usedModel } = await callWithModelFallback(
+      MODEL,
+      (model) =>
+        groq.chat.completions.create({
+          model,
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are an enterprise AI assistant. The payload you receive has already been privacy-screened: PII was redacted at the edge and re-checked on the server before reaching you. Produce a concise executive summary (3-5 sentences) of the business request. Focus on the action being requested, the business context, and any timeline or budget signals.',
+            },
+            { role: 'user', content: payload },
+          ],
+          max_tokens: completionBudget(model, 512),
+          temperature: 0.3,
+          ...reasoningParams(model),
+        }),
+      (from, to, status) => logApiWarning('api.model_fallback', { route: ROUTE, traceId: context.traceId, from, to, upstreamStatus: status }),
+    );
 
     const durationMs = elapsed();
     const rawSummary = completion.choices[0]?.message?.content ?? '';
-    const summary = sanitizeLLMOutput(rawSummary);
+    const summary = sanitizeLLMOutput(stripReasoning(rawSummary));
 
     const anomaly = detectAnomaly(durationMs, 200);
     if (anomaly.anomaly) {
       logApiWarning('api.anomaly_detected', { route: ROUTE, traceId: context.traceId, reasons: anomaly.reasons.join(', '), durationMs, status: 200 });
     }
 
-    logApiEvent('api.request_completed', { route: ROUTE, traceId: context.traceId, status: 200, durationMs, model: MODEL });
+    logApiEvent('api.request_completed', { route: ROUTE, traceId: context.traceId, status: 200, durationMs, model: usedModel });
 
     return finalizeApiResponse(
       NextResponse.json({
         summary,
         traceId: context.traceId,
         tier: 'cloud' as const,
-        model: MODEL,
+        model: usedModel,
         receipt: decided.receipt,
       }),
       context

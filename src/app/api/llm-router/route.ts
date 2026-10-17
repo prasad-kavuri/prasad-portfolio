@@ -15,6 +15,7 @@ import { detectAnomaly, logAPIEvent } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
 import { checkOutput, isPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
 import { safeServerFetch } from '@/lib/safe-fetch';
+import { MODEL_CATALOG, completionBudget, fetchWithModelFallback, modelById, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/llm-router';
 
@@ -32,12 +33,7 @@ async function fetchWithRetry(
   return res;
 }
 
-const MODELS = [
-  { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', provider: 'Meta', inputCost: 0.05, outputCost: 0.08 },
-  { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', provider: 'Meta', inputCost: 0.59, outputCost: 0.79 },
-  { id: 'meta-llama/llama-4-scout-17b-16e-instruct', name: 'Llama 4 Scout', provider: 'Meta', inputCost: 0.11, outputCost: 0.34 },
-  { id: 'qwen/qwen3-32b', name: 'Qwen3 32B', provider: 'Alibaba', inputCost: 0.29, outputCost: 0.59 },
-];
+const MODELS = MODEL_CATALOG;
 
 export async function POST(req: NextRequest) {
   const context = createRequestContext(req, ROUTE);
@@ -97,19 +93,27 @@ export async function POST(req: NextRequest) {
 
   try {
     const start = Date.now();
-    const res = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: effectiveModel.id,
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 500,
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
+    const { response: res, model: usedModelId } = await fetchWithModelFallback(
+      effectiveModel.id,
+      (model) =>
+        fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: completionBudget(model, 500),
+            ...reasoningParams(model),
+          }),
+          signal: AbortSignal.timeout(30000),
+        }),
+      (from, to, status) => logApiWarning('api.model_fallback', { route: ROUTE, traceId: context.traceId, from, to, upstreamStatus: status }),
+    );
+    // Report and price the model that actually answered, which differs from the request after a fallback.
+    const answered = modelById(usedModelId) ?? effectiveModel;
     const latency = Date.now() - start;
     const data = await res.json() as {
       usage?: { prompt_tokens?: number; completion_tokens?: number };
@@ -128,7 +132,7 @@ export async function POST(req: NextRequest) {
 
     const inputTokens = data.usage?.prompt_tokens || 0;
     const outputTokens = data.usage?.completion_tokens || 0;
-    const cost = (inputTokens * effectiveModel.inputCost + outputTokens * effectiveModel.outputCost) / 1_000_000;
+    const cost = (inputTokens * answered.inputCost + outputTokens * answered.outputCost) / 1_000_000;
 
     const totalDuration = Date.now() - context.startedAt;
     logApiEvent('api.request_completed', {
@@ -137,7 +141,7 @@ export async function POST(req: NextRequest) {
       status: 200,
       durationMs: totalDuration,
       upstreamLatencyMs: latency,
-      model: effectiveModel.id,
+      model: answered.id,
       requestedModel: model.id,
       promptLength: prompt.length,
       inputTokens,
@@ -149,7 +153,7 @@ export async function POST(req: NextRequest) {
       logAPIEvent({ event: 'api.anomaly_detected', route: ROUTE, traceId: context.traceId, severity: 'warn', durationMs: totalDuration, statusCode: 200, reasons: anomaly.reasons.join('; ') });
     }
 
-    const rawContent = data.choices?.[0]?.message?.content ?? '';
+    const rawContent = stripReasoning(data.choices?.[0]?.message?.content ?? '');
     const guardResult = checkOutput(rawContent, context.traceId);
     if (!guardResult.isSafe) {
       logApiWarning('api.guardrail_output_triggered', {
@@ -162,10 +166,10 @@ export async function POST(req: NextRequest) {
     }
 
     return finalizeApiResponse(NextResponse.json({
-      model: effectiveModel.id,
+      model: answered.id,
       requestedModel: model.id,
-      modelName: effectiveModel.name,
-      provider: effectiveModel.provider,
+      modelName: answered.name,
+      provider: answered.provider,
       response: sanitizeLLMOutput(guardResult.sanitizedOutput ?? rawContent),
       latency_ms: latency,
       input_tokens: inputTokens,

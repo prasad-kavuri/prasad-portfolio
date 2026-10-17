@@ -12,6 +12,7 @@ vi.mock('@/components/theme-toggle', () => ({
 }));
 
 import LLMRouterDemo from '@/app/demos/llm-router/page';
+import { FAST_MODEL } from '@/lib/groq-models';
 
 describe('LLMRouterDemo page', () => {
   const mockFetch = vi.fn();
@@ -21,8 +22,8 @@ describe('LLMRouterDemo page', () => {
     vi.stubGlobal('fetch', mockFetch);
     mockFetch.mockResolvedValue({
       json: async () => ({
-        model: 'llama-3.1-8b-instant',
-        modelName: 'Llama 3.1 8B',
+        model: FAST_MODEL.id,
+        modelName: FAST_MODEL.name,
         provider: 'Meta',
         response: 'Test response',
         latency_ms: 420,

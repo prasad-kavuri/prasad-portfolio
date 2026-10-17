@@ -18,6 +18,7 @@ import {
   logApiWarning,
   readJsonObject,
 } from '@/lib/api';
+import { CAPABLE_MODEL, completionBudget, fetchWithModelFallback, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/generative-ui';
 const MAX_QUERY_LENGTH = 300;
@@ -135,24 +136,30 @@ ${skillGroups}
 
 ${CATALOG_PROMPT_DESCRIPTION}`;
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: safeQuery },
-        ],
-        temperature: 0.2,
-        max_tokens: 1024,
-        response_format: { type: 'json_object' },
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
+    const { response } = await fetchWithModelFallback(
+      CAPABLE_MODEL.id,
+      (model) =>
+        fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: safeQuery },
+            ],
+            temperature: 0.2,
+            max_tokens: completionBudget(model, 1024),
+            response_format: { type: 'json_object' },
+            ...reasoningParams(model),
+          }),
+          signal: AbortSignal.timeout(30000),
+        }),
+      (from, to, status) => logApiWarning('api.model_fallback', { route: ROUTE, traceId: context.traceId, from, to, upstreamStatus: status }),
+    );
 
     if (!response.ok) {
       await response.text().catch(() => '');
@@ -167,7 +174,7 @@ ${CATALOG_PROMPT_DESCRIPTION}`;
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content ?? '';
+    const content = stripReasoning(data.choices?.[0]?.message?.content ?? '');
 
     let parsedSpec: unknown;
     try {

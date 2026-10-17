@@ -17,8 +17,10 @@ import {
 } from "@/lib/api";
 import { detectAnomaly, logAPIEvent, startTimer } from "@/lib/observability";
 import { verifyToken, type TokenPayload } from "@/lib/agent-auth";
+import { CAPABLE_MODEL, callWithModelFallback, completionBudget, reasoningParams, stripReasoning } from "@/lib/groq-models";
 
 const ROUTE = "/api/mcp-demo";
+const MODEL = CAPABLE_MODEL.id;
 
 const MCP_TOOLS = PROFILE_TOOLS;
 
@@ -127,18 +129,26 @@ export async function POST(request: NextRequest) {
 
   try {
     // Step 1: Initial call to Groq to select tools
-    const toolSelectionResponse = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "user",
-          content: query,
-        },
-      ],
-      tools: GROQ_TOOLS,
-      tool_choice: "required",
-      max_tokens: 1024,
-    });
+    const onFallback = (from: string, to: string, status: number) =>
+      logApiWarning('api.model_fallback', { route: ROUTE, traceId: context.traceId, from, to, upstreamStatus: status });
+    const { result: toolSelectionResponse } = await callWithModelFallback(
+      MODEL,
+      (model) =>
+        groq.chat.completions.create({
+          model,
+          messages: [
+            {
+              role: "user",
+              content: query,
+            },
+          ],
+          tools: GROQ_TOOLS,
+          tool_choice: "required",
+          max_tokens: completionBudget(model, 1024),
+          ...reasoningParams(model),
+        }),
+      onFallback,
+    );
 
     const message = toolSelectionResponse.choices[0].message;
 
@@ -263,19 +273,25 @@ export async function POST(request: NextRequest) {
         ...toolResultMessages,
       ];
 
-      const finalResponse = await groq.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages,
-        max_tokens: 1024,
-      });
+      const { result: finalResponse } = await callWithModelFallback(
+        MODEL,
+        (model) =>
+          groq.chat.completions.create({
+            model,
+            messages,
+            max_tokens: completionBudget(model, 1024),
+            ...reasoningParams(model),
+          }),
+        onFallback,
+      );
 
       finalAnswer = sanitizeLLMOutput(
-        finalResponse.choices[0].message.content || "No response generated"
+        stripReasoning(finalResponse.choices[0].message.content || "") || "No response generated"
       );
     } else {
       // No tools were called, use the initial response
       finalAnswer = sanitizeLLMOutput(
-        toolSelectionResponse.choices[0].message.content || "No response generated"
+        stripReasoning(toolSelectionResponse.choices[0].message.content || "") || "No response generated"
       );
     }
 

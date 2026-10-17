@@ -1,8 +1,9 @@
 import { logAPIEvent } from '@/lib/observability';
+import { CAPABLE_MODEL, FAST_MODEL } from '@/lib/groq-models';
 
 export const MAX_TOKENS_PER_REQUEST = 1_500;
 export const MAX_COST_REQUESTS_PER_MINUTE = 20;
-export const DEFAULT_FALLBACK_MODEL = 'llama-3.1-8b-instant';
+export const DEFAULT_FALLBACK_MODEL = FAST_MODEL.id;
 
 interface CostWindow {
   count: number;
@@ -34,7 +35,7 @@ export function estimateTokens(text: string): number {
 
 export function selectCostAwareModel(requestedModel?: string, estimatedTokens = 0): string | undefined {
   if (!requestedModel) return undefined;
-  if (requestedModel.includes('70b') && estimatedTokens > 350) {
+  if (requestedModel === CAPABLE_MODEL.id && estimatedTokens > 350) {
     return DEFAULT_FALLBACK_MODEL;
   }
   return requestedModel;

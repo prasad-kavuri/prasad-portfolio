@@ -14,6 +14,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { _resetStore } from '@/lib/rate-limit';
+import { FAST_MODEL } from '@/lib/groq-models';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -204,19 +205,19 @@ describe('Fuzz: /api/llm-router', () => {
   }
 
   it('[A] 10 K-character prompt is rejected as too long', async () => {
-    await post({ prompt: 'A'.repeat(10_000), model: 'llama-3.1-8b-instant' });
+    await post({ prompt: 'A'.repeat(10_000), model: FAST_MODEL.id });
   });
 
   it('[B] null prompt is rejected', async () => {
-    await post({ prompt: null, model: 'llama-3.1-8b-instant' });
+    await post({ prompt: null, model: FAST_MODEL.id });
   });
 
   it('[B] boolean prompt (type confusion) is rejected', async () => {
-    await post({ prompt: true, model: 'llama-3.1-8b-instant' });
+    await post({ prompt: true, model: FAST_MODEL.id });
   });
 
   it('[B] number prompt (type confusion) is rejected', async () => {
-    await post({ prompt: 9999, model: 'llama-3.1-8b-instant' });
+    await post({ prompt: 9999, model: FAST_MODEL.id });
   });
 
   it('[B] unknown model string is rejected', async () => {
@@ -229,14 +230,14 @@ describe('Fuzz: /api/llm-router', () => {
 
   it('[C] SQL injection string in prompt does not crash', async () => {
     await post(
-      { prompt: "'; DROP TABLE llms; --", model: 'llama-3.1-8b-instant' },
+      { prompt: "'; DROP TABLE llms; --", model: FAST_MODEL.id },
       [400, 429, 500]
     );
   });
 
   it('[C] 4-byte UTF-8 characters in prompt do not crash', async () => {
     await post(
-      { prompt: '𠜎𠜱𠝹𠱓'.repeat(20), model: 'llama-3.1-8b-instant' },
+      { prompt: '𠜎𠜱𠝹𠱓'.repeat(20), model: FAST_MODEL.id },
       [400, 429, 500]
     );
   });
@@ -246,7 +247,7 @@ describe('Fuzz: /api/llm-router', () => {
   });
 
   it('[D] deeply nested object as prompt field is rejected (type confusion)', async () => {
-    await post({ prompt: deeplyNested(), model: 'llama-3.1-8b-instant' });
+    await post({ prompt: deeplyNested(), model: FAST_MODEL.id });
   });
 });
 

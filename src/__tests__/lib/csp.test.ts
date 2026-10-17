@@ -27,7 +27,7 @@ const BASELINE: Record<string, string> = {
   'worker-src': "'self' blob:",
   'style-src': "'self' 'unsafe-inline'",
   'img-src': "'self' blob: data: https:",
-  'connect-src': `'self' blob: https://*.huggingface.co https://*.xethub.hf.co https://api.groq.com https://cdn-lfs-us-1.huggingface.co https://cdn-lfs.huggingface.co ${ORT_WASM_BASE} https://huggingface.co https://va.vercel-scripts.com https://xethub.hf.co`,
+  'connect-src': `'self' blob: https://*.cdn.hf.co https://*.huggingface.co https://*.xethub.hf.co https://api.groq.com https://cdn-lfs-us-1.huggingface.co https://cdn-lfs.huggingface.co ${ORT_WASM_BASE} https://huggingface.co https://va.vercel-scripts.com https://xethub.hf.co`,
   'font-src': "'self' data:",
   'frame-ancestors': "'none'",
   'base-uri': "'self'",
@@ -49,7 +49,7 @@ const parse = (policy: string) =>
   );
 
 describe('shared CSP (SPEC-0027 stage 1)', () => {
-  it('matches the policy that shipped before the refactor', () => {
+  it('matches the pinned policy (the only deliberate change since the refactor: *.cdn.hf.co, 2026-10-17)', () => {
     expect(parse(CONTENT_SECURITY_POLICY)).toEqual(BASELINE);
   });
 
@@ -183,5 +183,19 @@ describe('strict CSP (SPEC-0027 stage 2)', () => {
     for (const route of FULL_CSP_ROUTES) {
       expect(readFileSync(`src/app${route}/page.tsx`, 'utf8'), route).toContain('<RequireFullCsp />');
     }
+  });
+});
+
+describe('model download hosts (regression, 2026-10-17)', () => {
+  // Hugging Face redirects model files to these hosts. A host missing here blocks every in-browser model
+  // download, and the three WASM demos silently fall back to simulated mode.
+  const MODEL_HOSTS = ['huggingface.co', 'cdn-lfs.huggingface.co', 'xethub.hf.co', 'cas-bridge.xethub.hf.co', 'us.aws.cdn.hf.co'];
+  const allows = (sources: string[], host: string) =>
+    sources.some((src) => {
+      const h = src.replace(/^https:\/\//, '');
+      return h === host || (h.startsWith('*.') && host.endsWith(h.slice(1)));
+    });
+  it.each(MODEL_HOSTS)('the full policy lets the browser connect to %s', (host) => {
+    expect(allows(parse(CONTENT_SECURITY_POLICY)['connect-src'].split(' '), host)).toBe(true);
   });
 });

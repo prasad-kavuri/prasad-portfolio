@@ -38,6 +38,8 @@ export function checkPage(path, status, headers, tier) {
     if (!script.includes("'wasm-unsafe-eval'")) fail("full script-src lacks 'wasm-unsafe-eval'");
     // SPEC-0027 stage 3: the CDN is allowed only at the pinned onnxruntime-web path.
     if (!script.includes(ORT_WASM_BASE)) fail('full script-src lacks the pinned onnxruntime-web path');
+    // Model downloads redirect to the Hugging Face CDN; without this entry every demo silently falls back.
+    if (!connect.includes('https://*.cdn.hf.co')) fail('full connect-src lacks https://*.cdn.hf.co (model downloads blocked)');
     for (const bad of ['https://cdn.jsdelivr.net', 'https://unpkg.com']) {
       if (script.includes(bad) || connect.includes(bad)) fail(`full policy still allows the whole origin ${bad}`);
     }

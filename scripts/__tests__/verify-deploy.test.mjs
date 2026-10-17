@@ -6,7 +6,7 @@ import { CONTENT_SECURITY_POLICY, STRICT_CONTENT_SECURITY_POLICY } from '../../s
 import { directive, checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES } from '../verify-deploy.mjs';
 
 const STRICT = "default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com";
-const FULL = `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: ${ORT_WASM_BASE}`;
+const FULL = `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: ${ORT_WASM_BASE}; connect-src 'self' https://*.cdn.hf.co`;
 function hdrs(csp, tier, extra = {}) {
   const m = new Map(Object.entries({
     'content-security-policy': csp, 'server-timing': tier ? `csp;desc="${tier}"` : '',
@@ -33,11 +33,13 @@ test('flags a demo that received the strict policy or the wrong tier header', ()
 test('flags a full page that allows a whole CDN origin or lacks the pinned path', () => {
   const broad = hdrs(`${FULL} https://cdn.jsdelivr.net https://unpkg.com`, 'full');
   assert.equal(checkPage('/demos/quantization', 200, broad, 'full').length, 2);
-  const none = hdrs("script-src 'self' 'wasm-unsafe-eval'", 'full');
+  const none = hdrs("script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https://*.cdn.hf.co", 'full');
   assert.deepEqual(checkPage('/demos/quantization', 200, none, 'full'), ['/demos/quantization: full script-src lacks the pinned onnxruntime-web path']);
+  const noHf = hdrs(`script-src 'wasm-unsafe-eval' ${ORT_WASM_BASE}; connect-src 'self'`, 'full');
+  assert.equal(checkPage('/demos/quantization', 200, noHf, 'full').length, 1);
 });
 test('accepts the real production header for a demo (sources end with a semicolon)', () => {
-  const real = `default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com ${ORT_WASM_BASE}; worker-src 'self' blob:; connect-src 'self' ${ORT_WASM_BASE} blob:`;
+  const real = `default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com ${ORT_WASM_BASE}; worker-src 'self' blob:; connect-src 'self' https://*.cdn.hf.co ${ORT_WASM_BASE} blob:`;
   assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(real, 'full'), 'full'), []);
 });
 test('accepts the real policies built by src/lib/csp.ts', () => {

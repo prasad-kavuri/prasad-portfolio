@@ -8,7 +8,9 @@ import {
   getClientIp,
   isStringArray,
   jsonError,
+  logApiError,
   readJsonObject,
+  upstreamErrorInfo,
 } from '@/lib/api';
 import { _resetStore, RATE_LIMIT_MAX } from '@/lib/rate-limit';
 import { _resetObservability, getObservabilitySnapshot } from '@/lib/observability';
@@ -198,5 +200,25 @@ describe('api helpers', () => {
       errorName: 'Error',
     });
     expect(JSON.stringify(captured)).not.toContain('sensitive');
+  });
+
+  it('logs the upstream HTTP status and short codes but never the message', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const upstream = Object.assign(new Error('Invalid API key gsk_secret123 for request body hello'), {
+      status: 401,
+      code: 'invalid_api_key',
+      type: 'invalid_request_error',
+    });
+    logApiError('api.request_failed', upstream, { route: '/api/test' });
+    const logged = JSON.parse(error.mock.calls[0][0] as string);
+    expect(logged).toMatchObject({ upstreamStatus: 401, upstreamCode: 'invalid_api_key', upstreamType: 'invalid_request_error' });
+    expect(JSON.stringify(logged)).not.toMatch(/gsk_secret123|hello/);
+    error.mockRestore();
+  });
+
+  it('ignores odd upstream fields', () => {
+    expect(upstreamErrorInfo({ status: 99, code: 'has spaces and a message', type: 5 })).toEqual({});
+    expect(upstreamErrorInfo(null)).toEqual({});
+    expect(upstreamErrorInfo({ status: 429 })).toEqual({ upstreamStatus: 429 });
   });
 });

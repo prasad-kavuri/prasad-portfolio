@@ -82,10 +82,27 @@ export function logApiWarning(event: string, meta: LogMeta = {}): void {
   writeLog('warn', event, meta);
 }
 
+const SAFE_CODE = /^[A-Za-z0-9_.-]{1,64}$/;
+
+/**
+ * Provider errors (the Groq SDK follows the OpenAI shape) carry an HTTP status and short machine codes.
+ * Log only those: never the message, which can echo request content or key fragments.
+ */
+export function upstreamErrorInfo(error: unknown): LogMeta {
+  if (typeof error !== 'object' || error === null) return {};
+  const e = error as { status?: unknown; code?: unknown; type?: unknown };
+  const out: LogMeta = {};
+  if (typeof e.status === 'number' && Number.isInteger(e.status) && e.status >= 100 && e.status < 600) out.upstreamStatus = e.status;
+  if (typeof e.code === 'string' && SAFE_CODE.test(e.code)) out.upstreamCode = e.code;
+  if (typeof e.type === 'string' && SAFE_CODE.test(e.type)) out.upstreamType = e.type;
+  return out;
+}
+
 export function logApiError(event: string, error: unknown, meta: LogMeta = {}): void {
   writeLog('error', event, {
     ...meta,
     errorName: error instanceof Error ? error.name : typeof error,
+    ...upstreamErrorInfo(error),
   });
 }
 

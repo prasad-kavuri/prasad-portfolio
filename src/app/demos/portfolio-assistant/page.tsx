@@ -310,7 +310,7 @@ export default function PortfolioAssistantPage() {
               <h1 className="text-2xl font-bold">AI Portfolio Assistant</h1>
               <p className="text-sm text-muted-foreground">
                 Ask anything about Prasad&apos;s experience — full-context
-                grounding with optional retrieval cues via Llama 3.1
+                grounding with optional retrieval cues via GPT-OSS 20B
               </p>
             </div>
           </div>
@@ -530,7 +530,7 @@ export default function PortfolioAssistantPage() {
 
             {/* Footer */}
             <div className="mt-3 text-center text-xs text-muted-foreground">
-              <p>Powered by Groq + Llama 3.1 8B</p>
+              <p>Powered by Groq + GPT-OSS 20B</p>
             </div>
           </div>
         </div>

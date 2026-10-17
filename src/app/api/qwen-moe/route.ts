@@ -16,7 +16,7 @@ const QWEN_ENDPOINT = 'http://localhost:8000/v1/chat/completions';
 const QWEN_MODEL = 'qwen3-35b-a3b-int4';
 const FALLBACK_MESSAGE =
   'Qwen MoE local inference unavailable — requires local vllm server. ' +
-  'This demo shows the routing architecture; switch to Llama or Mixtral for live output.';
+  'This demo shows the routing architecture; switch to a Groq-hosted model for live output.';
 
 // Safety gate: only attempt localhost fetch when a server-side env flag is
 // explicitly set. Default is disabled so production deployments never make

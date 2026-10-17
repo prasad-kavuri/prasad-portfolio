@@ -3,6 +3,7 @@ import { validateParametricScene, clampToSchema } from './scene-schema';
 import type { RefinementResult } from './refinement-engine';
 import { applyRefinement } from './refinement-engine';
 import { logAPIEvent } from '@/lib/observability';
+import { CAPABLE_MODEL, completionBudget, reasoningParams } from '@/lib/groq-models';
 
 // Only active when NEXT_PUBLIC_ENABLE_LLM_REFINEMENT=true
 const LLM_ENABLED =
@@ -61,7 +62,7 @@ export async function llmRefineScene(
     const groq = new Groq({ apiKey: process.env['GROQ_API_KEY'] });
 
     const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: CAPABLE_MODEL.id,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         {
@@ -69,8 +70,9 @@ export async function llmRefineScene(
           content: `Scene: ${JSON.stringify({ id: scene.id, objects: scene.objects })}\n\nInstruction: ${instruction}`,
         },
       ],
-      max_tokens: 512,
+      max_tokens: completionBudget(CAPABLE_MODEL.id, 512),
       temperature: 0,
+      ...reasoningParams(CAPABLE_MODEL.id),
     });
 
     const raw = completion.choices[0]?.message?.content ?? '[]';

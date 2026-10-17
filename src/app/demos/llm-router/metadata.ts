@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'LLM Router — AI FinOps & Intelligent Multi-Model Routing | Prasad Kavuri',
   description:
-    'Live AI FinOps demo: intelligent routing across Llama 3.1 8B/70B, Qwen3, and Llama 4 to optimize cost, latency, and quality trade-offs in real time. Demonstrates the LLM cost optimization patterns behind 70%+ infrastructure savings.',
+    'Live AI FinOps demo: intelligent routing across GPT-OSS 20B/120B and Qwen3.8 to optimize cost, latency, and quality trade-offs in real time. Demonstrates the LLM cost optimization patterns behind 70%+ infrastructure savings.',
   alternates: {
     canonical: 'https://www.prasadkavuri.com/demos/llm-router',
   },
@@ -17,6 +17,6 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'LLM Router — AI FinOps & Multi-Model Routing',
     description:
-      'Intelligent routing across Llama 3.1, Qwen3, and Llama 4 — the AI FinOps pattern behind 70%+ infrastructure cost reduction.',
+      'Intelligent routing across GPT-OSS and Qwen3.8 — the AI FinOps pattern behind 70%+ infrastructure cost reduction.',
   },
 };

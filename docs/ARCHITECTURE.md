@@ -182,7 +182,7 @@ Combined with IP-level SHA-256 hashing (never raw IPs in storage), this creates 
 
 **Pattern:** A single orchestrator routes queries across heterogeneous models selected per-task by complexity and latency requirements — not by a static routing table.
 
-`src/app/api/llm-router/route.ts` implements dynamic routing: simple factual queries go to `llama-3.1-8b-instant`, moderate queries to `llama-3.3-70b`, and complex multi-step queries to `llama-4-scout`. The router reasons about query structure at inference time rather than relying on pre-classified categories.
+`src/app/api/llm-router/route.ts` implements dynamic routing: simple factual queries go to the fast tier, moderate and multi-step queries to the capable tier, and code queries to the code tier. The tiers, model ids, prices and fallback chains are defined once in `src/lib/groq-models.ts` (SPEC-0029); Groq retires models regularly, so a retired model falls back to the next one in its chain. The router reasons about query structure at inference time rather than relying on pre-classified categories.
 
 **Novel combination:** Real-time query complexity scoring + per-call model selection + unified streaming response format across models of different capability tiers.
 

@@ -14,8 +14,10 @@ real-time.
 
 The router sends exactly one request per query — always to Groq. The "routing" decision
 is made by the complexity classifier, which picks among Groq-hosted models
-(`llama-3.1-8b-instant`, `llama-3.3-70b-versatile`, `mixtral-8x7b-32768`). No other
-inference provider is called.
+(see `src/lib/groq-models.ts` for the current list: a fast, a capable and a code tier).
+No other inference provider is called. Model ids live only in that module, and a request
+retries once with the next model in the tier's chain when Groq reports the model as
+retired or unavailable to the account (SPEC-0029).
 
 ## Alternatives considered
 

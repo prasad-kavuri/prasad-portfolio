@@ -5,6 +5,7 @@
  */
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { _resetStore } from '@/lib/rate-limit';
+import { FAST_MODEL } from '@/lib/groq-models';
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -88,7 +89,7 @@ describe('Upstream timeout → 504', () => {
     mockFetch.mockRejectedValue(makeTimeoutError());
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(
-      llmRequest({ prompt: 'hello', model: 'llama-3.1-8b-instant' }) as any
+      llmRequest({ prompt: 'hello', model: FAST_MODEL.id }) as any
     );
     expect(res.status).toBe(504);
     const body = await res.json();
@@ -124,7 +125,7 @@ describe('Network drop → 500 (not 504)', () => {
     mockFetch.mockRejectedValue(new TypeError('Failed to fetch'));
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(
-      llmRequest({ prompt: 'test', model: 'llama-3.1-8b-instant' }) as any
+      llmRequest({ prompt: 'test', model: FAST_MODEL.id }) as any
     );
     expect(res.status).toBe(500);
     const body = await res.json();
@@ -155,7 +156,7 @@ describe('Malformed upstream responses', () => {
     });
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(
-      llmRequest({ prompt: 'hello', model: 'llama-3.1-8b-instant' }) as any
+      llmRequest({ prompt: 'hello', model: FAST_MODEL.id }) as any
     );
     // Should succeed with empty response string rather than throwing
     expect(res.status).toBe(200);
@@ -174,7 +175,7 @@ describe('Malformed upstream responses', () => {
     });
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(
-      llmRequest({ prompt: 'hello', model: 'llama-3.1-8b-instant' }) as any
+      llmRequest({ prompt: 'hello', model: FAST_MODEL.id }) as any
     );
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -190,7 +191,7 @@ describe('Malformed upstream responses', () => {
 describe('Concurrent load spike', () => {
   it('handles 5 concurrent requests from different IPs without errors', async () => {
     const { POST } = await import('@/app/api/llm-router/route');
-    const payload = { prompt: 'concurrent test', model: 'llama-3.1-8b-instant' };
+    const payload = { prompt: 'concurrent test', model: FAST_MODEL.id };
 
     const results = await Promise.all(
       Array.from({ length: 5 }, () =>
@@ -207,7 +208,7 @@ describe('Concurrent load spike', () => {
   it('rate limiter correctly serializes concurrent requests from same IP', async () => {
     const { POST } = await import('@/app/api/llm-router/route');
     const ip = nextIp();
-    const payload = { prompt: 'same-ip concurrent', model: 'llama-3.1-8b-instant' };
+    const payload = { prompt: 'same-ip concurrent', model: FAST_MODEL.id };
 
     // Fire 12 concurrent requests from the same IP
     const results = await Promise.all(

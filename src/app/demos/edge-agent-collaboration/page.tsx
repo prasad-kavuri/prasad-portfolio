@@ -325,7 +325,7 @@ export default function EdgeAgentCollaborationPage() {
               />
               <p className="text-center text-sm font-semibold">Tool Gateway → Cloud Agent</p>
               <p className="mt-1 text-center text-[11px] text-muted-foreground">
-                Groq · Llama 3.3 · Summary
+                Groq · GPT-OSS 120B · Summary
               </p>
               {isCloudDone && (
                 <CheckCircle2 className="mt-2 size-4 text-green-400" aria-hidden="true" />

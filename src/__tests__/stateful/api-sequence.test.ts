@@ -4,6 +4,7 @@
  */
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { _resetStore } from '@/lib/rate-limit';
+import { FAST_MODEL } from '@/lib/groq-models';
 
 // ---------------------------------------------------------------------------
 // Global fetch mock (used by llm-router)
@@ -75,7 +76,7 @@ describe('Rate-limit enforcement sequence', () => {
   it('allows first 10 requests then blocks subsequent ones with 429', async () => {
     const { POST } = await import('@/app/api/llm-router/route');
     const ip = nextIp();
-    const payload = { prompt: 'hello', model: 'llama-3.1-8b-instant' };
+    const payload = { prompt: 'hello', model: FAST_MODEL.id };
 
     // First 10 requests must NOT return 429
     for (let i = 0; i < 10; i++) {
@@ -96,7 +97,7 @@ describe('Rate-limit enforcement sequence', () => {
     const { POST } = await import('@/app/api/llm-router/route');
     const exhaustedIp = nextIp();
     const freshIp = nextIp();
-    const payload = { prompt: 'hello', model: 'llama-3.1-8b-instant' };
+    const payload = { prompt: 'hello', model: FAST_MODEL.id };
 
     // Exhaust the first IP
     for (let i = 0; i < 11; i++) {
@@ -185,7 +186,7 @@ describe('LLM-router retry on transient upstream error', () => {
 
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(
-      llmRequest({ prompt: 'retry test', model: 'llama-3.1-8b-instant' }, ip) as any
+      llmRequest({ prompt: 'retry test', model: FAST_MODEL.id }, ip) as any
     );
 
     expect(res.status).toBe(200);
@@ -204,7 +205,7 @@ describe('LLM-router retry on transient upstream error', () => {
 
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(
-      llmRequest({ prompt: 'retry exhaust', model: 'llama-3.1-8b-instant' }, ip) as any
+      llmRequest({ prompt: 'retry exhaust', model: FAST_MODEL.id }, ip) as any
     );
 
     expect(res.status).toBe(500);
@@ -225,7 +226,7 @@ describe('LLM-router retry on transient upstream error', () => {
 
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(
-      llmRequest({ prompt: 'no retry on 4xx', model: 'llama-3.1-8b-instant' }, ip) as any
+      llmRequest({ prompt: 'no retry on 4xx', model: FAST_MODEL.id }, ip) as any
     );
 
     // 4xx → no retry, just 500 from the route

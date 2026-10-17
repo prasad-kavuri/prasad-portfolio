@@ -236,7 +236,7 @@ export const demos: Demo[] = [
     businessImpact: "Accelerates strategic research by orchestrating multiple AI expert perspectives into a single structured executive report",
     businessOutcome: "Demonstrates STORM-style multi-agent research orchestration: perspective discovery, parallel question generation, sequential LLM research, and live report synthesis.",
     href: "/demos/storm-research",
-    tags: ["Groq", "Multi-Agent", "Llama 3.3 70B", "Research Synthesis", "Streaming"],
+    tags: ["Groq", "Multi-Agent", "GPT-OSS 120B", "Research Synthesis", "Streaming"],
     skills: ['observability', 'guardrails'],
     status: "live",
     mobileConfig: {

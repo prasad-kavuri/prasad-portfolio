@@ -88,7 +88,7 @@ const LAYERS: Layer[] = [
     tagline: 'Cost · Latency · Quality — pick the right model',
     category: 'model',
     detail: 'Routes each request to the optimal model based on task complexity, required latency, and cost target. Simple tasks go to fast/cheap models; complex reasoning to frontier models.',
-    tech: ['LLM Router API', 'Groq Llama 3.1 8B / 70B', 'Complexity scoring', 'Cost-per-token tracking'],
+    tech: ['LLM Router API', 'Groq GPT-OSS 20B / 120B', 'Complexity scoring', 'Cost-per-token tracking'],
     example: 'LLM Router demo: live routing decisions with cost and latency breakdown per model tier.',
   },
   {

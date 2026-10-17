@@ -23,23 +23,18 @@ vi.mock('@/lib/transformers-loader', () => ({
   }),
 }));
 
+const groqCreate = vi.hoisted(() => vi.fn());
+
 vi.mock('groq-sdk', () => {
   function MockGroq() {
-    return {
-      chat: {
-        completions: {
-          create: vi.fn().mockResolvedValue({
-            choices: [{ message: { content: 'The customer requests an upgrade to Enterprise tier.' } }],
-          }),
-        },
-      },
-    };
+    return { chat: { completions: { create: groqCreate } } };
   }
   return { Groq: MockGroq };
 });
 
 // Static import of page component — mocks are hoisted so this gets the mocked dependencies.
 import EdgeAgentCollaborationPage from '@/app/demos/edge-agent-collaboration/page';
+import { CAPABLE_MODEL } from '@/lib/groq-models';
 
 // --- classifyPII unit tests ---
 
@@ -221,6 +216,10 @@ describe('POST /api/edge-agent', () => {
     _resetDurableStore();
     vi.clearAllMocks();
     process.env.GROQ_API_KEY = 'test-groq-key';
+    groqCreate.mockReset();
+    groqCreate.mockResolvedValue({
+      choices: [{ message: { content: 'The customer requests an upgrade to Enterprise tier.' } }],
+    });
   });
 
   async function post(body: object) {
@@ -275,8 +274,30 @@ describe('POST /api/edge-agent', () => {
     const body = (await res.json()) as { summary: string; tier: string; model: string; receipt: { decision: string; payloadHash: string; approvalId: string } };
     expect(body.summary).toBeTruthy();
     expect(body.tier).toBe('cloud');
-    expect(body.model).toBe('llama-3.3-70b-versatile');
+    expect(body.model).toBe(CAPABLE_MODEL.id);
     expect(body.receipt).toMatchObject({ decision: 'approved', payloadHash: staged.payloadHash, approvalId: staged.approvalId });
+  });
+
+  it('retries with the next model when Groq reports the first one as retired', async () => {
+    groqCreate
+      .mockRejectedValueOnce(Object.assign(new Error('400'), { status: 400, error: { error: { code: 'model_decommissioned' } } }))
+      .mockResolvedValueOnce({ choices: [{ message: { content: 'Upgrade request summarised.' } }] });
+    const staged = await stage();
+    const res = await post({ action: 'approve', approvalId: staged.approvalId });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { summary: string; model: string };
+    expect(groqCreate).toHaveBeenCalledTimes(2);
+    expect(groqCreate.mock.calls[1][0].model).not.toBe(groqCreate.mock.calls[0][0].model);
+    expect(body.model).toBe(groqCreate.mock.calls[1][0].model);
+    expect(body.summary).toBe('Upgrade request summarised.');
+  });
+
+  it('does not retry on an unrelated upstream error', async () => {
+    groqCreate.mockRejectedValueOnce(Object.assign(new Error('401'), { status: 401 }));
+    const staged = await stage();
+    const res = await post({ action: 'approve', approvalId: staged.approvalId });
+    expect(res.status).toBe(502);
+    expect(groqCreate).toHaveBeenCalledTimes(1);
   });
 
   it('rejects a replayed approval with 409', async () => {

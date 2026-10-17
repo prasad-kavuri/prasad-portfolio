@@ -133,3 +133,13 @@ Verified in Chromium against the served full policy: the pinned path (script and
 the unversioned path, another package on the same CDN, another version of the package, and unpkg were all blocked.
 Not verified: loading the runtime and running a model, because this sandbox cannot reach the CDN or the model host.
 Run each of the three demos once on the Vercel preview before merging.
+
+## Finding after stage 3 (2026-10-17): model downloads blocked
+
+Opening the three demos in a browser showed RAG and quantization stuck on "model unavailable". The console showed
+`connect-src` blocking `https://us.aws.cdn.hf.co/...`: Hugging Face now redirects model files to that host, which no
+policy entry covered. The allow-list was unchanged by stages 1 to 3 (the stage 1 snapshot pinned it as it was), so this
+is a host change at Hugging Face, not a regression from the stages. Fix: add `https://*.cdn.hf.co` to the full
+`connect-src`. A test now checks that the five known model hosts are allowed, and the post-deploy check requires the
+entry. Neither can prove a download works: that needs a browser on a machine that can reach Hugging Face, so open
+each demo and press Load after every deploy that touches the policy.

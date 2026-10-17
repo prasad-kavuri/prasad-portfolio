@@ -49,6 +49,9 @@ export const CSP_DIRECTIVES: ReadonlyArray<readonly [string, readonly string[]]>
       // xethub.hf.co: Hugging Face migrated its model CDN to XetHub (2025)
       'https://xethub.hf.co',
       'https://*.xethub.hf.co',
+      // cdn.hf.co: model files now redirect to us.aws.cdn.hf.co (observed 2026-10-17); without it every
+      // in-browser model download is blocked and the three WASM demos fall back to their simulated mode
+      'https://*.cdn.hf.co',
       ORT_WASM_BASE,
       'https://va.vercel-scripts.com',
       'blob:',

@@ -2,7 +2,8 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES } from '../verify-deploy.mjs';
+import { CONTENT_SECURITY_POLICY, STRICT_CONTENT_SECURITY_POLICY } from '../../src/lib/csp';
+import { directive, checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES } from '../verify-deploy.mjs';
 
 const STRICT = "default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com";
 const FULL = `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: ${ORT_WASM_BASE}`;
@@ -33,11 +34,23 @@ test('flags a full page that allows a whole CDN origin or lacks the pinned path'
   const broad = hdrs(`${FULL} https://cdn.jsdelivr.net https://unpkg.com`, 'full');
   assert.equal(checkPage('/demos/quantization', 200, broad, 'full').length, 2);
   const none = hdrs("script-src 'self' 'wasm-unsafe-eval'", 'full');
-  assert.deepEqual(checkPage('/demos/quantization', 200, none, 'full'), ['/demos/quantization: full policy lacks the pinned onnxruntime-web path']);
+  assert.deepEqual(checkPage('/demos/quantization', 200, none, 'full'), ['/demos/quantization: full script-src lacks the pinned onnxruntime-web path']);
 });
 test('accepts the real production header for a demo (sources end with a semicolon)', () => {
   const real = `default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com ${ORT_WASM_BASE}; worker-src 'self' blob:; connect-src 'self' ${ORT_WASM_BASE} blob:`;
   assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(real, 'full'), 'full'), []);
+});
+test('accepts the real policies built by src/lib/csp.ts', () => {
+  assert.deepEqual(checkPage('/', 200, hdrs(STRICT_CONTENT_SECURITY_POLICY, 'strict'), 'strict'), []);
+  assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(CONTENT_SECURITY_POLICY, 'full'), 'full'), []);
+});
+test('blob: in img-src is allowed on strict pages, blob: in script-src is not', () => {
+  assert.deepEqual(checkPage('/', 200, hdrs("script-src 'self'; img-src 'self' blob: data:", 'strict'), 'strict'), []);
+  assert.equal(checkPage('/', 200, hdrs("script-src 'self' blob:", 'strict'), 'strict').length, 1);
+});
+test('directive() reads one directive and returns [] for a missing one', () => {
+  assert.deepEqual(directive("a 'self'; b x y; c", 'b'), ['x', 'y']);
+  assert.deepEqual(directive("a 'self'", 'z'), []);
 });
 test('flags bad status and missing baseline headers', () => {
   const errs = checkPage('/', 404, hdrs(STRICT, 'strict', { 'x-frame-options': 'SAMEORIGIN', 'strict-transport-security': '' }), 'strict');

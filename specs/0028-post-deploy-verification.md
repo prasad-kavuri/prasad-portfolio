@@ -13,8 +13,10 @@ manual dispatch, and on a daily schedule (to catch drift without a deploy).
 
 - Every route in a fixed list returns 200 with the expected CSP tier. `Server-Timing: csp;desc="strict|full"` must
   match the tier, and the `Content-Security-Policy` header must agree with it:
-  - strict pages (`/`, `/about`, `/for-recruiters`, `/governance`): no `unsafe-eval`, no `wasm-unsafe-eval`, no `blob:`,
-    no CDN script origin.
+  - strict pages (`/`, `/about`, `/for-recruiters`, `/governance`): `script-src` has no `unsafe-eval`, no
+    `wasm-unsafe-eval`, no `blob:` and no CDN origin; `worker-src` has no `blob:`; `connect-src` allows no model or CDN
+    host. Directives are judged one by one: `img-src` keeps `blob:` by design. (First production run, 2026-10-16, failed
+    on exactly this: the first version looked for `blob:` anywhere in the policy.)
   - full pages (the three WASM demos): `wasm-unsafe-eval` present, the pinned onnxruntime-web CDN path present, and
     no whole-origin `cdn.jsdelivr.net` or `unpkg.com` (SPEC-0027 stage 3). Bumping `ORT_WEB_VERSION` means bumping the
     constant in the script too; a test fails until both match.

@@ -9,8 +9,11 @@ export const FULL_ROUTES = ['/demos/rag-pipeline', '/demos/quantization', '/demo
 export const STRICT_ROUTES = ['/', '/about', '/for-recruiters', '/governance'];
 export const LINK_TARGETS = ['/for-recruiters', '/about', '/governance', '/status'];
 
-// Split on ';' too, so the last source of a directive is not read as "source;".
-const tokens = (csp) => csp.split(/[\s;]+/).filter(Boolean);
+/** Sources of one CSP directive, e.g. directive(csp, 'script-src'). Empty if the directive is absent. */
+export function directive(csp, name) {
+  const d = csp.split(';').map((x) => x.trim().split(/\s+/)).find((x) => x[0] === name);
+  return d ? d.slice(1) : [];
+}
 
 /** Header checks for one page response. `headers` is a Headers-like object with get(). */
 export function checkPage(path, status, headers, tier) {
@@ -21,17 +24,22 @@ export function checkPage(path, status, headers, tier) {
   const timing = headers.get('server-timing') ?? '';
   if (!csp) fail('missing Content-Security-Policy');
   if (!timing.includes(`csp;desc="${tier}"`)) fail(`Server-Timing is "${timing}", expected csp;desc="${tier}"`);
-  const t = tokens(csp);
+  // Only the directives that run or load code are judged: img-src legitimately keeps blob: in the strict policy.
+  const script = directive(csp, 'script-src');
+  const worker = directive(csp, 'worker-src');
+  const connect = directive(csp, 'connect-src');
   if (tier === 'strict') {
     for (const bad of ["'unsafe-eval'", "'wasm-unsafe-eval'", 'blob:', 'https://cdn.jsdelivr.net', 'https://unpkg.com']) {
-      if (t.includes(bad)) fail(`strict policy contains ${bad}`);
+      if (script.includes(bad)) fail(`strict script-src contains ${bad}`);
     }
+    if (worker.includes('blob:')) fail('strict worker-src contains blob:');
+    if (connect.some((x) => /huggingface|hf\.co|jsdelivr|unpkg/.test(x))) fail('strict connect-src allows a model or CDN host');
   } else {
-    if (!t.includes("'wasm-unsafe-eval'")) fail("full policy lacks 'wasm-unsafe-eval'");
+    if (!script.includes("'wasm-unsafe-eval'")) fail("full script-src lacks 'wasm-unsafe-eval'");
     // SPEC-0027 stage 3: the CDN is allowed only at the pinned onnxruntime-web path.
-    if (!t.includes(ORT_WASM_BASE)) fail('full policy lacks the pinned onnxruntime-web path');
+    if (!script.includes(ORT_WASM_BASE)) fail('full script-src lacks the pinned onnxruntime-web path');
     for (const bad of ['https://cdn.jsdelivr.net', 'https://unpkg.com']) {
-      if (t.includes(bad)) fail(`full policy still allows the whole origin ${bad}`);
+      if (script.includes(bad) || connect.includes(bad)) fail(`full policy still allows the whole origin ${bad}`);
     }
   }
   if (!(headers.get('strict-transport-security') ?? '').includes('max-age=')) fail('missing HSTS');

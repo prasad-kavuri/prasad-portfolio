@@ -32,7 +32,7 @@ on:
 jobs:
   skillspector:
     name: SkillSpector Scan
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
       # Required for uploading SARIF results to GitHub Security tab

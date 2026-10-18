@@ -20,6 +20,17 @@ Also load profile: `profiles/testing.yaml`.
 Do NOT invoke for: new feature development, redesigns, or speculative refactors.
 This skill fixes exactly what is broken — nothing more.
 
+## Safety tiers
+
+Run steps by tier. The repo's Security Scope in `CLAUDE.md` is the source of truth; this section only labels this
+skill's steps.
+
+- **Tier R, read-only. Run freely:** reading failing output, `git status` and `git diff`, `npx tsc --noEmit`, `npm run lint`, `npm run test`, `npm run build`.
+- **Tier W, writes inside the repo. Run on a branch, never on `main`:** the minimal fix, a new regression test, doc updates, a local commit.
+- **Tier S, needs a person's approval first:** changes to security headers or the CSP, auth, env handling, rate limits,
+  SSRF checks, logging or deployment config; `npm audit fix --force`; major dependency upgrades; pushing, merging,
+  deploying or deleting anything.
+
 ## Phase 1 — Identify the failure
 
 Run the full check sequence and capture every failure:

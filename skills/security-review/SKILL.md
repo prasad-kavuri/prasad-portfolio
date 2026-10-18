@@ -11,6 +11,17 @@ description: >
 
 Key terms used below — check `CONTEXT.md` for definitions if any are unfamiliar: **guardrail check**, **HITL gate**, **observability event**. For the full threat model, see `docs/SECURITY_THREAT_MODEL.md`.
 
+## Safety tiers
+
+Run steps by tier. The repo's Security Scope in `CLAUDE.md` is the source of truth; this section only labels this
+skill's steps.
+
+- **Tier R, read-only. Run freely:** `npm audit`, semgrep, gitleaks, reading headers and configuration, checking rate limits and guardrails.
+- **Tier W, writes inside the repo. Run on a branch, never on `main`:** fixing a finding in source, tests, and updating `docs/security.md`.
+- **Tier S, needs a person's approval first:** changes to security headers or the CSP, auth, env handling, rate limits,
+  SSRF checks, logging or deployment config; `npm audit fix --force`; major dependency upgrades; pushing, merging,
+  deploying or deleting anything.
+
 ## Phase 1 — Dependency vulnerabilities
 
 ```bash

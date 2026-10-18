@@ -1,0 +1,50 @@
+{
+  "generator": "scripts/generate-skill-index.mjs",
+  "skills": [
+    {
+      "name": "add-demo",
+      "description": "Add a new production AI demo to the portfolio. Use when the user wants to add a demo, create a new demo page, build a new AI showcase, or wire up a new demo route. Covers both browser demos (WASM/WebGPU) and server demos (Groq API).",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/add-demo/SKILL.md"
+    },
+    {
+      "name": "agentic-seo",
+      "description": "AI crawler and recruiter discoverability audit. Use when the user wants to improve AI SEO, update llms.txt, check if ChatGPT/Claude/Gemini/Perplexity can answer questions about the portfolio correctly, audit structured data, or generate docs/discoverability.md.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/agentic-seo/SKILL.md"
+    },
+    {
+      "name": "executive-review",
+      "description": "Board-level and CEO-persona review of the portfolio. Use when the user wants to know how their work reads to a named executive, board member, or prominent industry figure — and whether it would warrant a direct conversation or referral. Provides: first impression, confidence level, concerns, missing narratives, board readiness, and estimated interview probability.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/executive-review/SKILL.md"
+    },
+    {
+      "name": "prasad-portfolio",
+      "description": "Baseline security, CSP/WASM, and coding-convention invariants for the prasad-portfolio repository at prasadkavuri.com — the contract every code change here must satisfy, regardless of which other skill (add-demo, testing, security-review, etc.) is also in use. Use when making any change in this repository, alongside a task-specific skill or on its own for a small edit.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/prasad-portfolio/SKILL.md"
+    },
+    {
+      "name": "recruiter-review",
+      "description": "Simulates a recruiter persona review of the portfolio for a specific target company. Use when the user wants feedback on how their portfolio reads to a hiring manager, executive recruiter, or CTO at a specific company. Input is a target company (e.g. OpenAI, Anthropic, Stripe, NVIDIA, Databricks, Zip). Output is strengths, weaknesses, missing keywords, missing demos, and an interview readiness score.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/recruiter-review/SKILL.md"
+    },
+    {
+      "name": "redesign-portfolio",
+      "description": "Complete Claude-native workflow for adding or redesigning a portfolio section. Covers component build, accessibility, security integration, tests, SEO/JSON-LD update, llms.txt sync, and PR summary. Use when the user wants to redesign a section, add a new UI section, update the visual design of existing components, or overhaul a page.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/redesign-portfolio/SKILL.md"
+    },
+    {
+      "name": "security-review",
+      "description": "Security validation sweep for the portfolio. Use when the user wants a security audit, security review, vulnerability check, CSP validation, secret scan, or wants to update docs/security.md. Covers: npm audit, semgrep, gitleaks, CSP/COOP/COEP/SRI, headers, robots.txt, rate limiting, guardrails.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/security-review/SKILL.md"
+    },
+    {
+      "name": "self-heal",
+      "description": "Autonomous test-fail → diagnose → patch → retest → document loop. Use when the CI build is broken, tests are failing, TypeScript errors appeared after a change, or the build is red. Determines cause, applies the minimal fix, retests, updates docs, and generates a commit summary. Never makes speculative changes — only fixes the identified failure.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/self-heal/SKILL.md"
+    },
+    {
+      "name": "testing",
+      "description": "Repository-wide test suite runner and coverage auditor. Use when the user wants to run all tests, check coverage, add missing tests, fix failing tests, audit test health, or generate a testing report. Covers: lint, typecheck, unit, integration, fuzz, evals, E2E, accessibility, and Lighthouse.",
+      "entrypoint": "https://raw.githubusercontent.com/prasad-kavuri/prasad-portfolio/main/skills/testing/SKILL.md"
+    }
+  ]
+}

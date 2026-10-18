@@ -1,7 +1,7 @@
 # Temporary dependency audit exception
 
-Approved by the repository owner on 2026-10-03. Renewed once by the owner on 2026-10-12.
-Expires after 2026-11-17 UTC.
+Approved by the repository owner on 2026-10-03. Renewed by the owner on 2026-10-12 and again on 2026-10-18.
+Expires after 2026-12-17 UTC.
 
 Only GHSA-vfj7-8cjw-p6xm is excepted. It affects braces <=3.0.3;
 the advisory and npm registry report no patched release at this time.
@@ -17,6 +17,10 @@ boundaries. The ordinary npm audit command still reports the accepted risk.
 
 Renewal check (2026-10-12): braces 3.0.3 is still the latest release, no patch exists, and
 `npm audit --omit=dev` reports 0 vulnerabilities, so the risk stays confined to development tooling.
+
+Renewal check (2026-10-18): braces 3.0.3 is still the latest release (npm dist-tags), no patch exists, and
+`npm audit --omit=dev` still reports 0 vulnerabilities. Every remaining high finding is reached only through
+eslint-config-next and shadcn, and npm's suggested fixes are major-version downgrades, which this policy rejects.
 
 Remove the exception when upstream publishes a patch and update the lockfile.
 Do not renew it automatically or downgrade eslint-config-next/shadcn to hide it.

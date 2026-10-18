@@ -73,6 +73,10 @@ describe('GovernancePage', () => {
       'href',
       'https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/SECURITY_THREAT_MODEL.md'
     );
+    expect(screen.getByText('Security Pillar Mapping')).toHaveAttribute(
+      'href',
+      'https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/WELL_ARCHITECTED_SECURITY.md'
+    );
     expect(screen.getByText('security-posture.json')).toHaveAttribute(
       'href',
       '/.well-known/security-posture.json'

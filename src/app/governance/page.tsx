@@ -317,6 +317,12 @@ export default function GovernancePage() {
                   Security Threat Model
                 </Link>
                 <Link
+                  href="https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/WELL_ARCHITECTED_SECURITY.md"
+                  className="rounded-lg border border-border px-3 py-1.5 text-muted-foreground hover:text-foreground"
+                >
+                  Security Pillar Mapping
+                </Link>
+                <Link
                   href="/.well-known/security-posture.json"
                   className="rounded-lg border border-border px-3 py-1.5 text-muted-foreground hover:text-foreground"
                 >

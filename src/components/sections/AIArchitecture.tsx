@@ -58,7 +58,7 @@ const LAYERS: Layer[] = [
     tagline: 'Planner · Specialist agents · Multi-agent loop',
     category: 'agent',
     detail: 'A planner agent decomposes complex tasks into sub-goals, delegates to specialist agents (Analyzer, Researcher, Strategist), and manages the execution graph.',
-    tech: ['Multi-Agent API', 'Groq Llama 3.3 70B', 'Task decomposition', 'Agent-to-agent handoff'],
+    tech: ['Multi-Agent API', 'Groq GPT-OSS 120B', 'Task decomposition', 'Agent-to-agent handoff'],
     example: 'Multi-Agent demo: Analyzer → Researcher → Strategist pipeline with shared context and per-step observability.',
   },
   {

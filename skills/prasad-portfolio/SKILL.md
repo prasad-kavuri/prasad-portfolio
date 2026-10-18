@@ -39,7 +39,7 @@ middleware, Turbopack config), verify against `node_modules/next/dist/` rather t
 | Quantization | ONNX Runtime FP32 vs INT8 | Browser WASM |
 | LLM Router | Groq API | Server |
 | Portfolio Assistant | Groq + RAG, Vercel AI SDK | Server |
-| Resume Generator | Groq Llama 3.3 70B | Server |
+| Storm Research | Groq GPT-OSS 120B, multi-perspective | Server |
 | Multi-Agent | Groq, Analyzer+Researcher+Strategist | Server |
 | MCP Demo | MCP protocol + Groq tool calling | Server |
 

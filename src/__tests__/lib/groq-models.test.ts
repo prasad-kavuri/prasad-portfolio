@@ -176,15 +176,12 @@ describe('callWithModelFallback', () => {
 describe('retired model ids stay out of the source', () => {
   const RETIRED = ['llama-3.3-70b', 'llama-3.1-8b', 'llama-4-scout', 'qwen3-32b', 'mixtral'];
 
-  // Simulated dashboard data that never calls an API (SPEC-0029 out of scope).
-  const SIMULATED = ['enterpriseMockData.ts'];
-
   function walk(dir: string, out: string[] = []): string[] {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         if (entry.name !== '__tests__') walk(full, out);
-      } else if (/\.(ts|tsx)$/.test(entry.name) && !SIMULATED.includes(entry.name)) out.push(full);
+      } else if (/\.(ts|tsx)$/.test(entry.name)) out.push(full);
     }
     return out;
   }

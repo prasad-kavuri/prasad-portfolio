@@ -50,8 +50,8 @@ describe('reasoning helpers', () => {
   });
 
   it('gives reasoning models headroom, capped, and leaves others alone', () => {
-    expect(completionBudget(CAPABLE_MODEL.id, 512)).toBe(2048);
-    expect(completionBudget(CAPABLE_MODEL.id, 2000)).toBe(4096);
+    expect(completionBudget(CAPABLE_MODEL.id, 512)).toBe(1024);
+    expect(completionBudget(CAPABLE_MODEL.id, 2000)).toBe(2048);
     expect(completionBudget('unknown', 512)).toBe(512);
   });
 

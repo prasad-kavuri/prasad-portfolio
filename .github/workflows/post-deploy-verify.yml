@@ -16,11 +16,11 @@ jobs:
     if: >-
       github.event_name != 'deployment_status' ||
       (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - name: Check CSP tiers, headers and key links

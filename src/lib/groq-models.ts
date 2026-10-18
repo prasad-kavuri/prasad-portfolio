@@ -91,11 +91,12 @@ export function reasoningParams(id: string): { reasoning_effort?: 'low'; include
 
 /**
  * Thinking tokens count against the output limit, so a reasoning model given a small limit can return an empty
- * answer. Give reasoning models four times the headroom, capped.
+ * answer. Give reasoning models twice the headroom, capped. The free Groq plan allows 8K tokens a minute and counts
+ * the requested limit, so keep this modest.
  */
 export function completionBudget(id: string, base: number): number {
   const reasoning = modelById(id)?.reasoning ?? 'none';
-  return reasoning === 'none' ? base : Math.min(base * 4, 4096);
+  return reasoning === 'none' ? base : Math.min(base * 2, 2048);
 }
 
 /** Drop <think>…</think> blocks that inline-reasoning models can leave in `content`. */

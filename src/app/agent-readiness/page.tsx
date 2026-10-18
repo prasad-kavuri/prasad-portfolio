@@ -61,6 +61,12 @@ const OPERATING_SURFACE: ReadinessItem[] = [
     href: `${REPO}/tree/main/skills`,
   },
   {
+    icon: ListChecks,
+    title: 'skills/index.json',
+    detail: 'Machine-readable list of those skills (name, description, link to each SKILL.md), generated from the skill files and checked by a test so it cannot drift.',
+    href: `${REPO}/blob/main/skills/index.json`,
+  },
+  {
     icon: Compass,
     title: 'profiles/',
     detail: 'Context-switching YAML files — which skills are active, which tools are permitted, and the focus area for a given session type (recruiter evaluation, testing, security audit, design).',

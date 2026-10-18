@@ -47,6 +47,18 @@ describe('handoff guardrails', () => {
     expect(result.safe).toBe(false);
   });
 
+  it('accepts ordinary prose that uses semicolons', () => {
+    const summary =
+      'Content is sparse; key achievements (e.g., Agentic AI platforms) are buried. Navigation is weak; contact options are limited.';
+    expect(validateHandoffContext(summary)).toEqual({ safe: true });
+  });
+
+  it('still blocks code-shaped characters', () => {
+    for (const bad of ['use <script>x</script>', 'a ${b} c', 'run `ls`', 'x = {a: 1}', 'arr[0]']) {
+      expect(validateHandoffContext(bad).safe).toBe(false);
+    }
+  });
+
   it('blocks context with system path traversal patterns', () => {
     const result = validateHandoffContext('/etc/passwd should never be forwarded');
     expect(result.safe).toBe(false);

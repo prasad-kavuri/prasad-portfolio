@@ -284,8 +284,9 @@ export function validateHandoffContext(contextSummary: string): {
     return { safe: false, reason: 'context summary failed prompt-injection checks' };
   }
 
+  // Semicolons are ordinary prose punctuation (SPEC-0036); the code-shaped characters below stay blocked.
   if (
-    /[{}[\]<>`;$]|(?:\.\.\/|\/\.\.)|(?:\bimport\s+[\w*{]|(?:^|[^\w])require\s*\(|\beval\s*\(|\bprocess\.\w+|\b__dirname\b)/i.test(
+    /[{}[\]<>`$]|(?:\.\.\/|\/\.\.)|(?:\bimport\s+[\w*{]|(?:^|[^\w])require\s*\(|\beval\s*\(|\bprocess\.\w+|\b__dirname\b)/i.test(
       contextSummary
     )
   ) {

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { _resetStore } from '@/lib/rate-limit';
+import { UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
 
 vi.mock('@/data/profile.json', () => ({
   default: {
@@ -73,6 +74,14 @@ describe('POST /api/mcp-demo', () => {
     process.env.GROQ_API_KEY = 'test-key';
     // Default: always return a valid response so requests that reach Groq don't crash
     mockCreate.mockResolvedValue(DEFAULT_GROQ_RESPONSE);
+  });
+
+  it('says the demo is busy when Groq rate-limits the request', async () => {
+    mockCreate.mockRejectedValueOnce(Object.assign(new Error('rate limited'), { status: 429 }));
+    const { POST } = await import('@/app/api/mcp-demo/route');
+    const res = await POST(makeRequest({ query: 'Tell me about Prasad' }));
+    expect(res.status).toBe(429);
+    expect((await res.json()).error).toBe(UPSTREAM_BUSY_MESSAGE);
   });
 
   it('returns 400 when query is missing', async () => {

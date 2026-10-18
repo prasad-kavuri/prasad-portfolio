@@ -17,7 +17,7 @@ import {
 } from "@/lib/api";
 import { detectAnomaly, logAPIEvent, startTimer } from "@/lib/observability";
 import { verifyToken, type TokenPayload } from "@/lib/agent-auth";
-import { CAPABLE_MODEL, callWithModelFallback, completionBudget, reasoningParams, stripReasoning } from "@/lib/groq-models";
+import { CAPABLE_MODEL, UPSTREAM_BUSY_MESSAGE, callWithModelFallback, completionBudget, isUpstreamBusyError, reasoningParams, stripReasoning } from "@/lib/groq-models";
 
 const ROUTE = "/api/mcp-demo";
 const MODEL = CAPABLE_MODEL.id;
@@ -326,6 +326,10 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.name === 'TimeoutError') {
       logApiWarning('api.upstream_timeout', { route: ROUTE, traceId: context.traceId, status: 504, durationMs: totalDuration });
       return finalizeApiResponse(jsonError('Upstream timeout', 504, { context }), context);
+    }
+    if (isUpstreamBusyError(error)) {
+      logApiWarning('api.upstream_busy', { route: ROUTE, traceId: context.traceId, status: 429, upstreamStatus: 429 });
+      return finalizeApiResponse(jsonError(UPSTREAM_BUSY_MESSAGE, 429, { context }), context);
     }
     captureAndLogApiError("api.request_failed", error, {
       route: ROUTE,

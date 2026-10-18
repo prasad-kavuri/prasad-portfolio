@@ -18,7 +18,7 @@ import {
   logApiWarning,
   readJsonObject,
 } from '@/lib/api';
-import { CAPABLE_MODEL, completionBudget, fetchWithModelFallback, reasoningParams, stripReasoning } from '@/lib/groq-models';
+import { CAPABLE_MODEL, UPSTREAM_BUSY_MESSAGE, completionBudget, fetchWithModelFallback, isUpstreamBusy, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/generative-ui';
 const MAX_QUERY_LENGTH = 300;
@@ -161,6 +161,10 @@ ${CATALOG_PROMPT_DESCRIPTION}`;
       (from, to, status) => logApiWarning('api.model_fallback', { route: ROUTE, traceId: context.traceId, from, to, upstreamStatus: status }),
     );
 
+    if (isUpstreamBusy(response.status)) {
+      logApiWarning('api.upstream_busy', { route: ROUTE, traceId: context.traceId, status: 429, upstreamStatus: 429 });
+      return finalizeApiResponse(jsonError(UPSTREAM_BUSY_MESSAGE, 429, { context }), context);
+    }
     if (!response.ok) {
       await response.text().catch(() => '');
       captureAndLogApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {

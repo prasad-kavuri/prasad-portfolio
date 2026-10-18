@@ -12,6 +12,8 @@ import {
   fallbackChain,
   fetchWithModelFallback,
   isModelUnavailable,
+  isUpstreamBusy,
+  isUpstreamBusyError,
   modelById,
   reasoningParams,
   stripReasoning,
@@ -70,6 +72,18 @@ describe('isModelUnavailable', () => {
     expect(isModelUnavailable(401, 'model_decommissioned')).toBe(false);
     expect(isModelUnavailable(429, null)).toBe(false);
     expect(isModelUnavailable(undefined, undefined)).toBe(false);
+  });
+});
+
+describe('upstream busy', () => {
+  it('recognises Groq rate limiting', () => {
+    expect(isUpstreamBusy(429)).toBe(true);
+    expect(isUpstreamBusy(500)).toBe(false);
+    expect(isUpstreamBusy(undefined)).toBe(false);
+    expect(isUpstreamBusyError(Object.assign(new Error('x'), { status: 429 }))).toBe(true);
+    expect(isUpstreamBusyError(Object.assign(new Error('x'), { status: 401 }))).toBe(false);
+    expect(isUpstreamBusyError('boom')).toBe(false);
+    expect(isUpstreamBusyError(null)).toBe(false);
   });
 });
 

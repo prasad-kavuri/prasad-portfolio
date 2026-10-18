@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { _resetStore } from '@/lib/rate-limit';
+import { UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
 
 // Must mock before importing the route
 const mockFetch = vi.fn();
@@ -34,6 +35,14 @@ describe('POST /api/portfolio-assistant', () => {
 
   afterEach(() => {
     delete process.env.GROQ_API_KEY;
+  });
+
+  it('says the demo is busy when Groq rate-limits the request', async () => {
+    mockFetch.mockResolvedValue(new Response(JSON.stringify({ error: { code: 'rate_limit_exceeded' } }), { status: 429 }));
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const res = await POST(makeRequest({ messages: [{ role: 'user', content: 'hello' }], useRAG: false }));
+    expect(res.status).toBe(429);
+    expect((await res.json()).error).toBe(UPSTREAM_BUSY_MESSAGE);
   });
 
   it('returns 500 when GROQ_API_KEY is not set', async () => {

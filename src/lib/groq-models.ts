@@ -155,6 +155,18 @@ function sdkErrorParts(error: unknown): { status?: number; code?: string } {
   };
 }
 
+export const UPSTREAM_BUSY_MESSAGE = 'The demo is busy right now. Please try again in a minute.';
+
+/** Groq answers 429 when the account's rate limit is used up (the free plan is small). */
+export function isUpstreamBusy(status: number | undefined): boolean {
+  return status === 429;
+}
+
+/** True for an SDK error, or an error carrying a `status`, that reports Groq's rate limit. */
+export function isUpstreamBusyError(error: unknown): boolean {
+  return isUpstreamBusy(sdkErrorParts(error).status);
+}
+
 /** Same idea for the Groq SDK, which throws instead of returning a failed response. */
 export async function callWithModelFallback<T>(
   primary: string,

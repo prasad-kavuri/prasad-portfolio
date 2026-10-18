@@ -15,7 +15,7 @@ import {
 import { checkInput, detectStructuredPII, sanitizeLLMOutput } from '@/lib/guardrails';
 import { detectAnomaly, startTimer } from '@/lib/observability';
 import { APPROVAL_ERROR_MESSAGES, createPendingApproval, decideApproval } from '@/lib/approvals';
-import { CAPABLE_MODEL, callWithModelFallback, completionBudget, reasoningParams, stripReasoning } from '@/lib/groq-models';
+import { CAPABLE_MODEL, UPSTREAM_BUSY_MESSAGE, callWithModelFallback, completionBudget, isUpstreamBusyError, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/edge-agent';
 const MODEL = CAPABLE_MODEL.id;
@@ -190,6 +190,10 @@ async function decideHandoff(approvalId: unknown, action: 'approve' | 'reject', 
       context
     );
   } catch (error) {
+    if (isUpstreamBusyError(error)) {
+      logApiWarning('api.upstream_busy', { route: ROUTE, traceId: context.traceId, status: 429, upstreamStatus: 429 });
+      return finalizeApiResponse(jsonError(UPSTREAM_BUSY_MESSAGE, 429, { context }), context);
+    }
     captureAndLogApiError('api.request_failed', error, { route: ROUTE, traceId: context.traceId, status: 502, durationMs: elapsed() });
     return finalizeApiResponse(jsonError('Cloud agent request failed', 502, { context }), context);
   }

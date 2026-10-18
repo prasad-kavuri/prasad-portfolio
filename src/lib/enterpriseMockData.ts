@@ -294,9 +294,9 @@ export function getKvCacheMetrics(period: '7d' | '30d' | '90d'): KvCacheMetrics 
   const modelDefs = [
     { model: 'claude-sonnet-4',  baseHit: 0.79, ttftBase: 2800, ttftCached: 380 },
     { model: 'claude-haiku-4',   baseHit: 0.86, ttftBase: 1100, ttftCached: 160 },
-    { model: 'llama-3.3-70b',    baseHit: 0.63, ttftBase: 3400, ttftCached: 520 },
-    { model: 'llama-3.1-8b',     baseHit: 0.71, ttftBase: 900,  ttftCached: 120 },
-    { model: 'mixtral-8x7b',     baseHit: 0.58, ttftBase: 2200, ttftCached: 340 },
+    { model: 'gpt-oss-120b',     baseHit: 0.63, ttftBase: 3400, ttftCached: 520 },
+    { model: 'gpt-oss-20b',      baseHit: 0.71, ttftBase: 900,  ttftCached: 120 },
+    { model: 'qwen3.8-27b',      baseHit: 0.58, ttftBase: 2200, ttftCached: 340 },
   ];
 
   const byModel: KvCacheModelMetrics[] = modelDefs.map(m => {

@@ -715,7 +715,7 @@ export default function MultiAgentPage() {
     '@type': 'CreativeWork',
     name: 'Multi-Agent System',
     description: 'Three specialized agents — Analyzer, Researcher, and Strategist — with real LLM calls via Groq, handing off in sequence to a human review step.',
-    keywords: 'Groq, Llama 3.3, Handoff Architecture, Audit Trail, Agent Orchestration',
+    keywords: 'Groq, GPT-OSS 120B, Handoff Architecture, Audit Trail, Agent Orchestration',
     url: 'https://www.prasadkavuri.com/demos/multi-agent',
     author: { '@type': 'Person', '@id': 'https://www.prasadkavuri.com/#person', name: 'Prasad Kavuri', url: 'https://www.prasadkavuri.com', sameAs: ['https://www.linkedin.com/in/pkavuri/', 'https://github.com/prasad-kavuri'] },
     about: { '@type': 'Thing', name: 'AI Engineering' },

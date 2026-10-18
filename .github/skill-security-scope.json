@@ -1,6 +1,6 @@
 {
   "skill": "skills/prasad-portfolio",
-  "skill_sha256": "ea86c8eee7b684e8c150e2e3e72d76287b9729837f5c4a474547531d6f1994f8",
+  "skill_sha256": "7b1bc287822df775d9e3def79bb65de0e1c1317c0afe53655418d6528473e803",
   "reference_lines": [52, 53, 58, 59, 61, 97, 98, 100, 101, 102, 103, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 130, 131, 132, 143, 144, 164, 165, 167, 169, 176],
   "application_files": [
     "src/hooks/useBrowserAI.ts",

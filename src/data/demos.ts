@@ -105,7 +105,7 @@ export const demos: Demo[] = [
     businessImpact: "Coordinates specialized agent workflows with approvals and auditability for high-impact enterprise decisions",
     businessOutcome: "Demonstrates governed agentic workflows with human-in-the-loop approval checkpoints, audit trails, and role-based orchestration — safe for enterprise deployment.",
     href: "/demos/multi-agent",
-    tags: ["Groq", "Llama 3.3", "Handoff Architecture", "Audit Trail", "Agent Orchestration"],
+    tags: ["Groq", "GPT-OSS 120B", "Handoff Architecture", "Audit Trail", "Agent Orchestration"],
     skills: ['planning', 'hitl', 'guardrails', 'observability', 'eval-engine', 'drift-monitor'],
     status: "live",
     mobileConfig: {

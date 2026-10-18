@@ -1,0 +1,26 @@
+name: Model health
+
+# Weekly check that every Groq model in src/lib/groq-models.ts is still listed and still answers (SPEC-0033).
+# Needs the repository secret GROQ_API_KEY. Without it the job warns and passes.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 7 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  models:
+    name: Groq models still available
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check each model
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: node scripts/check-models.mjs

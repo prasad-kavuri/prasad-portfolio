@@ -20,7 +20,7 @@ import { checkOutput, sanitizeLLMOutput } from '@/lib/guardrails';
 import { screenConversation } from '@/lib/conversation-guard';
 import { logQueryForEval } from '@/lib/query-log';
 import { makeCacheKey, getResponseCache, setResponseCache } from '@/lib/response-cache';
-import { FAST_MODEL, completionBudget, fetchWithModelFallback, reasoningParams, stripReasoning } from '@/lib/groq-models';
+import { FAST_MODEL, UPSTREAM_BUSY_MESSAGE, completionBudget, fetchWithModelFallback, isUpstreamBusy, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/portfolio-assistant';
 
@@ -312,6 +312,10 @@ ${fullContext}`;
       (from, to, status) => logApiWarning('api.model_fallback', { route: ROUTE, traceId: context.traceId, from, to, upstreamStatus: status }),
     );
 
+    if (isUpstreamBusy(response.status)) {
+      logApiWarning('api.upstream_busy', { route: ROUTE, traceId: context.traceId, status: 429, upstreamStatus: 429 });
+      return finalizeApiResponse(jsonError(UPSTREAM_BUSY_MESSAGE, 429, { context }), context);
+    }
     if (!response.ok) {
       await response.text().catch(() => '');
       trackModelOutput(ROUTE, `upstream_error:${response.status}`, 'error');

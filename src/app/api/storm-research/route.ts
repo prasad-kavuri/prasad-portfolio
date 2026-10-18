@@ -14,7 +14,7 @@ import {
 import { startTimer, detectAnomaly, logAPIEvent } from '@/lib/observability';
 import { detectPromptInjection, sanitizeLLMOutput, checkOutput } from '@/lib/guardrails';
 import { trackModelOutput } from '@/lib/drift-monitor';
-import { CAPABLE_MODEL, completionBudget, fetchWithModelFallback, reasoningParams, stripReasoning } from '@/lib/groq-models';
+import { CAPABLE_MODEL, UPSTREAM_BUSY_MESSAGE, completionBudget, fetchWithModelFallback, isUpstreamBusyError, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/storm-research';
 const MAX_TOPIC_LENGTH = 200;
@@ -53,7 +53,7 @@ async function callGroq(apiKey: string, system: string, user: string, maxTokens 
       signal: AbortSignal.timeout(30000),
     }),
   );
-  if (!res.ok) throw new Error(`Groq API error: ${res.status}`);
+  if (!res.ok) throw Object.assign(new Error(`Groq API error: ${res.status}`), { status: res.status });
   const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
   return stripReasoning(data.choices?.[0]?.message?.content ?? '');
 }
@@ -266,13 +266,18 @@ export async function POST(req: NextRequest) {
           }
         } catch (error) {
           trackModelOutput(ROUTE, error instanceof Error ? error.name : 'stream_error', 'error');
-          captureAndLogApiError('api.stream_error', error, {
-            route: ROUTE,
-            traceId: context.traceId,
-            status: 500,
-            durationMs: elapsed(),
-          });
-          writeLine(controller, { type: 'error', message: 'Research failed. Please try again.' }, encoder);
+          if (isUpstreamBusyError(error)) {
+            logApiWarning('api.upstream_busy', { route: ROUTE, traceId: context.traceId, status: 429, upstreamStatus: 429 });
+            writeLine(controller, { type: 'error', message: UPSTREAM_BUSY_MESSAGE }, encoder);
+          } else {
+            captureAndLogApiError('api.stream_error', error, {
+              route: ROUTE,
+              traceId: context.traceId,
+              status: 500,
+              durationMs: elapsed(),
+            });
+            writeLine(controller, { type: 'error', message: 'Research failed. Please try again.' }, encoder);
+          }
         } finally {
           controller.close();
         }

@@ -6,6 +6,7 @@ import { ArrowLeft, Send, Trash2, Copy, Check } from 'lucide-react';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { resolveReviewCheckpoint } from '@/lib/hitl';
 import { generateClientTraceId, createTracedFetch } from '@/lib/observability';
+import { UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
 
 interface Message {
   id: string;
@@ -84,7 +85,7 @@ export default function PortfolioAssistantPage() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to get response');
+          throw new Error(response.status === 429 ? UPSTREAM_BUSY_MESSAGE : 'Failed to get response');
         }
 
         const reader = response.body?.getReader();
@@ -138,11 +139,12 @@ export default function PortfolioAssistantPage() {
         setStreamingText('');
       } catch (error) {
         console.error('Error:', error);
-        setStreamingText('Sorry, I encountered an error. Please try again.');
+        const failureText = error instanceof Error && error.message === UPSTREAM_BUSY_MESSAGE ? UPSTREAM_BUSY_MESSAGE : 'Sorry, I encountered an error. Please try again.';
+        setStreamingText(failureText);
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again.',
+          content: failureText,
         };
         setMessages(prev => [...prev, assistantMessage]);
       } finally {
@@ -185,7 +187,7 @@ export default function PortfolioAssistantPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get response');
+        throw new Error(response.status === 429 ? UPSTREAM_BUSY_MESSAGE : 'Failed to get response');
       }
 
       const reader = response.body?.getReader();
@@ -239,11 +241,12 @@ export default function PortfolioAssistantPage() {
       setStreamingText('');
     } catch (error) {
       console.error('Error:', error);
-      setStreamingText('Sorry, I encountered an error. Please try again.');
+      const failureText = error instanceof Error && error.message === UPSTREAM_BUSY_MESSAGE ? UPSTREAM_BUSY_MESSAGE : 'Sorry, I encountered an error. Please try again.';
+      setStreamingText(failureText);
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: failureText,
       };
       setMessages(prev => [...prev, assistantMessage]);
     } finally {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { _resetStore } from '@/lib/rate-limit';
-import { CAPABLE_MODEL, FAST_MODEL } from '@/lib/groq-models';
+import { CAPABLE_MODEL, FAST_MODEL, UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -167,6 +167,15 @@ describe('POST /api/llm-router', () => {
     const { POST } = await import('@/app/api/llm-router/route');
     const res = await POST(makeRequest({ prompt: 'hello', model: FAST_MODEL.id }) as any);
     expect(res.status).toBe(500);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('says the demo is busy when Groq rate-limits the request', async () => {
+    mockFetch.mockResolvedValueOnce(new Response(JSON.stringify({ error: { code: 'rate_limit_exceeded' } }), { status: 429 }));
+    const { POST } = await import('@/app/api/llm-router/route');
+    const res = await POST(makeRequest({ prompt: 'hello', model: FAST_MODEL.id }) as any);
+    expect(res.status).toBe(429);
+    expect((await res.json()).error).toBe(UPSTREAM_BUSY_MESSAGE);
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 

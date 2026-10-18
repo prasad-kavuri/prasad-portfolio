@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { _resetStore } from '@/lib/rate-limit';
+import { UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -50,6 +51,15 @@ describe('POST /api/storm-research', () => {
 
   afterEach(() => {
     delete process.env.GROQ_API_KEY;
+  });
+
+  it('streams the busy message when Groq rate-limits a step', async () => {
+    mockFetch.mockResolvedValue(new Response(JSON.stringify({ error: { code: 'rate_limit_exceeded' } }), { status: 429 }));
+    const { POST } = await import('@/app/api/storm-research/route');
+    const res = await POST(makeRequest({ topic: 'Agentic AI governance' }));
+    const text = await res.text();
+    const lines = text.trim().split('\n').map((l) => JSON.parse(l) as { type: string; message?: string });
+    expect(lines.find((l) => l.type === 'error')?.message).toBe(UPSTREAM_BUSY_MESSAGE);
   });
 
   it('returns 400 when topic is missing', async () => {

@@ -15,7 +15,7 @@ import { detectAnomaly, logAPIEvent } from '@/lib/observability';
 import { enforceCostControls } from '@/lib/cost-control';
 import { checkOutput, isPromptInjection, sanitizeLLMOutput } from '@/lib/guardrails';
 import { safeServerFetch } from '@/lib/safe-fetch';
-import { MODEL_CATALOG, completionBudget, fetchWithModelFallback, modelById, reasoningParams, stripReasoning } from '@/lib/groq-models';
+import { MODEL_CATALOG, UPSTREAM_BUSY_MESSAGE, completionBudget, fetchWithModelFallback, isUpstreamBusy, modelById, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/llm-router';
 
@@ -119,6 +119,10 @@ export async function POST(req: NextRequest) {
       usage?: { prompt_tokens?: number; completion_tokens?: number };
       choices?: Array<{ message?: { content?: string } }>;
     };
+    if (isUpstreamBusy(res.status)) {
+      logApiWarning('api.upstream_busy', { route: ROUTE, traceId: context.traceId, status: 429, upstreamStatus: 429 });
+      return finalizeApiResponse(jsonError(UPSTREAM_BUSY_MESSAGE, 429, { context }), context);
+    }
     if (!res.ok) {
       captureAndLogApiError('api.upstream_error', new Error('Groq API returned non-OK status'), {
         route: ROUTE,

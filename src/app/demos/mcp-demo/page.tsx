@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UPSTREAM_BUSY_MESSAGE } from "@/lib/groq-models";
 
 interface ToolCall {
   tool: string;
@@ -192,6 +193,7 @@ export default function MCPDemoPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
       });
+      if (res.status === 429) throw new Error(UPSTREAM_BUSY_MESSAGE);
       if (!res.ok) throw new Error("Failed to run MCP demo");
       const data = (await res.json()) as MCPResponse;
       setResponse(data);

@@ -34,7 +34,7 @@ vi.mock('groq-sdk', () => {
 
 // Static import of page component — mocks are hoisted so this gets the mocked dependencies.
 import EdgeAgentCollaborationPage from '@/app/demos/edge-agent-collaboration/page';
-import { CAPABLE_MODEL } from '@/lib/groq-models';
+import { CAPABLE_MODEL, UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
 
 // --- classifyPII unit tests ---
 
@@ -290,6 +290,14 @@ describe('POST /api/edge-agent', () => {
     expect(groqCreate.mock.calls[1][0].model).not.toBe(groqCreate.mock.calls[0][0].model);
     expect(body.model).toBe(groqCreate.mock.calls[1][0].model);
     expect(body.summary).toBe('Upgrade request summarised.');
+  });
+
+  it('says the demo is busy when Groq rate-limits the request', async () => {
+    groqCreate.mockRejectedValueOnce(Object.assign(new Error('429'), { status: 429 }));
+    const staged = await stage();
+    const res = await post({ action: 'approve', approvalId: staged.approvalId });
+    expect(res.status).toBe(429);
+    expect(((await res.json()) as { error: string }).error).toBe(UPSTREAM_BUSY_MESSAGE);
   });
 
   it('does not retry on an unrelated upstream error', async () => {

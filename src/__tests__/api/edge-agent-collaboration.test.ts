@@ -102,6 +102,43 @@ describe('classifyPII — edge inference', () => {
     // Regex redaction still works despite NER failure
     expect(result.redacted).toContain('[REDACTED:EMAIL]');
     expect(result.redactedFields).toContain('EMAIL');
+    expect(result.nameDetection).toBe('unavailable');
+  });
+
+  it('redacts a NER-detected name that has no character offsets, including repeats', async () => {
+    // Transformers.js v4 returns entity_group/word/score but no start/end.
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([{ entity_group: 'PER', word: 'Sarah Mitchell', score: 0.99 }]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Customer: Sarah Mitchell\nNote: Sarah  Mitchell asked again.');
+    expect(result.redacted).toBe('Customer: [REDACTED:NAME]\nNote: [REDACTED:NAME] asked again.');
+    expect(result.redactedFields).toContain('NAME');
+    expect(result.nameDetection).toBe('ok');
+  });
+
+  it('does not redact a short name inside a longer word', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([{ entity_group: 'PER', word: 'Al', score: 0.9 }]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Al reviewed the Algorithm.');
+    expect(result.redacted).toBe('[REDACTED:NAME] reviewed the Algorithm.');
+  });
+
+  it('flags a name it cannot place in the text', async () => {
+    const { loadTransformersModule } = await import('@/lib/transformers-loader');
+    const mockNer = vi.fn().mockResolvedValue([{ entity_group: 'PER', word: 'Zed Quill', score: 0.9 }]);
+    vi.mocked(loadTransformersModule).mockResolvedValueOnce({
+      pipeline: vi.fn().mockResolvedValue(mockNer),
+    } as never);
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Nothing matching here.');
+    expect(result.nameDetection).toBe('unlocated');
   });
 
   it('redacts multiple PII types in a single document', async () => {
@@ -141,7 +178,7 @@ describe('classifyPII — edge inference', () => {
     expect(result.redactedFields).not.toContain('NAME');
   });
 
-  it('skips NER entity when start/end are undefined', async () => {
+  it('locates a PER entity by its word when start/end are undefined', async () => {
     const { loadTransformersModule } = await import('@/lib/transformers-loader');
     const mockNer = vi.fn().mockResolvedValue([
       { entity_group: 'PER', word: 'Bob' }, // no start/end
@@ -151,7 +188,8 @@ describe('classifyPII — edge inference', () => {
     } as never);
     const { classifyPII } = await import('@/lib/edge-inference');
     const result = await classifyPII('Bob wants an upgrade.');
-    expect(result.redactedFields).not.toContain('NAME');
+    expect(result.redactedFields).toContain('NAME');
+    expect(result.redacted).toBe('[REDACTED:NAME] wants an upgrade.');
   });
 
   it('uses entity.entity fallback label when entity_group is absent', async () => {

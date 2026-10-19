@@ -21,6 +21,11 @@ export interface RedactionResult {
   processingMs: number;
   modelId: string;
   tier: 'edge';
+  /**
+   * Outcome of the neural name pass. 'unavailable' = the model failed to load or run;
+   * 'unlocated' = it found a name but we could not place it in the text. Both mean names may remain.
+   */
+  nameDetection: 'ok' | 'unavailable' | 'unlocated';
 }
 
 const MODEL_ID = 'Xenova/bert-base-NER';
@@ -57,6 +62,22 @@ interface RedactionSpan {
   type: StructuredPiiType | 'NAME';
 }
 
+/** Find every occurrence of an NER word in the text, tolerating whitespace differences from token joining. */
+function locateWord(text: string, word: string): Array<{ start: number; end: number }> {
+  const parts = word.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return [];
+  const pattern = parts.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s*');
+  // Letter/number boundaries stop a short name matching inside a longer word ("Al" in "Algorithm").
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])${pattern}(?![\\p{L}\\p{N}])`, 'gu');
+  const found: Array<{ start: number; end: number }> = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m[0].length === 0) { re.lastIndex += 1; continue; }
+    found.push({ start: m.index, end: m.index + m[0].length });
+  }
+  return found;
+}
+
 function spanOverlaps(a: RedactionSpan, b: RedactionSpan): boolean {
   return a.start < b.end && b.start < a.end;
 }
@@ -76,6 +97,9 @@ export async function classifyPII(text: string): Promise<RedactionResult> {
   }
 
   // --- Neural NER pass: person names (BERT, aggregation_strategy=simple) ---
+  // Transformers.js returns entity words but no character offsets, so each entity is located in the text
+  // by its word (whitespace-tolerant). Every occurrence is redacted, so a name repeated later is covered too.
+  let nameDetection: RedactionResult['nameDetection'] = 'ok';
   try {
     // Pipeline return type is opaque; cast is safe given the 'token-classification' task.
     // aggregation_strategy is passed at call time (not factory time) per Transformers.js v4 API.
@@ -83,24 +107,28 @@ export async function classifyPII(text: string): Promise<RedactionResult> {
     const entities = await ner(text, { aggregation_strategy: 'simple' });
     for (const entity of entities) {
       const label = (entity.entity_group ?? entity.entity ?? '').toUpperCase();
-      if (
-        (label.includes('PER') || label === 'PERSON') &&
-        entity.start !== undefined &&
-        entity.end !== undefined
-      ) {
-        const candidate: RedactionSpan = {
-          start: entity.start,
-          end: entity.end,
-          type: 'NAME',
-        };
-        // Skip if this span overlaps an already-captured structural span.
+      if (!(label.includes('PER') || label === 'PERSON')) continue;
+
+      const located: Array<{ start: number; end: number }> =
+        entity.start !== undefined && entity.end !== undefined
+          ? [{ start: entity.start, end: entity.end }]
+          : locateWord(text, entity.word);
+      if (located.length === 0) {
+        nameDetection = 'unlocated';
+        continue;
+      }
+      for (const { start: s0, end: e0 } of located) {
+        const candidate: RedactionSpan = { start: s0, end: e0, type: 'NAME' };
+        // Skip if this span overlaps an already-captured span.
         if (!spans.some((s) => spanOverlaps(s, candidate))) {
           spans.push(candidate);
         }
       }
     }
-  } catch {
-    // NER model unavailable or failed — regex redactions are still applied.
+  } catch (err) {
+    // NER model unavailable or failed — regex redactions are still applied, but say so.
+    nameDetection = 'unavailable';
+    console.warn('[edge-inference] name detection unavailable', err instanceof Error ? err.message : err);
   }
 
   // Apply replacements right-to-left to preserve character offsets.
@@ -120,6 +148,7 @@ export async function classifyPII(text: string): Promise<RedactionResult> {
     processingMs: Date.now() - start,
     modelId: MODEL_ID,
     tier: 'edge',
+    nameDetection,
   };
 }
 

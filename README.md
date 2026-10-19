@@ -52,7 +52,7 @@ evaluation, and drift monitoring at the platform layer.
 | [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Infrastructure | Transformers.js embeddings, in-browser retrieval, citations |
 | [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | FinOps | Routing across GPT-OSS 20B / 120B and Qwen3.8 27B, live cost/latency tradeoffs |
 | [Enterprise Control Plane](https://www.prasadkavuri.com/demos/enterprise-control-plane) | Governance | RBAC, spend limits, structured observability |
-| [Edge Agent Collaboration](https://www.prasadkavuri.com/demos/edge-agent-collaboration) | Privacy-first | Browser BERT NER (names) plus regex redaction, HITL gate, sovereign AI |
+| [Edge Agent Collaboration](https://www.prasadkavuri.com/demos/edge-agent-collaboration) | Privacy-first | Browser BERT NER (names) plus pattern redaction (email, phone, SSN, card, account), HITL gate, sovereign AI |
 
 ---
 

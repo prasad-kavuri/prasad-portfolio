@@ -469,7 +469,7 @@ AGENTIC SYSTEMS & GOVERNANCE
    auth.md flow: anonymous registration → claim (OTP shown inline in demo mode) → Bearer-authenticated tool calls.
 7. EDGE AGENT + CLOUD AGENT COLLABORATION
    URL: /demos/edge-agent-collaboration | Engine: BERT NER WASM (Xenova/bert-base-NER) + Groq GPT-OSS 120B (server)
-   Browser BERT NER redacts PII before a human-approved handoff; the cloud model receives only the sanitized payload.
+   Browser BERT NER (names) and shared patterns (email, phone, SSN, card, account numbers) redact PII before a human-approved handoff; the cloud model receives only the sanitized payload.
 8. ENTERPRISE CONTROL PLANE
    URL: /demos/enterprise-control-plane | Engine: Deterministic simulation (seeded data)
    RBAC, group spend limits, token-cost tracking, and an observability feed.

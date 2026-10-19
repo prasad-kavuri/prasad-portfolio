@@ -848,11 +848,11 @@ export default function MultiAgentPage() {
                 <h2 className="text-lg font-semibold text-foreground">Thinking Preservation</h2>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
-                Qwen3.6-27B natively retains chain-of-thought reasoning across historical messages — reducing context drift in long-running agentic workflows. This demo&apos;s orchestration pattern is designed to leverage this capability for more stable multi-turn decision chains.
+                Models with preserved thinking, such as Qwen3.8-27B, keep their chain-of-thought across historical messages, which reduces context drift in long-running agentic workflows. This demo currently runs GPT-OSS 120B on Groq; the orchestration pattern is model-agnostic and can use a preserved-thinking model for more stable multi-turn decision chains.
               </p>
             </div>
             <Badge variant="outline" className="w-fit bg-background/70">
-              Qwen3.6-27B compatible
+              Model-agnostic pattern
             </Badge>
           </div>
         </Card>

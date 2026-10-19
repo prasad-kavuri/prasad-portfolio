@@ -35,12 +35,11 @@ middleware, Turbopack config), verify against `node_modules/next/dist/` rather t
 |------|--------|------|
 | RAG Pipeline | Transformers.js all-MiniLM-L6-v2 | Browser WASM |
 | Vector Search | Transformers.js + PCA + Canvas | Browser WASM |
-| Multimodal | Florence-2, WebGPU + Transformers.js | Browser WebGPU |
 | Quantization | ONNX Runtime FP32 vs INT8 | Browser WASM |
-| LLM Router | Groq API | Server |
-| Portfolio Assistant | Groq + RAG, Vercel AI SDK | Server |
+| LLM Router | Groq: GPT-OSS 20B / 120B, Qwen3.8 27B | Server |
+| Portfolio Assistant | Groq GPT-OSS 20B + RAG, Vercel AI SDK | Server |
 | Storm Research | Groq GPT-OSS 120B, multi-perspective | Server |
-| Multi-Agent | Groq, Analyzer+Researcher+Strategist | Server |
+| Multi-Agent | Hugging Face Space (FastAPI + Groq GPT-OSS 120B), Analyzer+Researcher+Strategist | Server |
 | MCP Demo | MCP protocol + Groq tool calling | Server |
 
 **Never touch server-side demos when fixing browser-WASM/mobile issues — they are independent.**

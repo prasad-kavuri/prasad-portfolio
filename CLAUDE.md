@@ -30,11 +30,11 @@ Full architecture: see `docs/ARCHITECTURE.md`.
 
 | Demo | Engine | Mode | File |
 |------|--------|------|------|
-| RAG Pipeline | Transformers.js, all-MiniLM-L6-v2 | **Browser WASM** | `src/app/demos/rag-pipeline/page.tsx` |
+| RAG Pipeline | Transformers.js, Xenova/all-MiniLM-L6-v2 | **Browser WASM** | `src/app/demos/rag-pipeline/page.tsx` |
 | Quantization | ONNX Runtime, FP32 vs INT8 | **Browser WASM** | `src/app/demos/quantization/page.tsx` |
-| LLM Router | Groq API | **Server** | `src/app/api/llm-router/` |
-| Portfolio Assistant | Groq + RAG | **Server** | `src/app/api/portfolio-assistant/` |
-| Multi-Agent | Groq, Analyzer+Researcher+Strategist | **Server** | `src/app/api/multi-agent/` |
+| LLM Router | Groq: GPT-OSS 20B / 120B, Qwen3.8 27B (see `src/lib/groq-models.ts`) | **Server** | `src/app/api/llm-router/` |
+| Portfolio Assistant | Groq GPT-OSS 20B + RAG | **Server** | `src/app/api/portfolio-assistant/` |
+| Multi-Agent | Hugging Face Space (FastAPI + Groq GPT-OSS 120B), Analyzer+Researcher+Strategist | **Server** | `src/app/api/multi-agent/` |
 | MCP Demo | MCP protocol, Groq tool calling | **Server** | `src/app/api/mcp-demo/` |
 
 ---

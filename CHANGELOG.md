@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed (October 2026)
+
+- Server models moved to open-weight GPT-OSS 20B / 120B and Qwen3.8 27B behind one module with fallback chains
+  (SPEC-0029); the multi-agent Space moved to GPT-OSS 120B and its handoff guard was fixed for the new model's
+  punctuation (SPEC-0036).
+- Model names corrected across demo pages, README, architecture doc, diagrams and agent skill text (SPEC-0038, SPEC-0040).
+  The multi-agent backend is plain FastAPI plus the Groq SDK, not CrewAI. Florence-2 is no longer listed (no demo uses it).
+- Browser models reviewed and kept (SPEC-0039).
+
 ## [1.0.0] - 2026-04-19
 
 First public release of the AI Engineering Portfolio Platform.

@@ -6,7 +6,7 @@ Stack: Next.js 16 App Router · React 19 · TypeScript 6 · Tailwind 4 · Groq S
 ## Language
 
 **browser demo**:
-A demo that runs inference entirely in the browser — no server API call for the AI work. Uses WASM (Transformers.js, ONNX Runtime) or WebGPU (Florence-2). Must use the `useBrowserAI` hook.
+A demo that runs inference entirely in the browser — no server API call for the AI work. Uses WASM (Transformers.js, ONNX Runtime) or WebGPU. Must use the `useBrowserAI` hook.
 _Avoid_: "client-side demo", "WASM demo" (only correct for WASM subset)
 
 **server demo**:

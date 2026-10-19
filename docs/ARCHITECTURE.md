@@ -44,6 +44,24 @@ The platform implements the **Tool Gateway** pattern via `src/lib/registry.ts`. 
 
 This architecture shifts the focus from "standalone features" to a "composable AI platform," where the gateway is the primary entry point for orchestrating complex workflows.
 
+## Models
+
+Open-weight models only. Server model ids, tiers, prices and fallback chains are defined once in
+`src/lib/groq-models.ts`; browser model ids are constants in the demo that uses them.
+
+| Where | Model | Role |
+|---|---|---|
+| Groq | `openai/gpt-oss-20b` | Fast tier: portfolio assistant; simple queries in the router |
+| Groq | `openai/gpt-oss-120b` | Capable tier: storm research, MCP demo, generative UI, edge-agent summary, router |
+| Groq (preview) | `qwen/qwen3.8-27b` | Code tier; falls back to the capable tier if unavailable |
+| Hugging Face Space | `openai/gpt-oss-120b` via Groq | Multi-agent backend (`prasadkavuri/multi-agent-demo`, FastAPI, outside this repo) |
+| Browser WASM | `Xenova/all-MiniLM-L6-v2` | RAG embeddings (about 23 MB, q8) |
+| Browser WASM | `Xenova/bert-base-NER` | Edge-agent name detection (about 109 MB, q8) |
+| Browser WASM | `Xenova/distilbert-base-uncased-finetuned-sst-2-english` | Quantization benchmark fixture |
+
+The Space runs outside this repo's tests and drift guard, so a model change there has to be checked end to end in the
+demo UI (see SPEC-0036). Alternatives considered and rejected for the browser models: SPEC-0039.
+
 ## API Routes
 
 The current API surface is:
@@ -84,7 +102,7 @@ The AI services layer contains both server-side and browser-side demos:
 | RAG Pipeline | `/demos/rag-pipeline` | Browser embeddings and retrieval |
 | LLM Router | `/demos/llm-router` | Server route calling Groq |
 | AI Evaluation Showcase | `/demos/evaluation-showcase` | LLM-as-Judge eval pipeline, guardrails, CI gating |
-| Multi-Agent System | `/demos/multi-agent` | Server route plus external agent backend |
+| Multi-Agent System | `/demos/multi-agent` | Server route plus a Hugging Face Space backend (FastAPI + Groq, GPT-OSS 120B) |
 | MCP Tool Demo | `/demos/mcp-demo` | Server route calling Groq tool use |
 | Agent Auth Demo | `/demos/agent-auth` | auth.md discovery, anonymous and claimed agent authentication flows, and MCP auth context |
 | AI Portfolio Assistant | `/demos/portfolio-assistant` | Server route with streaming full-context grounding and retrieval cues |

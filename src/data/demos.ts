@@ -207,7 +207,7 @@ export const demos: Demo[] = [
       fallbackMode: 'cloud',
       cloudFallbackRoute: '/api/edge-agent',
       fallbackMessage: 'Edge inference requires desktop — showing cloud-only path on this device.',
-      capabilityNotes: 'Runs Transformers.js BERT NER via WASM (~440MB, desktop recommended)',
+      capabilityNotes: 'Runs Transformers.js BERT NER via WASM (~110MB download, desktop recommended)',
     },
   },
   {

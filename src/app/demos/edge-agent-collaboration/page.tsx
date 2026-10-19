@@ -345,6 +345,8 @@ export default function EdgeAgentCollaborationPage() {
             </div>
             <p className="text-xs text-muted-foreground">
               BERT NER runs in your browser via Transformers.js ONNX. No server call, no API key.
+              It redacts person names, emails, phone numbers, SSNs, card and account numbers; street addresses and free-text
+              dates are not detected.
               First-time load may take 30–60 seconds while the model downloads to your device.
             </p>
           </CardHeader>

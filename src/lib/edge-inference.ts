@@ -7,10 +7,12 @@
  * for preprocessing, and compliance requires data residency at the client boundary.
  *
  * Model: Xenova/bert-base-NER (token-classification, ONNX, English NER)
- * Fallback: regex for EMAIL and ACCOUNT_NUMBER patterns (structural, reliable).
+ * Structured PII (email, phone, SSN, card, account numbers) is redacted with the same patterns the server uses
+ * to block a handoff (SPEC-0041). Names come from the model. Street addresses and free-text dates are not detected.
  */
 
 import { loadTransformersModule } from './transformers-loader';
+import { findStructuredPIISpans, type StructuredPiiType } from './guardrails';
 
 export interface RedactionResult {
   original: string;
@@ -40,10 +42,6 @@ async function getNerPipeline(): Promise<unknown> {
   return pipelineInstance;
 }
 
-// Structural PII: regex is reliable for these patterns.
-const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
-const ACCOUNT_RE = /\bACC-[A-Z0-9\-]+\b/g;
-
 interface NerEntity {
   entity_group?: string;
   entity?: string;
@@ -56,7 +54,7 @@ interface NerEntity {
 interface RedactionSpan {
   start: number;
   end: number;
-  type: 'EMAIL' | 'ACCOUNT_NUMBER' | 'NAME';
+  type: StructuredPiiType | 'NAME';
 }
 
 function spanOverlaps(a: RedactionSpan, b: RedactionSpan): boolean {
@@ -65,7 +63,7 @@ function spanOverlaps(a: RedactionSpan, b: RedactionSpan): boolean {
 
 /**
  * Classify and redact PII in text using browser-side ONNX inference.
- * Person names are detected via BERT NER; emails and account numbers via regex.
+ * Person names are detected via BERT NER; emails, phones, SSNs, card and account numbers via shared regex.
  * No server call is made — all inference is local.
  */
 export async function classifyPII(text: string): Promise<RedactionResult> {
@@ -73,15 +71,8 @@ export async function classifyPII(text: string): Promise<RedactionResult> {
   const spans: RedactionSpan[] = [];
 
   // --- Regex pass: structural PII (reliable, zero inference cost) ---
-  let m: RegExpExecArray | null;
-  const emailRe = new RegExp(EMAIL_RE.source, 'g');
-  while ((m = emailRe.exec(text)) !== null) {
-    spans.push({ start: m.index, end: m.index + m[0].length, type: 'EMAIL' });
-  }
-
-  const accountRe = new RegExp(ACCOUNT_RE.source, 'g');
-  while ((m = accountRe.exec(text)) !== null) {
-    spans.push({ start: m.index, end: m.index + m[0].length, type: 'ACCOUNT_NUMBER' });
+  for (const span of findStructuredPIISpans(text)) {
+    spans.push({ start: span.start, end: span.end, type: span.type });
   }
 
   // --- Neural NER pass: person names (BERT, aggregation_strategy=simple) ---

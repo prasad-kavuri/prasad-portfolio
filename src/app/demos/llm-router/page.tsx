@@ -44,25 +44,25 @@ const MODEL_ESTIMATES: Record<string, Omit<ModelResult, 'response'>> = Object.fr
 
 const MID_TIER_MODELS = [
   {
-    id: 'qwen3.6-27b',
-    name: 'Qwen 3.6 27B',
+    id: 'qwen3.8-27b',
+    name: 'Qwen 3.8 27B',
     tier: 'mid',
     type: 'dense',
-    badges: ['Apache 2.0', '262K ctx', 'Thinking Preservation', 'FP8', 'GGUF / Local'],
+    badges: ['Apache 2.0', 'Thinking Preservation', 'Open weights', 'GGUF / Local'],
     description:
-      'Dense 27B model with reported 77.2% SWE-bench Verified — flagship coding performance on single-GPU hardware. Native Thinking Preservation retains chain-of-thought across turns. Unsloth GGUF variant available for local deployment via llama.cpp or LM Studio — tool calling supported, no API dependency.',
+      'Dense 27B open-weight model (Apache 2.0) with thinking preserved across turns by default; Qwen self-reports 61.7 on SWE-bench Pro. Quantized builds (GGUF) are linked from the model card for local use via llama.cpp, Ollama or LM Studio, and the model is also served on Groq (preview).',
     strengths: ['Agentic coding', 'Multi-turn stability', 'Repository-level reasoning', 'Frontend generation'],
-    vram: '~16.8GB (Q4)',
-    contextWindow: 262144,
+    vram: '~17GB (Q4, approximate)',
+    contextWindow: 131072,
     isFallback: false,
     localDeploy: {
-      label: 'Unsloth GGUF (Q4_K_M ~16.8GB VRAM)',
-      url: 'https://huggingface.co/unsloth/Qwen3.6-27B-GGUF',
+      label: 'Quantized builds linked from the model card',
+      url: 'https://huggingface.co/Qwen/Qwen3.8-27B',
     },
   },
   {
     id: 'qwen3-35b-a3b-int4',
-    name: 'Qwen3-35B-A3B-int4',
+    name: 'Qwen3.6-35B-A3B-int4',
     tier: 'mid',
     type: 'moe',
     badges: ['MoE', 'int4', '3B active', 'Single GPU'],
@@ -77,7 +77,7 @@ const MID_TIER_MODELS = [
 
 const QWEN_MOE_FALLBACK: ModelResult = {
   model: 'qwen-moe-local',
-  modelName: 'Qwen 3.6 MoE (int4) — Edge Efficient',
+  modelName: 'Qwen 3.6 35B-A3B (int4) — Edge Efficient',
   provider: 'Local vllm · localhost:8000',
   response: '',
   latency_ms: 0,
@@ -386,7 +386,7 @@ export default function LLMRouterDemo() {
           </div>
 
           <div className="mt-4 rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 text-sm">
-            <p className="font-medium text-foreground">Qwen3.6-27B Routing Rule</p>
+            <p className="font-medium text-foreground">Qwen3.8-27B Routing Rule</p>
             <p className="mt-1 font-mono text-xs text-muted-foreground">
               task.type === &quot;agent&quot; || task.complexity === &quot;medium-high&quot;
             </p>
@@ -394,7 +394,7 @@ export default function LLMRouterDemo() {
               Dense architecture + Thinking Preservation = stable multi-turn reasoning without MoE routing overhead.
             </p>
             <p className="mt-2 text-muted-foreground">
-              <span className="font-medium text-foreground">Local fallback:</span> when external API unavailable → Qwen3.6-27B GGUF via llama.cpp
+              <span className="font-medium text-foreground">Local fallback:</span> when external API unavailable → Qwen3.8-27B GGUF via llama.cpp
             </p>
           </div>
 
@@ -410,7 +410,6 @@ export default function LLMRouterDemo() {
               <tbody className="divide-y divide-border text-muted-foreground">
                 {[
                   ['Active params', '27B', '3B'],
-                  ['SWE-bench', '77.2%', '~72%'],
                   ['Inference speed', 'Moderate', 'Fast'],
                   ['VRAM (Q4)', '~16.8GB', '~21GB'],
                   ['Deployment', 'llama.cpp / LM Studio (GGUF)', 'API/Cloud'],

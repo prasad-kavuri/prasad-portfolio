@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   if (!LOCAL_QWEN_ENABLED) {
     return finalizeApiResponse(NextResponse.json({
       model: 'qwen-moe-local',
-      modelName: 'Qwen 3.6 MoE (int4) — Edge Efficient',
+      modelName: 'Qwen 3.6 35B-A3B (int4) — Edge Efficient',
       provider: 'Local vllm · localhost:8000',
       response: '',
       latency_ms: 0,
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
 
     return finalizeApiResponse(NextResponse.json({
       model: 'qwen-moe-local',
-      modelName: 'Qwen 3.6 MoE (int4) — Edge Efficient',
+      modelName: 'Qwen 3.6 35B-A3B (int4) — Edge Efficient',
       provider: 'Local vllm · localhost:8000',
       response: sanitizeLLMOutput(guardResult.sanitizedOutput ?? rawContent),
       latency_ms: latency,
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
 
     return finalizeApiResponse(NextResponse.json({
       model: 'qwen-moe-local',
-      modelName: 'Qwen 3.6 MoE (int4) — Edge Efficient',
+      modelName: 'Qwen 3.6 35B-A3B (int4) — Edge Efficient',
       provider: 'Local vllm · localhost:8000',
       response: '',
       latency_ms: durationMs,

@@ -39,7 +39,7 @@ describe('LLMRouterDemo page', () => {
     expect(screen.getByText('LLM Router Demo')).toBeInTheDocument();
     expect(screen.getByText('FinOps Routing Signal')).toBeInTheDocument();
     expect(screen.getByText(/illustrative estimates/i)).toBeInTheDocument();
-    expect(screen.getByText('Qwen 3.6 27B')).toBeInTheDocument();
+    expect(screen.getByText('Qwen 3.8 27B')).toBeInTheDocument();
   });
 
   it('shows business value projection only when business mode is enabled', async () => {
@@ -63,21 +63,21 @@ describe('LLMRouterDemo page', () => {
     });
   });
 
-  it('Qwen3.6-27B card contains GGUF reference', () => {
+  it('Qwen3.8-27B card contains GGUF reference', () => {
     render(React.createElement(LLMRouterDemo));
     const ggufMatches = screen.getAllByText(/GGUF/i);
     expect(ggufMatches.length).toBeGreaterThan(0);
   });
 
-  it('HuggingFace unsloth link is present', () => {
+  it('Hugging Face model-card link is present', () => {
     render(React.createElement(LLMRouterDemo));
     const link = screen.getByRole('link', { name: /HuggingFace/i });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', 'https://huggingface.co/unsloth/Qwen3.6-27B-GGUF');
+    expect(link).toHaveAttribute('href', 'https://huggingface.co/Qwen/Qwen3.8-27B');
     expect(link).toHaveAttribute('target', '_blank');
   });
 
-  it('"Local" badge or text is present on Qwen3.6-27B card', () => {
+  it('"Local" badge or text is present on Qwen3.8-27B card', () => {
     render(React.createElement(LLMRouterDemo));
     const localMatches = screen.getAllByText(/GGUF \/ Local|Local Deployment/i);
     expect(localMatches.length).toBeGreaterThan(0);

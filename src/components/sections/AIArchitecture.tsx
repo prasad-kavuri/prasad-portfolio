@@ -108,7 +108,7 @@ const LAYERS: Layer[] = [
     tagline: 'Server LLM · Browser WASM · WebGPU',
     category: 'model',
     detail: 'Two inference paths: Groq API for server-side LLMs, and Transformers.js WASM for browser-local models (embeddings, PII redaction, quantization benchmarks).',
-    tech: ['Groq API', 'Transformers.js v4', 'ONNX Runtime WASM', 'Florence-2 WebGPU'],
+    tech: ['Groq API', 'Transformers.js v4', 'ONNX Runtime WASM', 'WebGPU / WASM backends'],
     example: 'Quantization demo: FP32 vs INT8 ONNX inference side-by-side with latency and accuracy delta.',
   },
   {

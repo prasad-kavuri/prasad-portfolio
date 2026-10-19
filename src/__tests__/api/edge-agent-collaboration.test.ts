@@ -63,6 +63,28 @@ describe('classifyPII — edge inference', () => {
     expect(result.redactedFields).toContain('ACCOUNT_NUMBER');
   });
 
+  it('redacts phone, SSN, card and long account numbers with the server patterns', async () => {
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const { detectStructuredPII } = await import('@/lib/guardrails');
+    const text =
+      'Call 312-555-0147 or (415) 555-0199. SSN 123-45-6789. Card 4111 1111 1111 1111. Account 123456789012.';
+    const result = await classifyPII(text);
+    expect(result.redactedFields).toEqual(
+      expect.arrayContaining(['PHONE', 'SSN', 'CREDIT_CARD', 'ACCOUNT_NUMBER'])
+    );
+    expect(result.redacted).not.toMatch(/\d{3}[-\s)]/);
+    expect(result.redacted).toContain('[REDACTED:CREDIT_CARD]');
+    // The server backstop must find nothing left to block.
+    expect(detectStructuredPII(result.redacted)).toEqual([]);
+  });
+
+  it('keeps ordinary numbers and dates that carry business meaning', async () => {
+    const { classifyPII } = await import('@/lib/edge-inference');
+    const result = await classifyPII('Deliver by 03/31/2026 with a budget of 250 units and 12 weeks.');
+    expect(result.redacted).toBe('Deliver by 03/31/2026 with a budget of 250 units and 12 weeks.');
+    expect(result.redactedFields).toEqual([]);
+  });
+
   it('returns correct modelId and tier on result', async () => {
     const { classifyPII } = await import('@/lib/edge-inference');
     const result = await classifyPII('Plain text with no PII.');

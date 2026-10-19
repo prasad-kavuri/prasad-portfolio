@@ -384,6 +384,40 @@ function passesLuhn(digits: string): boolean {
  * cannot be caught this way — they depend on the edge NER model — so this is a backstop, not a
  * replacement, for client-side redaction.
  */
+export interface StructuredPiiSpan {
+  start: number;
+  end: number;
+  type: StructuredPiiType;
+}
+
+// When two patterns match the same characters, the more specific type wins.
+const PII_SPAN_PRIORITY: StructuredPiiType[] = ['CREDIT_CARD', 'SSN', 'EMAIL', 'PHONE', 'ACCOUNT_NUMBER'];
+
+/**
+ * Where structured PII sits in the text, using the same patterns as detectStructuredPII so the browser tier
+ * redacts exactly what the server tier would block (SPEC-0041).
+ */
+export function findStructuredPIISpans(text: string): StructuredPiiSpan[] {
+  const candidates: StructuredPiiSpan[] = [];
+  for (const { type, pattern } of PII_PATTERNS) {
+    for (const m of text.matchAll(new RegExp(pattern.source, 'g'))) {
+      if (m.index !== undefined) candidates.push({ start: m.index, end: m.index + m[0].length, type });
+    }
+  }
+  for (const m of text.matchAll(/\b(?:\d[ -]?){13,19}\b/g)) {
+    const digits = m[0].replace(/[ -]/g, '');
+    if (m.index !== undefined && digits.length >= 13 && digits.length <= 19 && passesLuhn(digits)) {
+      candidates.push({ start: m.index, end: m.index + m[0].length, type: 'CREDIT_CARD' });
+    }
+  }
+  candidates.sort((a, b) => PII_SPAN_PRIORITY.indexOf(a.type) - PII_SPAN_PRIORITY.indexOf(b.type) || a.start - b.start);
+  const accepted: StructuredPiiSpan[] = [];
+  for (const c of candidates) {
+    if (!accepted.some((s) => c.start < s.end && s.start < c.end)) accepted.push(c);
+  }
+  return accepted.sort((a, b) => a.start - b.start);
+}
+
 export function detectStructuredPII(text: string): StructuredPiiType[] {
   const found = new Set<StructuredPiiType>();
   for (const { type, pattern } of PII_PATTERNS) {

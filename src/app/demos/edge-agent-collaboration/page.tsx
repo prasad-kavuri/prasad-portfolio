@@ -68,6 +68,20 @@ const jsonLd = {
   about: { '@type': 'Thing', name: 'AI Engineering' },
 };
 
+function NameDetectionNotice({ status }: { status: 'ok' | 'unavailable' | 'unlocated' }) {
+  if (status === 'ok') return null;
+  return (
+    <p
+      role="status"
+      className="rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-700 dark:text-amber-300"
+    >
+      {status === 'unavailable'
+        ? 'Name detection is unavailable in this browser session (the on-device model did not load). Emails, phone numbers, SSNs, cards and account numbers were still redacted, but person names may remain. Review before approving.'
+        : 'The name model found a name it could not place in the text. Review the redacted output before approving.'}
+    </p>
+  );
+}
+
 export default function EdgeAgentCollaborationPage() {
   const [document, setDocument] = useState(SAMPLE_DOCUMENT);
   const [stage, setStage] = useState<Stage>('idle');
@@ -412,6 +426,7 @@ export default function EdgeAgentCollaborationPage() {
                     {edgeResult.redacted}
                   </pre>
                 </div>
+                <NameDetectionNotice status={edgeResult.nameDetection} />
                 <div className="flex flex-wrap gap-2">
                   {edgeResult.redactedFields.length > 0 ? (
                     edgeResult.redactedFields.map((field) => (
@@ -467,6 +482,7 @@ export default function EdgeAgentCollaborationPage() {
                   ) : (
                     <p className="text-sm text-muted-foreground">No PII redacted</p>
                   )}
+                  <NameDetectionNotice status={edgeResult.nameDetection} />
                 </div>
                 <div className="rounded-lg border border-border bg-background/60 p-3">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">

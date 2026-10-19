@@ -448,16 +448,16 @@ CORE AI PLATFORM
    coverage + forbidden topics) and guardrail screening, returning a pass/fail release verdict; eval
    suites run in CI on every push. The LLM-as-Judge panel is an illustrative walkthrough.
 2. RAG PIPELINE
-   URL: /demos/rag-pipeline | Engine: Transformers.js WASM (browser)
+   URL: /demos/rag-pipeline | Engine: Transformers.js WASM (browser), Xenova/all-MiniLM-L6-v2
    In-browser retrieval: all-MiniLM-L6-v2 embeddings over an in-memory vector index, cosine-similarity
    ranking, grounded answers with source traceability.
 3. LLM ROUTER
-   URL: /demos/llm-router | Engine: Groq (server)
-   Complexity-based routing across Groq-hosted model tiers with live latency, cost, and quality per tier.
+   URL: /demos/llm-router | Engine: Groq (server): GPT-OSS 20B, GPT-OSS 120B, Qwen3.8 27B
+   Complexity-based routing across Groq-hosted open-weight model tiers with live latency, cost, and quality per tier.
 
 AGENTIC SYSTEMS & GOVERNANCE
 4. MULTI-AGENT SYSTEM
-   URL: /demos/multi-agent | Engine: Groq via FastAPI backend (server)
+   URL: /demos/multi-agent | Engine: GPT-OSS 120B on Groq via a Hugging Face Space (FastAPI backend)
    Analyzer → Researcher → Strategist with real LLM calls. The Strategist's recommendation is released only through a
    server-recorded, single-use approval (receipt bound to a hash of the staged output); poisoned agent output is withheld.
 5. MCP TOOL DEMO
@@ -468,7 +468,7 @@ AGENTIC SYSTEMS & GOVERNANCE
    URL: /demos/agent-auth | Engine: Server API
    auth.md flow: anonymous registration → claim (OTP shown inline in demo mode) → Bearer-authenticated tool calls.
 7. EDGE AGENT + CLOUD AGENT COLLABORATION
-   URL: /demos/edge-agent-collaboration | Engine: BERT NER WASM + Groq (server)
+   URL: /demos/edge-agent-collaboration | Engine: BERT NER WASM (Xenova/bert-base-NER) + Groq GPT-OSS 120B (server)
    Browser BERT NER redacts PII before a human-approved handoff; the cloud model receives only the sanitized payload.
 8. ENTERPRISE CONTROL PLANE
    URL: /demos/enterprise-control-plane | Engine: Deterministic simulation (seeded data)

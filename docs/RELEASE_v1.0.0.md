@@ -1,5 +1,8 @@
 # Production AI Platform Reference Architecture
 
+> **Historical snapshot.** The models named below are those of the original release. Several have since been
+> retired or replaced; see the "Models" section of the README for what runs today.
+
 **Tag:** v1.0.0
 
 This platform is a production-grade AI portfolio demonstrating Tool Gateway architecture, multi-agent orchestration, governance and evaluation frameworks, with machine-readable AI discoverability and 70%+ cost optimization patterns. It is built to run in a real deployment environment (Next.js on Vercel), not as static slides or isolated notebooks. Every capability shown is implemented in code and verifiable end-to-end.

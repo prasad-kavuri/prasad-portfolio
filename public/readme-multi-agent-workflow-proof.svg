@@ -6,7 +6,7 @@
   <text x="84" y="128" fill="#9CA3AF" font-family="Inter, Arial, sans-serif" font-size="16">Analyzer → Researcher → Strategist with explicit human approval and traceable output.</text>
 
   <rect x="84" y="166" width="128" height="30" rx="15" fill="#1F2937" stroke="#4B5563"/>
-  <text x="112" y="186" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">CrewAI</text>
+  <text x="112" y="186" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">GPT-OSS 120B</text>
   <rect x="224" y="166" width="112" height="30" rx="15" fill="#1F2937" stroke="#4B5563"/>
   <text x="256" y="186" fill="#D1D5DB" font-family="Inter, Arial, sans-serif" font-size="12">Groq</text>
   <rect x="348" y="166" width="164" height="30" rx="15" fill="#1F2937" stroke="#4B5563"/>

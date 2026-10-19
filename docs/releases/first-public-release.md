@@ -1,5 +1,8 @@
 # v1.0.0 — AI Engineering Portfolio Platform
 
+> **Historical snapshot.** The models named below are those of the original release. Several have since been
+> retired or replaced; see the "Models" section of the README for what runs today.
+
 **Release date:** April 2026  
 **Live site:** https://www.prasadkavuri.com
 

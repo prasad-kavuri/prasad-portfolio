@@ -48,11 +48,11 @@ evaluation, and drift monitoring at the platform layer.
 |------|----------|--------|
 | [Governed Agent Platform](https://www.prasadkavuri.com/demos/governed-agent-platform) | Flagship | A2A v1.0 agent + MCP server, tool gateway, approval, trajectory-eval release gate |
 | [AI Evaluation Showcase](https://www.prasadkavuri.com/demos/evaluation-showcase) | Evaluation | Rubric-scored evals, release gating, CI eval suites |
-| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | Groq agents, server-enforced release approval, audit trails |
+| [Multi-Agent System](https://www.prasadkavuri.com/demos/multi-agent) | Agentic | GPT-OSS 120B agents on Groq, server-enforced release approval, audit trails |
 | [RAG Pipeline](https://www.prasadkavuri.com/demos/rag-pipeline) | Infrastructure | Transformers.js embeddings, in-browser retrieval, citations |
-| [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | FinOps | Multi-model routing, live cost/latency tradeoffs |
+| [LLM Router](https://www.prasadkavuri.com/demos/llm-router) | FinOps | Routing across GPT-OSS 20B / 120B and Qwen3.8 27B, live cost/latency tradeoffs |
 | [Enterprise Control Plane](https://www.prasadkavuri.com/demos/enterprise-control-plane) | Governance | RBAC, spend limits, structured observability |
-| [Edge Agent Collaboration](https://www.prasadkavuri.com/demos/edge-agent-collaboration) | Privacy-first | BERT NER redaction, HITL gate, sovereign AI |
+| [Edge Agent Collaboration](https://www.prasadkavuri.com/demos/edge-agent-collaboration) | Privacy-first | Browser BERT NER (names) plus regex redaction, HITL gate, sovereign AI |
 
 ---
 
@@ -60,6 +60,23 @@ evaluation, and drift monitoring at the platform layer.
 
 Next.js 16 · React 19 · TypeScript 6 · Tailwind CSS 4 · Transformers.js ·
 Vercel · Upstash Redis · Groq · Playwright · Vitest
+
+### Models
+
+Open-weight models only, no paid proprietary models. Server model ids, tiers and fallback chains live in one file,
+`src/lib/groq-models.ts`; a weekly workflow (`model-health.yml`) checks they still answer on Groq.
+
+| Where | Model | Used for |
+|---|---|---|
+| Groq | `openai/gpt-oss-20b` (fast tier) | Portfolio assistant; simple queries in the router |
+| Groq | `openai/gpt-oss-120b` (capable tier) | Storm research, MCP demo, generative UI, edge-agent summary; capable tier in the router |
+| Groq (preview) | `qwen/qwen3.8-27b` (code tier) | Code-tier routing, falls back to GPT-OSS if unavailable |
+| Hugging Face Space | `openai/gpt-oss-120b` via Groq | Multi-agent demo backend (FastAPI) |
+| Browser (WASM) | `Xenova/all-MiniLM-L6-v2` | RAG pipeline embeddings |
+| Browser (WASM) | `Xenova/bert-base-NER` | Edge-agent name redaction |
+| Browser (WASM) | `Xenova/distilbert-base-uncased-finetuned-sst-2-english` | Quantization benchmark (FP32 vs INT8) |
+
+Why these and not newer ones: see `specs/0029-groq-model-migration.md` and `specs/0039-browser-model-trial.md`.
 
 **Quality baseline:** Vitest unit/integration/eval suites · npm audit, gitleaks, semgrep · 0 lint errors · CI: lint → unit → build → E2E matrix
 

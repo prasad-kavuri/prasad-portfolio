@@ -77,6 +77,10 @@ describe('GovernancePage', () => {
       'href',
       'https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/WELL_ARCHITECTED_SECURITY.md'
     );
+    expect(screen.getByText('OWASP Alignment')).toHaveAttribute(
+      'href',
+      'https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/OWASP_ALIGNMENT.md'
+    );
     expect(screen.getByText('security-posture.json')).toHaveAttribute(
       'href',
       '/.well-known/security-posture.json'

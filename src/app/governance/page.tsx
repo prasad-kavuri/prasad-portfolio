@@ -323,6 +323,12 @@ export default function GovernancePage() {
                   Security Pillar Mapping
                 </Link>
                 <Link
+                  href="https://github.com/prasad-kavuri/prasad-portfolio/blob/main/docs/OWASP_ALIGNMENT.md"
+                  className="rounded-lg border border-border px-3 py-1.5 text-muted-foreground hover:text-foreground"
+                >
+                  OWASP Alignment
+                </Link>
+                <Link
                   href="/.well-known/security-posture.json"
                   className="rounded-lg border border-border px-3 py-1.5 text-muted-foreground hover:text-foreground"
                 >

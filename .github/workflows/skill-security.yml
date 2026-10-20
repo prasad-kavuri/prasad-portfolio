@@ -23,18 +23,12 @@ on:
     # even when skill files haven't changed (SkillSpector SC4 queries OSV.dev live)
     - cron: '0 10 * * 1'
   workflow_dispatch:
-    inputs:
-      skill_path:
-        description: 'One skill to scan, for example ./skills/self-heal (default: all nine skills)'
-        required: false
-        default: ''
 
 jobs:
   skillspector:
     # One job per skill so each report, finding and SARIF category stays separate.
     # The list below must match skills/ and .github/skill-security-scope.json (a unit test checks it).
     name: SkillSpector (${{ matrix.skill }})
-    if: github.event_name != 'workflow_dispatch' || inputs.skill_path == '' || inputs.skill_path == format('./skills/{0}', matrix.skill)
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     strategy:

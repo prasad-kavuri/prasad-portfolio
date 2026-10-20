@@ -63,3 +63,29 @@ removed to avoid duplicate PR runs.
 
 Rollback: revert this scope-policy follow-up to restore strict blocking on every
 incomplete report. Application controls and production behavior are unchanged.
+
+## All nine skills are scanned (SPEC-0044, 2026-10-20)
+
+Until SPEC-0044 only `skills/prasad-portfolio` was scanned. Now every folder under `skills/` is, one job per skill
+(`SkillSpector (<skill>)`), and a final job named `SkillSpector Scan` requires all of them to pass, so the status
+name used for merge checks did not change.
+
+- Each skill has its own entry in `.github/skill-security-scope.json` (`skills` list): exact SHA-256 of its SKILL.md,
+  the exact lines where the scanner reports a missing reference, and the tracked application files those lines name.
+  The rules above apply to every entry unchanged. A skill with no entry gets the strict default and fails on any
+  incomplete report.
+- All nine skills have a single SKILL.md and no other files, and the first scan found no HIGH or CRITICAL findings and
+  only `reference_missing` notices (paths into the application, or files a skill writes when it runs, such as
+  `docs/testing.md`).
+- Four of the other eight skills (add-demo, redesign-portfolio, self-heal, testing) have MEDIUM findings, all rule RP1
+  ("MCP server referenced without pinned version") on `npx tsc --noEmit`. That is the project's own TypeScript compiler
+  run through `npx`, not a downloaded MCP server, so the finding is a false positive of the rule. The project skill's
+  two documented MEDIUM findings (the same RP1 and RA2 "Session Persistence") are unchanged. All stay visible as
+  warnings and none is dismissed or hidden.
+- A unit test fails if a skill folder, the scope file and the workflow matrix stop agreeing, or if a SKILL.md changes
+  without its entry being refreshed.
+
+To change a skill: edit it, run `skillspector scan skills/<name> --format sarif --output skillspector-report.sarif
+--no-llm`, then `python3 .github/scripts/skill_security_propose.py skills/<name> skillspector-report.sarif` to print a
+proposed entry. Read each reference line and file by hand, then paste the entry into the scope file. The helper never
+writes the file. To add a skill, add its folder, a scope entry and its name in the workflow matrix in one pull request.

@@ -25,15 +25,22 @@ on:
   workflow_dispatch:
     inputs:
       skill_path:
-        description: 'Skill path to scan (default: ./skills/prasad-portfolio)'
+        description: 'One skill to scan, for example ./skills/self-heal (default: all nine skills)'
         required: false
-        default: './skills/prasad-portfolio'
+        default: ''
 
 jobs:
   skillspector:
-    name: SkillSpector Scan
+    # One job per skill so each report, finding and SARIF category stays separate.
+    # The list below must match skills/ and .github/skill-security-scope.json (a unit test checks it).
+    name: SkillSpector (${{ matrix.skill }})
+    if: github.event_name != 'workflow_dispatch' || inputs.skill_path == '' || inputs.skill_path == format('./skills/{0}', matrix.skill)
     runs-on: ubuntu-26.04
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        skill: [add-demo, agentic-seo, executive-review, prasad-portfolio, recruiter-review, redesign-portfolio, security-review, self-heal, testing]
     permissions:
       # Required for uploading SARIF results to GitHub Security tab
       security-events: write
@@ -63,14 +70,13 @@ jobs:
       - name: Determine skill path
         id: skill-path
         env:
-          EVENT_NAME: ${{ github.event_name }}
-          INPUT_SKILL_PATH: ${{ inputs.skill_path }}
+          MATRIX_SKILL: ${{ matrix.skill }}
         run: |
           python3 - <<'PY'
           import os, pathlib, sys
           sys.path.insert(0, '.github/scripts')
           from skill_security import resolve_skill
-          value = os.environ['INPUT_SKILL_PATH'] if os.environ['EVENT_NAME'] == 'workflow_dispatch' else 'skills/prasad-portfolio'
+          value = 'skills/' + os.environ['MATRIX_SKILL']
           path = resolve_skill(pathlib.Path.cwd(), value)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write(f'path={path.as_posix()}\n')
@@ -102,15 +108,32 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: skillspector-upload.sarif
-          category: skillspector
+          category: skillspector-${{ matrix.skill }}
 
       - name: Upload SARIF artifact (for download / governance page)
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: skillspector-sarif-${{ github.run_id }}
+          name: skillspector-sarif-${{ matrix.skill }}-${{ github.run_id }}
           path: |
             skillspector-report.sarif
             skillspector-upload.sarif
           if-no-files-found: error
           retention-days: 90
+
+  # Single status for branch protection: the check name "SkillSpector Scan" is unchanged.
+  skillspector-gate:
+    name: SkillSpector Scan
+    needs: skillspector
+    if: always()
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every skill scan to pass
+        env:
+          RESULT: ${{ needs.skillspector.result }}
+        run: |
+          if [ "$RESULT" != "success" ]; then
+            echo "::error::At least one skill scan did not pass (result: $RESULT)."
+            exit 1
+          fi

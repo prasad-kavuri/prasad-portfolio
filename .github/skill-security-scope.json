@@ -1,25 +1,124 @@
 {
-  "skill": "skills/prasad-portfolio",
-  "skill_sha256": "0b65c80800dc1426875e5b8575448d239fcce9359b1c118fdd926a5583ab1e9c",
-  "reference_lines": [51, 52, 57, 58, 60, 96, 97, 99, 100, 101, 102, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 129, 130, 131, 142, 143, 163, 164, 166, 168, 175],
-  "application_files": [
-    "src/hooks/useBrowserAI.ts",
-    "vercel.json",
-    "next.config.ts",
-    "src/lib/api.ts",
-    "src/lib/observability.ts",
-    "src/lib/guardrails.ts",
-    "src/proxy.ts",
-    "src/components/BrowserAIWarning.tsx",
-    "src/data/profile.json",
-    "src/lib/rate-limit.ts",
-    "src/lib/eval-engine.ts",
-    "src/lib/drift-monitor.ts",
-    "src/lib/cost-control.ts",
-    "src/lib/hitl.ts",
-    "src/data/demos.ts",
-    "src/components/sections/AITools.tsx",
-    "src/app/layout.tsx",
-    "public/.well-known/ai-agent-manifest.json"
+  "skills": [
+    {
+      "skill": "skills/add-demo",
+      "skill_sha256": "4c6fe772859ccc88cda5c8d51ffdab5bdd351abab7b1320fd265e9cb394d9f31",
+      "reference_lines": [8, 23, 37, 39, 88, 100, 104, 105, 106],
+      "application_files": [
+        "CONTEXT.md",
+        "src/__tests__/components/AITools.test.tsx",
+        "src/components/sections/AITools.tsx",
+        "src/components/sections/DemosGallery.tsx",
+        "src/data/demo-groups.ts",
+        "src/data/demos.ts"
+      ]
+    },
+    {
+      "skill": "skills/agentic-seo",
+      "skill_sha256": "a4ef95c0028e0c830622da37ba3fd7ae2660fe11f801169e132ca317c5aa41c6",
+      "reference_lines": [8, 15, 16, 20, 22, 23, 24, 28, 34, 42, 45, 52, 65, 67, 78, 79, 80, 81, 99, 100, 103],
+      "application_files": [
+        "CONTEXT.md",
+        "public/.well-known/ai-agent-manifest.json",
+        "public/llms.txt",
+        "src/app/layout.tsx",
+        "src/data/demos.ts",
+        "src/data/site-config.ts"
+      ]
+    },
+    {
+      "skill": "skills/executive-review",
+      "skill_sha256": "74a6707b88e0df6583b6e0774fa92245b0bee63c6d09faabe31fcdea66efed38",
+      "reference_lines": [12, 36, 37, 38, 39],
+      "application_files": [
+        "CONTEXT.md",
+        "public/llms.txt",
+        "src/components/sections/Experience.tsx",
+        "src/data/demos.ts",
+        "src/data/profile.json"
+      ]
+    },
+    {
+      "skill": "skills/prasad-portfolio",
+      "skill_sha256": "0b65c80800dc1426875e5b8575448d239fcce9359b1c118fdd926a5583ab1e9c",
+      "reference_lines": [51, 52, 57, 58, 60, 96, 97, 99, 100, 101, 102, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 129, 130, 131, 142, 143, 163, 164, 166, 168, 175],
+      "application_files": [
+        "src/hooks/useBrowserAI.ts",
+        "vercel.json",
+        "next.config.ts",
+        "src/lib/api.ts",
+        "src/lib/observability.ts",
+        "src/lib/guardrails.ts",
+        "src/proxy.ts",
+        "src/components/BrowserAIWarning.tsx",
+        "src/data/profile.json",
+        "src/lib/rate-limit.ts",
+        "src/lib/eval-engine.ts",
+        "src/lib/drift-monitor.ts",
+        "src/lib/cost-control.ts",
+        "src/lib/hitl.ts",
+        "src/data/demos.ts",
+        "src/components/sections/AITools.tsx",
+        "src/app/layout.tsx",
+        "public/.well-known/ai-agent-manifest.json"
+      ]
+    },
+    {
+      "skill": "skills/recruiter-review",
+      "skill_sha256": "0ff19b4e49ba99c6c3454bfcdc94981524c9d741d2920a8d3ccc67c5598ddc0e",
+      "reference_lines": [8, 29, 30, 31, 32],
+      "application_files": [
+        "CONTEXT.md",
+        "public/llms.txt",
+        "src/components/sections/Experience.tsx",
+        "src/data/demos.ts",
+        "src/data/profile.json"
+      ]
+    },
+    {
+      "skill": "skills/redesign-portfolio",
+      "skill_sha256": "ac97fe35eb14cd20ee005cd81c8d5bc39e7a1a916e3f658c35ffb00b88f6da96",
+      "reference_lines": [8, 16, 79, 81, 87, 88, 89],
+      "application_files": [
+        "CONTEXT.md",
+        "public/.well-known/ai-agent-manifest.json",
+        "public/llms.txt",
+        "src/app/layout.tsx"
+      ]
+    },
+    {
+      "skill": "skills/security-review",
+      "skill_sha256": "18da23c80de8da49540824a750a1baa7d5d384f72b3eb1513cfcced73891f81f",
+      "reference_lines": [12, 16, 20, 35, 56, 92, 98, 101, 117, 131, 133, 137, 138, 142, 144],
+      "application_files": [
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "docs/SECURITY_THREAT_MODEL.md",
+        "public/.well-known/ai-agent-manifest.json",
+        "src/lib/api.ts",
+        "src/lib/csp.ts",
+        "src/lib/rate-limit.ts",
+        "src/proxy.ts"
+      ]
+    },
+    {
+      "skill": "skills/self-heal",
+      "skill_sha256": "20e10a6ba32b8b22237f4909d850e7937799c5285f814c44753650b9f40f49ed",
+      "reference_lines": [8, 9, 25, 126, 128],
+      "application_files": [
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "evaluations/testing.yaml",
+        "profiles/testing.yaml"
+      ]
+    },
+    {
+      "skill": "skills/testing",
+      "skill_sha256": "dfabdddd7399e26d0507b201c8d5b0ab9c1e789dea9ef4d703ad92040e61b22d",
+      "reference_lines": [12, 95, 97],
+      "application_files": [
+        "CONTEXT.md"
+      ]
+    }
   ]
 }

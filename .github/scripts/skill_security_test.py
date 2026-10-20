@@ -10,7 +10,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from skill_security import prepare_report, resolve_skill
+from skill_security import prepare_report, resolve_skill, select_policy
+from skill_security_propose import propose
 
 
 def report(level=None):
@@ -198,3 +199,56 @@ class GateTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+REPO = Path(__file__).resolve().parents[2]
+
+
+class ScopeFileTests(unittest.TestCase):
+    """The reviewed scope file, the skills folder and the workflow must describe the same nine skills."""
+
+    def setUp(self):
+        self.document = json.loads((REPO / '.github/skill-security-scope.json').read_text())
+        self.on_disk = sorted(f'skills/{p.name}' for p in (REPO / 'skills').iterdir() if (p / 'SKILL.md').is_file())
+
+    def test_every_skill_has_exactly_one_reviewed_entry(self):
+        listed = sorted(e['skill'] for e in self.document['skills'])
+        self.assertEqual(listed, self.on_disk)
+        self.assertEqual(len(listed), len(set(listed)))
+
+    def test_every_skill_is_in_the_workflow_matrix(self):
+        text = (REPO / '.github/workflows/skill-security.yml').read_text()
+        block = text.split('skill: [', 1)[1].split(']', 1)[0]
+        in_matrix = sorted(f'skills/{name.strip()}' for name in block.split(',') if name.strip())
+        self.assertEqual(in_matrix, self.on_disk)
+
+    def test_entries_match_current_skill_text_and_files(self):
+        tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=REPO, text=True).split('\0'))
+        for entry in self.document['skills']:
+            data = (REPO / entry['skill'] / 'SKILL.md').read_bytes()
+            self.assertEqual(hashlib.sha256(data).hexdigest(), entry['skill_sha256'], entry['skill'] + ' changed: refresh its entry on purpose')
+            self.assertEqual(entry['reference_lines'], sorted(entry['reference_lines']))
+            lines = data.decode().split('\n')
+            self.assertTrue(all(1 <= n <= len(lines) for n in entry['reference_lines']), entry['skill'])
+            for name in entry['application_files']:
+                self.assertIn(name, tracked, f"{entry['skill']} references untracked {name}")
+
+    def test_select_policy(self):
+        entry = self.document['skills'][0]
+        self.assertEqual(select_policy(self.document, Path(entry['skill'])), entry)
+        self.assertIsNone(select_policy(self.document, Path('skills/unknown')))
+        self.assertIsNone(select_policy(None, Path(entry['skill'])))
+        self.assertEqual(select_policy(entry, Path(entry['skill'])), entry)
+        with self.assertRaises(ValueError):
+            select_policy({'skills': [entry, entry]}, Path(entry['skill']))
+
+
+class ProposeTests(unittest.TestCase):
+    def test_proposal_reproduces_the_reviewed_entry(self):
+        # Build a synthetic report whose notices sit on the reviewed lines of one skill.
+        document = json.loads((REPO / '.github/skill-security-scope.json').read_text())
+        entry = next(e for e in document['skills'] if e['skill'] == 'skills/testing')
+        notices = [{'locations': [{'physicalLocation': {'region': {'startLine': n, 'endLine': n}}}]}
+                   for n in entry['reference_lines']]
+        fake = {'runs': [{'invocations': [{'toolExecutionNotifications': notices}]}]}
+        self.assertEqual(propose(REPO, 'skills/testing', fake), entry)

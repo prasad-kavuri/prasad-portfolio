@@ -67,7 +67,7 @@ incomplete report. Application controls and production behavior are unchanged.
 ## All nine skills are scanned (SPEC-0044, 2026-10-20)
 
 Until SPEC-0044 only `skills/prasad-portfolio` was scanned. Now every folder under `skills/` is, one job per skill
-(`SkillSpector (<skill>)`), and a final job named `SkillSpector Scan` requires all of them to pass, so the status
+(`SkillSpector (<skill>)`; a manual run scans all nine), and a final job named `SkillSpector Scan` requires all of them to pass, so the status
 name used for merge checks did not change.
 
 - Each skill has its own entry in `.github/skill-security-scope.json` (`skills` list): exact SHA-256 of its SKILL.md,

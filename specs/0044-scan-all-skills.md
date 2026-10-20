@@ -34,6 +34,14 @@ are instructions that agents read and follow, so they are the same kind of risk 
 - The scope helper never writes the file; refreshing stays a reviewed act.
 - Cost: nine short jobs per run instead of one (about a minute each); weekly schedule unchanged.
 
+## Follow-up fix (2026-10-20)
+
+The first version put `if: ... matrix.skill` on the job. GitHub does not allow the `matrix` context there, so the
+workflow file was invalid and the run failed with no jobs on the PR branch and on main (SkillSpector did not run at
+all). The `if` and the single-skill `skill_path` dispatch input were removed; manual runs now scan all nine skills.
+`actionlint` reports the original error and passes on the fixed file (ignoring only its stale `ubuntu-26.04` label
+list). Lesson: run `actionlint` on any workflow change before opening the PR.
+
 ## Verification
 
 Local: all nine reports pass the gate; editing one byte of a skill makes its gate fail; 22 unit tests pass.

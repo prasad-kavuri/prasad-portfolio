@@ -20,6 +20,21 @@ def resolve_skill(root, value):
     return relative
 
 
+def select_policy(document, skill):
+    """Return the reviewed scope entry for this skill, or None (strict default applies).
+
+    The scope file lists one entry per skill. The earlier single-entry layout is still read so an
+    old checkout does not silently lose its exception.
+    """
+    if not isinstance(document, dict):
+        return None
+    entries = document['skills'] if 'skills' in document else [document]
+    matches = [e for e in entries if isinstance(e, dict) and e.get('skill') == skill.as_posix()]
+    if len(matches) > 1:
+        raise ValueError('Duplicate scope entries for one skill')
+    return matches[0] if matches else None
+
+
 def normalize_locations(node, root, skill):
     """Rewrite local artifact URIs, including related locations, not external sources."""
     if isinstance(node, list):
@@ -142,7 +157,8 @@ def main():
         skill = resolve_skill(root, os.environ.get('SKILL_PATH', ''))
         report = json.loads(Path('skillspector-report.sarif').read_text())
         policy_path = Path('.github/skill-security-scope.json')
-        policy = json.loads(policy_path.read_text()) if policy_path.is_file() else None
+        document = json.loads(policy_path.read_text()) if policy_path.is_file() else None
+        policy = select_policy(document, skill)
         errors, warnings = prepare_report(report, root, skill, os.environ.get('SCAN_EXIT_CODE', ''), policy)
         # Preserve valid reports even when findings/completeness block the job.
         Path('skillspector-upload.sarif').write_text(json.dumps(report, indent=2) + '\n')

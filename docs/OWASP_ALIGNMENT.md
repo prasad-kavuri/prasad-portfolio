@@ -1,6 +1,6 @@
 # OWASP alignment: MCP Top 10, Agentic Skills Top 10 and ASVS
 
-Last reviewed: 2026-10-20 (SPEC-0043)
+Last reviewed: 2026-10-20 (SPEC-0043, updated by SPEC-0044)
 
 This is a self-assessment, not a certification and not a third-party penetration test (see
 `docs/SECURITY_THREAT_MODEL.md`). It maps this repository to three OWASP projects. Every "Evidence" entry is a file or
@@ -46,18 +46,18 @@ Adding any new MCP server, Space or external backend means adding a row here in 
 
 ## 2. Agentic Skills Top 10
 
-The repo ships nine skills under `skills/` (one pinned and scanned project skill, `prasad-portfolio`, plus eight
-workflow skills) and a generated `skills/index.json`.
+The repo ships nine skills under `skills/` (the project skill `prasad-portfolio` plus eight workflow skills) and a
+generated `skills/index.json`. All nine are scanned and hash-pinned (SPEC-0044).
 
 | Risk | What this repo does | Evidence | Gap or limit |
 |---|---|---|---|
-| AST01 Malicious skills | The project skill is scanned by SkillSpector (static only) on skill changes and weekly; all skills are first-party and reviewed by the owner | `.github/workflows/skill-security.yml`, `docs/SKILL_SECURITY_SCOPE.md` | Only `skills/prasad-portfolio` is scanned; the other eight skills are not |
-| AST02 Supply chain compromise | Skills are served from this repo only, the scanner is pinned to a commit, and the project skill text is pinned by SHA-256 | `.github/skill-security-scope.json`, `.github/workflows/skill-security.yml` | No signing of skills; no other registry is used |
+| AST01 Malicious skills | Every skill is scanned by SkillSpector (static only) on skill changes and weekly; all skills are first-party and reviewed by the owner | `.github/workflows/skill-security.yml`, `docs/SKILL_SECURITY_SCOPE.md` | Static scan only; MEDIUM findings (an `npx tsc` false positive on four skills, plus two documented ones on the project skill) stay as visible warnings |
+| AST02 Supply chain compromise | Skills are served from this repo only, the scanner is pinned to a commit, and every skill's text is pinned by SHA-256 | `.github/skill-security-scope.json`, `.github/workflows/skill-security.yml` | No signing of skills; no other registry is used |
 | AST03 Over-privileged skills | `self-heal` and `security-review` state which steps are free and which need a person's approval; the repo operating contract forbids reading secrets or changing security configuration without approval | `skills/self-heal/SKILL.md`, `skills/security-review/SKILL.md` (Safety tiers), `AGENTS.md`, `CLAUDE.md` | Policy text, not a technical sandbox; the other skills have no tiers section |
 | AST04 Insecure metadata | Frontmatter is linted ("Use when" descriptions) and the index is generated and drift-tested | `src/__tests__/lib/skills-frontmatter.test.ts`, `scripts/generate-skill-index.mjs` | Skills do not declare permissions, so there is nothing to compare declared against actual behaviour |
 | AST05 Untrusted external instructions | Skill text is pinned and reviewed; no skill is fetched at run time by this site | `.github/skill-security-scope.json` | The external links inside each skill have not been inventoried or snapshotted |
 | AST06 Weak isolation | Skills run in the user's own agent, not on the site; the site never executes skills | `docs/SKILL_SECURITY_SCOPE.md` | Isolation is the agent runtime's job and is not verified here |
-| AST07 Update drift | A changed byte in the project skill fails the gate until the hash and reviewed lines are refreshed on purpose; Dependabot proposes updates for review | `.github/scripts/skill_security.py`, `.github/skill-security-scope.json` | Hash pinning covers one skill; the others can change without a gate |
+| AST07 Update drift | A changed byte in any skill fails the gate until its hash and reviewed lines are refreshed on purpose (a unit test also catches it before CI); Dependabot proposes updates for review | `.github/scripts/skill_security.py`, `.github/skill-security-scope.json` | Pinning is of the skill text only; nothing watches for a skill being copied elsewhere |
 | AST08 Poor scanning | SkillSpector reads natural-language skill text as well as code, alongside Semgrep, gitleaks and the audit policy | `.github/workflows/skill-security.yml`, `.github/workflows/ci.yml` | The scanner's report is partial by design (reference notices are excepted at reviewed lines); no runtime behaviour monitoring |
 | AST09 No governance | A generated index is the inventory; every change goes through a reviewed pull request and a numbered spec; the revocation procedure is below | `skills/index.json`, `specs/`, this file | Owner is a single person; the revocation steps have not been exercised |
 | AST10 Cross-platform reuse | One canonical copy of each skill lives in `skills/`; nothing is generated for other platforms | `skills/` | Not applicable today; if skills are ever ported, record the platform and permissions per skill |
@@ -104,7 +104,6 @@ is a chapter-level self-assessment: a requirement-by-requirement walk has not be
 1. A log drain with alert rules for denied tool calls, invalid tokens, `api.upstream_busy` and `api.model_fallback`
    (closes MCP08 and the V16 gap). It touches logging and deployment configuration, so it needs the owner's approval.
 2. A health check for the Hugging Face Space and a UI smoke test of the multi-agent flow (MCP09).
-3. SkillSpector or an equivalent static check across all nine skills, not only `prasad-portfolio` (AST01, AST07).
-4. A requirement-by-requirement ASVS Level 1 walk, then a review date each quarter.
-5. SHA-pinned third-party GitHub Actions (MCP04).
-6. An external review, if the site is to claim more than a self-assessment.
+3. A requirement-by-requirement ASVS Level 1 walk, then a review date each quarter.
+4. SHA-pinned third-party GitHub Actions (MCP04).
+5. An external review, if the site is to claim more than a self-assessment.

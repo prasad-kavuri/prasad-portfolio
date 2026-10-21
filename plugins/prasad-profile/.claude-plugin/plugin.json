@@ -9,5 +9,11 @@
   },
   "homepage": "https://www.prasadkavuri.com/agent-readiness",
   "repository": "https://github.com/prasad-kavuri/prasad-portfolio",
-  "keywords": ["profile", "recruiting", "mcp", "ai-engineering"]
+  "keywords": [
+    "profile",
+    "recruiting",
+    "mcp",
+    "ai-engineering"
+  ],
+  "license": "MIT"
 }

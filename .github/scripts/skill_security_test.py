@@ -302,3 +302,19 @@ class PluginPackagingTests(unittest.TestCase):
         skills = manifest.get('skills', [])
         skills = [skills] if isinstance(skills, str) else skills
         self.assertTrue(all(isinstance(path, str) and path.startswith('./') for path in skills))
+
+
+class LicenseTests(unittest.TestCase):
+    """LICENSE, NOTICE and every manifest must agree (SPEC-0046)."""
+
+    def test_license_files_and_manifests_agree(self):
+        license_text = (REPO / 'LICENSE').read_text()
+        self.assertTrue(license_text.startswith('MIT License'))
+        self.assertIn('Prasad Kavuri', license_text)
+        notice = (REPO / 'NOTICE').read_text()
+        self.assertIn('all rights reserved', notice)
+        manifests = [REPO / '.claude-plugin/plugin.json']
+        manifests += sorted((REPO / 'plugins').glob('*/.claude-plugin/plugin.json'))
+        for path in manifests:
+            self.assertEqual(json.loads(path.read_text()).get('license'), 'MIT', str(path))
+        self.assertEqual(json.loads((REPO / 'package.json').read_text()).get('license'), 'MIT')

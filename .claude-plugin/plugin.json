@@ -2,5 +2,6 @@
   "name": "prasad-portfolio",
   "version": "1.0.1",
   "description": "Agent skills for working on the prasad-portfolio codebase. Enforces security invariants, demo execution modes, CSP/WASM rules, and coding conventions for prasadkavuri.com.",
-  "repository": "https://github.com/prasad-kavuri/prasad-portfolio"
+  "repository": "https://github.com/prasad-kavuri/prasad-portfolio",
+  "license": "MIT"
 }

@@ -1,0 +1,13 @@
+Licence scope
+
+The MIT licence in LICENSE applies to the source code in this repository: the application code, tests, scripts,
+workflows, specifications and technical documentation.
+
+It does not apply to the personal and profile content, which remains all rights reserved by Prasad Kavuri, and may not
+be reused or republished without permission. That content includes, for example: the profile and career text, metrics
+and achievements (src/data/profile.json, resume files, public/resume.*, public/llms*.txt, the written perspectives
+pages), photographs and logos (public/*.jpg, public/*.pdf and similar), and the wording of the site's own copy.
+
+Third-party names, marks and models referenced here belong to their owners and keep their own licences.
+
+This note describes intent and is not legal advice.

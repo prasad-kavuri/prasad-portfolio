@@ -115,5 +115,12 @@ Full architecture: [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · Security: [SECUR
 
 ---
 
+## License
+
+The source code is released under the [MIT License](LICENSE). The personal and profile content (career text, metrics,
+photos, written pieces) stays all rights reserved; see [NOTICE](NOTICE).
+
+---
+
 *Chicago area & remote*  
 *Contact: vbkpkavuri@gmail.com · [LinkedIn](https://linkedin.com/in/pkavuri) · [Book a call](https://calendly.com/vbkpkavuri)*

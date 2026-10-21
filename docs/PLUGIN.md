@@ -27,8 +27,9 @@ The marketplace is `.claude-plugin/marketplace.json` (name `prasad-kavuri`) and 
   (public) and `get_achievements`, which stays denied unless the caller holds a `read:profile` credential
   (`/auth.md`). The plugin ships no credential and the skill does not try to obtain one.
 - It makes no network calls other than to that one server, and has no hooks, scripts, agents or executables.
-- It is not listed in Anthropic's plugin directory. That would need a `LICENSE` file or a `license` field, which is the
-  owner's decision (not set).
+- It is not listed in Anthropic's plugin directory. Installing from this marketplace needs no listing. The repository is
+  MIT-licensed for code (`LICENSE`, `NOTICE`) and the manifests declare `MIT`; a directory submission would still need an
+  icon and a privacy-policy URL in the manifest.
 
 ## Two plugins, two audiences
 

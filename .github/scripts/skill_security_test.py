@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -209,7 +210,10 @@ class ScopeFileTests(unittest.TestCase):
 
     def setUp(self):
         self.document = json.loads((REPO / '.github/skill-security-scope.json').read_text())
-        self.on_disk = sorted(f'skills/{p.name}' for p in (REPO / 'skills').iterdir() if (p / 'SKILL.md').is_file())
+        found = [p for p in (REPO / 'skills').iterdir() if (p / 'SKILL.md').is_file()]
+        found += [p for plugin in (REPO / 'plugins').iterdir() if (plugin / 'skills').is_dir()
+                  for p in (plugin / 'skills').iterdir() if (p / 'SKILL.md').is_file()]
+        self.on_disk = sorted(p.relative_to(REPO).as_posix() for p in found)
 
     def test_every_skill_has_exactly_one_reviewed_entry(self):
         listed = sorted(e['skill'] for e in self.document['skills'])
@@ -218,8 +222,7 @@ class ScopeFileTests(unittest.TestCase):
 
     def test_every_skill_is_in_the_workflow_matrix(self):
         text = (REPO / '.github/workflows/skill-security.yml').read_text()
-        block = text.split('skill: [', 1)[1].split(']', 1)[0]
-        in_matrix = sorted(f'skills/{name.strip()}' for name in block.split(',') if name.strip())
+        in_matrix = sorted(re.findall(r'path: (\S+) \}', text))
         self.assertEqual(in_matrix, self.on_disk)
 
     def test_entries_match_current_skill_text_and_files(self):
@@ -238,6 +241,13 @@ class ScopeFileTests(unittest.TestCase):
         self.assertEqual(select_policy(self.document, Path(entry['skill'])), entry)
         self.assertIsNone(select_policy(self.document, Path('skills/unknown')))
         self.assertIsNone(select_policy(None, Path(entry['skill'])))
+        # Plugin skills resolve too; anything else does not.
+        root = REPO
+        self.assertEqual(resolve_skill(root, 'plugins/prasad-profile/skills/evaluate-fit').as_posix(),
+                         'plugins/prasad-profile/skills/evaluate-fit')
+        for bad in ('plugins/prasad-profile', 'plugins/prasad-profile/skills', 'docs', '../x', 'skills/../docs'):
+            with self.assertRaises((ValueError, OSError)):
+                resolve_skill(root, bad)
         self.assertEqual(select_policy(entry, Path(entry['skill'])), entry)
         with self.assertRaises(ValueError):
             select_policy({'skills': [entry, entry]}, Path(entry['skill']))
@@ -252,3 +262,43 @@ class ProposeTests(unittest.TestCase):
                    for n in entry['reference_lines']]
         fake = {'runs': [{'invocations': [{'toolExecutionNotifications': notices}]}]}
         self.assertEqual(propose(REPO, 'skills/testing', fake), entry)
+
+
+class PluginPackagingTests(unittest.TestCase):
+    """Marketplace and plugin manifests must stay valid and match the repo (SPEC-0045)."""
+    RESERVED = ('claude-', 'anthropic-', 'anthropics-', 'cc-plugin-')
+
+    def setUp(self):
+        self.market = json.loads((REPO / '.claude-plugin/marketplace.json').read_text())
+
+    def test_marketplace_entries_match_plugin_manifests(self):
+        self.assertTrue(self.market['plugins'])
+        self.assertIn('name', self.market['owner'])
+        for entry in self.market['plugins']:
+            source = entry['source']
+            self.assertTrue(source.startswith('./') and '..' not in source, source)
+            plugin_dir = REPO / source
+            manifest = json.loads((plugin_dir / '.claude-plugin/plugin.json').read_text())
+            self.assertEqual(entry['name'], manifest['name'])
+            for name in (entry['name'], self.market['name']):
+                self.assertRegex(name, r'^[a-z0-9]+(-[a-z0-9]+)*$')
+                self.assertFalse(name.startswith(self.RESERVED), name)
+                self.assertNotIn('official', name)
+            self.assertTrue((plugin_dir / 'skills').is_dir())
+
+    def test_mcp_connector_points_at_the_public_server_over_https(self):
+        for entry in self.market['plugins']:
+            mcp = REPO / entry['source'] / '.mcp.json'
+            if not mcp.is_file():
+                continue
+            for name, server in json.loads(mcp.read_text())['mcpServers'].items():
+                self.assertEqual(server['type'], 'http', name)
+                self.assertEqual(server['url'], 'https://www.prasadkavuri.com/api/mcp', name)
+                self.assertNotIn('headers', server, 'no credentials belong in a published plugin')
+                self.assertNotIn('env', server, name)
+
+    def test_root_manifest_uses_valid_field_shapes(self):
+        manifest = json.loads((REPO / '.claude-plugin/plugin.json').read_text())
+        skills = manifest.get('skills', [])
+        skills = [skills] if isinstance(skills, str) else skills
+        self.assertTrue(all(isinstance(path, str) and path.startswith('./') for path in skills))

@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'skills/**'
+      - 'plugins/**'
       - '.claude-plugin/**'
       - '.github/workflows/skill-security.yml'
       - '.github/scripts/skill_security*.py'
@@ -13,6 +14,7 @@ on:
   pull_request:
     paths:
       - 'skills/**'
+      - 'plugins/**'
       - '.claude-plugin/**'
       - '.github/workflows/skill-security.yml'
       - '.github/scripts/skill_security*.py'
@@ -28,13 +30,23 @@ jobs:
   skillspector:
     # One job per skill so each report, finding and SARIF category stays separate.
     # The list below must match skills/ and .github/skill-security-scope.json (a unit test checks it).
-    name: SkillSpector (${{ matrix.skill }})
+    name: SkillSpector (${{ matrix.name }})
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        skill: [add-demo, agentic-seo, executive-review, prasad-portfolio, recruiter-review, redesign-portfolio, security-review, self-heal, testing]
+        include:
+          - { name: add-demo, path: skills/add-demo }
+          - { name: agentic-seo, path: skills/agentic-seo }
+          - { name: executive-review, path: skills/executive-review }
+          - { name: prasad-portfolio, path: skills/prasad-portfolio }
+          - { name: recruiter-review, path: skills/recruiter-review }
+          - { name: redesign-portfolio, path: skills/redesign-portfolio }
+          - { name: security-review, path: skills/security-review }
+          - { name: self-heal, path: skills/self-heal }
+          - { name: testing, path: skills/testing }
+          - { name: evaluate-fit, path: plugins/prasad-profile/skills/evaluate-fit }
     permissions:
       # Required for uploading SARIF results to GitHub Security tab
       security-events: write
@@ -64,13 +76,13 @@ jobs:
       - name: Determine skill path
         id: skill-path
         env:
-          MATRIX_SKILL: ${{ matrix.skill }}
+          MATRIX_PATH: ${{ matrix.path }}
         run: |
           python3 - <<'PY'
           import os, pathlib, sys
           sys.path.insert(0, '.github/scripts')
           from skill_security import resolve_skill
-          value = 'skills/' + os.environ['MATRIX_SKILL']
+          value = os.environ['MATRIX_PATH']
           path = resolve_skill(pathlib.Path.cwd(), value)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write(f'path={path.as_posix()}\n')
@@ -102,13 +114,13 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: skillspector-upload.sarif
-          category: skillspector-${{ matrix.skill }}
+          category: skillspector-${{ matrix.name }}
 
       - name: Upload SARIF artifact (for download / governance page)
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: skillspector-sarif-${{ matrix.skill }}-${{ github.run_id }}
+          name: skillspector-sarif-${{ matrix.name }}-${{ github.run_id }}
           path: |
             skillspector-report.sarif
             skillspector-upload.sarif

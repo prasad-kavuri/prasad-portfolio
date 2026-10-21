@@ -1,0 +1,13 @@
+{
+  "name": "prasad-profile",
+  "displayName": "Prasad Kavuri Profile",
+  "version": "1.0.0",
+  "description": "Query Prasad Kavuri's professional profile through his public, read-only MCP server and check a role description against it.",
+  "author": {
+    "name": "Prasad Kavuri",
+    "url": "https://www.prasadkavuri.com"
+  },
+  "homepage": "https://www.prasadkavuri.com/agent-readiness",
+  "repository": "https://github.com/prasad-kavuri/prasad-portfolio",
+  "keywords": ["profile", "recruiting", "mcp", "ai-engineering"]
+}

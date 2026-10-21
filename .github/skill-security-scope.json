@@ -1,6 +1,12 @@
 {
   "skills": [
     {
+      "skill": "plugins/prasad-profile/skills/evaluate-fit",
+      "skill_sha256": "8adf36646245a72d60383097442c8494a8e826deb55222eca1ecf74256ef1e8c",
+      "reference_lines": [],
+      "application_files": []
+    },
+    {
       "skill": "skills/add-demo",
       "skill_sha256": "4c6fe772859ccc88cda5c8d51ffdab5bdd351abab7b1320fd265e9cb394d9f31",
       "reference_lines": [8, 23, 37, 39, 88, 100, 104, 105, 106],

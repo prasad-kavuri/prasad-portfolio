@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "prasad-profile": {
+      "type": "http",
+      "url": "https://www.prasadkavuri.com/api/mcp"
+    }
+  }
+}

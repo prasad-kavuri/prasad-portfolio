@@ -89,3 +89,10 @@ To change a skill: edit it, run `skillspector scan skills/<name> --format sarif 
 --no-llm`, then `python3 .github/scripts/skill_security_propose.py skills/<name> skillspector-report.sarif` to print a
 proposed entry. Read each reference line and file by hand, then paste the entry into the scope file. The helper never
 writes the file. To add a skill, add its folder, a scope entry and its name in the workflow matrix in one pull request.
+
+## Plugin skills (SPEC-0045, 2026-10-21)
+
+The scan also covers skills inside plugins (`plugins/<plugin>/skills/<name>`, currently `evaluate-fit`), so ten skills
+in all. The gate accepts only `skills/<name>` or `plugins/<plugin>/skills/<name>` as a target. `evaluate-fit` references
+no repository files, so its first scan was complete with no notices; its scope entry has empty reference lines and exists
+to pin the skill text by hash. The unit tests also check the marketplace and plugin manifests.

@@ -1,0 +1,14 @@
+{
+  "name": "prasad-kavuri",
+  "description": "Plugins from prasadkavuri.com: query Prasad Kavuri's profile through his public MCP server.",
+  "owner": {
+    "name": "Prasad Kavuri"
+  },
+  "plugins": [
+    {
+      "name": "prasad-profile",
+      "source": "./plugins/prasad-profile",
+      "description": "Query Prasad Kavuri's profile through his public read-only MCP server and check a role description against it."
+    }
+  ]
+}

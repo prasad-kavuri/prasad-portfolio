@@ -17,6 +17,18 @@
 | 3. Governance controls | [prasadkavuri.com/governance](https://www.prasadkavuri.com/governance) | 45 sec |
 | 4. Book a conversation | [calendly.com/vbkpkavuri](https://calendly.com/vbkpkavuri) | 30 sec |
 
+### Use the profile from Claude
+
+In Claude Code, add the marketplace and install the profile plugin (it connects to the public, read-only MCP server and
+adds an `evaluate-fit` skill that checks a role description against the profile):
+
+```bash
+claude plugin marketplace add prasad-kavuri/prasad-portfolio
+claude plugin install prasad-profile@prasad-kavuri
+```
+
+Then ask Claude to evaluate a role, or run `/prasad-profile:evaluate-fit`. Details and limits: `docs/PLUGIN.md`.
+
 ---
 
 ## About

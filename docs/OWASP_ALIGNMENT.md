@@ -40,6 +40,7 @@ exposes three read-only profile tools.
 | Profile MCP server | Vercel, `/api/mcp` | yes | repo owner | post-deploy verification, tests |
 | Groq model calls (6 routes) | Groq API via Vercel routes | yes | repo owner | weekly Model health (our three model ids) |
 | Multi-agent backend | Hugging Face Space `prasadkavuri/multi-agent-demo` (FastAPI) | no (`app.py` lives in the Space) | repo owner | nothing automated; it broke unnoticed once (2026-10-18) |
+| Claude plugin connector | Users' own Claude sessions, calling `/api/mcp` | yes (`plugins/prasad-profile/.mcp.json`) | repo owner | unit test pins the URL; same server checks as above |
 | Rate-limit and approval state | Upstash Redis | no (managed service) | repo owner | provider |
 
 Adding any new MCP server, Space or external backend means adding a row here in the same change.
@@ -47,7 +48,8 @@ Adding any new MCP server, Space or external backend means adding a row here in 
 ## 2. Agentic Skills Top 10
 
 The repo ships nine skills under `skills/` (the project skill `prasad-portfolio` plus eight workflow skills) and a
-generated `skills/index.json`. All nine are scanned and hash-pinned (SPEC-0044).
+generated `skills/index.json`. All nine are scanned and hash-pinned (SPEC-0044). A tenth, `evaluate-fit`, ships inside the visitor plugin
+(`plugins/prasad-profile/`, SPEC-0045) and is scanned the same way.
 
 | Risk | What this repo does | Evidence | Gap or limit |
 |---|---|---|---|
@@ -60,7 +62,7 @@ generated `skills/index.json`. All nine are scanned and hash-pinned (SPEC-0044).
 | AST07 Update drift | A changed byte in any skill fails the gate until its hash and reviewed lines are refreshed on purpose (a unit test also catches it before CI); Dependabot proposes updates for review | `.github/scripts/skill_security.py`, `.github/skill-security-scope.json` | Pinning is of the skill text only; nothing watches for a skill being copied elsewhere |
 | AST08 Poor scanning | SkillSpector reads natural-language skill text as well as code, alongside Semgrep, gitleaks and the audit policy | `.github/workflows/skill-security.yml`, `.github/workflows/ci.yml` | The scanner's report is partial by design (reference notices are excepted at reviewed lines); no runtime behaviour monitoring |
 | AST09 No governance | A generated index is the inventory; every change goes through a reviewed pull request and a numbered spec; the revocation procedure is below | `skills/index.json`, `specs/`, this file | Owner is a single person; the revocation steps have not been exercised |
-| AST10 Cross-platform reuse | One canonical copy of each skill lives in `skills/`; nothing is generated for other platforms | `skills/` | Not applicable today; if skills are ever ported, record the platform and permissions per skill |
+| AST10 Cross-platform reuse | One canonical copy of each skill; the visitor plugin packages one skill and one connector for Claude Code, and the packaging is tested | `skills/`, `plugins/prasad-profile/`, `docs/PLUGIN.md` | Only Claude Code packaging exists; if skills are ported to another platform, record the platform and permissions per skill |
 
 ### Skill revocation procedure
 

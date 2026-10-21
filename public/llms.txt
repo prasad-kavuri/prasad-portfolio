@@ -116,6 +116,7 @@ MCP server:  https://www.prasadkavuri.com/api/mcp — Streamable HTTP, stateless
 A2A agent:   card https://www.prasadkavuri.com/.well-known/agent-card.json (A2A v1.0), JSON-RPC https://www.prasadkavuri.com/api/a2a
              Skills: profile-brief (public); payment-exception-review (synthetic, requires finance:sandbox; pauses for human approval)
 Credentials: https://www.prasadkavuri.com/auth.md
+Claude plugin: claude plugin marketplace add prasad-kavuri/prasad-portfolio, then claude plugin install prasad-profile@prasad-kavuri (MCP connector plus an evaluate-fit skill)
 
 ## PROFILE QUERY ENDPOINT (natural-language demo)
 Endpoint:   POST https://www.prasadkavuri.com/api/mcp-demo

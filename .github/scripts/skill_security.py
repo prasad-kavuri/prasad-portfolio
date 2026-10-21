@@ -15,8 +15,12 @@ def resolve_skill(root, value):
         raise ValueError('A local skill directory is required')
     path = (root / value).resolve()
     relative = path.relative_to(root.resolve())
-    if relative.parts[:1] != ('skills',) or not (path / 'SKILL.md').is_file():
-        raise ValueError('Target must be a skill directory under skills/')
+    parts = relative.parts
+    # skills/<name> or plugins/<plugin>/skills/<name>, nothing else.
+    allowed = (len(parts) == 2 and parts[0] == 'skills') or (
+        len(parts) == 4 and parts[0] == 'plugins' and parts[2] == 'skills')
+    if not allowed or not (path / 'SKILL.md').is_file():
+        raise ValueError('Target must be a skill directory under skills/ or plugins/<plugin>/skills/')
     return relative
 
 

@@ -437,3 +437,14 @@ describe('SEO metadata integrity', () => {
     expect(report).toMatch(/no repository exposure was verified/i);
   });
 });
+
+describe('vercel.json well-known headers (SPEC-0047 follow-up)', () => {
+  it('does not force application/json onto security.txt', () => {
+    const cfg = JSON.parse(readFileSync('vercel.json', 'utf8')) as { headers: { source: string }[] };
+    const rule = cfg.headers.find((h) => h.source.startsWith('/.well-known/'));
+    expect(rule).toBeDefined();
+    const re = new RegExp(`^${rule!.source}$`);
+    expect(re.test('/.well-known/security.txt')).toBe(false);
+    expect(re.test('/.well-known/agent-card.json')).toBe(true);
+  });
+});

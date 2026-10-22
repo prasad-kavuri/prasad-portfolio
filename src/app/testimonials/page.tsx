@@ -21,6 +21,7 @@ export default function TestimonialsPage() {
           Back to portfolio
         </Link>
 
+        <h1 className="sr-only">Testimonials and recommendations for Prasad Kavuri</h1>
         <Testimonials />
 
         <div className="mt-12 text-center">

@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
       { source: '/demos/:path*.html', destination: '/demos', permanent: true },
       // Catch-all: any root-level legacy .html slug not covered above → /demos
       { source: '/:path*.html', destination: '/demos', permanent: true },
+      // /resume is the first URL people and agents try; send it to the resume PDF route.
+      { source: '/resume', destination: '/api/resume-download', permanent: false },
     ];
   },
   async headers() {
@@ -27,6 +29,11 @@ const nextConfig: NextConfig = {
         // Prevent Google from continuing to index the stale legacy PDF filename.
         source: "/Prasad_Kavuri_Resume.pdf",
         headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
+      {
+        // RFC 9116: security.txt must be text/plain. It was being served as application/json.
+        source: "/.well-known/security.txt",
+        headers: [{ key: "Content-Type", value: "text/plain; charset=utf-8" }],
       },
       {
         // Advertise llms.txt to AI crawlers that discover it via HTTP Link headers

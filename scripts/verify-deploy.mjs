@@ -65,6 +65,83 @@ export function headerLinks(html, href) {
   return !!m && new RegExp(`href="${href}"`).test(m[0]);
 }
 
+/** Paths every robots.txt group must leave open so agents can fetch the resume and reach MCP and A2A. */
+export const AGENT_PATHS = ['/api/resume-download', '/api/mcp', '/api/a2a', '/api/context'];
+/** Pages that once shared the homepage title; each must keep its own. */
+export const TITLE_ROUTES = ['/', '/recruiter-dashboard', '/agent-marketplace', '/agent-readiness', '/demos/edge-agent-collaboration', '/demos/agent-auth', '/demos/storm-research', '/demos/generative-ui'];
+
+/** Split robots.txt into groups of { agents, allow, disallow }. */
+export function parseRobots(text) {
+  const groups = [];
+  let cur = null;
+  let lastWasAgent = false;
+  for (const raw of text.split('\n')) {
+    const line = raw.split('#')[0].trim();
+    const m = line.match(/^([A-Za-z-]+)\s*:\s*(.*)$/);
+    if (!m) continue;
+    const key = m[1].toLowerCase();
+    if (key === 'user-agent') {
+      if (!cur || !lastWasAgent) { cur = { agents: [], allow: [], disallow: [] }; groups.push(cur); }
+      cur.agents.push(m[2]);
+      lastWasAgent = true;
+    } else if (cur && (key === 'allow' || key === 'disallow')) {
+      cur[key].push(m[2]);
+      lastWasAgent = false;
+    }
+  }
+  return groups;
+}
+
+/** Longest matching rule wins; Allow wins a tie (RFC 9309). Wildcards are not needed for these paths. */
+export function robotsAllows(group, path) {
+  let best = { len: -1, allow: true };
+  for (const [rules, allow] of [[group.allow, true], [group.disallow, false]]) {
+    for (const r of rules) {
+      if (!r) continue;
+      const prefix = r.replace(/\*$/, '');
+      if (r.includes('*') && !r.endsWith('*')) continue;
+      if (path.startsWith(prefix) && (prefix.length > best.len || (prefix.length === best.len && allow))) best = { len: prefix.length, allow };
+    }
+  }
+  return best.allow;
+}
+
+export function checkRobots(text) {
+  const errs = [];
+  const groups = parseRobots(text);
+  if (!groups.some((g) => g.agents.includes('*'))) errs.push('robots.txt: no default (*) group');
+  for (const g of groups) {
+    for (const p of AGENT_PATHS) {
+      if (!robotsAllows(g, p)) errs.push(`robots.txt: ${g.agents.join(',')} is blocked from ${p}`);
+    }
+  }
+  return errs;
+}
+
+export function pageTitle(html) {
+  const m = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return m ? m[1].trim() : '';
+}
+
+export function checkTitles(titles) {
+  const errs = [];
+  const seen = new Map();
+  for (const [path, title] of Object.entries(titles)) {
+    if (!title) { errs.push(`${path}: missing <title>`); continue; }
+    if (seen.has(title)) errs.push(`${path}: title duplicates ${seen.get(title)}`);
+    else seen.set(title, path);
+  }
+  return errs;
+}
+
+export function checkSecurityTxt(status, headers, body) {
+  const errs = [];
+  if (status !== 200) errs.push(`security.txt: status ${status}`);
+  if (!/^text\/plain/i.test(headers.get('content-type') ?? '')) errs.push(`security.txt: content-type is "${headers.get('content-type')}", expected text/plain`);
+  if (!/^Contact:/m.test(body) || !/^Expires:/m.test(body)) errs.push('security.txt: missing Contact or Expires');
+  return errs;
+}
+
 async function get(fetchFn, url) {
   const res = await fetchFn(url, { redirect: 'manual', headers: { 'user-agent': 'prasad-portfolio-verify-deploy' } });
   return res;
@@ -87,6 +164,18 @@ export async function verify(base, fetchFn = fetch) {
     const res = await get(fetchFn, base + path);
     if (res.status !== 200) errs.push(`link ${path}: status ${res.status}`);
   }
+  const robotsRes = await get(fetchFn, `${base}/robots.txt`);
+  errs.push(...checkRobots(await robotsRes.text()));
+  const titles = {};
+  for (const path of TITLE_ROUTES) {
+    const res = await get(fetchFn, base + path);
+    titles[path] = pageTitle(await res.text());
+  }
+  errs.push(...checkTitles(titles));
+  const sec = await get(fetchFn, `${base}/.well-known/security.txt`);
+  errs.push(...checkSecurityTxt(sec.status, sec.headers, await sec.text()));
+  const resume = await get(fetchFn, `${base}/resume`);
+  if (![301, 302, 307, 308].includes(resume.status) || !(resume.headers.get('location') ?? '').includes('/api/resume-download')) errs.push(`/resume: status ${resume.status}, expected a redirect to /api/resume-download`);
   return errs;
 }
 

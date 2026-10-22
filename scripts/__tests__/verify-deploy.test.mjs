@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { CONTENT_SECURITY_POLICY, STRICT_CONTENT_SECURITY_POLICY } from '../../src/lib/csp';
-import { directive, checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES } from '../verify-deploy.mjs';
+import { directive, checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES, parseRobots, robotsAllows, checkRobots, checkTitles, checkSecurityTxt, pageTitle } from '../verify-deploy.mjs';
 
 const STRICT = "default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com";
 const FULL = `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: ${ORT_WASM_BASE}; connect-src 'self' https://*.cdn.hf.co`;
@@ -68,20 +68,71 @@ test('header link check ignores the footer', () => {
   assert.equal(headerLinks('<div></div>', '/for-recruiters'), false);
 });
 
-function fakeFetch({ strictPolicyOnDemo = false, link = true } = {}) {
+const GOOD_ROBOTS = `User-agent: *
+Allow: /
+Allow: /api/resume-download
+Allow: /api/mcp
+Allow: /api/a2a
+Allow: /api/context
+Disallow: /api/
+
+User-agent: GPTBot
+Allow: /
+Allow: /api/resume-download
+Allow: /api/mcp
+Allow: /api/a2a
+Allow: /api/context
+Disallow: /api/
+`;
+const BAD_ROBOTS = `User-agent: *
+Allow: /
+Disallow: /api/
+`;
+function fakeFetch({ strictPolicyOnDemo = false, link = true, robots = GOOD_ROBOTS, sameTitle = false, secType = 'text/plain; charset=utf-8', resumeRedirect = true } = {}) {
   return async (url) => {
     const path = new URL(url).pathname;
+    if (path === '/robots.txt') return { status: 200, headers: hdrs('', ''), text: async () => robots };
+    if (path === '/.well-known/security.txt') {
+      return { status: 200, headers: new Map([['content-type', secType]]), text: async () => 'Contact: mailto:a@b.c\nExpires: 2030-01-01T00:00:00Z\n' };
+    }
+    if (path === '/resume') {
+      return resumeRedirect
+        ? { status: 307, headers: new Map([['location', '/api/resume-download']]), text: async () => '' }
+        : { status: 404, headers: new Map(), text: async () => '' };
+    }
     const isFull = FULL_ROUTES.includes(path);
     const tier = isFull ? 'full' : 'strict';
     const h = path.startsWith('/api/') ? hdrs(STRICT, '')
       : hdrs(isFull && !strictPolicyOnDemo ? FULL : STRICT, tier);
-    return { status: 200, headers: h, text: async () => `<header>${link ? '<a href="/for-recruiters">r</a>' : ''}</header>` };
+    return { status: 200, headers: h, text: async () => `<title>${sameTitle ? 'same' : 'Page ' + path}</title><header>${link ? '<a href="/for-recruiters">r</a>' : ''}</header>` };
   };
 }
 test('verify passes on a healthy site and fails on regressions', async () => {
   assert.deepEqual(await verify('https://x.test', fakeFetch()), []);
   assert.ok((await verify('https://x.test', fakeFetch({ strictPolicyOnDemo: true }))).length > 0);
   assert.deepEqual(await verify('https://x.test', fakeFetch({ link: false })), ['/: header has no link to /for-recruiters']);
+});
+test('verify flags robots, title, security.txt and resume regressions', async () => {
+  assert.ok((await verify('https://x.test', fakeFetch({ robots: BAD_ROBOTS }))).some((e) => e.includes('/api/resume-download')));
+  assert.ok((await verify('https://x.test', fakeFetch({ sameTitle: true }))).some((e) => e.includes('duplicates')));
+  assert.ok((await verify('https://x.test', fakeFetch({ secType: 'application/json' }))).some((e) => e.includes('text/plain')));
+  assert.ok((await verify('https://x.test', fakeFetch({ resumeRedirect: false }))).some((e) => e.startsWith('/resume')));
+});
+test('robots parsing: longest match wins and groups are separate', () => {
+  const groups = parseRobots(GOOD_ROBOTS + '\n' + BAD_ROBOTS);
+  assert.equal(groups.length, 3);
+  assert.equal(robotsAllows(groups[0], '/api/mcp'), true);
+  assert.equal(robotsAllows(groups[0], '/api/other'), false);
+  assert.equal(robotsAllows(groups[2], '/api/mcp'), false);
+  assert.deepEqual(checkRobots(GOOD_ROBOTS), []);
+  assert.equal(checkRobots(BAD_ROBOTS).length, 4);
+  assert.deepEqual(checkRobots('User-agent: GPTBot\nAllow: /\n').filter((e) => e.includes('default')), ['robots.txt: no default (*) group']);
+});
+test('title and security.txt helpers', () => {
+  assert.equal(pageTitle('<html><title> A </title>'), 'A');
+  assert.deepEqual(checkTitles({ '/a': 'X', '/b': 'Y' }), []);
+  assert.equal(checkTitles({ '/a': 'X', '/b': 'X', '/c': '' }).length, 2);
+  assert.equal(checkSecurityTxt(200, new Map([['content-type', 'application/json']]), 'Contact: x\nExpires: y').length, 1);
 });
 test('main retries then reports failure, and returns 0 on success', async () => {
   let waits = 0;

@@ -143,6 +143,50 @@ describe('SEO metadata integrity', () => {
     expect(generated.sitemap).toBe('https://www.prasadkavuri.com/sitemap.xml');
   });
 
+  it('every robots group lets agents reach the resume, MCP and A2A endpoints (SPEC-0047)', () => {
+    const generated = robots();
+    const rules = Array.isArray(generated.rules) ? generated.rules : [generated.rules];
+    expect(rules.length).toBeGreaterThan(1);
+    for (const rule of rules) {
+      expect(rule.allow).toEqual(
+        expect.arrayContaining(['/api/resume-download', '/api/mcp', '/api/a2a', '/api/context']),
+      );
+      expect(rule.disallow).toEqual(expect.arrayContaining(['/api/']));
+    }
+  });
+
+  it('pages that once shared the homepage title now have their own (SPEC-0047)', () => {
+    const files = [
+      'src/app/recruiter-dashboard/layout.tsx',
+      'src/app/agent-marketplace/layout.tsx',
+      'src/app/agent-readiness/page.tsx',
+      'src/app/demos/edge-agent-collaboration/layout.tsx',
+      'src/app/demos/agent-auth/layout.tsx',
+      'src/app/demos/storm-research/layout.tsx',
+      'src/app/demos/generative-ui/layout.tsx',
+    ];
+    const titles = files.map((f) => {
+      const m = readFileSync(f, 'utf8').match(/metadata: Metadata = \{\s*title:\s*'([^']+)'/);
+      expect(m, f).not.toBeNull();
+      return m![1];
+    });
+    expect(new Set(titles).size).toBe(titles.length);
+    for (const t of titles) expect(t).not.toBe('Prasad Kavuri — Head of AI Platform & Agentic Solutions');
+  });
+
+  it('security.txt is served as text/plain and its Policy is not itself (SPEC-0047)', () => {
+    const cfg = readFileSync('next.config.ts', 'utf8');
+    expect(cfg).toMatch(/\/\.well-known\/security\.txt[\s\S]{0,120}text\/plain/);
+    const txt = readFileSync('public/.well-known/security.txt', 'utf8');
+    expect(txt).toMatch(/^Policy: https:\/\/github\.com\/prasad-kavuri\/prasad-portfolio\/security\/policy$/m);
+    expect(txt).toMatch(/^Contact:/m);
+    expect(txt).toMatch(/^Expires:/m);
+  });
+
+  it('/resume redirects to the resume download route (SPEC-0047)', () => {
+    expect(readFileSync('next.config.ts', 'utf8')).toMatch(/source: '\/resume', destination: '\/api\/resume-download'/);
+  });
+
   it('llms.txt exists with correct identity and availability', () => {
     const llmsTxt = readFileSync('public/llms.txt', 'utf8');
     expect(llmsTxt).toMatch(/Prasad Kavuri/);

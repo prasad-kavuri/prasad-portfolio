@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, FileText, Compass, ListChecks, Gauge, History, BookOpen, ExternalLink } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -108,6 +109,13 @@ function ItemCard({ item }: { item: ReadinessItem }) {
     </Card>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Agent Readiness — AGENTS.md, Skills and Specs',
+  description:
+    'How this repository is prepared for AI coding agents: AGENTS.md, CLAUDE.md, CONTEXT.md, decision records, specs and a skills index.',
+  alternates: { canonical: 'https://www.prasadkavuri.com/agent-readiness' },
+};
 
 export default function AgentReadinessPage() {
   return (

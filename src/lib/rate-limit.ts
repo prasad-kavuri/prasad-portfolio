@@ -85,6 +85,9 @@ export async function rateLimit(rawIp: string): Promise<RateLimitResult> {
     const { success, limit, remaining, reset } = await upstashLimiter.limit(key);
     return { limited: !success, limit, remaining, resetAt: reset };
   }
+  if (process.env.VERCEL_ENV === 'production' || process.env.VERCEL_ENV === 'preview') {
+    throw new Error('Shared rate limiting is unavailable');
+  }
   return inMemoryRateLimit(ip);
 }
 

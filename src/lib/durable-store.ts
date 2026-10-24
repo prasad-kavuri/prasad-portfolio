@@ -20,6 +20,12 @@ const redis = hasUpstash
 interface MemEntry { value: string; expiresAt: number }
 const mem = new Map<string, MemEntry>();
 
+function requireLocalFallback(): void {
+  if (process.env.VERCEL_ENV === 'production' || process.env.VERCEL_ENV === 'preview') {
+    throw new Error('Shared state storage is unavailable');
+  }
+}
+
 function memGet(key: string): MemEntry | null {
   const entry = mem.get(key);
   if (!entry) return null;
@@ -38,6 +44,7 @@ export async function kvSetJson(key: string, value: unknown, ttlSeconds: number)
     await redis.set(key, raw, { ex: ttlSeconds });
     return;
   }
+  requireLocalFallback();
   mem.set(key, { value: raw, expiresAt: Date.now() + ttlSeconds * 1000 });
 }
 
@@ -49,6 +56,7 @@ export async function kvTakeJson<T>(key: string): Promise<T | null> {
     if (raw === null || raw === undefined) return null;
     return (typeof raw === 'string' ? JSON.parse(raw) : raw) as T;
   }
+  requireLocalFallback();
   const entry = memGet(key);
   if (!entry) return null;
   mem.delete(key);
@@ -63,6 +71,7 @@ export async function kvGetJson<T>(key: string): Promise<T | null> {
     if (raw === null || raw === undefined) return null;
     return (typeof raw === 'string' ? JSON.parse(raw) : raw) as T;
   }
+  requireLocalFallback();
   const entry = memGet(key);
   return entry ? (JSON.parse(entry.value) as T) : null;
 }
@@ -78,6 +87,7 @@ export async function kvIncrWithTtl(key: string, ttlSeconds: number): Promise<nu
       return count
     `, [key], [ttlSeconds]);
   }
+  requireLocalFallback();
   const entry = memGet(key);
   const next = (entry ? Number(entry.value) : 0) + 1;
   mem.set(key, { value: String(next), expiresAt: entry?.expiresAt ?? Date.now() + ttlSeconds * 1000 });

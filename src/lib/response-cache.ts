@@ -11,7 +11,7 @@
  *
  * On Vercel + Groq (managed inference), we don't control the serving layer, so
  * we cache at the application boundary instead: store the complete LLM response
- * text in Upstash Redis keyed on a hash of (userQuery + useRAG flag).
+ * text in Upstash Redis keyed on query, grounding and response context.
  *
  * The principle is identical — avoid recomputing what you've already computed.
  * The mechanism is one layer higher.
@@ -21,8 +21,8 @@
  * Only single-turn queries are cached (messages.length === 1). Multi-turn
  * conversations are unique per session and must always hit the model.
  *
- * TTL: 24 hours (profile data doesn't change intra-day).
- * Key prefix: "pa-cache:" to avoid collisions with rate-limit keys.
+ * TTL: 24 hours; profile/prompt/model changes invalidate keys immediately.
+ * Key prefix: "pa-cache:v2:" to isolate this key schema from legacy entries.
  */
 
 // ─── Redis client (same Upstash instance as rate limiting) ──────────────────
@@ -82,11 +82,20 @@ async function sha256Hex(input: string): Promise<string> {
   return Array.from(new Uint8Array(bytes)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-const KEY_PREFIX = 'pa-cache:';
+const KEY_PREFIX = 'pa-cache:v2:';
 const TTL_SECONDS = 86_400; // 24 hours
 
-export async function makeCacheKey(query: string, useRAG: boolean): Promise<string> {
-  const hash = await sha256Hex(`${query}|${useRAG}`);
+export interface ResponseCacheContext {
+  profile: object;
+  systemPrompt: string;
+  models: readonly string[];
+  responseVersion: string;
+}
+
+export async function makeCacheKey(query: string, useRAG: boolean, context: ResponseCacheContext): Promise<string> {
+  const hash = await sha256Hex(JSON.stringify([
+    2, query, useRAG, context.profile, context.systemPrompt, context.models, context.responseVersion,
+  ]));
   return `${KEY_PREFIX}${hash}`;
 }
 

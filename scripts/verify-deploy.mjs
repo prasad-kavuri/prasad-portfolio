@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 // Must equal ORT_WASM_BASE in src/lib/csp.ts (guarded by a test).
 export const ORT_WASM_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';
 export const DEFAULT_BASE = 'https://www.prasadkavuri.com';
+export const REQUEST_TIMEOUT_MS = 10_000;
 export const FULL_ROUTES = ['/demos/rag-pipeline', '/demos/quantization', '/demos/edge-agent-collaboration'];
 export const STRICT_ROUTES = ['/', '/about', '/for-recruiters', '/governance'];
 export const LINK_TARGETS = ['/for-recruiters', '/about', '/governance', '/status'];
@@ -157,24 +158,52 @@ export function checkTitles(titles) {
   return errs;
 }
 
-export function checkSecurityTxt(status, headers, body) {
+export function checkSecurityTxt(status, headers, body, now = Date.now()) {
   const errs = [];
   if (status !== 200) errs.push(`security.txt: status ${status}`);
   if (!/^text\/plain/i.test(headers.get('content-type') ?? '')) errs.push(`security.txt: content-type is "${headers.get('content-type')}", expected text/plain`);
-  if (!/^Contact:/m.test(body) || !/^Expires:/m.test(body)) errs.push('security.txt: missing Contact or Expires');
+  if (!/^Contact:[ \t]*\S/im.test(body)) errs.push('security.txt: missing Contact');
+  const expires = [...body.matchAll(/^Expires:[ \t]*(.*)$/gim)];
+  if (expires.length !== 1) errs.push('security.txt: expected exactly one Expires field');
+  else {
+    const value = expires[0][1].trim();
+    const format = /^(\d{4}-\d{2}-\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/i.exec(value);
+    const timestamp = Date.parse(value);
+    const calendarDay = format ? Date.parse(`${format[1]}T00:00:00Z`) : NaN;
+    if (!format || !Number.isFinite(timestamp) || !Number.isFinite(calendarDay) || new Date(calendarDay).toISOString().slice(0, 10) !== format[1]) {
+      errs.push('security.txt: Expires must be a valid RFC3339 timestamp');
+    } else if (timestamp <= now) errs.push('security.txt: Expires is not in the future');
+  }
   return errs;
 }
 
-async function get(fetchFn, url) {
-  const res = await fetchFn(url, { redirect: 'manual', headers: { 'user-agent': 'prasad-portfolio-verify-deploy' } });
-  return res;
+async function get(fetchFn, url, readBody = false) {
+  const controller = new AbortController();
+  let timer;
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      const error = new Error(`request timed out after ${REQUEST_TIMEOUT_MS}ms: ${new URL(url).pathname}`);
+      reject(error);
+      controller.abort(error);
+    }, REQUEST_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([deadline, (async () => {
+      const res = await fetchFn(url, { redirect: 'manual', signal: controller.signal, headers: { 'user-agent': 'prasad-portfolio-verify-deploy' } });
+      if (!readBody) { await res.body?.cancel(); return res; }
+      const body = await res.text();
+      return { status: res.status, headers: res.headers, text: async () => body };
+    })()]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function verify(base, fetchFn = fetch) {
   const errs = [];
   for (const [routes, tier] of [[STRICT_ROUTES, 'strict'], [FULL_ROUTES, 'full']]) {
     for (const path of routes) {
-      const res = await get(fetchFn, base + path);
+      const res = await get(fetchFn, base + path, path === '/');
       errs.push(...checkPage(path, res.status, res.headers, tier));
       if (path === '/' && res.status === 200 && !headerLinks(await res.text(), '/for-recruiters')) {
         errs.push('/: header has no link to /for-recruiters');
@@ -187,15 +216,15 @@ export async function verify(base, fetchFn = fetch) {
     const res = await get(fetchFn, base + path);
     if (res.status !== 200) errs.push(`link ${path}: status ${res.status}`);
   }
-  const robotsRes = await get(fetchFn, `${base}/robots.txt`);
+  const robotsRes = await get(fetchFn, `${base}/robots.txt`, true);
   errs.push(...checkRobots(await robotsRes.text()));
   const titles = {};
   for (const path of TITLE_ROUTES) {
-    const res = await get(fetchFn, base + path);
+    const res = await get(fetchFn, base + path, true);
     titles[path] = pageTitle(await res.text());
   }
   errs.push(...checkTitles(titles));
-  const sec = await get(fetchFn, `${base}/.well-known/security.txt`);
+  const sec = await get(fetchFn, `${base}/.well-known/security.txt`, true);
   errs.push(...checkSecurityTxt(sec.status, sec.headers, await sec.text()));
   const resume = await get(fetchFn, `${base}/resume`);
   if (![301, 302, 307, 308].includes(resume.status) || !(resume.headers.get('location') ?? '').includes('/api/resume-download')) errs.push(`/resume: status ${resume.status}, expected a redirect to /api/resume-download`);

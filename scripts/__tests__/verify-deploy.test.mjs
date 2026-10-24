@@ -1,9 +1,11 @@
-import { test } from 'vitest';
+import { test, vi, afterEach } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { CONTENT_SECURITY_POLICY, STRICT_CONTENT_SECURITY_POLICY } from '../../src/lib/csp';
-import { directive, checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES, parseRobots, robotsAllows, checkRobots, checkTitles, checkSecurityTxt, pageTitle } from '../verify-deploy.mjs';
+import { directive, checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES, parseRobots, robotsAllows, checkRobots, checkTitles, checkSecurityTxt, pageTitle, REQUEST_TIMEOUT_MS } from '../verify-deploy.mjs';
+
+afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
 const STRICT = STRICT_CONTENT_SECURITY_POLICY;
 const FULL = CONTENT_SECURITY_POLICY;
@@ -154,7 +156,67 @@ test('title and security.txt helpers', () => {
   assert.equal(pageTitle('<html><title> A </title>'), 'A');
   assert.deepEqual(checkTitles({ '/a': 'X', '/b': 'Y' }), []);
   assert.equal(checkTitles({ '/a': 'X', '/b': 'X', '/c': '' }).length, 2);
-  assert.equal(checkSecurityTxt(200, new Map([['content-type', 'application/json']]), 'Contact: x\nExpires: y').length, 1);
+  assert.equal(checkSecurityTxt(200, new Map([['content-type', 'application/json']]), 'Contact: x\nExpires: y').length, 2);
+});
+
+const SECURITY_HEADERS = new Map([['content-type', 'text/plain; charset=utf-8']]);
+const EXPIRY_NOW = Date.parse('2026-10-24T00:00:00Z');
+test.each([
+  '2026-10-23T23:59:59Z', '2026-10-24T00:00:00Z',
+  'yesterday', '2030-01-01', '2030-01-01T00:00:00',
+  '2027-02-29T00:00:00Z', '2030-02-30T00:00:00Z', '2030-13-01T00:00:00Z',
+  '2030-01-01T24:00:00Z', '2030-01-01T00:00:00+25:00',
+])('rejects invalid or expired security.txt Expires: %s', (expires) => {
+  assert.ok(checkSecurityTxt(200, SECURITY_HEADERS, `Contact: mailto:a@b.c\nExpires: ${expires}\n`, EXPIRY_NOW).length > 0);
+});
+test.each([
+  '2026-10-24T00:00:00.001Z', '2026-10-24T01:00:01+01:00',
+  '2026-10-23T23:00:01-01:00', '2028-02-29T00:00:00Z',
+])('accepts future RFC3339 expiration: %s', (expires) => {
+  assert.deepEqual(checkSecurityTxt(200, SECURITY_HEADERS, `contact: mailto:a@b.c\r\nexpires: ${expires}\r\n`, EXPIRY_NOW), []);
+});
+test('rejects missing and duplicate Expires fields', () => {
+  for (const body of ['Contact: x', 'Contact: x\nExpires: 2030-01-01T00:00:00Z\nexpires: 2031-01-01T00:00:00Z']) {
+    assert.ok(checkSecurityTxt(200, SECURITY_HEADERS, body, EXPIRY_NOW).some((e) => e.includes('exactly one')));
+  }
+  assert.ok(checkSecurityTxt(200, SECURITY_HEADERS, 'Expires: 2030-01-01T00:00:00Z', EXPIRY_NOW).some((e) => e.includes('Contact')));
+});
+test.each(['headers', 'body'])('times out stalled %s and aborts the request', async (stage) => {
+  vi.useFakeTimers();
+  let signal;
+  const stalled = new Promise(() => {});
+  const request = verify('https://x.test', async (_url, init) => {
+    signal = init.signal;
+    return stage === 'headers' ? stalled : { status: 200, headers: hdrs(STRICT, 'strict'), text: () => stalled };
+  });
+  const rejected = assert.rejects(request, /request timed out after 10000ms: \//);
+  await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS);
+  await rejected;
+  assert.equal(signal.aborted, true);
+  assert.equal(vi.getTimerCount(), 0);
+});
+test('clears deadlines on success and failure and cancels unread bodies', async () => {
+  vi.useFakeTimers();
+  const cancel = vi.fn(async () => {});
+  const healthy = fakeFetch();
+  assert.deepEqual(await verify('https://x.test', async (url, init) => ({ ...await healthy(url, init), body: { cancel } })), []);
+  assert.ok(cancel.mock.calls.length > 0);
+  assert.equal(vi.getTimerCount(), 0);
+  await assert.rejects(verify('https://x.test', async () => { throw new Error('network failed'); }), /network failed/);
+  assert.equal(vi.getTimerCount(), 0);
+});
+test('CLI retries timed-out requests and exits unsuccessfully after three attempts', async () => {
+  vi.useFakeTimers();
+  vi.spyOn(console, 'log').mockImplementation(() => {});
+  const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const fetchFn = vi.fn(() => new Promise(() => {}));
+  const wait = vi.fn(async () => {});
+  const result = main(['--base', 'https://x.test'], fetchFn, wait);
+  await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS * 3);
+  assert.equal(await result, 1);
+  assert.equal(fetchFn.mock.calls.length, 3);
+  assert.equal(wait.mock.calls.length, 2);
+  assert.match(error.mock.calls[0][0], /timed out/);
 });
 test('main retries then reports failure, and returns 0 on success', async () => {
   let waits = 0;

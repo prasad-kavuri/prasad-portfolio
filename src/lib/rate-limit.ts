@@ -4,6 +4,7 @@ import { isPromptInjection, sanitizeLLMOutput as sanitizeFromGuardrails } from '
 
 export const RATE_LIMIT_MAX = 10;
 export const RATE_LIMIT_WINDOW_MS = 60_000;
+export const LOCAL_RATE_LIMIT_CAPACITY = 1_000;
 
 export interface RateLimitResult {
   limited: boolean;
@@ -39,7 +40,16 @@ const store = new Map<string, Entry>();
 function inMemoryRateLimit(ip: string): RateLimitResult {
   const now = Date.now();
   const entry = store.get(ip);
-  if (!entry || now > entry.resetAt) {
+  if (!entry && store.size >= LOCAL_RATE_LIMIT_CAPACITY) {
+    for (const [key, value] of store) {
+      if (now >= value.resetAt) store.delete(key);
+    }
+    // Do not evict active limits: identity churn must not reset other clients.
+    if (store.size >= LOCAL_RATE_LIMIT_CAPACITY) {
+      return { limited: true, limit: RATE_LIMIT_MAX, remaining: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
+    }
+  }
+  if (!entry || now >= entry.resetAt) {
     const resetAt = now + RATE_LIMIT_WINDOW_MS;
     store.set(ip, { count: 1, resetAt });
     return { limited: false, limit: RATE_LIMIT_MAX, remaining: RATE_LIMIT_MAX - 1, resetAt };

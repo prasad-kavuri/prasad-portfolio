@@ -3,6 +3,7 @@ import { CAPABLE_MODEL, FAST_MODEL } from '@/lib/groq-models';
 
 export const MAX_TOKENS_PER_REQUEST = 1_500;
 export const MAX_COST_REQUESTS_PER_MINUTE = 20;
+export const LOCAL_COST_CONTROL_CAPACITY = 1_000;
 export const DEFAULT_FALLBACK_MODEL = FAST_MODEL.id;
 
 interface CostWindow {
@@ -60,7 +61,15 @@ export function enforceCostControls(input: CostControlInput): CostControlResult 
   const now = Date.now();
   const key = `${input.route}:${input.userKey}`;
   const existing = requestWindows.get(key);
-  if (!existing || now > existing.resetAt) {
+  if (!existing && requestWindows.size >= LOCAL_COST_CONTROL_CAPACITY) {
+    for (const [storedKey, window] of requestWindows) {
+      if (now >= window.resetAt) requestWindows.delete(storedKey);
+    }
+    if (requestWindows.size >= LOCAL_COST_CONTROL_CAPACITY) {
+      return { allowed: false, reason: 'request_frequency', estimatedTokens };
+    }
+  }
+  if (!existing || now >= existing.resetAt) {
     requestWindows.set(key, { count: 1, resetAt: now + 60_000 });
   } else if (existing.count >= MAX_COST_REQUESTS_PER_MINUTE) {
     logAPIEvent({

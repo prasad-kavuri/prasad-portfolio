@@ -68,6 +68,14 @@ const counters: ObservabilitySnapshot = {
 
 const failureWindows = new Map<string, number[]>();
 const requestWindows = new Map<string, number[]>();
+export const ANOMALY_IDENTITY_CAPACITY = 1_000;
+
+function storeAnomalyWindow(store: Map<string, number[]>, key: string, values: number[]): void {
+  if (!store.has(key) && store.size >= ANOMALY_IDENTITY_CAPACITY) {
+    store.delete(store.keys().next().value!);
+  }
+  store.set(key, values);
+}
 
 function increment(bucket: Record<string, number>, route: string): void {
   bucket[route] = (bucket[route] ?? 0) + 1;
@@ -132,7 +140,7 @@ export function detectUsageAnomaly(route: string, statusCode: number, userHash =
 
   const requests = pruneWindow(requestWindows.get(key) ?? [], now, 60_000);
   requests.push(now);
-  requestWindows.set(key, requests);
+  storeAnomalyWindow(requestWindows, key, requests.slice(-12));
   if (requests.length >= 12) {
     increment(counters.highFrequency, route);
     reasons.push('high_request_frequency');
@@ -141,7 +149,7 @@ export function detectUsageAnomaly(route: string, statusCode: number, userHash =
   if (statusCode >= ERROR_STATUS_THRESHOLD) {
     const failures = pruneWindow(failureWindows.get(key) ?? [], now, 60_000);
     failures.push(now);
-    failureWindows.set(key, failures);
+    storeAnomalyWindow(failureWindows, key, failures.slice(-3));
     if (failures.length >= 3) {
       reasons.push('repeated_failures');
     }

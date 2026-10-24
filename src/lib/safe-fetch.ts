@@ -1,4 +1,7 @@
 import * as dns from 'node:dns/promises';
+import type { LookupAddress } from 'node:dns';
+import { isIP } from 'node:net';
+import { Agent } from 'undici';
 import { classifyIpAddress, isBlockedOutboundUrl } from '@/lib/url-security';
 
 type SafeFetchErrorCode =
@@ -51,24 +54,29 @@ function assertSafeTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): v
   }
 }
 
-async function assertDnsSafeTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): Promise<void> {
+async function resolveSafeTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): Promise<LookupAddress[]> {
   try {
-    const records = await dns.lookup(url.hostname, { all: true, verbatim: true });
+    const hostname = url.hostname.replace(/^\[|\]$/g, '');
+    const records = await dns.lookup(hostname, { all: true, verbatim: true });
+    if (!records.length) throw new Error('Empty DNS answer');
     for (const record of records) {
+      if (!isIP(record.address) || isIP(record.address) !== record.family) throw new Error('Invalid DNS answer');
       const block = classifyIpAddress(record.address);
       if (block.blocked) {
         throw new SafeFetchError('Blocked outbound URL after DNS resolution', code, block.reason);
       }
     }
+    return records;
   } catch (error) {
     if (error instanceof SafeFetchError) throw error;
     throw new SafeFetchError('DNS resolution failed for outbound URL', 'dns_resolution_failed');
   }
 }
 
+/** Preflight only; separate downstream fetches still need connection-time DNS protection. */
 export async function assertSafeFetchTarget(url: URL, code: SafeFetchErrorCode = 'blocked_url'): Promise<void> {
   assertSafeTarget(url, code);
-  await assertDnsSafeTarget(url, code);
+  await resolveSafeTarget(url, code);
 }
 
 /**
@@ -78,7 +86,7 @@ export async function assertSafeFetchTarget(url: URL, code: SafeFetchErrorCode =
  * - protocol allowlist (`http`/`https`)
  * - credentialed URL blocking
  * - internal/private hostname, IP, and DNS result blocking (via `url-security.ts`)
- * - redirect validation at each hop
+ * - redirect validation and connection DNS pinning at each hop
  */
 export async function safeServerFetch(
   url: string | URL,
@@ -89,14 +97,31 @@ export async function safeServerFetch(
   let currentUrl = parseRequestUrl(url);
   let currentInit: RequestInit = { ...init, redirect: 'manual' };
 
-  await assertSafeFetchTarget(currentUrl);
-
   for (let redirectCount = 0; redirectCount <= maxRedirects; redirectCount += 1) {
-    const response = await fetch(currentUrl, currentInit);
+    const code = redirectCount === 0 ? 'blocked_url' : 'blocked_redirect_target';
+    assertSafeTarget(currentUrl, code);
+    const addresses = await resolveSafeTarget(currentUrl, code);
+    const dispatcher = new Agent({
+      connect: {
+        lookup(_hostname, lookupOptions, callback) {
+          if (lookupOptions.all) callback(null, addresses);
+          else callback(null, addresses[0].address, addresses[0].family);
+        },
+      },
+    });
+    let response: Response;
+    try {
+      const pinnedInit: RequestInit & { dispatcher: Agent } = { ...currentInit, cache: 'no-store', dispatcher };
+      response = await fetch(currentUrl, pinnedInit);
+    } finally {
+      // Graceful close waits for the response body; do not block its caller.
+      void dispatcher.close().catch(() => dispatcher.destroy());
+    }
 
     if (!isRedirect(response.status)) {
       return response;
     }
+    await response.body?.cancel();
 
     if (redirectCount === maxRedirects) {
       throw new SafeFetchError('Redirect limit exceeded', 'redirect_limit_exceeded');
@@ -112,7 +137,6 @@ export async function safeServerFetch(
     if (nextUrl.origin !== currentUrl.origin && ['authorization', 'cookie', 'proxy-authorization'].some((name) => headers.has(name))) {
       throw new SafeFetchError('Credentialed cross-origin redirect blocked', 'blocked_redirect_target', 'cross_origin_credentials');
     }
-    await assertSafeFetchTarget(nextUrl, 'blocked_redirect_target');
 
     // 303 always, and 301/302 for non-GET/HEAD, should become GET without body.
     const method = (currentInit.method ?? 'GET').toUpperCase();

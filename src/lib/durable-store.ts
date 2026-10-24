@@ -69,11 +69,14 @@ export async function kvGetJson<T>(key: string): Promise<T | null> {
 
 /** Increment a counter, setting its TTL when it is first created. Returns the new value. */
 export async function kvIncrWithTtl(key: string, ttlSeconds: number): Promise<number> {
-  /* c8 ignore next 5 — Redis path only reachable in production */
   if (redis) {
-    const value = await redis.incr(key);
-    if (value === 1) await redis.expire(key, ttlSeconds);
-    return value;
+    return await redis.eval<[number], number>(`
+      local count = redis.call('INCR', KEYS[1])
+      if redis.call('TTL', KEYS[1]) < 0 then
+        redis.call('EXPIRE', KEYS[1], ARGV[1])
+      end
+      return count
+    `, [key], [ttlSeconds]);
   }
   const entry = memGet(key);
   const next = (entry ? Number(entry.value) : 0) + 1;

@@ -28,6 +28,22 @@ export function checkPage(path, status, headers, tier) {
   const script = directive(csp, 'script-src');
   const worker = directive(csp, 'worker-src');
   const connect = directive(csp, 'connect-src');
+  for (const [name, expected] of [['default-src', "'self'"], ['base-uri', "'self'"], ['form-action', "'self'"], ['object-src', "'none'"], ['frame-ancestors', "'none'"]]) {
+    const values = directive(csp, name);
+    if (values.length !== 1 || values[0] !== expected) fail(`${name} must be ${expected}`);
+  }
+  for (const name of ['default-src', 'base-uri', 'form-action', 'object-src', 'frame-ancestors', 'script-src', 'worker-src', 'connect-src']) {
+    if (csp.split(';').filter((part) => part.trim().split(/\s+/)[0] === name).length !== 1) fail(`expected exactly one ${name}`);
+  }
+  for (const [name, values] of [['script-src', script], ['worker-src', worker], ['connect-src', connect]]) {
+    if (!values.includes("'self'")) fail(`${name} lacks 'self'`);
+    if (values.some((value) => value === '*' || /^(?:https?|data):$/.test(value) || /^https?:\/\/\*\/?$/.test(value) || (name !== 'connect-src' && value.includes('://*')))) fail(`${name} permits an unrestricted source`);
+  }
+  const scriptAllowed = ["'self'", "'unsafe-inline'", 'https://va.vercel-scripts.com', ...(tier === 'full' ? ["'unsafe-eval'", "'wasm-unsafe-eval'", 'blob:', ORT_WASM_BASE] : [])];
+  const workerAllowed = ["'self'", ...(tier === 'full' ? ['blob:'] : [])];
+  if (script.some((source) => !scriptAllowed.includes(source))) fail('script-src contains an unapproved source');
+  if (worker.some((source) => !workerAllowed.includes(source))) fail('worker-src contains an unapproved source');
+  if (tier === 'strict' && connect.some((source) => !["'self'", 'https://va.vercel-scripts.com'].includes(source))) fail('strict connect-src contains an unapproved source');
   if (tier === 'strict') {
     for (const bad of ["'unsafe-eval'", "'wasm-unsafe-eval'", 'blob:', 'https://cdn.jsdelivr.net', 'https://unpkg.com']) {
       if (script.includes(bad)) fail(`strict script-src contains ${bad}`);
@@ -44,10 +60,17 @@ export function checkPage(path, status, headers, tier) {
       if (script.includes(bad) || connect.includes(bad)) fail(`full policy still allows the whole origin ${bad}`);
     }
   }
-  if (!(headers.get('strict-transport-security') ?? '').includes('max-age=')) fail('missing HSTS');
+  const hsts = headers.get('strict-transport-security') ?? '';
+  const ages = [...hsts.matchAll(/(?:^|;)\s*max-age\s*=\s*(\d+)\s*(?=;|$)/gi)];
+  if (ages.length !== 1 || Number(ages[0][1]) < 31536000 || !/(?:^|;)\s*includeSubDomains\s*(?:;|$)/i.test(hsts)) fail('HSTS must include max-age >= 31536000 and includeSubDomains');
   if (headers.get('x-content-type-options') !== 'nosniff') fail('X-Content-Type-Options is not nosniff');
   if (headers.get('x-frame-options') !== 'DENY') fail('X-Frame-Options is not DENY');
   if (headers.get('cross-origin-opener-policy') !== 'same-origin') fail('COOP is not same-origin');
+  if (headers.get('cross-origin-embedder-policy') !== 'credentialless') fail('COEP is not credentialless');
+  const permissions = headers.get('permissions-policy') ?? '';
+  for (const feature of ['camera', 'microphone', 'geolocation', 'payment', 'usb', 'serial']) {
+    if (!new RegExp(`(?:^|,)\\s*${feature}\\s*=\\s*\\(\\s*\\)\\s*(?=,|$)`).test(permissions)) fail(`Permissions-Policy must disable ${feature}`);
+  }
   return errs;
 }
 

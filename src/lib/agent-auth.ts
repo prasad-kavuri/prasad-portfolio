@@ -99,11 +99,9 @@ export async function storeClaimEntry(claimId: string, entry: ClaimEntry): Promi
 }
 
 export async function popClaimEntry(claimId: string): Promise<ClaimEntry | null> {
-  /* c8 ignore next 8 — Redis path only reachable in production */
   if (redis) {
-    const raw = await redis.get<string>(`agent-auth:claim:${claimId}`);
+    const raw = await redis.getdel<string | ClaimEntry>(`agent-auth:claim:${claimId}`);
     if (!raw) return null;
-    await redis.del(`agent-auth:claim:${claimId}`); // consume once
     return typeof raw === 'string' ? (JSON.parse(raw) as ClaimEntry) : (raw as ClaimEntry);
   }
   const entry = claimStore.get(claimId) ?? null;

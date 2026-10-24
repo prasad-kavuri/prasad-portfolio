@@ -5,12 +5,14 @@ import path from 'node:path';
 import { CONTENT_SECURITY_POLICY, STRICT_CONTENT_SECURITY_POLICY } from '../../src/lib/csp';
 import { directive, checkPage, checkApi, ORT_WASM_BASE, headerLinks, verify, main, FULL_ROUTES, STRICT_ROUTES, parseRobots, robotsAllows, checkRobots, checkTitles, checkSecurityTxt, pageTitle } from '../verify-deploy.mjs';
 
-const STRICT = "default-src 'self'; script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com";
-const FULL = `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: ${ORT_WASM_BASE}; connect-src 'self' https://*.cdn.hf.co`;
+const STRICT = STRICT_CONTENT_SECURITY_POLICY;
+const FULL = CONTENT_SECURITY_POLICY;
 function hdrs(csp, tier, extra = {}) {
   const m = new Map(Object.entries({
     'content-security-policy': csp, 'server-timing': tier ? `csp;desc="${tier}"` : '',
-    'strict-transport-security': 'max-age=63072000', 'x-content-type-options': 'nosniff',
+    'strict-transport-security': 'max-age=63072000; includeSubDomains; preload', 'x-content-type-options': 'nosniff',
+    'cross-origin-embedder-policy': 'credentialless',
+    'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()',
     'x-frame-options': 'DENY', 'cross-origin-opener-policy': 'same-origin', ...extra,
   }));
   return { get: (k) => m.get(k) ?? null };
@@ -31,24 +33,25 @@ test('flags a demo that received the strict policy or the wrong tier header', ()
   assert.ok(errs.some((e) => e.includes('wasm-unsafe-eval')));
 });
 test('flags a full page that allows a whole CDN origin or lacks the pinned path', () => {
-  const broad = hdrs(`${FULL} https://cdn.jsdelivr.net https://unpkg.com`, 'full');
-  assert.equal(checkPage('/demos/quantization', 200, broad, 'full').length, 2);
+  const broad = hdrs(FULL.replace("script-src 'self'", "script-src 'self' https://cdn.jsdelivr.net https://unpkg.com"), 'full');
+  assert.ok(checkPage('/demos/quantization', 200, broad, 'full').length >= 2);
   const none = hdrs("script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https://*.cdn.hf.co", 'full');
-  assert.deepEqual(checkPage('/demos/quantization', 200, none, 'full'), ['/demos/quantization: full script-src lacks the pinned onnxruntime-web path']);
+  assert.ok(checkPage('/demos/quantization', 200, none, 'full').some((e) => e.includes('lacks the pinned')));
   const noHf = hdrs(`script-src 'wasm-unsafe-eval' ${ORT_WASM_BASE}; connect-src 'self'`, 'full');
-  assert.equal(checkPage('/demos/quantization', 200, noHf, 'full').length, 1);
+  assert.ok(checkPage('/demos/quantization', 200, noHf, 'full').some((e) => e.includes('connect-src lacks')));
 });
 test('accepts the real production header for a demo (sources end with a semicolon)', () => {
   const real = `default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: https://va.vercel-scripts.com ${ORT_WASM_BASE}; worker-src 'self' blob:; connect-src 'self' https://*.cdn.hf.co ${ORT_WASM_BASE} blob:`;
-  assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(real, 'full'), 'full'), []);
+  assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(FULL, 'full'), 'full'), []);
+  assert.ok(directive(real, 'script-src').includes(ORT_WASM_BASE));
 });
 test('accepts the real policies built by src/lib/csp.ts', () => {
   assert.deepEqual(checkPage('/', 200, hdrs(STRICT_CONTENT_SECURITY_POLICY, 'strict'), 'strict'), []);
   assert.deepEqual(checkPage('/demos/quantization', 200, hdrs(CONTENT_SECURITY_POLICY, 'full'), 'full'), []);
 });
 test('blob: in img-src is allowed on strict pages, blob: in script-src is not', () => {
-  assert.deepEqual(checkPage('/', 200, hdrs("script-src 'self'; img-src 'self' blob: data:", 'strict'), 'strict'), []);
-  assert.equal(checkPage('/', 200, hdrs("script-src 'self' blob:", 'strict'), 'strict').length, 1);
+  assert.deepEqual(checkPage('/', 200, hdrs(STRICT, 'strict'), 'strict'), []);
+  assert.ok(checkPage('/', 200, hdrs(STRICT.replace("script-src 'self'", "script-src 'self' blob:"), 'strict'), 'strict').some((e) => e.includes('blob:')));
 });
 test('directive() reads one directive and returns [] for a missing one', () => {
   assert.deepEqual(directive("a 'self'; b x y; c", 'b'), ['x', 'y']);
@@ -57,6 +60,25 @@ test('directive() reads one directive and returns [] for a missing one', () => {
 test('flags bad status and missing baseline headers', () => {
   const errs = checkPage('/', 404, hdrs(STRICT, 'strict', { 'x-frame-options': 'SAMEORIGIN', 'strict-transport-security': '' }), 'strict');
   assert.equal(errs.length, 3);
+});
+test('rejects missing essential CSP directives and unrestricted code sources', () => {
+  const errs = checkPage('/', 200, hdrs('script-src *; worker-src *; connect-src *', 'strict'), 'strict');
+  assert.ok(errs.some((e) => e.includes('default-src')));
+  assert.ok(errs.some((e) => e.includes('unrestricted')));
+  for (const name of ['script-src', 'worker-src', 'connect-src']) {
+    for (const source of ['*', 'https:', 'data:', 'https://*']) {
+      const policy = STRICT.replace(`${name} 'self'`, `${name} 'self' ${source}`);
+      assert.ok(checkPage('/', 200, hdrs(policy, 'strict'), 'strict').some((e) => e.includes('unrestricted')));
+    }
+  }
+  assert.ok(checkPage('/', 200, hdrs(`${STRICT}; script-src 'self'`, 'strict'), 'strict').some((e) => e.includes('exactly one script-src')));
+});
+test('rejects disabled, short and ambiguous HSTS and missing isolation/permissions', () => {
+  for (const value of ['max-age=0; includeSubDomains', 'max-age=300; includeSubDomains', 'max-age=63072000', 'max-age=63072000; max-age=0; includeSubDomains']) {
+    assert.ok(checkPage('/', 200, hdrs(STRICT, 'strict', { 'strict-transport-security': value }), 'strict').some((e) => e.includes('HSTS')));
+  }
+  assert.ok(checkPage('/', 200, hdrs(STRICT, 'strict', { 'cross-origin-embedder-policy': '' }), 'strict').some((e) => e.includes('COEP')));
+  assert.ok(checkPage('/', 200, hdrs(STRICT, 'strict', { 'permissions-policy': 'camera=(*)' }), 'strict').some((e) => e.includes('disable camera')));
 });
 test('api responses must not carry csp server-timing', () => {
   assert.deepEqual(checkApi('/api/context', hdrs(STRICT, '')), []);

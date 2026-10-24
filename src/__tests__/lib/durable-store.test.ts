@@ -49,12 +49,16 @@ vi.mock('@upstash/redis', () => {
       redisStore.delete(key);
       return value;
     }
-    async incr(key: string) {
+    async eval(script: string, keys: string[], args: number[]) {
+      expect(script).toContain("redis.call('INCR', KEYS[1])");
+      expect(script).toContain("redis.call('TTL', KEYS[1]) < 0");
+      expect(script).toContain("redis.call('EXPIRE', KEYS[1], ARGV[1])");
+      expect(args).toEqual([60]);
+      const key = keys[0];
       const next = Number(redisStore.get(key) ?? 0) + 1;
       redisStore.set(key, next);
       return next;
     }
-    async expire() { return 1; }
   }
   return { Redis };
 });

@@ -24,7 +24,7 @@ Key terms used below — check `CONTEXT.md` for definitions if any are unfamilia
 
 ```bash
 npm run lint                      # ESLint — zero errors required
-npx tsc --noEmit                  # TypeScript strict — zero errors required
+npm run typecheck                 # TypeScript strict — zero errors required
 npm audit --audit-level=high      # 0 high/critical vulnerabilities
 ```
 

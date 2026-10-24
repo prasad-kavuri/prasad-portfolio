@@ -96,3 +96,17 @@ The scan also covers skills inside plugins (`plugins/<plugin>/skills/<name>`, cu
 in all. The gate accepts only `skills/<name>` or `plugins/<plugin>/skills/<name>` as a target. `evaluate-fit` references
 no repository files, so its first scan was complete with no notices; its scope entry has empty reference lines and exists
 to pin the skill text by hash. The unit tests also check the marketplace and plugin manifests.
+
+## Local compiler commands (2026-10-24)
+
+Seven RP1 warnings in add-demo, redesign-portfolio, self-heal and testing
+mistook `npx tsc` for an unpinned MCP server. Those seven instructions now use
+`npm run typecheck`, whose script is `tsc --noEmit`. npm resolves the compiler
+from the installed project dependencies; it does not fetch an MCP server.
+TypeScript remains pinned in package.json and the lockfile.
+
+Only those command substitutions changed the four skill texts. Their hashes
+were reviewed and refreshed deliberately; line counts, reference line lists,
+and referenced application files remain unchanged. No rule, severity gate or
+SARIF result is suppressed. The PR scan must verify the updated skills before
+merge; default-branch alerts resolve after the scan on main.

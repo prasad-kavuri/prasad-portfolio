@@ -95,7 +95,7 @@ Follow the pattern in `src/__tests__/components/AITools.test.tsx`:
 ## Step 6 — Verify
 
 ```bash
-npx tsc --noEmit                        # zero errors required
+npm run typecheck                       # zero errors required
 npm run lint                            # zero lint errors
 node -e "require('./src/data/demos')"   # demos.ts loads without error
 ```

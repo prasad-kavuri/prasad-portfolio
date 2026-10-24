@@ -8,7 +8,7 @@
     },
     {
       "skill": "skills/add-demo",
-      "skill_sha256": "4c6fe772859ccc88cda5c8d51ffdab5bdd351abab7b1320fd265e9cb394d9f31",
+      "skill_sha256": "5aecc825e33fc03af8b0206dab1dad735aafdff8c0bb63a5b331fce9f10e8b1e",
       "reference_lines": [8, 23, 37, 39, 88, 100, 104, 105, 106],
       "application_files": [
         "CONTEXT.md",
@@ -83,7 +83,7 @@
     },
     {
       "skill": "skills/redesign-portfolio",
-      "skill_sha256": "ac97fe35eb14cd20ee005cd81c8d5bc39e7a1a916e3f658c35ffb00b88f6da96",
+      "skill_sha256": "499501fd2263eb5e0ae939a0f35c98252568e679fc96329963bdd127a64931df",
       "reference_lines": [8, 16, 79, 81, 87, 88, 89],
       "application_files": [
         "CONTEXT.md",
@@ -109,7 +109,7 @@
     },
     {
       "skill": "skills/self-heal",
-      "skill_sha256": "20e10a6ba32b8b22237f4909d850e7937799c5285f814c44753650b9f40f49ed",
+      "skill_sha256": "8321c8167d351e02f1ab0c03488c1405edf55f97bd655c519111eabf20a43d98",
       "reference_lines": [8, 9, 25, 126, 128],
       "application_files": [
         "CLAUDE.md",
@@ -120,7 +120,7 @@
     },
     {
       "skill": "skills/testing",
-      "skill_sha256": "dfabdddd7399e26d0507b201c8d5b0ab9c1e789dea9ef4d703ad92040e61b22d",
+      "skill_sha256": "2d481c1667de5d09ddeab1dd876880d82657c479d54cae1896465fdf39c77145",
       "reference_lines": [12, 95, 97],
       "application_files": [
         "CONTEXT.md"

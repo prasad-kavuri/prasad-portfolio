@@ -108,6 +108,10 @@ export async function safeServerFetch(
     }
 
     const nextUrl = new URL(location, currentUrl);
+    const headers = new Headers(currentInit.headers);
+    if (nextUrl.origin !== currentUrl.origin && ['authorization', 'cookie', 'proxy-authorization'].some((name) => headers.has(name))) {
+      throw new SafeFetchError('Credentialed cross-origin redirect blocked', 'blocked_redirect_target', 'cross_origin_credentials');
+    }
     await assertSafeFetchTarget(nextUrl, 'blocked_redirect_target');
 
     // 303 always, and 301/302 for non-GET/HEAD, should become GET without body.

@@ -201,7 +201,14 @@ export async function enforceRateLimit(
 ): Promise<NextResponse | null> {
   const clientKey = meta.clientKey ?? getClientIp(req, fallback);
   const userHash = await hashLogValue(clientKey.split(',')[0].trim());
-  const result = await rateLimit(clientKey);
+  let result: RateLimitResult;
+  try {
+    result = await rateLimit(clientKey);
+  } catch {
+    logApiWarning('api.rate_limit_unavailable', { route: meta.context?.route ?? meta.route, traceId: meta.context?.traceId ?? meta.traceId, status: 503 });
+    const response = jsonError('Request limits are temporarily unavailable. Please try again later.', 503, meta);
+    return meta.context ? finalizeApiResponse(response, meta.context, 503) as NextResponse : response;
+  }
   if (meta.context) {
     meta.context.rateLimit = result;
     meta.context.userHash = userHash;
@@ -244,6 +251,19 @@ function positiveIntFromEnv(name: string, fallback: number): number {
  * `context.userHash`) and before any model call. Returns a 503 response when a cap is reached.
  */
 export async function enforceDailyBudget(context: RequestContext): Promise<NextResponse | null> {
+  try {
+    return await checkDailyBudget(context);
+  } catch {
+    logApiWarning('api.daily_budget_unavailable', { route: context.route, traceId: context.traceId, status: 503 });
+    return finalizeApiResponse(
+      jsonError('Demo usage limits are temporarily unavailable. Please try again later.', 503, { context }),
+      context,
+      503,
+    ) as NextResponse;
+  }
+}
+
+async function checkDailyBudget(context: RequestContext): Promise<NextResponse | null> {
   const day = new Date().toISOString().slice(0, 10);
   const routeCap = positiveIntFromEnv('DAILY_LLM_CALL_CAP', DAILY_LLM_CALL_CAP_DEFAULT);
   const clientCap = positiveIntFromEnv('DAILY_LLM_CALLS_PER_CLIENT', DAILY_LLM_CALLS_PER_CLIENT);

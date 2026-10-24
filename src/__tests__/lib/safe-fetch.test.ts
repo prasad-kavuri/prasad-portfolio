@@ -49,6 +49,21 @@ describe('safeServerFetch', () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
+  it.each(['::ffff:7f00:1', '0:0:0:0:0:ffff:c0a8:101', 'febf::1'])('blocks unsafe IPv6 DNS answer %s before fetching', async (address) => {
+    mockLookup.mockResolvedValueOnce([{ address, family: 6 }]);
+    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject({ code: 'blocked_url' });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('blocks a redirect whose DNS resolves to mapped metadata IPv4', async () => {
+    mockLookup
+      .mockResolvedValueOnce([{ address: '93.184.216.34', family: 4 }])
+      .mockResolvedValueOnce([{ address: '::ffff:a9fe:a9fe', family: 6 }]);
+    mockFetch.mockResolvedValueOnce({ status: 302, headers: new Headers({ location: 'https://metadata.example/' }) });
+    await expect(safeServerFetch('https://example.com/start')).rejects.toMatchObject({ code: 'blocked_redirect_target', reason: 'ipv4_link_local' });
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
   it('follows safe redirects and resolves final response', async () => {
     mockFetch
       .mockResolvedValueOnce({
@@ -67,6 +82,29 @@ describe('safeServerFetch', () => {
     expect(mockFetch).toHaveBeenCalledTimes(2);
     // 302 on POST should downgrade follow-up to GET (safe browser-compatible behavior).
     expect(mockFetch.mock.calls[1]?.[1]?.method).toBe('GET');
+  });
+
+  it.each(['authorization', 'cookie', 'proxy-authorization'])('does not forward %s across origins', async (header) => {
+    mockFetch.mockResolvedValueOnce({ status: 307, headers: new Headers({ location: 'https://other.example/collect' }) });
+    await expect(safeServerFetch('https://example.com/start', { headers: { [header]: 'synthetic-test-value' } }))
+      .rejects.toMatchObject({ code: 'blocked_redirect_target', reason: 'cross_origin_credentials' });
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('preserves authorization on a same-origin redirect', async () => {
+    mockFetch
+      .mockResolvedValueOnce({ status: 307, headers: new Headers({ location: '/final' }) })
+      .mockResolvedValueOnce({ status: 200 });
+    await safeServerFetch('https://example.com/start', { headers: { authorization: 'synthetic-test-value' } });
+    expect(new Headers(mockFetch.mock.calls[1][1].headers).get('authorization')).toBe('synthetic-test-value');
+  });
+
+  it('allows an uncredentialed public cross-origin redirect', async () => {
+    mockFetch
+      .mockResolvedValueOnce({ status: 302, headers: new Headers({ location: 'https://cdn.example/file' }) })
+      .mockResolvedValueOnce({ status: 200 });
+    expect((await safeServerFetch('https://example.com/start')).status).toBe(200);
+    expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 
   it('blocks redirects that resolve to internal targets', async () => {

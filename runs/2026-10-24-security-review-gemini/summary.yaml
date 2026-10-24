@@ -1,0 +1,23 @@
+run_id: 2026-10-24-security-review-gemini
+date: 2026-10-24
+skill: security-review
+profile: security
+target: Gemini audit comparison and independent outbound request review
+gates_passed: 6
+gates_failed: 0
+gates_untested: 3
+output_files:
+  - docs/security-audit-comparison-2026-10-24.md
+  - specs/0048-ipv6-ssrf-audit.md
+verification:
+  focused_outbound_regressions: passed
+  full_coverage: passed
+  typecheck: passed
+  lint: passed_with_existing_warnings
+  build: passed
+  dependency_audit: zero_vulnerabilities
+untested:
+  - fresh_local_semgrep_and_gitleaks_scan
+  - browser_e2e_waiting_for_pr_ci
+  - private_production_configuration
+notes: Fourteen new regression cases failed before the IPv6 fix. No production exploit or credential disclosure is claimed. Remaining networking and body-limit work is documented separately.

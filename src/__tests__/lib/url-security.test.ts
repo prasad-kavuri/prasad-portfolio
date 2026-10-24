@@ -62,6 +62,30 @@ describe('url-security host classification', () => {
     expect(getHostBlockReason('2606:4700:4700::1111')).toBeNull();
   });
 
+  it.each([
+    ['0:0:0:0:0:0:0:1', 'ipv6_loopback'],
+    ['0:0:0:0:0:0:0:0', 'ipv6_loopback'],
+    ['::ffff:7f00:1', 'ipv4_loopback'],
+    ['0:0:0:0:0:ffff:c0a8:10a', 'ipv4_private'],
+    ['::ffff:a9fe:a9fe', 'ipv4_link_local'],
+    ['fe90::1', 'ipv6_link_local'],
+    ['febf:ffff::1', 'ipv6_link_local'],
+    ['fed0::1', 'ipv6_site_local'],
+    ['feff:ffff::1', 'ipv6_site_local'],
+    ['ff02::1', 'ipv6_multicast'],
+  ])('blocks equivalent or reserved IPv6 target %s', (address, reason) => {
+    expect(classifyIpAddress(address)).toEqual({ blocked: true, reason });
+    expect(isBlockedOutboundUrl(new URL(`http://[${address}]/`))).toEqual({ blocked: true, reason });
+  });
+
+  it('rejects scoped IPv6 inputs without attempting URL normalization', () => {
+    expect(classifyIpAddress('fe80::1%eth0').blocked).toBe(true);
+  });
+
+  it.each(['::ffff:808:808', '0:0:0:0:0:ffff:8.8.8.8', 'fe7f::1', '2001:4860:4860::8888'])('preserves nonblocked address behavior for %s', (address) => {
+    expect(classifyIpAddress(address)).toEqual({ blocked: false });
+  });
+
   it('classifies direct IP inputs without blocking non-IP strings', () => {
     expect(classifyIpAddress('not-an-ip')).toEqual({ blocked: false });
     expect(classifyIpAddress('0.1.2.3')).toEqual({ blocked: true, reason: 'ipv4_unspecified' });

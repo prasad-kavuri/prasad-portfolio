@@ -104,23 +104,29 @@ function classifyIpv4(ipv4: string): BlockResult {
 }
 
 function classifyIpv6(ipv6: string): BlockResult {
-  const normalized = ipv6.toLowerCase();
+  if (ipv6.includes('%')) return { blocked: true, reason: 'ipv6_zone_identifier' };
+  // Canonicalize expanded/dotted forms before applying prefix checks.
+  const normalized = new URL(`http://[${ipv6}]/`).hostname.slice(1, -1);
   if (normalized === '::' || normalized === '::1') {
     return { blocked: true, reason: 'ipv6_loopback' };
   }
   if (normalized.startsWith('fc') || normalized.startsWith('fd')) {
     return { blocked: true, reason: 'ipv6_unique_local' };
   }
-  if (normalized.startsWith('fe80:')) {
+  if (/^fe[89ab][0-9a-f]:/.test(normalized)) {
     return { blocked: true, reason: 'ipv6_link_local' };
   }
-  if (normalized.startsWith('fec0:')) {
+  if (/^fe[cdef][0-9a-f]:/.test(normalized)) {
     return { blocked: true, reason: 'ipv6_site_local' };
   }
-  if (normalized.startsWith('::ffff:')) {
-    const mapped = normalized.slice('::ffff:'.length);
-    const mappedIpv4 = parseFlexibleIpv4(mapped);
-    if (mappedIpv4) return classifyIpv4(mappedIpv4);
+  if (normalized.startsWith('ff')) {
+    return { blocked: true, reason: 'ipv6_multicast' };
+  }
+  const mapped = /^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/.exec(normalized);
+  if (mapped) {
+    const high = Number.parseInt(mapped[1], 16);
+    const low = Number.parseInt(mapped[2], 16);
+    return classifyIpv4([high >> 8, high & 255, low >> 8, low & 255].join('.'));
   }
   return { blocked: false };
 }

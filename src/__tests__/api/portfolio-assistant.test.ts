@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { _resetStore } from '@/lib/rate-limit';
-import { UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
+import { FAST_MODEL, fallbackChain, UPSTREAM_BUSY_MESSAGE } from '@/lib/groq-models';
+import * as responseCache from '@/lib/response-cache';
 
 // Must mock before importing the route
 const mockFetch = vi.fn();
@@ -35,6 +36,36 @@ describe('POST /api/portfolio-assistant', () => {
 
   afterEach(() => {
     delete process.env.GROQ_API_KEY;
+    vi.restoreAllMocks();
+  });
+
+  it('binds a single-turn cache lookup to the live profile, prompt and model policy', async () => {
+    const key = vi.spyOn(responseCache, 'makeCacheKey');
+    vi.spyOn(responseCache, 'getResponseCache').mockResolvedValue('Cached executive answer');
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    const res = await POST(makeRequest({ messages: [{ role: 'user', content: 'Tell me about current leadership' }], useRAG: false }));
+    expect(res.headers.get('X-Cache')).toBe('HIT');
+    expect(await res.text()).toContain('Cached executive answer');
+    expect(key).toHaveBeenCalledWith('Tell me about current leadership', false, {
+      profile: { personal: { name: 'Prasad Kavuri' }, knowledgeBase: ['AI engineer with 20 years experience'] },
+      systemPrompt: expect.stringContaining('AI engineer with 20 years experience'),
+      models: fallbackChain(FAST_MODEL.id),
+      responseVersion: '1',
+    });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('does not use the shared response cache for multi-turn conversations', async () => {
+    const key = vi.spyOn(responseCache, 'makeCacheKey');
+    const read = vi.spyOn(responseCache, 'getResponseCache');
+    mockFetch.mockResolvedValue(new Response('{}', { status: 429 }));
+    const { POST } = await import('@/app/api/portfolio-assistant/route');
+    await POST(makeRequest({ messages: [
+      { role: 'user', content: 'Hello' }, { role: 'assistant', content: 'Hello' },
+      { role: 'user', content: 'Tell me about leadership' },
+    ], useRAG: false }));
+    expect(key).not.toHaveBeenCalled();
+    expect(read).not.toHaveBeenCalled();
   });
 
   it('says the demo is busy when Groq rate-limits the request', async () => {

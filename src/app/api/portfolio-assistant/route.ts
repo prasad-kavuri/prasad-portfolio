@@ -20,9 +20,11 @@ import { checkOutput, sanitizeLLMOutput } from '@/lib/guardrails';
 import { screenConversation } from '@/lib/conversation-guard';
 import { logQueryForEval } from '@/lib/query-log';
 import { makeCacheKey, getResponseCache, setResponseCache } from '@/lib/response-cache';
-import { FAST_MODEL, UPSTREAM_BUSY_MESSAGE, completionBudget, fetchWithModelFallback, isUpstreamBusy, reasoningParams, stripReasoning } from '@/lib/groq-models';
+import { FAST_MODEL, UPSTREAM_BUSY_MESSAGE, completionBudget, fallbackChain, fetchWithModelFallback, isUpstreamBusy, reasoningParams, stripReasoning } from '@/lib/groq-models';
 
 const ROUTE = '/api/portfolio-assistant';
+// Bump for generation settings, output processing or replay contract changes.
+const RESPONSE_CACHE_VERSION = '1';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -254,10 +256,15 @@ ${fullContext}`;
 
     // ── Response cache check ─────────────────────────────────────────────────
     // Only cache single-turn queries: multi-turn conversations are unique per
-    // session and must always hit the model. Cache key = SHA-256(query|useRAG).
+    // session and must always hit the model. Include the complete response context.
     const isSingleTurn = messages.length === 1 && lastUserMessage !== undefined;
     const cacheKey = isSingleTurn && lastUserMessage
-      ? await makeCacheKey(lastUserMessage.content, useRetrievalGrounding)
+      ? await makeCacheKey(lastUserMessage.content, useRetrievalGrounding, {
+        profile,
+        systemPrompt: effectiveSystemPrompt,
+        models: fallbackChain(FAST_MODEL.id),
+        responseVersion: RESPONSE_CACHE_VERSION,
+      })
       : null;
 
     if (cacheKey) {

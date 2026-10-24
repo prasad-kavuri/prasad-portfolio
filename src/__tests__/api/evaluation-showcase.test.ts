@@ -19,6 +19,18 @@ describe('POST /api/evaluation-showcase', () => {
     vi.clearAllMocks();
   });
 
+  it('rejects an oversized evaluation sample before scoring it', async () => {
+    const { POST } = await import('@/app/api/evaluation-showcase/route');
+    const res = await POST(makeRequest({ query: 'Evaluate this', mockResponse: 'x'.repeat(16001) }));
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Mock response too long');
+  });
+
+  it('rejects a non-object JSON body safely', async () => {
+    const { POST } = await import('@/app/api/evaluation-showcase/route');
+    expect((await POST(makeRequest([]))).status).toBe(400);
+  });
+
   it('returns 400 when query is missing', async () => {
     const { POST } = await import('@/app/api/evaluation-showcase/route');
     const res = await POST(makeRequest({}));

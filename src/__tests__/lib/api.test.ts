@@ -14,6 +14,7 @@ import {
 } from '@/lib/api';
 import { _resetStore, RATE_LIMIT_MAX } from '@/lib/rate-limit';
 import { _resetObservability, getObservabilitySnapshot } from '@/lib/observability';
+import { MAX_JSON_BODY_BYTES } from '@/lib/request-body';
 
 function makeRequest(body = '{}', headers: Record<string, string> = {}) {
   return new NextRequest('http://localhost/api/test', {
@@ -131,6 +132,17 @@ describe('api helpers', () => {
     const result = await readJsonObject(req);
 
     expect(result).toEqual({ ok: true, data: { message: 'hello' } });
+  });
+
+  it.each([true, false])('rejects oversized JSON with trace headers (context=%s)', async (withContext) => {
+    const req = makeRequest(JSON.stringify({ query: 'x'.repeat(MAX_JSON_BODY_BYTES) }), { 'x-request-id': 'oversized-body-test' });
+    const context = createRequestContext(req, '/api/test');
+    const result = await readJsonObject(req, withContext ? { context } : { traceId: context.traceId });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.response.status).toBe(413);
+      expect(result.response.headers.get('x-request-id')).toBe('oversized-body-test');
+    }
   });
 
   it('tracks allowed and blocked rate-limit attempts', async () => {

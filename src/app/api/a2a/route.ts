@@ -9,6 +9,7 @@ import { verifyToken } from '@/lib/agent-auth';
 import { buildAgentCard } from '@/lib/a2a/agent-card';
 import { PortfolioAgentExecutor, ScopedUser } from '@/lib/a2a/executor';
 import { DurableTaskStore } from '@/lib/a2a/task-store';
+import { readBoundedText, RequestBodyTooLarge } from '@/lib/request-body';
 
 const ROUTE = '/api/a2a';
 const MAX_BODY_BYTES = 16_000;
@@ -32,15 +33,14 @@ export async function POST(req: NextRequest) {
   const rateLimited = await enforceRateLimit(req, 'anonymous', { context });
   if (rateLimited) return rateLimited;
 
-  const raw = await req.text();
-  if (raw.length > MAX_BODY_BYTES) {
-    logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'body_too_large', status: 413 });
-    return finalizeApiResponse(rpcError(null, -32600, 'Request too large', 413), context, 413);
-  }
   let body: unknown;
   try {
-    body = JSON.parse(raw);
-  } catch {
+    body = JSON.parse(await readBoundedText(req, MAX_BODY_BYTES));
+  } catch (error) {
+    if (error instanceof RequestBodyTooLarge) {
+      logApiWarning('api.abnormal_usage', { route: ROUTE, traceId: context.traceId, reason: 'body_too_large', status: 413 });
+      return finalizeApiResponse(rpcError(null, -32600, 'Request too large', 413), context, 413);
+    }
     return finalizeApiResponse(rpcError(null, -32700, 'Parse error', 400), context, 400);
   }
 

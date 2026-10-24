@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, type RateLimitResult } from '@/lib/rate-limit';
 import { kvIncrWithTtl } from '@/lib/durable-store';
+import { readBoundedText, RequestBodyTooLarge } from '@/lib/request-body';
 import {
   captureAPIError,
   categorizeError,
@@ -278,8 +279,12 @@ export async function readJsonObject(
 ): Promise<JsonBodyResult> {
   let data: unknown;
   try {
-    data = await req.json();
-  } catch {
+    data = JSON.parse(await readBoundedText(req));
+  } catch (error) {
+    if (error instanceof RequestBodyTooLarge) {
+      const response = jsonError('Request body too large', 413, meta);
+      return { ok: false, response: meta.context ? finalizeApiResponse(response, meta.context, 413) as NextResponse : response };
+    }
     logApiWarning('api.invalid_json', {
       route: meta.context?.route ?? meta.route,
       traceId: meta.context?.traceId ?? meta.traceId,

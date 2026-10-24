@@ -17,6 +17,7 @@ import { verifyToken } from '@/lib/agent-auth';
 import { executeProfileTool, PROFILE_TOOLS, SKILL_CATEGORIES } from '@/lib/profile-tools';
 import { invokeTool } from '@/lib/tool-gateway';
 import { TOOL_POLICIES } from '@/lib/tool-policy';
+import { readBoundedText, RequestBodyTooLarge } from '@/lib/request-body';
 
 const ROUTE = '/api/mcp';
 const RESOURCE_METADATA_URL = 'https://www.prasadkavuri.com/.well-known/oauth-protected-resource';
@@ -97,11 +98,21 @@ async function handle(req: NextRequest): Promise<Response> {
     return finalizeApiResponse(response, context, 401);
   }
 
+  let transportRequest: Request = req;
+  if (req.method === 'POST') {
+    try {
+      const raw = await readBoundedText(req, 64_000);
+      transportRequest = new Request(req.url, { method: 'POST', headers: req.headers, body: raw, signal: req.signal });
+    } catch (error) {
+      const status = error instanceof RequestBodyTooLarge ? 413 : 400;
+      return finalizeApiResponse(NextResponse.json({ jsonrpc: '2.0', id: null, error: { code: -32600, message: status === 413 ? 'Request too large' : 'Invalid request body' } }, { status }), context, status);
+    }
+  }
   const server = buildServer();
   const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   await server.connect(transport);
   try {
-    const response = await transport.handleRequest(req, { authInfo });
+    const response = await transport.handleRequest(transportRequest, { authInfo });
     logApiEvent('api.request_completed', { route: ROUTE, traceId: context.traceId, status: response.status, authenticated: Boolean(authInfo) });
     return finalizeApiResponse(response, context);
   } finally {

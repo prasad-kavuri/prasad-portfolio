@@ -28,6 +28,21 @@ const text = (result: unknown) => ((result as { content: { text: string }[] }).c
 describe('MCP server /api/mcp (official SDK, stateless Streamable HTTP)', () => {
   beforeEach(() => _resetStore());
 
+  it('rejects oversized POST bodies before the SDK parses them', async () => {
+    const { POST } = await import('@/app/api/mcp/route');
+    const res = await POST(new NextRequest('http://localhost/api/mcp', { method: 'POST', body: 'x'.repeat(64001) }));
+    expect(res.status).toBe(413);
+    expect((await res.json()).error.message).toBe('Request too large');
+    expect(res.headers.get('x-request-id')).toBeTruthy();
+  });
+
+  it('returns a protocol error when the request stream cannot be decoded', async () => {
+    const { POST } = await import('@/app/api/mcp/route');
+    const res = await POST(new NextRequest('http://localhost/api/mcp', { method: 'POST', body: new Uint8Array([255]) }));
+    expect(res.status).toBe(400);
+    expect((await res.json()).error.message).toBe('Invalid request body');
+  });
+
   it('completes the MCP handshake and lists the profile tools with read-only annotations', async () => {
     const client = await connect();
     expect(client.getServerVersion()?.name).toBe('prasadkavuri-profile');

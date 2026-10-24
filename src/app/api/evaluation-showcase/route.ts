@@ -6,6 +6,7 @@ import {
   jsonError,
   captureAndLogApiError,
   logApiEvent,
+  readJsonObject,
 } from '@/lib/api';
 import { startTimer, logAPIEvent } from '@/lib/observability';
 import { scoreResponse } from '@/lib/eval-engine';
@@ -29,14 +30,9 @@ export async function POST(request: NextRequest) {
     const limited = await enforceRateLimit(request, 'anonymous', { context });
     if (limited) return limited;
 
-    let body: { query?: unknown; mockResponse?: unknown };
-    try {
-      body = await request.json();
-    } catch {
-      return finalizeApiResponse(jsonError('Invalid JSON', 400, { context }), context);
-    }
-
-    const { query, mockResponse } = body;
+    const body = await readJsonObject(request, { context });
+    if (!body.ok) return body.response;
+    const { query, mockResponse } = body.data;
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
@@ -46,6 +42,9 @@ export async function POST(request: NextRequest) {
     }
     if (mockResponse !== undefined && typeof mockResponse !== 'string') {
       return finalizeApiResponse(jsonError('Invalid input', 400, { context }), context);
+    }
+    if (typeof mockResponse === 'string' && mockResponse.length > 16_000) {
+      return finalizeApiResponse(jsonError('Mock response too long', 400, { context }), context);
     }
 
     // Step 1: Guardrail the input

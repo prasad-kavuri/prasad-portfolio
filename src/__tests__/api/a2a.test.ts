@@ -26,6 +26,15 @@ describe('A2A v1.0 agent /api/a2a', () => {
     _resetDurableStore();
   });
 
+  it('measures the body limit in UTF-8 bytes rather than characters', async () => {
+    const { POST } = await import('@/app/api/a2a/route');
+    const raw = JSON.stringify({ text: '\u20ac'.repeat(6000) });
+    expect(raw.length).toBeLessThan(16000);
+    const res = await POST(new NextRequest('http://localhost/api/a2a', { method: 'POST', body: raw }));
+    expect(res.status).toBe(413);
+    expect((await res.json()).error.message).toBe('Request too large');
+  });
+
   it('publishes an agent card identical to the builder output', () => {
     const published = JSON.parse(readFileSync('public/.well-known/agent-card.json', 'utf8'));
     expect(published).toEqual(agentCardJson());

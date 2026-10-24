@@ -1,6 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { lookup } from 'node:dns/promises';
 import { safeServerFetch } from '@/lib/safe-fetch';
+import type { LookupFunction } from 'node:net';
+
+const agents = vi.hoisted(() => [] as Array<{ lookup: LookupFunction; close: ReturnType<typeof vi.fn>; destroy: ReturnType<typeof vi.fn> }>);
+vi.mock('undici', () => ({
+  Agent: class {
+    close = vi.fn().mockResolvedValue(undefined);
+    destroy = vi.fn().mockResolvedValue(undefined);
+    constructor(options: { connect: { lookup: LookupFunction } }) {
+      agents.push({ lookup: options.connect.lookup, close: this.close, destroy: this.destroy });
+    }
+  },
+}));
 
 vi.mock('node:dns/promises', () => ({
   lookup: vi.fn(),
@@ -18,7 +30,70 @@ const mockLookup = vi.mocked(
 describe('safeServerFetch', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    agents.length = 0;
+    mockLookup.mockReset();
+    mockFetch.mockReset();
     mockLookup.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+  });
+
+  it('pins connection lookups to the validated result without resolving DNS again', async () => {
+    const validated = [{ address: '93.184.216.34', family: 4 }, { address: '2606:4700:4700::1111', family: 6 }];
+    mockLookup
+      .mockResolvedValueOnce(validated as Array<{ address: string; family: 4 | 6 }>)
+      .mockResolvedValueOnce([{ address: '127.0.0.1', family: 4 }]);
+    mockFetch.mockResolvedValueOnce({ status: 200 });
+    await safeServerFetch('https://example.com/start');
+    const single = vi.fn();
+    const all = vi.fn();
+    agents[0].lookup('example.com', {}, single);
+    agents[0].lookup('example.com', { all: true }, all);
+    expect(single).toHaveBeenCalledWith(null, '93.184.216.34', 4);
+    expect(all).toHaveBeenCalledWith(null, validated);
+    expect(mockLookup).toHaveBeenCalledTimes(1);
+    expect(mockFetch.mock.calls[0][0].hostname).toBe('example.com');
+    expect(mockFetch.mock.calls[0][1]).toMatchObject({ cache: 'no-store', redirect: 'manual', dispatcher: expect.anything() });
+    expect(agents[0].close).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    { records: [] },
+    { records: [{ address: 'invalid', family: 4 }] },
+    { records: [{ address: '93.184.216.34', family: 6 }] },
+  ])('rejects unusable DNS results %j', async ({ records }) => {
+    mockLookup.mockResolvedValueOnce(records as Array<{ address: string; family: 4 | 6 }>);
+    await expect(safeServerFetch('https://example.com/')).rejects.toMatchObject({ code: 'dns_resolution_failed' });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('rejects a mixed public/private DNS answer rather than selecting the public address', async () => {
+    mockLookup.mockResolvedValueOnce([{ address: '93.184.216.34', family: 4 }, { address: '10.0.0.1', family: 4 }]);
+    await expect(safeServerFetch('https://example.com/')).rejects.toMatchObject({ code: 'blocked_url' });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('independently pins redirects and cancels their discarded response bodies', async () => {
+    mockLookup
+      .mockResolvedValueOnce([{ address: '93.184.216.34', family: 4 }])
+      .mockResolvedValueOnce([{ address: '2606:4700:4700::1111', family: 6 }]);
+    const cancel = vi.fn().mockResolvedValue(undefined);
+    mockFetch.mockResolvedValueOnce({ status: 302, headers: new Headers({ location: '/next' }), body: { cancel } })
+      .mockResolvedValueOnce({ status: 200 });
+    await safeServerFetch('https://example.com/');
+    const callback = vi.fn();
+    agents[1].lookup('example.com', {}, callback);
+    expect(callback).toHaveBeenCalledWith(null, '2606:4700:4700::1111', 6);
+    expect(agents).toHaveLength(2);
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it('closes agents on fetch failure and destroys them if graceful close fails', async () => {
+    mockFetch.mockImplementationOnce(async () => {
+      agents[0].close.mockRejectedValueOnce(new Error('close failed'));
+      throw new Error('fetch failed');
+    });
+    await expect(safeServerFetch('https://example.com/')).rejects.toThrow('fetch failed');
+    expect(agents[0].close).toHaveBeenCalledOnce();
+    expect(agents[0].destroy).toHaveBeenCalledOnce();
   });
 
   it.each([

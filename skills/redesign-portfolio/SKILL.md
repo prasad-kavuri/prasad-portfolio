@@ -93,7 +93,7 @@ See ADR-0006 for llms.txt ownership rules.
 ## Step 7 — Verify
 
 ```bash
-npx tsc --noEmit                   # zero TypeScript errors
+npm run typecheck                  # zero TypeScript errors
 npm run lint                       # zero lint errors
 npm run test                       # all unit tests pass
 npm run build                      # production build succeeds

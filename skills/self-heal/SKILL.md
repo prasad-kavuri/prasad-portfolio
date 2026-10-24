@@ -11,7 +11,7 @@ Also load profile: `profiles/testing.yaml`.
 ## When to invoke this skill
 
 - `npm run test` has failures after a code change
-- `npx tsc --noEmit` returns errors
+- `npm run typecheck` returns errors
 - `npm run build` fails
 - `npm audit --audit-level=high` returns new high/critical findings
 - A Playwright E2E test regressed
@@ -25,7 +25,7 @@ This skill fixes exactly what is broken — nothing more.
 Run steps by tier. The repo's Security Scope in `CLAUDE.md` is the source of truth; this section only labels this
 skill's steps.
 
-- **Tier R, read-only. Run freely:** reading failing output, `git status` and `git diff`, `npx tsc --noEmit`, `npm run lint`, `npm run test`, `npm run build`.
+- **Tier R, read-only. Run freely:** reading failing output, `git status` and `git diff`, `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build`.
 - **Tier W, writes inside the repo. Run on a branch, never on `main`:** the minimal fix, a new regression test, doc updates, a local commit.
 - **Tier S, needs a person's approval first:** changes to security headers or the CSP, auth, env handling, rate limits,
   SSRF checks, logging or deployment config; `npm audit fix --force`; major dependency upgrades; pushing, merging,
@@ -36,7 +36,7 @@ skill's steps.
 Run the full check sequence and capture every failure:
 
 ```bash
-npx tsc --noEmit 2>&1 | head -50          # TypeScript errors first
+npm run typecheck 2>&1 | head -50         # TypeScript errors first
 npm run lint 2>&1 | head -50              # Lint errors
 npm run test 2>&1 | tail -80              # Test failures
 npm audit --audit-level=high 2>&1         # New vulnerabilities
@@ -111,7 +111,7 @@ npm audit fix                    # for non-breaking patches
 Run the full check sequence again:
 
 ```bash
-npx tsc --noEmit                 # must be clean
+npm run typecheck                # must be clean
 npm run lint                     # must be clean
 npm run test                     # must pass
 npm run build                    # must pass

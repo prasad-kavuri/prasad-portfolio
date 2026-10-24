@@ -8,6 +8,7 @@
  */
 
 import { Redis } from '@upstash/redis';
+import { z } from 'zod';
 
 // ---------------------------------------------------------------------------
 // Config
@@ -15,7 +16,7 @@ import { Redis } from '@upstash/redis';
 
 const DEV_ONLY_SECRET = 'portfolio-demo-secret-dev-only-not-for-prod';
 
-/** Thrown when token signing is attempted in production without AGENT_AUTH_SECRET. */
+/** Thrown when signing is not configured outside local development/test. */
 export class AgentAuthConfigError extends Error {
   constructor() {
     super('AGENT_AUTH_SECRET is not configured');
@@ -27,15 +28,20 @@ export class AgentAuthConfigError extends Error {
  * The dev fallback secret is public (it is in this repo), so tokens signed with it are forgeable.
  * Fail closed in production rather than silently accept that.
  */
-/** False only in production when AGENT_AUTH_SECRET is missing — routes should return 503. */
+function allowsDevelopmentSigning(): boolean {
+  const localMode = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+  return localMode && (!process.env.VERCEL_ENV || process.env.VERCEL_ENV === 'development');
+}
+
+/** Routes return 503 when signing is not configured for this environment. */
 export function isAgentAuthConfigured(): boolean {
-  return Boolean(process.env.AGENT_AUTH_SECRET) || process.env.VERCEL_ENV !== 'production';
+  return Boolean(process.env.AGENT_AUTH_SECRET?.trim()) || allowsDevelopmentSigning();
 }
 
 function getSigningSecret(): string {
   const secret = process.env.AGENT_AUTH_SECRET;
-  if (secret) return secret;
-  if (process.env.VERCEL_ENV === 'production') throw new AgentAuthConfigError();
+  if (secret?.trim()) return secret;
+  if (!allowsDevelopmentSigning()) throw new AgentAuthConfigError();
   return DEV_ONLY_SECRET;
 }
 export const DEMO_SCOPES = ['read:profile', 'call:mcp-tools', 'finance:sandbox'];
@@ -56,6 +62,16 @@ export interface TokenPayload {
   iat: number;
   exp: number;
 }
+
+const nonblank = (max: number) => z.string().min(1).max(max).refine((value) => value.trim().length > 0);
+const tokenPayloadSchema = z.object({
+  sub: nonblank(512),
+  type: z.enum(['anonymous', 'claimed']),
+  scopes: z.array(nonblank(128)).max(32),
+  email: nonblank(254).optional(),
+  iat: z.number().int().nonnegative(),
+  exp: z.number().int().nonnegative(),
+}).refine((payload) => payload.exp > payload.iat);
 
 interface ClaimEntry {
   otp: string;
@@ -163,6 +179,7 @@ export async function issueToken(
 }
 
 export async function verifyToken(token: string): Promise<TokenPayload | null> {
+  if (token.length > 8192 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(token)) return null;
   const dot = token.lastIndexOf('.');
   if (dot < 1) return null;
   const encoded = token.slice(0, dot);
@@ -170,9 +187,11 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
   const expected = await hmacSign(encoded);
   if (!constantTimeEqual(sig, expected)) return null;
   try {
-    const payload = JSON.parse(base64urlDecode(encoded)) as TokenPayload;
-    if (Math.floor(Date.now() / 1000) > payload.exp) return null;
-    return payload;
+    const parsed = tokenPayloadSchema.safeParse(JSON.parse(base64urlDecode(encoded)));
+    if (!parsed.success) return null;
+    const now = Math.floor(Date.now() / 1000);
+    if (parsed.data.iat > now || now >= parsed.data.exp) return null;
+    return parsed.data;
   } catch {
     return null;
   }

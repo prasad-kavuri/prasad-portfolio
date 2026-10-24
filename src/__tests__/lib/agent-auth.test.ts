@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
+import { createHmac } from 'node:crypto';
 import {
   CLAIM_TTL_S,
   CLAIMED_TTL_S,
@@ -15,6 +16,7 @@ describe('agent auth utilities', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   it('issues and verifies anonymous tokens with demo scopes', async () => {
@@ -126,6 +128,73 @@ describe('agent auth utilities', () => {
 
     expect(hex).toMatch(/^[a-f0-9]{16}$/);
     expect(otp).toMatch(/^\d{6}$/);
+  });
+
+  it.each([
+    ['development', undefined, true],
+    ['test', undefined, true],
+    ['development', 'development', true],
+    ['production', undefined, false],
+    ['production', 'production', false],
+    ['test', 'preview', false],
+    ['development', 'production', false],
+    [undefined, undefined, false],
+  ] as const)('limits development signing for NODE_ENV=%s VERCEL_ENV=%s', async (nodeEnv, vercelEnv, allowed) => {
+    vi.stubEnv('NODE_ENV', nodeEnv);
+    vi.stubEnv('VERCEL_ENV', vercelEnv);
+    vi.stubEnv('AGENT_AUTH_SECRET', undefined);
+    const { isAgentAuthConfigured, AgentAuthConfigError } = await import('@/lib/agent-auth');
+    expect(isAgentAuthConfigured()).toBe(allowed);
+    const issued = issueToken({ sub: 'test-agent', type: 'anonymous', scopes: [] }, 60);
+    if (allowed) expect(await verifyToken(await issued)).not.toBeNull();
+    else await expect(issued).rejects.toBeInstanceOf(AgentAuthConfigError);
+  });
+
+  it('requires a nonblank secret in production but preserves configured secret bytes', async () => {
+    const { isAgentAuthConfigured } = await import('@/lib/agent-auth');
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('VERCEL_ENV', undefined);
+    vi.stubEnv('AGENT_AUTH_SECRET', '   ');
+    expect(isAgentAuthConfigured()).toBe(false);
+    vi.stubEnv('AGENT_AUTH_SECRET', ' configured-test-secret ');
+    expect(isAgentAuthConfigured()).toBe(true);
+    const token = await issueToken({ sub: 'test-agent', type: 'anonymous', scopes: [] }, 60);
+    expect(await verifyToken(token)).not.toBeNull();
+    vi.stubEnv('AGENT_AUTH_SECRET', 'configured-test-secret');
+    expect(await verifyToken(token)).toBeNull();
+  });
+
+  it('accepts a token before expiry and rejects it exactly at expiry', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-24T00:00:00Z'));
+    const token = await issueToken({ sub: 'test-agent', type: 'anonymous', scopes: [] }, 60);
+    vi.advanceTimersByTime(59000);
+    expect(await verifyToken(token)).not.toBeNull();
+    vi.advanceTimersByTime(1000);
+    expect(await verifyToken(token)).toBeNull();
+  });
+
+  it.each([
+    null, [], {}, { sub: '' }, { sub: ' ' }, { sub: 'x'.repeat(513) },
+    { type: 'admin' }, { scopes: 'read:profile' }, { scopes: [42] },
+    { scopes: [''] }, { scopes: [' '] }, { scopes: ['x'.repeat(129)] },
+    { scopes: Array(33).fill('read:profile') }, { email: 42 }, { email: '' },
+    { email: 'x'.repeat(255) }, { iat: -1 }, { iat: 1.5 },
+    { exp: 'never' }, { exp: null }, { exp: 1.5 }, { exp: Number.MAX_SAFE_INTEGER + 1 },
+    { iat: 1792800001 }, { exp: 1792800000 },
+  ])('rejects malformed claims even with a valid signature: %j', async (changes) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-24T00:00:00Z'));
+    vi.stubEnv('AGENT_AUTH_SECRET', 'independent-auth-test-key');
+    const valid = { sub: 'test-agent', type: 'anonymous', scopes: ['read:profile'], iat: 1792800000, exp: 1792800060 };
+    const payload = changes === null || Array.isArray(changes) ? changes : Object.keys(changes).length ? { ...valid, ...changes } : {};
+    const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url');
+    const signature = createHmac('sha256', 'independent-auth-test-key').update(encoded).digest('base64url');
+    expect(await verifyToken(`${encoded}.${signature}`)).toBeNull();
+  });
+
+  it('rejects oversized credentials before processing', async () => {
+    expect(await verifyToken('x'.repeat(8193))).toBeNull();
   });
 
   it('fails closed in production when AGENT_AUTH_SECRET is missing', async () => {

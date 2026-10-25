@@ -12,8 +12,13 @@ const BASE_URL = profile.personal.portfolio;
 const ROUTE = '/ai-profile.json';
 
 function buildPayload() {
+  const tools = [
+    'get_experience(company)',
+    'search_skills(category)',
+    'get_achievements(company?) — requires read:profile credential',
+  ];
   return {
-    version: '1.0',
+    version: '1.1',
     schema: 'ai-profile',
     generated: new Date().toISOString(),
     identity: {
@@ -65,15 +70,24 @@ function buildPayload() {
         `${BASE_URL}/api/context`,
       ],
       mcp_endpoint: {
-        url: `${BASE_URL}/api/mcp-demo`,
+        url: `${BASE_URL}/api/mcp`,
+        protocol: 'mcp',
+        transport: 'streamable-http',
         method: 'POST',
-        auth: 'none',
+        auth: 'optional_bearer',
+        auth_instructions: `${BASE_URL}/auth.md`,
+        description: 'MCP JSON-RPC server over Streamable HTTP. get_experience and search_skills are public; get_achievements requires a Bearer credential with read:profile.',
+        tools,
+      },
+      natural_language_endpoint: {
+        url: `${BASE_URL}/api/mcp-demo`,
+        protocol: 'json',
+        method: 'POST',
+        auth: 'optional_bearer',
+        auth_instructions: `${BASE_URL}/auth.md`,
         description: "Natural-language profile query endpoint (LLM tool calling over JSON-Schema tools; not an MCP JSON-RPC server). POST { \"query\": \"<question>\" }.",
-        tools: [
-          'get_experience(company)',
-          'search_skills(category)',
-          'get_achievements(company?) — requires read:profile credential',
-        ],
+        tools,
+        request_example: { query: "What is Prasad's current role?" },
         example_query: "What is Prasad's current role and experience with multi-agent systems and LLM cost optimization?",
       },
     },

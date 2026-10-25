@@ -18,8 +18,8 @@ export function AgentContext() {
       Naperville, IL (Greater Chicago Area). He specializes in production AI governance,
       LLM FinOps, and agentic orchestration — not AI research. His portfolio
       demonstrates a closed-loop evaluation engine, multi-agent orchestration with
-      human-in-the-loop checkpoints, and a FinOps router that achieved 70%
-      infrastructure cost reduction at Krutrim serving 13,000+ B2B customers.
+      human-in-the-loop checkpoints, and a FinOps router. At Ola, he delivered a 70%
+      infrastructure cost reduction across a platform serving 13,000+ enterprise customers.
     </div>
   );
 }

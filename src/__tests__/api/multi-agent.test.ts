@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { lookup } from 'node:dns/promises';
 import { _resetStore } from '@/lib/rate-limit';
 import { _resetDurableStore } from '@/lib/durable-store';
@@ -12,6 +12,8 @@ vi.mock('node:dns/promises', () => ({
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
+beforeEach(() => vi.stubEnv('MULTI_AGENT_SHARED_SECRET', 'synthetic-shared-secret-for-testing-only'));
+afterEach(() => vi.unstubAllEnvs());
 const mockLookup = vi.mocked(
   lookup as unknown as (hostname: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: 4 | 6 }>>
 );
@@ -48,6 +50,27 @@ describe('POST /api/multi-agent', () => {
       ok: true,
       json: async () => ({ agents: [], total_duration_ms: 100 }),
     });
+  });
+
+
+  it.each([undefined, '', 'short', ' '.repeat(32), ' padded-shared-secret-that-is-long-enough', 'x'.repeat(257), '\u00e9'.repeat(40)])('fails closed with an unconfigured backend credential', async (secret) => {
+    vi.stubEnv('MULTI_AGENT_SHARED_SECRET', secret);
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(503);
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(await res.text()).not.toContain('MULTI_AGENT_SHARED_SECRET');
+  });
+
+  it('sends the credential only in the backend Authorization header', async () => {
+    const { POST } = await import('@/app/api/multi-agent/route');
+    const res = await POST(makeRequest({ website_url: 'https://example.com' }) as any);
+    expect(res.status).toBe(200);
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(String(url)).toBe('https://prasadkavuri-multi-agent-demo.hf.space/analyze');
+    expect(new Headers(init.headers).get('authorization')).toBe('Bearer synthetic-shared-secret-for-testing-only');
+    expect(String(init.body)).not.toContain('synthetic-shared-secret');
+    expect(await res.text()).not.toContain('synthetic-shared-secret');
   });
 
   it('returns 400 for missing website_url', async () => {

@@ -1,0 +1,26 @@
+name: Multi-Agent Space package
+on:
+  pull_request:
+    paths:
+      - 'services/multi-agent-space/**'
+      - '.github/workflows/multi-agent-space-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/multi-agent-space/**'
+      - '.github/workflows/multi-agent-space-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r services/multi-agent-space/requirements.txt pip-audit==2.10.1
+      - run: python -m unittest -v test_app
+        working-directory: services/multi-agent-space
+      - run: pip-audit

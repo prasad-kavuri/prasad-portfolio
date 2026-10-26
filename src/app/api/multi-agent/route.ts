@@ -103,13 +103,18 @@ export async function POST(req: NextRequest) {
     return finalizeApiResponse(jsonError('URL not allowed', 400, { context }), context);
   }
 
+  const sharedSecret = process.env.MULTI_AGENT_SHARED_SECRET;
+  if (!sharedSecret || !/^[\x21-\x7e]{32,256}$/.test(sharedSecret)) {
+    return finalizeApiResponse(jsonError('Agent backend is temporarily unavailable', 503, { context }), context);
+  }
+
   const overBudget = await enforceDailyBudget(context);
   if (overBudget) return overBudget;
 
   try {
     const response = await safeServerFetch(`${HF_SPACE_URL}/analyze`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sharedSecret}` },
       body: JSON.stringify({ website_url }),
       signal: AbortSignal.timeout(60000),
     }, { maxRedirects: 1 });

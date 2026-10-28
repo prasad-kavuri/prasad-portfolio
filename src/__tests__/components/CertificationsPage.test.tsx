@@ -23,4 +23,9 @@ describe('CertificationsPage', () => {
     expect(screen.getAllByText(/Cloud \/ Platform \/ Infrastructure Foundations/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Legacy \/ Archive/i).length).toBeGreaterThan(0);
   });
+
+  it('gives the certifications home link an accessible name and correct destination', () => {
+    render(React.createElement(CertificationsPage));
+    expect(screen.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/');
+  });
 });

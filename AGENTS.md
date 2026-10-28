@@ -46,7 +46,7 @@ Key ADRs in `docs/adr/` explain the most surprising architectural decisions:
 - `0006` — `llms.txt` is the canonical plain-text portfolio for LLM crawlers
 - `0007` — JSON-LD uses a single `@graph` with all entity types
 - `0008` — Playwright is E2E; Vitest is unit — no overlap
-- `0009` — CSP uses hash/mime-type allowlisting, not nonces (Vercel constraint)
+- `0009` — Route-specific CSP; inline-script nonces/hashes deferred to SPEC-0027 stage 4
 - `0010` — No shadcn/ui — Tailwind utilities only, ARIA manually implemented
 
 ## Portfolio Skills

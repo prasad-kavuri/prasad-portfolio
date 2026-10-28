@@ -1,8 +1,8 @@
 # Prasad Kavuri — Full AI Platform Context
 # Long-form companion to https://www.prasadkavuri.com/llms.txt
-# Updated: 2026-09-23 | Short form: /llms.txt | Agent manifest: /.well-known/ai-agent-manifest.json
+# Updated: 2026-10-28 | Short form: /llms.txt | Agent manifest: /.well-known/ai-agent-manifest.json
 Contact: vbkpkavuri@gmail.com | LinkedIn: https://www.linkedin.com/in/pkavuri/ | Portfolio: https://www.prasadkavuri.com | Book: https://calendly.com/vbkpkavuri
-Last-Updated: 2026-09-23
+Last-Updated: 2026-10-28
 
 ## Identity Signal
 - Role: Head of AI Platform & Agentic Solutions at Zip
@@ -515,4 +515,4 @@ WHAT MAKES IT AGENT-NATIVE:
 
 This is what an agent-first engineering repository looks like in 2026.
 
-Last Updated: 2026-09-23
+Last Updated: 2026-10-28

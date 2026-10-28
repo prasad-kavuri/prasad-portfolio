@@ -60,7 +60,7 @@ export default function CertificationsPage() {
         <div className="flex items-center gap-4 mb-8">
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link href="/" className="text-muted-foreground hover:text-foreground">
+            <Link href="/" aria-label="Back to home" className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="w-5 h-5" />
             </Link>
           </div>

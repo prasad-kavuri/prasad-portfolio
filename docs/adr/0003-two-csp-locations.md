@@ -3,6 +3,12 @@
 **Status**: Accepted  
 **Date**: 2026-06
 
+> Historical decision: the dual-CSP arrangement below is superseded. CSP is
+> built in `src/lib/csp.ts` and delivered only by `src/proxy.ts`, per route.
+> COOP/COEP remain in both delivery locations. See the 2026-10-12 update below.
+> Demo names and header values below describe the original decision, not current
+> requirements; read current configuration for the shipped values.
+
 ## Context
 
 The four browser demos (RAG Pipeline, Vector Search, Quantization, Multimodal) require `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embedder-Policy: require-corp`, and specific `Content-Security-Policy` directives (`blob:`, `wasm-unsafe-eval`) to enable SharedArrayBuffer and WebAssembly. These headers must be present on every response for those pages.

@@ -1,0 +1,13 @@
+run_id: 2026-11-02-self-heal-dependency-audit
+date: 2026-11-02
+skill: self-heal
+profile: testing
+failure_type: audit
+root_cause: New high-severity advisories in wait-on transitive dependencies blocked six dependency PRs before application tests.
+files_changed: [package-lock.json]
+remediation: Update follow-redirects to 1.16.2 and joi to 18.3.1 within existing dependency ranges; preserve the audit gate.
+verification_status: passed
+checks: [typecheck, lint, coverage, production-build, dependency-audit]
+test_files_passed: 144
+tests_passed: 1494
+notes: Existing lint warnings and low/moderate advisories remain; no new exception added.
